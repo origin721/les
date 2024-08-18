@@ -1,0 +1,1 @@
+export { default as RandomPage } from './RandomPage.svelte';

@@ -1,0 +1,1 @@
+export { default as AccountNewPage } from './AccountNewPage.svelte';

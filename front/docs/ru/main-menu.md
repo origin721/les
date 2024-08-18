@@ -1,0 +1,4 @@
+- [svelte-vite](./docs/svelte-vite.md)
+- [data-attribute](./docs/data-attribute.md)
+- [styles](./docs/styles/styles.md)
+- [crypto](src/lib/crypt/README.md)

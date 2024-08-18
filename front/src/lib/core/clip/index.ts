@@ -1,0 +1,3 @@
+
+
+export { copyTextToClipboard } from './copyTextToClipboard';

@@ -1,0 +1,1 @@
+export { AccountNewPage } from './ui';
