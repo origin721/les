@@ -46,10 +46,11 @@ async fn manual_hello() -> impl Responder {
 // Функция, которая добавляет маршруты к существующему Scope
 fn add_routes_to_scope(scope: Scope) -> Scope {
     let scope = scope
+        .route("", web::get().to(index))
         .route("/", web::get().to(index))
-        .route("/hey", web::get().to(manual_hello));
+        .route("hey", web::get().to(manual_hello));
     let scope = scope
-      .route("/ok", web::get().to(index));
+      .route("ok", web::get().to(index));
 
     scope
 }
@@ -74,7 +75,7 @@ pub async fn create_server() -> Result<(), io::Error> {
     
     HttpServer::new(move || App::new()
         .app_data(counter.clone())
-        .service(add_routes_to_scope(web::scope("/")))
+        .service(add_routes_to_scope(web::scope("")))
         .default_service(web::to(not_found)))
             .bind(("127.0.0.1", 8080))?
             .run()
