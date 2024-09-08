@@ -7,18 +7,16 @@ pub async fn echo(req_body: String) -> impl Responder {
     HttpResponse::Ok().body(req_body)
 }
 
-pub struct AppStateWithCounter {
-    counter: Mutex<i32>, // <- Mutex is necessary to mutate safely across threads
-}
 
-pub fn create_count() -> web::Data<AppStateWithCounter> {
-    web::Data::new(AppStateWithCounter {
+
+pub fn create_count() -> web::Data<super::AppStateWithCounter> {
+    web::Data::new(super::AppStateWithCounter {
         counter: Mutex::new(0),
     })
 }
 
 
-async fn index(data: web::Data<AppStateWithCounter>) -> String {
+async fn index(data: web::Data<super::AppStateWithCounter>) -> String {
     let mut counter = data.counter.lock().unwrap(); // <- get counter's MutexGuard
     *counter += 1; // <- access counter inside MutexGuard
 
