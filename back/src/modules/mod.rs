@@ -5,6 +5,8 @@ use actix_web::{
 };
 use std::sync::Arc;
 use std::{fs, io, sync::Mutex};
+
+use crate::utils::RelativePathParams;
 mod api;
 mod host_dist;
 
@@ -45,14 +47,13 @@ async fn manual_hello() -> impl Responder {
 
 // Функция, которая добавляет маршруты к существующему Scope
 fn add_routes_to_scope(scope: Scope) -> Scope {
-    let scope = scope
-        .route("", web::get().to(index))
-        .route("/", web::get().to(index))
-        .route("hey", web::get().to(manual_hello));
+    // let scope = scope
+    //     .route("", web::get().to(index))
+    //     .route("/", web::get().to(index))
+    //     .route("hey", web::get().to(manual_hello));
     let scope = scope
       .route("ok", web::get().to(index));
-
-    scope
+    host_dist::add_scope(scope)
 }
 
 // Функция для создания App
@@ -69,9 +70,10 @@ fn add_routes_to_scope(scope: Scope) -> Scope {
 // }
 
 #[actix_web::main]
-pub async fn create_server() -> Result<(), io::Error> {
+pub async fn create_server(params: RelativePathParams) -> Result<(), io::Error> {
     let counter = api::create_count();
     rest::greet();
+    host_dist::create_dist_utils(params);
     
     HttpServer::new(move || App::new()
         .app_data(counter.clone())

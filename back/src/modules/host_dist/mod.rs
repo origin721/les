@@ -1,45 +1,47 @@
 use actix_web::{post, web::{self, Data}, App, HttpResponse, HttpServer, Responder, Scope};
-use std::sync::Mutex;
+use std::{collections::HashMap, sync::Mutex};
 use std::fs;
 use std::path::{Path, PathBuf};
 
+use crate::utils::RelativePathParams;
+
 // use super::api::AppStateWithCounter;
 
-/// Рекурсивно получает все файлы в директории и вложенных директориях
-fn get_all_files(dir: &Path) -> Vec<String> {
-    let mut file_paths = Vec::new();
-    if let Ok(entries) = fs::read_dir(dir) {
-        for entry in entries.flatten() {
-            let path = entry.path();
-            if path.is_dir() {
-                file_paths.extend(get_all_files(&path));
-            } else if path.is_file() {
-                // Получаем путь к файлу относительно исходной директории
-                if let Some(relative_path) = path.strip_prefix(dir).ok() {
-                    file_paths.push(relative_path.display().to_string());
-                }
-            }
-        }
-    }
-    file_paths
-}
 
 
-
-async fn index(data: web::Data<super::AppStateWithCounter>) -> String {
-    let mut counter = data.counter.lock().unwrap(); // <- get counter's MutexGuard
-    *counter += 1; // <- access counter inside MutexGuard
-
-    format!("Request number: {counter}") // <- response with count
-}
-
-
-async fn manual_hello() -> impl Responder {
-    HttpResponse::Ok().body("Hey there!")
-}
-
-// TODO: реализовать получение сущьности и добавление route и возвращение
-pub fn scope<AppEntry>(scope: Scope) -> Scope {
+pub fn add_scope(scope: Scope) -> Scope {
     scope
-                   
+        .route("/", web::get().to(|| async { "Hello, World!" }))
+        .route("/about", web::get().to(|| async { "About Page" }))
+}
+
+
+struct DistFileItem {
+
+}
+
+type DistFiles = HashMap<String, String>;
+
+pub fn create_dist_utils(params: RelativePathParams) -> DistFiles {
+    let mut dist_files = HashMap::new();
+
+    // 1. Добавление элементов
+    dist_files.insert("key1".to_string(), "value1".to_string());
+    dist_files.insert("key2".to_string(), "value2".to_string());
+    dist_files.insert("key3".to_string(), "value3".to_string());
+
+    // 2. Удаление элемента по ключу
+    dist_files.remove("key2"); // Удаляем элемент с ключом "key2"
+
+    // 3. Перебор элементов
+    for (key, value) in &dist_files {
+        println!("Ключ: {}, Значение: {}", key, value);
+    }
+
+    // Проверка существования ключа
+    if let Some(value) = dist_files.get("key1") {
+        println!("Значение для ключа 'key1': {}", value);
+    }
+
+    dist_files
 }

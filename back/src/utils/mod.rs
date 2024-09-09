@@ -35,8 +35,13 @@ pub fn read_files_from_dir(path: &str) -> Vec<String> {
     files_list
 }
 
-pub fn read_files_from_dir_relative(current_file: &str, relative_path: &str) -> Vec<String> {
-    match get_absolute_path(current_file, relative_path) {
+pub struct  RelativePathParams<'a> {
+    pub current_file: &'a String,
+    pub relative_path: &'a String,
+}
+
+pub fn read_files_from_dir_relative(params: RelativePathParams) -> Vec<String> {
+    match get_absolute_path(params.current_file, params.relative_path) {
         Some(result) => read_files_from_dir(&result),
         None => Vec::new(),
     }
