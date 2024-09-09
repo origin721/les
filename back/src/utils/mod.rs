@@ -35,6 +35,12 @@ pub fn read_files_from_dir(path: &str) -> Vec<String> {
     files_list
 }
 
+pub fn read_files_from_dir_relative(current_file: &str, relative_path: &str) -> Vec<String> {
+    match get_absolute_path(current_file, relative_path) {
+        Some(result) => read_files_from_dir(&result),
+        None => Vec::new(),
+    }
+}
 
 pub fn get_absolute_path(current_file: &str, relative_path: &str) -> Option<String> {
     // Получаем путь до директории, где находится текущий файл
