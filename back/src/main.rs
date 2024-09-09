@@ -19,8 +19,10 @@ fn main()  {
     //     Ok(absolute_path) => println!("Абсолютный путь: {}", absolute_path),
     //     Err(e) => println!("Ошибка: {}", e),
     // }
-    let path = "./dist";  // Указываем относительный путь
-    let files = utils::read_files_from_dir_relative(file!(),path);
+    let files = utils::read_files_from_dir_relative(
+        file!(),
+        "../dist"
+    );
     for file in files {
         println!("{}", file);  // Выводим каждый файл в консоль
     }

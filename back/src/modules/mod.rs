@@ -6,7 +6,7 @@ use actix_web::{
 use std::sync::Arc;
 use std::{fs, io, sync::Mutex};
 mod api;
-mod dist;
+mod host_dist;
 
 pub mod rest {
     pub fn greet() {
