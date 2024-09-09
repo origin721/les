@@ -3,7 +3,7 @@ use std::{collections::HashMap, sync::Mutex};
 use std::fs;
 use std::path::{Path, PathBuf};
 
-use crate::utils::RelativePathParams;
+use crate::utils::{read_files_from_dir_relative, RelativePathParams};
 
 // use super::api::AppStateWithCounter;
 
@@ -15,33 +15,46 @@ pub fn add_scope(scope: Scope) -> Scope {
         .route("/about", web::get().to(|| async { "About Page" }))
 }
 
-
-struct DistFileItem {
-
+#[derive(Debug)]
+pub struct DistFileItem<> {
+    fileContent: String,
 }
 
-type DistFiles = HashMap<String, String>;
+type DistFiles = HashMap<String, DistFileItem>;
 
 pub fn create_dist_utils(params: RelativePathParams) -> DistFiles {
     let mut dist_files = HashMap::new();
 
+    let dist_files_list = read_files_from_dir_relative(params);
+
+    
     // 1. Добавление элементов
-    dist_files.insert("key1".to_string(), "value1".to_string());
-    dist_files.insert("key2".to_string(), "value2".to_string());
-    dist_files.insert("key3".to_string(), "value3".to_string());
+    for item in &dist_files_list {
+        let dist_item = DistFileItem {
+            fileContent: "jlskdf".to_string(),
+        };
+        dist_files.insert(item.clone(), dist_item);
+
+        println!("{}", item);
+    }
+
 
     // 2. Удаление элемента по ключу
-    dist_files.remove("key2"); // Удаляем элемент с ключом "key2"
+    // dist_files.remove("key2"); // Удаляем элемент с ключом "key2"
 
     // 3. Перебор элементов
-    for (key, value) in &dist_files {
-        println!("Ключ: {}, Значение: {}", key, value);
-    }
+    // for (key, value) in &dist_files {
+    //     println!("Ключ: {}, Значение: {:?}", key, value);
+    // }
 
     // Проверка существования ключа
-    if let Some(value) = dist_files.get("key1") {
-        println!("Значение для ключа 'key1': {}", value);
-    }
+    // if let Some(value) = dist_files.get("key1") {
+    //     println!("Значение для ключа 'key1': {:?}", value);
+    // }
+
+    for (key, value) in &dist_files {
+        println!("Ключ: {}, Значение: {:?}", key, value);
+    };
 
     dist_files
 }

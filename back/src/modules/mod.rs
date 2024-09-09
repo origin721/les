@@ -29,11 +29,6 @@ pub struct AppStateWithCounter {
     counter: Mutex<i32>, // <- Mutex is necessary to mutate safely across threads
 }
 
-fn create_count() -> AppStateWithCounter {
-    AppStateWithCounter {
-        counter: Mutex::new(0),  // Без обёртки Arc
-    }
-}
 
 // Пример обработчиков для маршрутов
 async fn index() -> impl Responder {
@@ -56,18 +51,6 @@ fn add_routes_to_scope(scope: Scope) -> Scope {
     host_dist::add_scope(scope)
 }
 
-// Функция для создания App
-// fn create_app(counter: web::Data<AppStateWithCounter>) -> App {
-//     App::new()
-//         .app_data(counter)
-//         // .service(
-//         //     fs::Files::new("/", "./static")
-//         //         .show_files_listing()
-//         //         .use_etag(true),
-//         // )
-//         .service(add_routes_to_scope(web::scope("/")))
-//         .default_service(web::to(not_found))
-// }
 
 #[actix_web::main]
 pub async fn create_server(params: RelativePathParams) -> Result<(), io::Error> {
