@@ -10,14 +10,12 @@ pub fn read_files_from_dir(path: &str) -> Vec<String> {
         for entry in entries {
             if let Ok(entry) = entry {
                 let path = entry.path();
-                println!("{:?}", path);
+                println!("PATH: {:?}", path);
 
                 // Если это файл, добавляем его в список
                 if path.is_file() {
-                    if let Some(file_name) = path.file_name() {
-                        if let Some(file_name_str) = file_name.to_str() {
-                            files_list.push(file_name_str.to_string());
-                        }
+                    if let Some(path_str) = path.to_str() {
+                        files_list.push(path_str.to_string());
                     }
                 }
 
@@ -41,7 +39,7 @@ pub struct  RelativePathParams<'a> {
 }
 
 pub fn read_files_from_dir_relative(params: RelativePathParams) -> Vec<String> {
-    match get_absolute_path(params.current_file, params.relative_path) {
+    match get_absolute_path(params) {
         Some(result) => read_files_from_dir(&result),
         None => Vec::new(),
     }
@@ -49,21 +47,23 @@ pub fn read_files_from_dir_relative(params: RelativePathParams) -> Vec<String> {
 
 pub fn read_file_contents(path: &str) -> Result<String, io::Error> {
     // Читаем содержимое файла в строку
+    // print!("ARG_PATH: {}", path);
     let contents = fs::read_to_string(path)?;
+    // let contents = fs::read_to_string(path)?;
 
     // Возвращаем содержимое файла
     Ok(contents)
 }
 
-pub fn get_absolute_path(current_file: &str, relative_path: &str) -> Option<String> {
+pub fn get_absolute_path(params: RelativePathParams) -> Option<String> {
     // Получаем путь до директории, где находится текущий файл
-    let current_file_path = Path::new(current_file);
+    let current_file_path = Path::new(params.current_file);
     
     // Получаем родительский путь текущего файла (директория, где он находится)
     let current_dir = current_file_path.parent()?;
 
     // Соединяем родительскую директорию с относительным путем
-    let combined_path = current_dir.join(relative_path);
+    let combined_path = current_dir.join(params.relative_path);
 
     // Преобразуем в абсолютный путь (canonicalize вернёт полный путь от корня файловой системы)
     fs::canonicalize(combined_path)
