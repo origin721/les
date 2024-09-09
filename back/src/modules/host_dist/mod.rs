@@ -59,7 +59,7 @@ pub fn create_dist_utils(params: RelativePathParams) -> DistFiles {
     // }
 
     for (key, value) in &dist_files {
-        println!("Ключ: {}, Значение: {:?}", key, value);
+        println!("Ключ: \n{}, Значение: \n{:?}", key, value);
     }
 
     dist_files
