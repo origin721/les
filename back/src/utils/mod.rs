@@ -47,6 +47,14 @@ pub fn read_files_from_dir_relative(params: RelativePathParams) -> Vec<String> {
     }
 }
 
+pub fn read_file_contents(path: &str) -> Result<String, io::Error> {
+    // Читаем содержимое файла в строку
+    let contents = fs::read_to_string(path)?;
+
+    // Возвращаем содержимое файла
+    Ok(contents)
+}
+
 pub fn get_absolute_path(current_file: &str, relative_path: &str) -> Option<String> {
     // Получаем путь до директории, где находится текущий файл
     let current_file_path = Path::new(current_file);
