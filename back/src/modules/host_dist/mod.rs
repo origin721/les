@@ -122,8 +122,7 @@ async fn get_file_content(file_content: String) -> impl Responder {
 }
 
 
-pub fn add_routes_to_scope(scope: Scope, params: RelativePathParamsBase) -> Scope {
-    let dist_utils = create_dist_utils(params);
+pub fn add_routes_to_scope(scope: Scope, dist_utils: DistFiles) -> Scope {
     // let scope = scope
     //     .route("", web::get().to(index))
     //     .route("/", web::get().to(index))
@@ -136,7 +135,6 @@ pub fn add_routes_to_scope(scope: Scope, params: RelativePathParamsBase) -> Scop
     // );
 
     for (key, value) in dist_utils {
-        println!("SUUPORT:ROUTES: {}", key);
         new_scope = new_scope.route(
             &format!("{}", key), // Создайте путь на основе ключа
             // &format!("/{}", key), // Создайте путь на основе ключа

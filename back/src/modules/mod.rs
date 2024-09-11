@@ -6,7 +6,8 @@ use actix_web::{
 use std::sync::Arc;
 use std::{fs, io, sync::Mutex};
 
-use crate::utils::{RelativePathParams, RelativePathParamsBase};
+
+use crate::utils::{RelativePathParams, RelativePathParamsBase, get_absolute_path_dir};
 mod api;
 pub mod host_dist;
 
@@ -51,18 +52,24 @@ fn add_routes_to_scope(scope: Scope) -> Scope {
 
 
 #[actix_web::main]
-pub async fn create_server(params: RelativePathParamsBase) -> Result<(), io::Error> {
+pub async fn create_server(params: RelativePathParams) -> Result<(), io::Error> {
     let counter = api::create_count();
     rest::greet();
     // host_dist::create_dist_utils(params);
     // let params_clone = Arc::new(params);
+
+
+    let dist_utils = host_dist::create_dist_utils(RelativePathParamsBase {
+        absolute_dir: get_absolute_path_dir(params.clone()),
+        base: params,
+    });
 
     HttpServer::new(move || {
         App::new()
             .app_data(counter.clone())
             .service(host_dist::add_routes_to_scope(
                 web::scope(""),
-                params.clone(),
+                dist_utils.clone(),
             ))
             .default_service(web::to(not_found))
     })
