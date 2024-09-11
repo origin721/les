@@ -122,3 +122,26 @@ pub fn get_absolute_path(params: RelativePathParams) -> Option<String> {
     //     Err(_) => String::new(),
     // }
 }
+
+pub fn get_absolute_path_dir(params: RelativePathParams) -> String {
+    // Получаем путь до директории, где находится текущий файл
+    let current_file_path = Path::new(&params.current_file);
+
+    let current_dir = current_file_path.parent();
+
+    // Получаем родительский путь текущего файла (директория, где он находится)
+    let current_dir = match current_file_path.parent() {
+        Some(dir) => dir.to_path_buf(),
+        None => return String::new(),
+    };
+
+    // Соединяем родительскую директорию с относительным путем
+    let combined_path = current_dir.join(params.relative_path);
+
+
+    // Преобразуем в абсолютный путь (canonicalize вернёт полный путь от корня файловой системы)
+    match fs::canonicalize(combined_path) {
+        Ok(abs_path) => abs_path.to_string_lossy().to_string(),
+        Err(_) => String::new(),
+    }
+}
