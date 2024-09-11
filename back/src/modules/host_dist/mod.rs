@@ -7,7 +7,7 @@ use std::{fs, sync::Arc};
 use std::path::{Path, PathBuf};
 use std::{collections::HashMap, sync::Mutex};
 
-use crate::utils::{read_file_contents, read_files_from_dir_relative, RelativePathParams};
+use crate::utils::{get_absolute_directory_path, get_directory_path, read_file_contents, read_files_from_dir_relative, RelativePathParams};
 
 // use super::api::AppStateWithCounter;
 
@@ -51,11 +51,18 @@ fn get_content_type(file_path: &str) -> &'static str {
 pub fn create_dist_utils(params: RelativePathParams) -> DistFiles {
     let mut dist_files = HashMap::new();
 
-    let dist_files_list = read_files_from_dir_relative(params);
+    let dist_files_list = read_files_from_dir_relative(params.clone());
+
+    // let dist_home = get_absolute_directory_path(params);
+    // print!("dist_home: {:?}", dist_home);
+
 
     // 1. Добавление элементов
     for item in dist_files_list {
         // print!("MY_ITEM: {}", item);
+
+        
+
         // print!("MY_ITEM_CONTENT: {}", match read_file_contents(&item) {
         //     Ok(content) => {
         //         print!("\nCONTENT: {}", content);
@@ -77,7 +84,7 @@ pub fn create_dist_utils(params: RelativePathParams) -> DistFiles {
         });
         dist_files.insert(item.clone(), dist_item);
 
-        println!("{}", item);
+        // println!("{}", item);
     }
 
     // 2. Удаление элемента по ключу
@@ -106,26 +113,26 @@ async fn get_file_content(file_content: String) -> impl Responder {
 
 
 pub fn add_routes_to_scope(scope: Scope, params: RelativePathParams) -> Scope {
-    // let dist_utils = create_dist_utils(params);
+    let dist_utils = create_dist_utils(params);
     // let scope = scope
     //     .route("", web::get().to(index))
     //     .route("/", web::get().to(index))
     //     .route("hey", web::get().to(manual_hello));
     let mut new_scope = scope;
 
-    new_scope = new_scope.route(
-        "/czaa", // Создайте путь на основе ключа
-        web::get().to( || async {"hi my route"}),
-    );
+    // new_scope = new_scope.route(
+    //     "czaa", // Создайте путь на основе ключа
+    //     web::get().to( || async {"hi my route"}),
+    // );
 
-    // for (key, value) in dist_utils {
-    //     print!("SUUPORT:ROUTES: {}", key);
-    //     new_scope = new_scope.route(
-    //         &format!("/{}", key), // Создайте путь на основе ключа
-    //         // &format!("/{}", key), // Создайте путь на основе ключа
-    //         web::get().to(move || get_file_content(value.fileContent.clone())),
-    //     );
-    // }
+    for (key, value) in dist_utils {
+        // print!("SUUPORT:ROUTES: {}", key);
+        // new_scope = new_scope.route(
+        //     &format!("{}", key), // Создайте путь на основе ключа
+        //     // &format!("/{}", key), // Создайте путь на основе ключа
+        //     web::get().to(move || get_file_content(value.fileContent.clone())),
+        // );
+    }
 
 
     new_scope

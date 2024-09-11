@@ -48,6 +48,8 @@ fn add_routes_to_scope(scope: Scope) -> Scope {
     host_dist::add_scope(scope)
 }
 
+
+
 #[actix_web::main]
 pub async fn create_server(params: RelativePathParams) -> Result<(), io::Error> {
     let counter = api::create_count();
