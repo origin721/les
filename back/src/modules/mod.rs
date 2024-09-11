@@ -6,9 +6,9 @@ use actix_web::{
 use std::sync::Arc;
 use std::{fs, io, sync::Mutex};
 
-use crate::utils::RelativePathParams;
+use crate::utils::{RelativePathParams, RelativePathParamsBase};
 mod api;
-mod host_dist;
+pub mod host_dist;
 
 pub mod rest {
     pub fn greet() {
@@ -51,7 +51,7 @@ fn add_routes_to_scope(scope: Scope) -> Scope {
 
 
 #[actix_web::main]
-pub async fn create_server(params: RelativePathParams) -> Result<(), io::Error> {
+pub async fn create_server(params: RelativePathParamsBase) -> Result<(), io::Error> {
     let counter = api::create_count();
     rest::greet();
     // host_dist::create_dist_utils(params);

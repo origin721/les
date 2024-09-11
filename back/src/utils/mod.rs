@@ -37,6 +37,23 @@ pub struct RelativePathParams {
     pub relative_path: String,
 }
 
+pub fn extract_substring(first: &str, second: &str) -> String {
+    // Определяем длину первой строки
+    let length_of_first = first.len();
+    
+    // Извлекаем подстроку из второй строки, начиная с индекса length_of_first
+    let remaining = second.get(length_of_first..).unwrap_or("");
+    
+    // Возвращаем оставшуюся часть строки
+    remaining.to_string()
+}
+
+#[derive(Clone)]
+pub struct RelativePathParamsBase {
+    pub absolute_dir: String,
+    pub base: RelativePathParams,
+}
+
 pub fn get_absolute_directory_path(params: RelativePathParams) -> String {
     // Преобразуем строки в Path
     let base_path = Path::new(&params.current_file);
