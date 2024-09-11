@@ -60,7 +60,7 @@ pub fn create_dist_utils(params: RelativePathParams) -> DistFiles {
         //     Ok(content) => {
         //         print!("\nCONTENT: {}", content);
         //         content
-        //     },
+        //     },create_dist_utils
         //     Err(e) => {
         //         eprintln!("Ошибка при чтении файла: {}", e);
         //         String::new() // Возвращаем пустую строку или можно выбрать другой способ обработки
@@ -106,22 +106,26 @@ async fn get_file_content(file_content: String) -> impl Responder {
 
 
 pub fn add_routes_to_scope(scope: Scope, params: RelativePathParams) -> Scope {
-    let dist_utils = create_dist_utils(params);
+    // let dist_utils = create_dist_utils(params);
     // let scope = scope
     //     .route("", web::get().to(index))
     //     .route("/", web::get().to(index))
     //     .route("hey", web::get().to(manual_hello));
     let mut new_scope = scope;
 
+    new_scope = new_scope.route(
+        "/czaa", // Создайте путь на основе ключа
+        web::get().to( || async {"hi my route"}),
+    );
 
-    for (key, value) in dist_utils {
-        print!("SUUPORT:ROUTES: {}", key);
-        new_scope = new_scope.route(
-            &format!("/{}", key), // Создайте путь на основе ключа
-            // &format!("/{}", key), // Создайте путь на основе ключа
-            web::get().to(move || get_file_content(value.fileContent.clone())),
-        );
-    }
+    // for (key, value) in dist_utils {
+    //     print!("SUUPORT:ROUTES: {}", key);
+    //     new_scope = new_scope.route(
+    //         &format!("/{}", key), // Создайте путь на основе ключа
+    //         // &format!("/{}", key), // Создайте путь на основе ключа
+    //         web::get().to(move || get_file_content(value.fileContent.clone())),
+    //     );
+    // }
 
 
     new_scope

@@ -3,7 +3,7 @@ use std::io;
 use std::path::{Path, PathBuf};
 
 
-pub fn read_files_from_dir(path: &str) -> Vec<String> {
+pub fn read_files_from_dir(path: String) -> Vec<String> {
     let mut files_list: Vec<String> = Vec::new();
 
     if let Ok(entries) = fs::read_dir(path) {
@@ -22,7 +22,7 @@ pub fn read_files_from_dir(path: &str) -> Vec<String> {
                 // Если это директория, рекурсивно вызываем функцию для неё
                 if path.is_dir() {
                     if let Some(dir_name) = path.to_str() {
-                        files_list.extend(read_files_from_dir(dir_name));
+                        files_list.extend(read_files_from_dir(dir_name.to_string()));
                     }
                 }
             }
@@ -33,14 +33,15 @@ pub fn read_files_from_dir(path: &str) -> Vec<String> {
     files_list
 }
 
-pub struct  RelativePathParams<'a> {
-    pub current_file: &'a String,
-    pub relative_path: &'a String,
+#[derive(Clone)]
+pub struct  RelativePathParams {
+    pub current_file: String,
+    pub relative_path: String,
 }
 
 pub fn read_files_from_dir_relative(params: RelativePathParams) -> Vec<String> {
     match get_absolute_path(params) {
-        Some(result) => read_files_from_dir(&result),
+        Some(result) => read_files_from_dir(result),
         None => Vec::new(),
     }
 }
@@ -57,7 +58,7 @@ pub fn read_file_contents(path: &str) -> Result<String, io::Error> {
 
 pub fn get_absolute_path(params: RelativePathParams) -> Option<String> {
     // Получаем путь до директории, где находится текущий файл
-    let current_file_path = Path::new(params.current_file);
+    let current_file_path = Path::new(&params.current_file);
     
     // Получаем родительский путь текущего файла (директория, где он находится)
     let current_dir = current_file_path.parent()?;
