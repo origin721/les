@@ -11,11 +11,5 @@ fn main() {
     };
 
 
-
-    // let relative_path_params_base = ;
-
-
-    // let dist_home = relative_path_params;
-    // print!("dist_home: {:?}", dist_utils.get("/index.html"));
     modules::create_server(relative_path_params);
 }

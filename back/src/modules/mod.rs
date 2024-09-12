@@ -6,8 +6,7 @@ use actix_web::{
 use std::sync::Arc;
 use std::{fs, io, sync::Mutex};
 
-
-use crate::utils::{RelativePathParams, RelativePathParamsBase, get_absolute_path_dir};
+use crate::utils::{get_absolute_path_dir, RelativePathParams, RelativePathParamsBase};
 mod api;
 pub mod host_dist;
 
@@ -49,8 +48,6 @@ fn add_routes_to_scope(scope: Scope) -> Scope {
     host_dist::add_scope(scope)
 }
 
-
-
 #[actix_web::main]
 pub async fn create_server(params: RelativePathParams) -> Result<(), io::Error> {
     let counter = api::create_count();
@@ -58,11 +55,18 @@ pub async fn create_server(params: RelativePathParams) -> Result<(), io::Error> 
     // host_dist::create_dist_utils(params);
     // let params_clone = Arc::new(params);
 
-
     let dist_utils = host_dist::create_dist_utils(RelativePathParamsBase {
         absolute_dir: get_absolute_path_dir(params.clone()),
         base: params,
     });
+
+    // let mapMutss = Arc::new(Mutex::new(dist_utils));
+    
+    // let default_content = dist_utils;
+
+    // println!("TMP MESSAGE: {}", default_content);
+
+    println!("Started server: 8080");
 
     HttpServer::new(move || {
         App::new()
@@ -71,7 +75,12 @@ pub async fn create_server(params: RelativePathParams) -> Result<(), io::Error> 
                 web::scope(""),
                 dist_utils.clone(),
             ))
-            .default_service(web::to(not_found))
+            // .default_service(
+            //     web::to(move || async move {
+            //         HttpResponse::Ok().body(default_content.clone())
+            //     }),
+            // )
+    
     })
     .bind(("127.0.0.1", 8080))?
     .run()

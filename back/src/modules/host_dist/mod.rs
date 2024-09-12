@@ -18,13 +18,14 @@ pub fn add_scope(scope: Scope) -> Scope {
 }
 
 #[derive(Debug)]
+#[derive(Clone)]
 pub struct DistFileItem {
-    fileContent: String,
-    id: String,
-    content_type: String,
+    pub file_content: String,
+    pub id: String,
+    pub content_type: String,
 }
 
-type DistFiles = HashMap<String, Arc<DistFileItem>>;
+type DistFiles = Vec<DistFileItem>;
 
 fn get_content_type(file_path: &str) -> &'static str {
     let path = Path::new(file_path);
@@ -51,7 +52,7 @@ fn get_content_type(file_path: &str) -> &'static str {
 }
 
 pub fn create_dist_utils(params: RelativePathParamsBase) -> DistFiles {
-    let mut dist_files = HashMap::new();
+    let mut dist_files = Vec::new();
 
     let dist_files_list = read_files_from_dir_relative(params.base.clone());
 
@@ -78,23 +79,24 @@ pub fn create_dist_utils(params: RelativePathParamsBase) -> DistFiles {
 
         let itemId = extract_substring(&params.absolute_dir, &item);
 
-        let dist_item = Arc::new(DistFileItem {
+        // TODO: превратить в массив и в ребёнке просто создавать хэш мапу
+        let dist_item = DistFileItem {
             id: itemId.clone(),
             content_type: get_content_type(&itemId).to_string(),
-            fileContent: match read_file_contents(&item) {
+            file_content: match read_file_contents(&item) {
                 Ok(content) => content,
                 Err(e) => {
                     eprintln!("Ошибка при чтении файла: {}", e);
                     String::new() // Возвращаем пустую строку или можно выбрать другой способ обработки
                 }
             },
-        });
+        };
 
 
-        dist_files.insert(itemId.clone(), dist_item);
+        dist_files.push(dist_item);
         // print!("PRE_TEST: {}", &item);
         // print!("PRE_TEST1: {}", &params.absolute_dir);
-        // println!("test: {}", itemId);
+        // println!(k"test: {}", itemId);
     }
 
     // 2. Удаление элемента по ключу
@@ -117,8 +119,10 @@ pub fn create_dist_utils(params: RelativePathParamsBase) -> DistFiles {
     dist_files
 }
 
-async fn get_file_content(file_content: String) -> impl Responder {
-    HttpResponse::Ok().body(file_content)
+async fn get_file_content(dist_item: DistFileItem) -> impl Responder {
+    HttpResponse::Ok()
+        .content_type(dist_item.content_type.clone())
+        .body(dist_item.file_content.clone())
 }
 
 
@@ -134,11 +138,11 @@ pub fn add_routes_to_scope(scope: Scope, dist_utils: DistFiles) -> Scope {
     //     web::get().to( || async {"hi my route"}),
     // );
 
-    for (key, value) in dist_utils {
+    for dist_item in dist_utils {
         new_scope = new_scope.route(
-            &format!("{}", key), // Создайте путь на основе ключа
+            &format!("{}", dist_item.id), // Создайте путь на основе ключа
             // &format!("/{}", key), // Создайте путь на основе ключа
-            web::get().to(move || get_file_content(value.fileContent.clone())),
+            web::get().to(move || get_file_content(dist_item.clone())),
         );
     }
 
