@@ -9,6 +9,7 @@ pub struct AppParams {
     relative_path_params: RelativePathParams,
 }
 
+
 fn main() {
     let relative_path_params = RelativePathParams {
         current_file: file!().to_string(),

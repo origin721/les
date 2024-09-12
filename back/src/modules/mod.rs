@@ -5,10 +5,13 @@ use actix_web::{
 };
 use std::sync::Arc;
 use std::{fs, io, sync::Mutex};
+use tokio::time::{sleep, Duration};
+use actix_web::web::Bytes;
 
 use crate::{utils::{get_absolute_path_dir, RelativePathParams, RelativePathParamsBase}, AppParams};
 mod api;
 pub mod host_dist;
+pub mod my_events;
 
 pub mod rest {
     pub fn greet() {
@@ -47,6 +50,28 @@ fn add_routes_to_scope(scope: Scope) -> Scope {
     let scope = scope.route("ok", web::get().to(index));
     host_dist::add_scope(scope)
 }
+type MyError = io::Error; 
+// async fn sse_handler() -> impl Responder {
+//     // let stream = stream! {
+//     //     let mut count = 0;
+//     //     loop {
+//     //         count += 1;
+//     //         let data = format!("data: Event number {}\n\n", count);
+//     //         yield Ok(Bytes::from(data)); // Преобразование строки в Bytes
+//     //         sleep(Duration::from_secs(1)).await;
+//     //     }
+//     // };
+//     let stream: impl Stream<Item = Result<Bytes, MyError>> = stream! {
+//         let data = "example"; // Replace with your actual data source
+//         yield Ok(Bytes::from(data)); // Convert the string to Bytes
+//     };
+
+//     HttpResponse::Ok()
+//         .content_type("text/event-stream")
+//         .streaming(stream) // Преобразование `stream` в поток типа `Result<Bytes, Error>`
+// }
+
+
 
 #[actix_web::main]
 pub async fn create_server(params: AppParams) -> Result<(), io::Error> {
@@ -68,6 +93,7 @@ pub async fn create_server(params: AppParams) -> Result<(), io::Error> {
 
     println!("Started server: {}", params.port);
 
+
     HttpServer::new(move || {
         App::new()
             .app_data(counter.clone())
@@ -75,6 +101,8 @@ pub async fn create_server(params: AppParams) -> Result<(), io::Error> {
                 web::scope(""),
                 dist_utils.clone(),
             ))
+            // .route("/events", web::get().to(sse_handler))
+            // .route("/events", web::get().to(my_events::sse_handler))
             // .default_service(
             //     web::to(move || async move {
             //         HttpResponse::Ok().body(default_content.clone())
