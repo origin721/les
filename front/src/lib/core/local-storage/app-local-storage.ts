@@ -37,7 +37,7 @@ export const appLocalStorage = {
               origin: encrItem,
               decr: JSON.parse(secret),
             });
-        } finally {
+        } catch(err) {
         }
 
         return acc;

@@ -15,6 +15,10 @@
   font-size: 28px;
 }
 
+textarea {
+  color: black;
+}
+
 html, body, #app {
   height: 100%;
 }
