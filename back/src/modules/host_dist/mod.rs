@@ -78,7 +78,7 @@ pub fn create_dist_utils(params: RelativePathParamsBase) -> DistFiles {
         // });
 
         let itemId = extract_substring(&params.absolute_dir, &item);
-
+        println!("route: {}", itemId);
         // TODO: превратить в массив и в ребёнке просто создавать хэш мапу
         let dist_item = DistFileItem {
             id: itemId.clone(),
