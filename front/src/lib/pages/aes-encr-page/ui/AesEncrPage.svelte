@@ -3,6 +3,7 @@
   import Link from "../../../routing/ui/Link.svelte";
   import { submit_stop } from "../../../svelte-default";
 
+
 </script>
 <ul>
     <li><Link href={ROUTES.HOME}>Назад</Link></li>
