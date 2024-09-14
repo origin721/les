@@ -25,3 +25,5 @@ front/*.sw?
 
 back/target
 back/dist
+
+event-stream/node_modules

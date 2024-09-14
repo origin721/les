@@ -15,6 +15,9 @@
             <Link href={ROUTES.AEC_ENCR}>AES</Link>
         </li>
         <li>
+            <Link href={ROUTES.CHAT_ROOMS}>Чаты</Link>
+        </li>
+        <li>
             <Link href={ROUTES.SETTINGS}>Настройки</Link>
         </li>
     </ul>

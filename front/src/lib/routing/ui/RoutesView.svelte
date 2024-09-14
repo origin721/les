@@ -9,6 +9,7 @@
     RandomPage,
   } from "../../pages";
   import AesEncrPage from "../../pages/aes-encr-page/ui/AesEncrPage.svelte";
+  import { ChatRoomsPage } from "../../pages/chat-rooms";
   import { appAuthStore } from "../../stores";
   import { ROUTES } from "../constants";
   import { routingStore } from "../stores";
@@ -17,6 +18,8 @@
 
 {#if $routingStore.pathname === ROUTES.ACCOUNTS_NEW}
   <AccountNewPage />
+{:else if $routingStore.pathname === ROUTES.CHAT_ROOMS}
+  <ChatRoomsPage/>
 {:else if !$appAuthStore.length}
   <AuthPage />
 {:else if $routingStore.pathname === ROUTES.RANDOM}

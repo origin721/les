@@ -6,4 +6,5 @@ export const ROUTES = {
     ACCOUNTS_NEW: '/accounts/new',
     RANDOM: '/RANDOM',
     AEC_ENCR: '/AEC_ENCR',
+    CHAT_ROOMS: '/chat-rooms',
 } as const;

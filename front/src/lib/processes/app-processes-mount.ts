@@ -1,7 +1,7 @@
 import { onMount } from "svelte";
 import { appLocalStorage } from "../core";
-import {worker} from './worker/worker';
-import { sharedWorker } from './worker/sharedWorker';
+// import {worker} from './worker/worker';
+// import { sharedWorker } from './worker/sharedWorker';
 import { v4 as uuidv4 } from 'uuid';
 import { create_my_events } from "./create_my_events";
 
