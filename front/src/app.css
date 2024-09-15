@@ -15,7 +15,7 @@
   font-size: 28px;
 }
 
-textarea {
+textarea, input {
   color: black;
 }
 

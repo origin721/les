@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { get } from "svelte/store";
   import {
     AccountNewPage,
     AccountsPage,
@@ -11,15 +12,24 @@
   import AesEncrPage from "../../pages/aes-encr-page/ui/AesEncrPage.svelte";
   import { ChatRoomsPage } from "../../pages/chat-rooms";
   import { appAuthStore } from "../../stores";
-  import { ROUTES } from "../constants";
+  import { QUERY_PARAMS, ROUTES } from "../constants";
   import { routingStore } from "../stores";
+  import ChatRoomPage from "../../pages/chat-room/ui/ChatRoomPage.svelte";
+  import { ChatRoomsAddPage } from "../../pages/chat_rooms_add";
   // console.log({aaa: $appAuthStore})
+  // console.log('queryParams test: ', $routingStore.queryParams.get("aaa"));
 </script>
 
 {#if $routingStore.pathname === ROUTES.ACCOUNTS_NEW}
   <AccountNewPage />
 {:else if $routingStore.pathname === ROUTES.CHAT_ROOMS}
-  <ChatRoomsPage/>
+  {#if $routingStore.queryParams.get(QUERY_PARAMS.ROOM_ID)}
+    <ChatRoomPage />
+  {:else}
+    <ChatRoomsPage />
+  {/if}
+{:else if $routingStore.pathname === ROUTES.CHAT_ROOMS_ADD}
+  <ChatRoomsAddPage/>
 {:else if !$appAuthStore.length}
   <AuthPage />
 {:else if $routingStore.pathname === ROUTES.RANDOM}

@@ -5,6 +5,12 @@ export const ROUTES = {
     ACCOUNTS: '/accounts',
     ACCOUNTS_NEW: '/accounts/new',
     RANDOM: '/RANDOM',
-    AEC_ENCR: '/AEC_ENCR',
-    CHAT_ROOMS: '/chat-rooms',
+    AEC_ENCR: '/aec_encr',
+    CHAT_ROOMS: '/chat_rooms',
+    CHAT_ROOMS_ADD: '/chat_rooms/add',
+} as const;
+
+export const QUERY_PARAMS = {
+    ROOM_ID: 'room_id',
+
 } as const;

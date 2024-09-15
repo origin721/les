@@ -1,4 +1,4 @@
-import { writable } from "svelte/store";
+import { get, writable } from "svelte/store";
 import { uuidv4 } from "../../core/uuid";
 
 export const events_store = create_events_store();
@@ -16,21 +16,36 @@ function create_events_store() {
   const store = writable(get_initial_store());
   function add_room(rParams: AddRoomParams) {
     const roomId = uuidv4();
+    const entity: RoomData = {
+        roomId,
+        name: 'no name',
+        messages: {},
+    };
+    const result = {
+      roomId,
+      entity,
+    };
 
     store.update((prev) => {
+      const new_rooms: EntityRoom = {
+        ...prev.rooms,
+        [roomId]: {
+          name: rParams.name,
+          roomId,
+          messages: {},
+        }
+      };
+      // result.entity = new_rooms;
       const _s: EventsStore = {
         ...prev,
-        rooms: {
-          ...prev.rooms,
-          [roomId]: {
-            name: rParams.name,
-            roomId,
-            messages: {},
-          }
-        }
+        rooms: new_rooms,
       };
       return _s;
     });
+
+    return {
+      roomId
+    }
   }
   const add_message = (mParams: AddMessageParams) => {
     const messageId = uuidv4();
@@ -67,6 +82,9 @@ function create_events_store() {
     subscribe: store.subscribe,
     add_message,
     add_room,
+    get_room_by_id: (pRoomId: string): RoomData | null => Object
+      .values(get(store).rooms)
+      .find((r) => r.roomId === pRoomId)||null
   };
 }
 
@@ -75,7 +93,7 @@ type MessageData = {
   created_date: Date;
 };
 
-type RoomData = {
+export type RoomData = {
   name: string;
   roomId: string;
   messages: EntityMessage;

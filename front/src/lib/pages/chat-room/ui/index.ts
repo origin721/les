@@ -1,0 +1,1 @@
+export { default as ChatRoomsPage } from './ChatRoomPage.svelte';

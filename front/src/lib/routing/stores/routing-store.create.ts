@@ -9,7 +9,9 @@ export const createRoutingStore = () => {
 
     // Новый URL, который нужно установить
     const title = ""; // Вы можете установить заголовок страницы, если нужно
+    // const url = '/sss.page?aaa=ccc#section';
     const url = newPathString;
+ 
 
     // Изменяем URL и добавляем новое состояние в историю браузера
     history.pushState(state, title, url);
@@ -18,25 +20,24 @@ export const createRoutingStore = () => {
 
   }
 
-  function getJson() {
-    try {
-      const currentStore = get(store);
-      return JSON.stringify(currentStore);
-    }
-    finally {
-      return null;
-    }
-  };
-
   return {
     subscribe: store.subscribe,
     setPath,
-    getJson,
   };
 };
 
 function getInitialValue() {
+  const queryParams = new URLSearchParams(location.search);
+  // const startIndex = url.indexOf('?') + 1; // Индекс символа после "."
+  // const endIndex = url.indexOf('#') !== -1 ? url.indexOf('#') : url.length; // Индекс "#", если он существует
+
+  // const queryParamString = url.slice(startIndex, endIndex); // Получаем строку от точки до #
+  // console.log(queryParamString); // "page?aaa=ccc#jksdf" -> "aaa=ccc"
+  // const queryParams = new URLSearchParams(queryParamString);
+  // const value = queryParams.get('aaa');
+
   return {
     pathname: location.pathname,
+    queryParams,
   };
 }

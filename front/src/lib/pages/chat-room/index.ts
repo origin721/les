@@ -1,0 +1,1 @@
+export { ChatRoomsPage } from "./ui";

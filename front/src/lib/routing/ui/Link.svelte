@@ -3,6 +3,7 @@
 
 
     export let href: undefined|string = undefined;
+    export let className: string = "";
 
     function handleClick(event) {
         event.preventDefault();
@@ -12,4 +13,4 @@
 </script>
 
 
-<a href={href} on:click={handleClick}><slot/></a>
+<a href={href} on:click={handleClick} class={className}><slot/></a>
