@@ -17,7 +17,7 @@ function create_events_store() {
   function add_room(rParams: AddRoomParams) {
     const roomId = uuidv4();
     const entity: RoomData = {
-        roomId,
+        room_id: roomId,
         name: 'no name',
         messages: {},
     };
@@ -31,7 +31,7 @@ function create_events_store() {
         ...prev.rooms,
         [roomId]: {
           name: rParams.name,
-          roomId,
+          room_id: roomId,
           messages: {},
         }
       };
@@ -84,7 +84,7 @@ function create_events_store() {
     add_room,
     get_room_by_id: (pRoomId: string): RoomData | null => Object
       .values(get(store).rooms)
-      .find((r) => r.roomId === pRoomId)||null
+      .find((r) => r.room_id === pRoomId)||null
   };
 }
 
@@ -95,7 +95,7 @@ type MessageData = {
 
 export type RoomData = {
   name: string;
-  roomId: string;
+  room_id: string;
   messages: EntityMessage;
 };
 

@@ -23,5 +23,14 @@ export default defineConfig({
         // Вывод для дополнительной сборки в папку dist2
       ],
     },
+  },
+  server: {
+    proxy: {
+      '/events': {
+        target: 'http://127.0.0.1:8000', // Целевой сервер
+        // changeOrigin: true, // Меняет origin заголовка на целевой URL
+        // rewrite: (path) => path.replace(/^\/events/, ''), // Убирает /api из пути
+      }
+    }
   }
 })
