@@ -39,6 +39,7 @@ const clients_by_id = {};
 /**
  * @typedef {Object} RoomData
  * @prop {string} room_id
+ * @prop {string} owner_id
  * @prop {string[]} user_ids
  */
 /**
@@ -53,6 +54,7 @@ const PATHS_POST_EVENTS = (/** @type {const} **/ {
 /**
  * @typedef {Object} EventsReqBody
  * @prop {keyof typeof PATHS_POST_EVENTS} path
+ * @prop {RoomData} params
  */
 
 const server = http.createServer((req, res) => {
@@ -62,7 +64,15 @@ const server = http.createServer((req, res) => {
      * @param {EventsReqBody} body
      */
     function events_post_middleware(body) {
-      if (!body) {
+      const is_valid_body = check_validation(() => {
+        return (/** @see {EventsReqBody} */
+          typeof body.path === 'string'
+          && typeof body.params.room_id === 'string'
+          && typeof body.params.owner_id === 'string'
+          && body.params.user_ids.every(u => typeof u === 'string') 
+        );
+      });
+      if (!is_valid_body) {
         res.writeHead(400);
         res.end("400 Bad Request");
 
@@ -71,11 +81,17 @@ const server = http.createServer((req, res) => {
 
       switch (body.path) {
         case PATHS_POST_EVENTS.create_room: {
-
+          rooms_by_id[body.params.room_id] = body.params;
+          console.log('add room: ', rooms_by_id);
+          res.writeHead(201);
+          res.write("");
         }
-        return;
-
+        break;
+        default:
+          res.writeHead(404);
+          res.write("");
       };
+      return;
     };
     getRequestBody(req).then(events_post_middleware);
   }
@@ -153,3 +169,13 @@ async function getRequestBody(req) {
     });
   });
 };
+
+
+function check_validation(cb) {
+  try {
+    return cb();
+  }
+  catch (err) {
+    return null;
+  }
+}
