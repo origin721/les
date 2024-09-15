@@ -99,6 +99,11 @@ export type RoomData = {
   messages: EntityMessage;
 };
 
+export function messageSortByDate(messages: EntityMessage) {
+  return Object.values(messages)
+      .sort((a, b) => b.created_date.valueOf() - a.created_date.valueOf());
+}
+
 type EntityById<T> = Record<string, T>;
 type EntityMessage = EntityById<MessageData>;
 type EntityRoom = EntityById<RoomData>;

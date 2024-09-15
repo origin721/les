@@ -1,33 +1,43 @@
 <script lang="ts">
+  import { writable } from "svelte/store";
   import {
     events_store,
+    messageSortByDate,
     type RoomData,
   } from "../../../processes/create_my_events/events_store";
 
   import { Link, ROUTES } from "../../../routing";
 
+  let messageTextField = writable("");
+
   export let room: RoomData;
-  $: console.log('listMessages: ', Object.values(room.messages));
+//   $: console.log("listMessages: ", Object.values(room.messages));
 </script>
 
 <Link className="text-yellow-500" href={ROUTES.CHAT_ROOMS}>
   <p>back</p>
 </Link>
 
+<textarea bind:value={$messageTextField} />
 <button
-  on:click={() =>
+  on:click={() => {
     events_store.add_message({
       roomId: room.roomId,
-      message: 'hi)) sdfsdfsd',
-    })}
+      message: $messageTextField,
+    });
+    messageTextField.set("");
+  }}
   class="text-teal-500">send message</button
 >
 <div>
   <h1 class="text-2xl text-cyan-400">{room.name}</h1>
   <div>
-    {#each Object.values(room.messages) as message}
-      <p>{message.created_date}</p>
-      <p>{message.text}</p>
+    {#each messageSortByDate(room.messages) as message}
+      <div>
+        <p>{message.created_date}</p>
+        <p>{message.text}</p>
+        <hr/>
+      </div>
     {/each}
   </div>
 </div>
