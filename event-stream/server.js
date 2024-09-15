@@ -16,17 +16,29 @@ const CLIENT_PATHS = Object.freeze(/** @type {const} */{
  * @prop {string} path
  */
 /**
+ * @typedef {PayloadByConnectSuccess|PayloadByPing} AllClientPayloads
+ */
+/**
+ * @typedef {undefined} PayloadByPing
+ */
+/**
+ * @typedef {Object} PayloadByConnectSuccess
+ * @prop {string} user_id это id сгенерировано сервером
+ * для клиента, сам клиент не мог его сгенерировать, клиенту не терять
+ * так как повторно не высылается
+ * 
+ */
+/**
  * @typedef {Object} SendJsonDtoResponse
  * @prop {keyof typeof CLIENT_PATHS} path
- * @prop {any} payload
+ * @prop {AllClientPayloads} payload
  * @prop {Date} date_created
- * @prop {number} activeUsers
- * @prop {string} user_id
+ * @prop {number} active_users
  */
 
 /**
  * @typedef {Object} SendJsonDtoParams
- * @prop {any} payload
+ * @prop {AllClientPayloads} payload
  * @prop {keyof typeof CLIENT_PATHS} path
  */
 
@@ -154,24 +166,36 @@ function create_event_socket(httpParams) {
         path: p.path,
         payload: p.payload,
         date_created: new Date(),
-        activeUsers: Object.keys(clients_by_id).length,
-        user_id: new_client_id,
+        active_users: Object.keys(clients_by_id).length,
       }
       const message = `data: ${JSON.stringify(_response)}\n\n`;
       httpParams.res.write(message);
     }
   };
 
+  // user_id: new_client_id;
+
+  /**
+   * @type {PayloadByConnectSuccess}
+   */
+  const payload_connect = {
+    user_id: new_client_id,
+  }
   new_client.send_json({
-    payload: {hi:'))'},
+    payload: payload_connect,
     path: CLIENT_PATHS.connect_success,
   })
 
   clients_by_id[new_client_id] = new_client;
 
+  /**
+   * @type {PayloadByPing}
+   */
+  const payloadPing = undefined;
+
   Object.values(clients_by_id).forEach((client_ctl) => {
     client_ctl.send_json({
-      payload: 'ok',
+      payload: payloadPing,
       path: CLIENT_PATHS.ping,
     })
   });
