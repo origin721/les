@@ -18,7 +18,7 @@
   <p>back</p>
 </Link>
 
-<textarea bind:value={$messageTextField} />
+<textarea class="bg-blue-900 text-blue-200" bind:value={$messageTextField} />
 <button
   on:click={() => {
     events_store.add_message({
