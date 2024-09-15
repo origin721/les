@@ -4,7 +4,7 @@ const openpgp = require('openpgp');
 const { v4: uuid } = require('uuid');
 
 console.log(uuid());
-const CLIENT_PATHS = Object.freeze(/** @type {const} */{
+const CLIENT_PATHS = Object.freeze({
   connect_success: 'connect_success',
   ping: 'ping',
 });
@@ -19,23 +19,28 @@ const CLIENT_PATHS = Object.freeze(/** @type {const} */{
  * @typedef {PayloadByConnectSuccess|PayloadByPing} AllClientPayloads
  */
 /**
- * @typedef {undefined} PayloadByPing
+ * @typedef {Object} PayloadByPing
  */
 /**
  * @typedef {Object} PayloadByConnectSuccess
  * @prop {string} user_id это id сгенерировано сервером
  * для клиента, сам клиент не мог его сгенерировать, клиенту не терять
  * так как повторно не высылается
- * 
  */
 /**
  * @typedef {Object} SendJsonDtoResponse
  * @prop {keyof typeof CLIENT_PATHS} path
  * @prop {AllClientPayloads} payload
- * @prop {Date} date_created
  * @prop {number} active_users
  */
 
+/**
+ * @typedef {Object} SendJsonDtoParamsaa
+ * @prop {AllClientPayloads} payload
+ * @prop {keyof typeof CLIENT_PATHS} path
+ * @prop {Date} date_created
+ * @prop {number} active_users
+ */
 /**
  * @typedef {Object} SendJsonDtoParams
  * @prop {AllClientPayloads} payload
@@ -48,7 +53,7 @@ const CLIENT_PATHS = Object.freeze(/** @type {const} */{
  * @prop {string} message
  */
 /**
- * @typedef {(p: EnsureResponse) => void} SendJson
+ * @typedef {(p: SendJsonDtoParams) => void} SendJson
  */
 /**
  * @typedef {Object} ClientData
@@ -140,14 +145,20 @@ function check_validation(cb) {
     return null;
   }
 }
-
+/**
+ * @typedef {Object} EnsureResponseReadonly
+ * @prop {string} request_id  
+ * @prop {Readonly<SendJsonDtoParams>} send_params
+ */
 /**
  * @typedef {Object} EnsureResponse 
  * @prop {string} request_id  
  * @prop {SendJsonDtoParams} send_params
+ * @prop {Date} date_created
+ * @prop {number} active_users
  */
 /**
- * @type {Record<string, EnsureResponse>}
+ * @type {Record<string, EnsureResponseReadonly>}
  */
 const ensure_response = {};
 
@@ -180,15 +191,20 @@ function create_event_socket(httpParams) {
   const new_client = {
     client_id: new_client_id,
     send_json: (p) => {
+      if(!p) return;
       /**
-       * @type {SendJsonDtoResponse}
+       * @type {EnsureResponse}
        */
       const _response = {
-        path: p.path,
-        payload: p.payload,
+        request_id: uuid(),
         date_created: new Date(),
         active_users: Object.keys(clients_by_id).length,
+        send_params: {
+          path: p.path,
+          payload: p.payload,
+        }
       }
+      ensure_response[_response.request_id] = _response;
       const message = `data: ${JSON.stringify(_response)}\n\n`;
       httpParams.res.write(message);
     }
@@ -203,16 +219,17 @@ function create_event_socket(httpParams) {
     user_id: new_client_id,
   }
 
-  const req_id = uuid();
-  ensure_response[req_id] = {
-    request_id: req_id,
-    send_params: Object.freeze({
-      payload: payload_connect,
-      path: CLIENT_PATHS.connect_success,
-    })
-  };
+  // const req_id = uuid();
+  // ensure_response[req_id] = {
+  //   request_id: req_id,
+  //   send_params: Object.freeze({
+  //     payload: payload_connect,
+  //     path: CLIENT_PATHS.connect_success,
+  //     created_date: new Date(),
+  //   })
+  // };
   ;
-  const ensureResOk = create_ensure_response({new_client, req_id});
+  const ensureResOk = create_ensure_response({ new_client, req_id });
 
   clients_by_id[new_client_id] = new_client;
 
@@ -224,7 +241,10 @@ function create_event_socket(httpParams) {
   Object.values(clients_by_id).forEach((client_ctl) => {
     client_ctl.send_json({
       // payload: payloadPing,
-      payload: undefined,
+      // send_params: {
+      //   payload: undefined
+      // },
+      payload: payloadPing,
       path: CLIENT_PATHS.ping,
     })
   });
@@ -250,11 +270,11 @@ function create_event_socket(httpParams) {
 function create_ensure_response(p) {
   let is_finished = false;
   const id_interval = setInterval(() => {
-    p.new_client.send_json(ensure_response[p.req_id])
-  }, 500)
+    p.new_client.send_json(ensure_response.send_params[p.req_id])
+  }, 500);
 
   return () => {
-    if(is_finished) return;
+    if (is_finished) return;
     is_finished = true;
     clearInterval(id_interval)
   };
