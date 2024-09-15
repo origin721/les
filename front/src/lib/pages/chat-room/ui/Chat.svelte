@@ -11,6 +11,16 @@
 
   let messageTextField = writable("");
 
+  function handle_send_message() {
+    event_post({
+        room_id: room.room_id,
+        message: 'text',
+        registration_id: 'text',
+        owner_id: 'id',
+        user_ids: [],
+    });
+  }
+
   export let room: RoomData;
   //   $: console.log("listMessages: ", Object.values(room.messages));
 </script>
@@ -28,10 +38,12 @@
     });
     messageTextField.set("");
   }}
-  class="text-teal-500">send message</button>
-<button on:click={() => event_post({ room_id: room.room_id })}>
-    send
+  class="text-teal-500"
+>
+  send message
 </button>
+
+<button on:click={handle_send_message}> send </button>
 <div>
   <h1 class="text-2xl text-cyan-400">{room.name}</h1>
   <div>
