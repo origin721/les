@@ -27,6 +27,7 @@ const CLIENT_PATHS = Object.freeze(/** @type {const} */{
 /**
  * @typedef {Object} SendJsonDtoParams
  * @prop {any} payload
+ * @prop {keyof typeof CLIENT_PATHS} path
  */
 
 /**
@@ -150,6 +151,7 @@ function create_event_socket(httpParams) {
        * @type {SendJsonDtoResponse}
        */
       const _response = {
+        path: p.path,
         payload: p.payload,
         date_created: new Date(),
         activeUsers: Object.keys(clients_by_id).length,
@@ -161,7 +163,8 @@ function create_event_socket(httpParams) {
   };
 
   new_client.send_json({
-    payload: {hi:'))'}
+    payload: {hi:'))'},
+    path: CLIENT_PATHS.connect_success,
   })
 
   clients_by_id[new_client_id] = new_client;
@@ -169,6 +172,7 @@ function create_event_socket(httpParams) {
   Object.values(clients_by_id).forEach((client_ctl) => {
     client_ctl.send_json({
       payload: 'ok',
+      path: CLIENT_PATHS.ping,
     })
   });
 
