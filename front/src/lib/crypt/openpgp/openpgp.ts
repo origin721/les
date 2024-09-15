@@ -7,7 +7,7 @@ export const openpgp = {
 };
 
 
-main();
+// main();
 async function main() {
   const secrets = await generateKeys({
     name: 'aasd',

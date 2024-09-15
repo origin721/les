@@ -6,7 +6,14 @@ const { v4: uuid } = require('uuid');
 console.log(uuid());
 
 /**
- * @typedef {Object} SendJsonDto
+ * @typedef {Object} SendJsonDtoResponse
+ * @prop {string} message
+ * @prop {Date} date_created
+ * @prop {number} activeUsers
+ */
+
+/**
+ * @typedef {Object} SendJsonDtoParams
  * @prop {string} message
  */
 
@@ -16,7 +23,7 @@ console.log(uuid());
  * @prop {string} message
  */
 /**
- * @typedef {(p: SendJsonDto) => void} SendJson
+ * @typedef {(p: SendJsonDtoParams) => void} SendJson
  */
 /**
  * @typedef {Object} ClientData
@@ -51,10 +58,15 @@ const server = http.createServer((req, res) => {
     const new_client = {
       client_id: new_client_id,
       send_json: (p) => {
-        const message = `data: ${JSON.stringify({
+        /**
+         * @type {SendJsonDtoResponse}
+         */
+        const _response = {
           message: p.message,
-          date_created: new Date().toLocaleTimeString(),
-        })}\n\n`;
+          date_created: new Date(),
+          activeUsers: Object.keys(clientsById).length,
+        }
+        const message = `data: ${JSON.stringify(_response)}\n\n`;
         res.write(message);
       }
     };
@@ -63,7 +75,9 @@ const server = http.createServer((req, res) => {
 
     // Send a message every second
     // const intervalId = setInterval(() => {
-    const message = `data: ${JSON.stringify({ date_created: new Date().toLocaleTimeString() })}\n\n`;
+    const message = `data: ${JSON.stringify({
+      date_created: new Date().toLocaleTimeString()
+    })}\n\n`;
     res.write(message);
     Object.values(clientsById).forEach((client_ctl) => {
       client_ctl.send_json({
@@ -76,7 +90,8 @@ const server = http.createServer((req, res) => {
 
     // Clean up when client disconnects
     req.on('close', () => {
-      clearInterval(intervalId);
+      delete clientsById[new_client_id]
+      // clearInterval(intervalId);
       res.end();
     });
   } else {

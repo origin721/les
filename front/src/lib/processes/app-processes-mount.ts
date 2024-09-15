@@ -10,7 +10,7 @@ export const appProcessesMount = () => {
     onMount(() => {
         console.log(uuidv4());
 
-        // create_my_events();
+        create_my_events();
         // appLocalStorage.setSecret('hihihi');
         // openpgp.generateKey({
         //     name: 'sdfsdf',
