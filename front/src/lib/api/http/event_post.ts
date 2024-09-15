@@ -1,34 +1,41 @@
 // @ts-check
 
-type EventPostParams = {
+type EventPostParamsPayload = {
   message: string;
-  room_id: string;
+  room_ids: string[];
   registration_id: string;
   owner_id: string;
   user_ids: string[];
 };
 
-type EventPostParamsDto = {
+type EventPostParams = {
+  payload: EventPostParamsPayload;
   path: keyof typeof PATHS_POST_EVENTS;
-  params: EventPostParams & {
-    created_date: Date;
-  };
 };
 
-const PATHS_POST_EVENTS = {
+type EventPostParamsDto = {
+  path: keyof typeof PATHS_POST_EVENTS;
+  params: {
+    created_date: Date;
+  };
+  payload: EventPostParams["payload"];
+};
+
+export const PATHS_POST_EVENTS = {
   create_room: "create_room",
+  ping: "ping",
 } as const;
 
-export function event_post(params: EventPostParams): void {
+export function event_post<T>(params: EventPostParams): Promise<T> {
   const _body: EventPostParamsDto = {
-    path: PATHS_POST_EVENTS.create_room,
+    path: params.path,
+    payload: params.payload,
     params: {
-      ...params,
       created_date: new Date(),
     },
   };
 
-  fetch("/events", {
+  return fetch("/events", {
     method: "POST",
     headers: {
       "Content-Type": "application/json", // Указываем, что отправляем JSON
@@ -38,8 +45,10 @@ export function event_post(params: EventPostParams): void {
     .then((response) => response.json()) // Обрабатываем ответ как JSON
     .then((result) => {
       console.log("Success:", result);
+      return result;
     })
     .catch((error) => {
       console.error("Error:", error);
+      return null;
     });
 }

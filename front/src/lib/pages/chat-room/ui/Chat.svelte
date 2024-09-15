@@ -7,17 +7,20 @@
   } from "../../../processes/create_my_events/events_store";
 
   import { Link, ROUTES } from "../../../routing";
-  import { event_post } from "../../../api/http/event_post";
+  import { event_post, PATHS_POST_EVENTS } from "../../../api/http/event_post";
 
   let messageTextField = writable("");
 
   function handle_send_message() {
     event_post({
-        room_id: room.room_id,
-        message: 'text',
-        registration_id: 'text',
-        owner_id: 'id',
+      path: PATHS_POST_EVENTS.ping,
+      payload: {
+        room_ids: Object.keys($events_store.rooms),
+        message: "text",
+        registration_id: "text",
+        owner_id: "id",
         user_ids: [],
+      },
     });
   }
 
@@ -55,4 +58,7 @@
       </div>
     {/each}
   </div>
+</div>
+<div>
+  <pre>{JSON.stringify($events_store, null, 2)}</pre>
 </div>

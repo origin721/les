@@ -67,7 +67,6 @@ const clients_by_id = {};
  * @prop {string} registration_id
  * @prop {string} owner_id
  * @prop {string[]} user_ids
- * @prop {Date} created_date - client send
  */
 /**
  * @type {Record<string, RoomData>}
@@ -76,12 +75,24 @@ const rooms_by_id = {};
 
 const PATHS_POST_EVENTS = Object.freeze(/** @type {const} **/ {
   create_room: 'create_room',
+  ping: 'ping',
 });
+
+/**
+ * @typedef {Object} EventPostParamsDtoParams
+ * @prop {Date} created_date - client send
+ */
+/**
+ * @typedef {Object} EventPostParamsDto
+ * @prop {keyof typeof PATHS_POST_EVENTS} path
+ * @prop {RoomData} payload
+ */
 
 /**
  * @typedef {Object} EventsReqBody
  * @prop {keyof typeof PATHS_POST_EVENTS} path
- * @prop {RoomData} params
+ * @prop {EventPostParamsDtoParams} params
+ * @prop {RoomData} payload
  */
 
 const server = http.createServer((req, res) => {
@@ -223,9 +234,9 @@ function post_middleware(httpParams) {
     const is_valid_body = check_validation(() => {
       return (/** @see {EventsReqBody} */
         typeof body.path === 'string'
-        && typeof body.params.room_id === 'string'
-        && typeof body.params.owner_id === 'string'
-        && body.params.user_ids.every(u => typeof u === 'string')
+        && typeof body.payload.room_id === 'string'
+        && typeof body.payload.owner_id === 'string'
+        && body.payload.user_ids.every(u => typeof u === 'string')
       );
     });
     if (!is_valid_body) {
@@ -237,7 +248,7 @@ function post_middleware(httpParams) {
 
     switch (body.path) {
       case PATHS_POST_EVENTS.create_room: {
-        rooms_by_id[body.params.room_id] = body.params;
+        rooms_by_id[body.payload.room_id] = body.payload;
         console.log('add room: ', rooms_by_id);
         httpParams.res.writeHead(201);
         httpParams.res.write("");

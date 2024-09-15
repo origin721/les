@@ -9,7 +9,7 @@ type AddRoomParams = {
 
 type AddMessageParams = {
   roomId: string;
-  message: string;  
+  message: string;
 };
 
 function create_events_store() {
@@ -17,9 +17,9 @@ function create_events_store() {
   function add_room(rParams: AddRoomParams) {
     const roomId = uuidv4();
     const entity: RoomData = {
-        room_id: roomId,
-        name: 'no name',
-        messages: {},
+      room_id: roomId,
+      name: "no name",
+      messages: {},
     };
     const result = {
       roomId,
@@ -33,7 +33,7 @@ function create_events_store() {
           name: rParams.name,
           room_id: roomId,
           messages: {},
-        }
+        },
       };
       // result.entity = new_rooms;
       const _s: EventsStore = {
@@ -44,8 +44,8 @@ function create_events_store() {
     });
 
     return {
-      roomId
-    }
+      roomId,
+    };
   }
   const add_message = (mParams: AddMessageParams) => {
     const messageId = uuidv4();
@@ -78,13 +78,47 @@ function create_events_store() {
     });
   };
 
+  type RegistrationByIdParams = {
+    // id для хранения от сервера
+    user_id: string;
+  };
+
+  function registration_by_id(p: RegistrationByIdParams) {
+    store.update((prev) => {
+      try {
+        let new_projection = {
+          ...prev,
+          // p.user_id
+          // new_projection
+          my_ids_for_server: prev.my_ids_for_server || {},
+        };
+
+        new_projection.my_ids_for_server = {
+          ...new_projection.my_ids_for_server,
+          [p.user_id]: p.user_id,
+        }
+        return new_projection;
+      } catch (err) {
+        console.error(import.meta.url, err);
+        return prev;
+      }
+      // result.entity = new_rooms;
+      // const _s: EventsStore = {
+      //   ...prev,
+      //   my_ids_for_server: ,
+      // };
+      // return _s;
+    });
+  }
+
   return {
     subscribe: store.subscribe,
     add_message,
     add_room,
-    get_room_by_id: (pRoomId: string): RoomData | null => Object
-      .values(get(store).rooms)
-      .find((r) => r.room_id === pRoomId)||null
+    get_room_by_id: (pRoomId: string): RoomData | null =>
+      Object.values(get(store).rooms).find((r) => r.room_id === pRoomId) ||
+      null,
+    registration_by_id,
   };
 }
 
@@ -100,8 +134,9 @@ export type RoomData = {
 };
 
 export function messageSortByDate(messages: EntityMessage) {
-  return Object.values(messages)
-      .sort((a, b) => b.created_date.valueOf() - a.created_date.valueOf());
+  return Object.values(messages).sort(
+    (a, b) => b.created_date.valueOf() - a.created_date.valueOf()
+  );
 }
 
 type EntityById<T> = Record<string, T>;
@@ -110,11 +145,13 @@ type EntityRoom = EntityById<RoomData>;
 
 type EventsStore = {
   rooms: EntityRoom;
+  my_ids_for_server: EntityById<string>;
 };
 
 function get_initial_store(): EventsStore {
   return {
     rooms: {},
+    my_ids_for_server: {},
   };
 }
 
@@ -122,14 +159,13 @@ type ExtractMessagesParams = {
   data: EventsStore;
   roomId: string;
   messageId: string;
-}
+};
 function extractMessages(params: ExtractMessagesParams) {
   try {
     const messages = params.data.rooms[params.roomId].messages;
-    if(!messages) return null;
+    if (!messages) return null;
     return messages;
-  }
-  catch(err) {
+  } catch (err) {
     return null;
   }
 }
