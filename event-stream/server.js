@@ -48,7 +48,7 @@ const CLIENT_PATHS = Object.freeze(/** @type {const} */{
  * @prop {string} message
  */
 /**
- * @typedef {(p: SendJsonDtoParams) => void} SendJson
+ * @typedef {(p: EnsureResponse) => void} SendJson
  */
 /**
  * @typedef {Object} ClientData
@@ -63,7 +63,7 @@ const clients_by_id = {};
 /**
  * @typedef {Object} RoomData
  * @typedef {string} message;
- * @prop {string} room_id
+ * @prop {string[]} room_ids
  * @prop {string} registration_id
  * @prop {string} owner_id
  * @prop {string[]} user_ids
@@ -142,6 +142,16 @@ function check_validation(cb) {
 }
 
 /**
+ * @typedef {Object} EnsureResponse 
+ * @prop {string} request_id  
+ * @prop {SendJsonDtoParams} send_params
+ */
+/**
+ * @type {Record<string, EnsureResponse>}
+ */
+const ensure_response = {};
+
+/**
  * @typedef {Object}  HttpControllerParams
  * @prop {http.IncomingMessage} req 
  * @prop {http.ServerResponse<http.IncomingMessage>
@@ -192,10 +202,17 @@ function create_event_socket(httpParams) {
   const payload_connect = {
     user_id: new_client_id,
   }
-  new_client.send_json({
-    payload: payload_connect,
-    path: CLIENT_PATHS.connect_success,
-  })
+
+  const req_id = uuid();
+  ensure_response[req_id] = {
+    request_id: req_id,
+    send_params: Object.freeze({
+      payload: payload_connect,
+      path: CLIENT_PATHS.connect_success,
+    })
+  };
+  ;
+  const ensureResOk = create_ensure_response({new_client, req_id});
 
   clients_by_id[new_client_id] = new_client;
 
@@ -206,7 +223,8 @@ function create_event_socket(httpParams) {
 
   Object.values(clients_by_id).forEach((client_ctl) => {
     client_ctl.send_json({
-      payload: payloadPing,
+      // payload: payloadPing,
+      payload: undefined,
       path: CLIENT_PATHS.ping,
     })
   });
@@ -215,8 +233,31 @@ function create_event_socket(httpParams) {
   // Clean up when client disconnects
   httpParams.req.on('close', () => {
     delete clients_by_id[new_client_id]
+    ensureResOk();
     httpParams.res.end();
   });
+}
+
+/**
+ * @typedef {Object} CreateEnsureResponseParam
+ * @prop {ClientData} new_client
+ * @prop {string} req_id
+ */
+/**
+ * 
+ * @param {CreateEnsureResponseParam} p 
+ */
+function create_ensure_response(p) {
+  let is_finished = false;
+  const id_interval = setInterval(() => {
+    p.new_client.send_json(ensure_response[p.req_id])
+  }, 500)
+
+  return () => {
+    if(is_finished) return;
+    is_finished = true;
+    clearInterval(id_interval)
+  };
 }
 
 /**
@@ -234,7 +275,7 @@ function post_middleware(httpParams) {
     const is_valid_body = check_validation(() => {
       return (/** @see {EventsReqBody} */
         typeof body.path === 'string'
-        && typeof body.payload.room_id === 'string'
+        && body.payload.room_ids.every(r => typeof r === 'string')
         && typeof body.payload.owner_id === 'string'
         && body.payload.user_ids.every(u => typeof u === 'string')
       );

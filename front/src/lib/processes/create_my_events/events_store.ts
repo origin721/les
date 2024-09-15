@@ -83,6 +83,26 @@ function create_events_store() {
     user_id: string;
   };
 
+  function delete_registration_by_id(p: RegistrationByIdParams) {
+    store.update((prev) => {
+      try {
+        let new_projection = {
+          ...prev,
+          my_ids_for_server: prev.my_ids_for_server || {},
+        };
+
+        new_projection.my_ids_for_server = {
+          ...new_projection.my_ids_for_server,
+        };
+        delete new_projection.my_ids_for_server[p.user_id];
+        return new_projection;
+      } catch (err) {
+        console.error(import.meta.url, err);
+        return prev;
+      }
+    });
+  }
+
   function registration_by_id(p: RegistrationByIdParams) {
     store.update((prev) => {
       try {
@@ -102,12 +122,6 @@ function create_events_store() {
         console.error(import.meta.url, err);
         return prev;
       }
-      // result.entity = new_rooms;
-      // const _s: EventsStore = {
-      //   ...prev,
-      //   my_ids_for_server: ,
-      // };
-      // return _s;
     });
   }
 
@@ -119,6 +133,7 @@ function create_events_store() {
       Object.values(get(store).rooms).find((r) => r.room_id === pRoomId) ||
       null,
     registration_by_id,
+    delete_registration_by_id,
   };
 }
 
