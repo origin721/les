@@ -8,8 +8,12 @@ type EventPostParamsPayload = {
   user_ids: string[];
 };
 
+type ResponseOkPayload = {
+  response_id: string;
+}
+
 type EventPostParams = {
-  payload: EventPostParamsPayload;
+  payload: ResponseOkPayload|EventPostParamsPayload;
   path: keyof typeof PATHS_POST_EVENTS;
 };
 
@@ -24,6 +28,7 @@ type EventPostParamsDto = {
 export const PATHS_POST_EVENTS = {
   create_room: "create_room",
   ping: "ping",
+  response_ok: 'response_ok',
 } as const;
 
 export function event_post<T>(params: EventPostParams): Promise<T> {

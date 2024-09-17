@@ -6,6 +6,7 @@ type MyEvents = MyEventConnect;
 const CLIENT_PATHS = Object.freeze({
   connect_success: "connect_success",
   ping: "ping",
+  response_ok: 'response_ok',
 });
 type MyEventConnect = {
   path: (typeof CLIENT_PATHS)["connect_success"];
@@ -13,6 +14,7 @@ type MyEventConnect = {
 };
 
 type MyEventConnectPayload = {
+  response_id: string;
   /**
    * @prop {string} user_id это id сгенерировано сервером
    * для клиента, сам клиент не мог его сгенерировать, клиенту не терять
@@ -67,6 +69,12 @@ function parseEvent(event: any) {
 function main_middleware(event: any) {
   const request = parseEvent(event);
   if (!request) return;
+
+  // POST SUCCESS RESPONSE
+  event_post({
+    path: CLIENT_PATHS.response_ok,
+    payload: {response_id: 'sdf'},
+  });
 
   if (request.path === CLIENT_PATHS.connect_success) {
     const params = parse_my_event_connect(request);
