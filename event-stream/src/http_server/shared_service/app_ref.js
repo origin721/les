@@ -7,7 +7,7 @@
  * @typedef {import('../../types/RoomData')} RoomData
  */
 /**
- * @typedef {import('../../types/ClientData')} ClientData
+ * @typedef {import('./server_side_event_connection/add.js/types/ClientData')} ClientData
  */
 
 

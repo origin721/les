@@ -2,12 +2,11 @@
 
 
 const { uuid } = require('../../libs');
-const { CLIENT_PATHS } = require('../../constants');
+const { CLIENT_PATHS } = require('../constants');
 const { create_ensure_response } = require('./create_ensure_response');
 
 
 
-// @ts-check
 module.exports = {
   create_event_socket,
 }
@@ -35,7 +34,7 @@ function create_event_socket({ httpParams, app_ref }) {
 
   // user_id: new_client_id;
 
-  const ensureResOk = create_ensure_response({ new_client, request_id });
+
 
   // app_ref.clients_session_by_id[new_client_id] = new_client;
 

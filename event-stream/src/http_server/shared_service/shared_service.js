@@ -1,11 +1,11 @@
 // @ts-check
-const {server_side_event_connection} = require('./server_side_event_connection');
+const {create_server_side_event_connection} = require('./server_side_event_connection');
 
 /**
  * @type {SharedService}
  */
 const shared_service = {
-  connection_service: server_side_event_connection,
+  connection_service: create_server_side_event_connection(),
 };
 
 module.exports = {

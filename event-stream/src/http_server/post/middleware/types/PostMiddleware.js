@@ -1,5 +1,7 @@
 // @ts-check
 
+const { shared_service } = require('../../../shared_service');
+
 /**
  * @typedef {import('../../types/HttpControllerParams')} HttpControllerParams
  */
@@ -7,7 +9,7 @@
 /**
  * @typedef {Object} PostMiddleware
  * @prop {HttpControllerParams} httpParams
- * @prop {import('../../modules/shared_service/app_ref')} app_ref
+ * @prop {typeof shared_service} shared_service
  */
 
 /**

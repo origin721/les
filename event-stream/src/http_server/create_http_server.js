@@ -3,7 +3,7 @@ const http = require('http');
 const openpgp = require('openpgp');
 const { post_middleware } = require('./post/middleware');
 const { create_event_socket } = require('./create_event_socket');
-const app_ref = require('./shared_service/app_ref');
+const {shared_service} = require('./shared_service');
 
 module.exports = { create_http_server };
 
@@ -17,10 +17,10 @@ function create_http_server(p) {
      */
     const httpParams = { req, res };
     if (req.url === '/events' && req.method === 'POST') {
-      post_middleware({httpParams, app_ref});
+      post_middleware({httpParams, shared_service});
     }
     else if (req.url === '/events') {
-      create_event_socket({httpParams, app_ref});
+      create_event_socket({httpParams, shared_service});
     }
     else { // TODO: поменять на 404
       res.writeHead(200, { 'Content-Type': 'text/plain' });

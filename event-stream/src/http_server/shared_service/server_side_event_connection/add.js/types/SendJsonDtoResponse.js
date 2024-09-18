@@ -1,6 +1,6 @@
 // @ts-check
 /**
- * @typedef {import('./post_body_payloads/AllClientPayloads')} AllClientPayloads
+ * @typedef {import('../../../../../types/post_body_payloads/AllClientPayloads')} AllClientPayloads
  */
 
 /**

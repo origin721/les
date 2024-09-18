@@ -1,11 +1,12 @@
 // @ts-check
 
+const { PATHS_POST } = require("../../constants");
+
 
 /**
  * @typedef {Object} EventsReqBody
- * @prop {keyof typeof PATHS_POST_EVENTS} path
- * @prop {EventPostParamsDtoParams} params
- * @prop {import("./RoomData")} payload
+ * @prop {keyof typeof PATHS_POST} path
+ * @prop {import("../../../types/RoomData")} body
  */
 
 

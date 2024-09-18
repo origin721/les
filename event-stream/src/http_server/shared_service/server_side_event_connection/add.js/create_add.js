@@ -26,14 +26,14 @@ function create_add(connection_ref) {
 
 
 /**
- * @param {import('./types/AddCoreParams')} p 
- * @returns {void}
+ * @param {import('./types/AddCoreParams')} p
+ * @returns {import('../../../../validation/types/SafeResult').SafeResult<null>}
  */
 function add_core(p) {
   const { params } = p;
   const _v = validation(params);
 
-  if (!_v.is_ok) return;
+  if (!_v.is_ok) return _v;
 
   /**
    * @type {import("../types/ServerSideEventConnectionItem")}
@@ -43,6 +43,8 @@ function add_core(p) {
   p
     .connection_ref
     .connection_by_id[params.connection_id] = new_connection_item;
+
+  return _v;
 };
 
 /**
@@ -67,7 +69,7 @@ function validation(params) {
       result.err_messages.push(_err);
     };
 
-    if(result.err_messages.length !== 0) {
+    if (result.err_messages.length !== 0) {
       result.is_ok = true;
     }
   }

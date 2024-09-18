@@ -17,8 +17,8 @@ module.exports = {
  * 
  * @param {PostMiddleware} httpParams 
  */
-function post_middleware({httpParams, app_ref}) {
+function post_middleware({httpParams, shared_service}) {
   return get_request_body(httpParams.req).then((body) => {
-    events_post_middleware({body,httpParams,app_ref})
+    events_post_middleware({body,httpParams,shared_service})
   });
 }

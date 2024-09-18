@@ -4,7 +4,7 @@
  * @typedef {import('./EnsureResponseReadonly')} EnsureResponseReadonly
  */
 /**
- * @typedef {import('./SendJsonDtoParams')} SendJsonDtoParams
+ * @typedef {import('../http_server/shared_service/server_side_event_connection/add.js/types/SendJsonDtoParams')} SendJsonDtoParams
  */
 
 /**
