@@ -21,7 +21,8 @@ function create_http_server(p) {
     }
     else if (req.url === '/events') {
       create_event_socket({httpParams, app_ref});
-    } else {
+    }
+    else { // TODO: поменять на 404
       res.writeHead(200, { 'Content-Type': 'text/plain' });
       res.end('Hello, World!');
     }
