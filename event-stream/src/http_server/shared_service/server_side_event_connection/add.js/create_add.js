@@ -57,7 +57,6 @@ function validation(params) {
 
   try {
     if (typeof params.connection_id !== 'string') {
-
       /**
        * @type {ErrorEntity}
        */
@@ -67,7 +66,10 @@ function validation(params) {
       }
       result.err_messages.push(_err);
     };
-    result.is_ok = true;
+
+    if(result.err_messages.length !== 0) {
+      result.is_ok = true;
+    }
   }
   catch (err) {
 
