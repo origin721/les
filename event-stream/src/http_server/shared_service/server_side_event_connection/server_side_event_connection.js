@@ -1,23 +1,26 @@
 // @ts-check
 
+const { create_connection_ref } = require('./connection_ref');
 const { create_get_by_id } = require('./get_by_id');
 
-/**
- * @type {ServerSideEventConnectionRecord}
- */
-const record = {};
+function create_server_side_event_connection() {
+  const connection_ref = create_connection_ref();
 
-/**
- * @type {import('./ServerSideEventConnection')}
+  /**
+ * @type {import('./types/ServerSideEventConnection')}
  */
-const server_side_event_connection = {
-  get_by_id: create_get_by_id(record),
+  const server_side_event_connection = {
+    /**
+     * Для получения по id сесии сущьности клиента
+     * Например для отправки данных
+     */
+    get_by_id: create_get_by_id(connection_ref),
+  }
+
+  return server_side_event_connection;
 }
 
-module.exports = { 
-  server_side_event_connection,
-}
 
-/**
- * @typedef {import('./ServerSideEventConnectionRecord')} ServerSideEventConnectionRecord
- */
+module.exports = {
+  create_server_side_event_connection,
+}

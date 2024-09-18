@@ -12,5 +12,5 @@ const SharedService;
 module.exports = SharedService;
 
 /**
- * @typedef {import('./server_side_event_connection/ServerSideEventConnection')} ServerSideEventConnection
+ * @typedef {import('./server_side_event_connection/types/ServerSideEventConnection')} ServerSideEventConnection
  */

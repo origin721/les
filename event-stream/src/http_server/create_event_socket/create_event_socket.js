@@ -37,7 +37,7 @@ function create_event_socket({ httpParams, app_ref }) {
 
   const ensureResOk = create_ensure_response({ new_client, request_id });
 
-  app_ref.clients_session_by_id[new_client_id] = new_client;
+  // app_ref.clients_session_by_id[new_client_id] = new_client;
 
   /**
    * @type {PayloadByPing}

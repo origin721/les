@@ -13,5 +13,5 @@ const ServerSideEventConnection;
 module.exports = ServerSideEventConnection;
 
 /**
- * @typedef {import('./ServerSideEventConnectionGetById')} ServerSideEventConnectionGetById
+ * @typedef {import('../get_by_id/types/ServerSideEventConnectionGetById')} ServerSideEventConnectionGetById
  */

@@ -15,7 +15,6 @@ module.exports = { create_new_client_session };
  * @typedef {Object} CreateNewClientSessionParams
  */
 /**
- * 
  * @param {CreateNewClientSessionParams} params 
  */
 function create_new_client_session(params) {
