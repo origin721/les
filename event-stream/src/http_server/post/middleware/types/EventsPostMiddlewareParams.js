@@ -11,7 +11,7 @@
  * @typedef {Object} EventsPostMiddlewareParams
  * @prop {HttpControllerParams} httpParams 
  * @prop {EventsReqBody} body
- * @prop {import('../../app_ref')} app_ref
+ * @prop {import('../../modules/shared_service/app_ref')} app_ref
  */
 
 /**

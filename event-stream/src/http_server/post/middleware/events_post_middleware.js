@@ -1,11 +1,11 @@
 // @ts-check
-const { PATHS_POST } = require('../constants');
-const { check_validation } = require("../core");
+const { PATHS_POST } = require('../../../constants');
+const { check_validation } = require("../../../core");
 
 module.exports = { events_post_middleware };
 
 /**
- * @typedef {import('../types/EventsReqBody')} EventsReqBody
+ * @typedef {import('../../../types/EventsReqBody')} EventsReqBody
  */
 /**
  * @typedef {import('./types/EventsPostMiddlewareParams')} EventsPostMiddlewareParams

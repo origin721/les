@@ -1,6 +1,10 @@
 // @ts-check
 
 /**
+ * @typedef {import('./SendJsonDtoParams')} SendJsonDtoParams
+ */
+
+/**
  * @typedef {(p: SendJsonDtoParams) => void} SendJson
  */
 
