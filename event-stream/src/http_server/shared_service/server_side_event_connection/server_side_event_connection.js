@@ -3,6 +3,8 @@
 const { create_add } = require('./add.js/create_add');
 const { create_connection_ref } = require('./connection_ref');
 const { create_get_by_id } = require('./get_by_id');
+const { create_registration } = require('./registration/create_registration');
+const { create_send_by_pub_key_client: create_send_by_client_id } = require('./send_by_pub_key_client');
 
 function create_server_side_event_connection() {
   const connection_ref = create_connection_ref();
@@ -15,8 +17,20 @@ function create_server_side_event_connection() {
      * Для получения по id сесии сущьности клиента
      * Например для отправки данных
      */
-    get_by_id: create_get_by_id(connection_ref),
+    // get_by_id: create_get_by_id(connection_ref),
+    /**
+     * Для добавления новой сесии
+     */
     add: create_add(connection_ref),
+    /**
+     * Для подтверждение сесии 
+     * добавляет pub_key_client
+     */
+    registration: create_registration(connection_ref),
+    /**
+     * Для отправки сообщения клиенту по его id(публичному ключу в будущем)
+     */
+    send_by_pub_key_client: create_send_by_client_id(connection_ref),
   }
 
   return server_side_event_connection;

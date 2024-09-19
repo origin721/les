@@ -21,5 +21,5 @@ module.exports = ServerSideEventConnectionRecordById;
  * @typedef {import('../../types/ServerSideEventConnectionItem')} ServerSideEventConnectionItem
  */
 /**
- * @typedef {import('../../add.js/types/ClientData')} ClientData
+ * @typedef {import('../../types/SseClientService')} ClientData
  */

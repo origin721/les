@@ -2,7 +2,7 @@
 
 
 /**
- * @typedef {import('../../../../../validation/types/SafeResult').SafeResult<undefined>} RegistrationResult
+ * @typedef {import('../../../../../validation/types/SafeResult').SafeResult<null>} RegistrationResult
  */
 
 /**

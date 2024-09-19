@@ -1,7 +1,7 @@
 // @ts-check
 
 const { ERROR_TYPES } = require('../../../../validation');
-const { create_empty_entity } = require('../../../../validation/create_empty_entity');
+const { create_safe_result: create_empty_entity } = require('../../../../validation/create_safe_result');
 const { create_new_connection } = require('./create_new_connection');
 
 module.exports = {
@@ -32,14 +32,15 @@ function create_add(connection_ref) {
  */
 function add_core(p) {
   const { params } = p;
+  const {http_params} = params;
   const _v = validation(params);
 
   if (!_v.is_ok) return _v;
 
   /**
-   * @type {import("../types/ServerSideEventConnectionItem")}
+   * @type {import("../types/SseClientService")}
    */
-  const new_connection_item = create_new_connection(p);
+  const new_connection_item = create_new_connection(http_params);
 
   p
     .connection_ref

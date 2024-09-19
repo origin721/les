@@ -13,7 +13,7 @@
 /**
  * @typedef {Object} EnsureResponse 
  * @prop {string} request_id  
- * @prop {SendJsonDtoParams} send_params
+ * @prop {unknown} body
  * @prop {Date} date_created
  * @prop {number} active_users
  */

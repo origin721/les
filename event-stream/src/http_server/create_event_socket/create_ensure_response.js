@@ -5,7 +5,7 @@ module.exports = {
 }
 
 /**
- * @typedef {import('../shared_service/server_side_event_connection/add.js/types/ClientData.js')} ClientData
+ * @typedef {import('../shared_service/server_side_event_connection/types/SseClientService.js')} ClientData
  */
 
 /**

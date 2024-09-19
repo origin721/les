@@ -1,6 +1,6 @@
 // @ts-check
 
-const {create_empty_entity} = require('./create_empty_entity');
+const {create_safe_result: create_empty_entity} = require('./create_safe_result');
 const {ERROR_TYPES} = require('./constants');
 
 module.exports = {

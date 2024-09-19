@@ -7,7 +7,7 @@
  * @typedef {import('../../types/RoomData')} RoomData
  */
 /**
- * @typedef {import('./server_side_event_connection/add.js/types/ClientData')} ClientData
+ * @typedef {import('./server_side_event_connection/types/SseClientService')} ClientData
  */
 
 
@@ -37,6 +37,7 @@ const clients_session_by_id = {};
  */
 /**
  * @type {AppRef}
+ * @deprecated
  */
 const app_ref = {
   rooms_by_id,

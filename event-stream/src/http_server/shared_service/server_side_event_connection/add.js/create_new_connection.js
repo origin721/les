@@ -6,23 +6,18 @@ module.exports = {create_new_connection};
 
 /**
  * 
- * @param {import('./types/CreateNewConnection')} p 
- * @returns 
+ * @param {import('./types/CreateNewConnection')} http_params
  */
-function create_new_connection({
-  connection_ref,
-  params
-}) {
-  const {http_params} = params;
+function create_new_connection(http_params) {
   const session_id = uuid();
 
   /**
-   * @type {import("./types/ClientData")}
+   * @type {import("../types/SseClientService")}
    */
   const new_client = {
-    session_id,
+    connection_id: session_id,
     // TODO: доработать получшение ip клиента
-    client_id: null,
+    pub_key_client: null,
     send_json: (p) => {
       if (!p) return;
       const response_id = uuid();
@@ -42,6 +37,8 @@ function create_new_connection({
       http_params.res.write(message);
     }
   };
+
+
 
   return new_client;
 }

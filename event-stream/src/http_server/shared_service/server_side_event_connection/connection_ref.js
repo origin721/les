@@ -2,12 +2,14 @@
 
 
 
+
 function create_connection_ref() {
   /**
    * @type {ConnectionRef}
    */
   const connection_ref = {
     connection_by_id: {},
+    by_pub_key_client: {},
   };
   return connection_ref;
 };

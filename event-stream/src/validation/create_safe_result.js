@@ -1,11 +1,11 @@
 // @ts-check
 
-module.exports = {create_empty_entity};
+module.exports = {create_safe_result};
 
 /**
  * @template T
  */
-function create_empty_entity() {
+function create_safe_result() {
   /**
    * @type {import('./types/SafeResult').SafeResult<T|null>}
    */

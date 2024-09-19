@@ -1,7 +1,7 @@
 // @ts-check
 
 /**
- * @typedef {import('./AddCoreParams')} CreateNewConnectionParams
+ * @typedef {import('../../../../../types/HttpControllerParams')} CreateNewConnectionParams
  */
 
 /**
