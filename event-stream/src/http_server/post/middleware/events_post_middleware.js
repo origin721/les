@@ -2,6 +2,7 @@
 const { PATHS_POST } = require('../../constants');
 const { check_validation } = require("../../../core");
 const { create_empty_entity, ERROR_TYPES } = require('../../../validation');
+const { registration } = require('../services');
 
 module.exports = { events_post_middleware };
 
@@ -17,19 +18,21 @@ module.exports = { events_post_middleware };
  */
 function events_post_middleware(params) {
   const _v = events_post_middleware_validation(params.body);
+  const {httpParams} = params
 
   if (!_v.is_ok) {
-    params.httpParams.res.writeHead(400);
-    params.httpParams.res.end("400 Bad Request");
+    httpParams.res.writeHead(400);
+    httpParams.res.end("400 Bad Request");
 
     return;
   }
 
-  switch (params.body.path) {
-    case PATHS_POST.response_ok: {
 
-    }
+  switch (params.body.path) {
+    case PATHS_POST.server_event_registration: {
+      registration({httpParams, request: params.body});
       break;
+    }
     // case PATHS_POST.create_room: {
     //   // TODO: перебирать в массиве
     //   params.app_ref.rooms_by_id[params.body.payload.room_id] = params.body.payload;

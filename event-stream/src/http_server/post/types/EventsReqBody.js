@@ -4,9 +4,9 @@ const { PATHS_POST } = require("../../constants");
 
 
 /**
- * @typedef {Object} EventsReqBody
- * @prop {keyof typeof PATHS_POST} path
- * @prop {import("../../../types/RoomData")} body
+ * @typedef {(
+ * import('../services/registration/types/RegistrationRequest')
+ * )} EventsReqBody
  */
 
 
