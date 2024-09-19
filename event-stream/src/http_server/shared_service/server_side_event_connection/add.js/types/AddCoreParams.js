@@ -3,7 +3,7 @@
 /**
  * @typedef {Object} AddCoreParams
  * @prop {ConnectionRef} connection_ref
- * @prop {AddParams} params
+ * @prop {import('./AddParams')} params
  */
 
 /**
@@ -15,9 +15,6 @@ module.exports = AddCoreParams;
 
 /**
  * @typedef {import('../../types/ServerSideEventConnectionItem')} ServerSideEventConnectionItem
- */
-/**
- * @typedef {import('./AddParams')} AddParams
  */
 /**
  * @typedef {import('../../types/ConnectionRef')} ConnectionRef

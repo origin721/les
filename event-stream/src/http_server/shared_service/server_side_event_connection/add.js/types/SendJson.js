@@ -1,7 +1,7 @@
 // @ts-check
 
 /**
- * @typedef {import('./SendJsonDtoParams')} SendJsonDtoParams
+ * @typedef {import('../../../types/SendJsonDtoParams/SendJsonDtoParams')} SendJsonDtoParams
  */
 
 /**

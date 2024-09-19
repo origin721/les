@@ -6,7 +6,6 @@ const {CLIENT_PATHS} = require('../../../../constants');
  * @prop {import("./ConnectSuccessResponseBody")} body
  * @prop {Date} created_date
  * @prop {string} response_id
- * @prop {number} active_users
  */
 
 /**

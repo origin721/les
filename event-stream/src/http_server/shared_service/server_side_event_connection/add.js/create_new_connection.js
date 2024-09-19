@@ -2,10 +2,18 @@
 
 const { uuid } = require("../../../../libs");
 
-module.exports = { create_new_connection };
+module.exports = {create_new_connection};
 
-function create_new_connection(params) {
-  const {app_ref, httpParams} = params;
+/**
+ * 
+ * @param {import('./types/CreateNewConnection')} p 
+ * @returns 
+ */
+function create_new_connection({
+  connection_ref,
+  params
+}) {
+  const {http_params} = params;
   const session_id = uuid();
 
   /**
@@ -23,15 +31,15 @@ function create_new_connection(params) {
        * @type {import("../../types/ServerSideEventResponse/SSEResponse")}
        */
       const _response = {
-        path: params.path,
+        path: p.path,
         response_id,
         created_date: new Date(),
-        active_users: Object.keys(app_ref.clients_by_id).length,
+        // active_users: Object.keys(connection_ref.connection_by_id).length,
         body: p.body,
       };
       
       const message = `data: ${JSON.stringify(_response)}\n\n`;
-      httpParams.res.write(message);
+      http_params.res.write(message);
     }
   };
 

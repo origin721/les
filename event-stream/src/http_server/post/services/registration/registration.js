@@ -14,8 +14,8 @@ function registration({ httpParams, request }) {
   const _v = validation(request);
   if (!_v.is_ok) {
     httpParams.res.writeHead(400);
-    httpParams.res.write("");
-    
+    httpParams.res.write("invalid params");
+
     return;
   }
 

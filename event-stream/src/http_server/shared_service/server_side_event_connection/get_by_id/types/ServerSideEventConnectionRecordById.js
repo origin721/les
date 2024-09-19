@@ -1,9 +1,11 @@
 // @ts-check
 
+// const ClientData = require();
+
 /**
  * @typedef {Record<
- * ServerSideEventConnectionItem['connection_id'],
- * ServerSideEventConnectionItem>
+ * ClientData['session_id'],
+ * ClientData>
  * } ServerSideEventConnectionRecordById
  */
 
@@ -17,4 +19,7 @@ module.exports = ServerSideEventConnectionRecordById;
 
 /**
  * @typedef {import('../../types/ServerSideEventConnectionItem')} ServerSideEventConnectionItem
+ */
+/**
+ * @typedef {import('../../add.js/types/ClientData')} ClientData
  */

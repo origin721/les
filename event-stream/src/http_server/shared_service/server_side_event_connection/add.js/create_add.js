@@ -2,6 +2,7 @@
 
 const { ERROR_TYPES } = require('../../../../validation');
 const { create_empty_entity } = require('../../../../validation/create_empty_entity');
+const { create_new_connection } = require('./create_new_connection');
 
 module.exports = {
   create_add,
@@ -38,7 +39,7 @@ function add_core(p) {
   /**
    * @type {import("../types/ServerSideEventConnectionItem")}
    */
-  const new_connection_item = p.params;
+  const new_connection_item = create_new_connection(p);
 
   p
     .connection_ref
