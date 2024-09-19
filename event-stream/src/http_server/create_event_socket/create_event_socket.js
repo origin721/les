@@ -19,7 +19,7 @@ module.exports = {
 /**
 * @param {CreateEventSocketParams} p
 */
-function create_event_socket({ httpParams, app_ref }) {
+function create_event_socket({ http_params: httpParams, app_ref }) {
   // Set headers for SSE
   httpParams.res.writeHead(200, {
     'Content-Type': 'text/event-stream',
@@ -30,14 +30,6 @@ function create_event_socket({ httpParams, app_ref }) {
 
 
 
-  
-
-  // user_id: new_client_id;
-
-
-
-  // app_ref.clients_session_by_id[new_client_id] = new_client;
-
   /**
    * @type {PayloadByPing}
    */
@@ -45,11 +37,6 @@ function create_event_socket({ httpParams, app_ref }) {
 
   Object.values(app_ref.clients_session_by_id).forEach((client_ctl) => {
     client_ctl.send_json({
-      // payload: payloadPing,
-      // send_params: {
-      //   payload: undefined
-      // },
-      payload: payloadPing,
       path: CLIENT_PATHS.ping,
     })
   });

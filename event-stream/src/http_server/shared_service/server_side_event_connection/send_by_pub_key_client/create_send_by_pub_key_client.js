@@ -36,9 +36,9 @@ function send_by_pub_key_client_core(p) {
 
   const {params, connection_ref} = p;
 
-  const sse_session = connection_ref.connection_by_id[params.session_id];
+  const sse_session = connection_ref.connection_by_id[params.pub_key_client];
 
-  sse_session.pub_key_client = params.client_id;
+  sse_session.pub_key_client = params.pub_key_client;
 
   return new Promise((res) => {
     res(_v)
@@ -59,10 +59,10 @@ function validation(params) {
   const _v = create_empty_entity();
 
   try {
-    if(typeof params.client_id !== 'string') {
+    if(typeof params.pub_key_client !== 'string') {
       _v.err_messages.push({
         type: ERROR_TYPES.INVALID_PARAMS,
-        message: '.client_id не строка'
+        message: '.pub_key_client не строка'
       })
       return _v;
     }

@@ -9,7 +9,7 @@
 
 /**
  * @typedef {Object} CreateEventSocketParams
- * @prop {HttpControllerParams} httpParams
+ * @prop {HttpControllerParams} http_params
  * @prop {AppRef} app_ref
  */
 

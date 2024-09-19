@@ -2,7 +2,7 @@
 
 /**
  * @typedef {Object} SendByPubKeyClientParams
- * @prop {SseClientService['pub_key_client']} client_id
+ * @prop {RefsByPubKeyClient['pub_key_client']} pub_key_client
  * @prop {unknown} body
  */
 
@@ -14,5 +14,5 @@ const SendByPubKeyClientParams;
 module.exports = SendByPubKeyClientParams;
 
 /**
- * @typedef {import('../../types/SseClientService')} SseClientService
+ * @typedef {import('../../types/RefsByPubKeyClient')} RefsByPubKeyClient
  */
