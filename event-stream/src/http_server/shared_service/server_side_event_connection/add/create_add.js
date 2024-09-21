@@ -12,12 +12,12 @@ module.exports = {
  * @param {import('../types/ConnectionRef')} connection_ref 
  */
 function create_add(connection_ref) {
-  return create_add;
+  return _add;
 
   /**
    * @param {import("./types/AddParams")} p
    */
-  function create_add(p) {
+  function _add(p) {
     return add_core({
       params: p,
       connection_ref,

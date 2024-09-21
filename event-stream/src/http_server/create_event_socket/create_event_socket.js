@@ -25,23 +25,10 @@ function create_event_socket({ http_params, shared_service }) {
     'Access-Control-Allow-Origin': '*', // Enable CORS if needed
   });
 
-  const connection_id = uuid()
-
   shared_service.add({
-    connection_id,
     http_params,
   })
 
-  /**
-   * @type {PayloadByPing}
-   */
-  const payloadPing = undefined;
-
-  Object.values(app_ref.clients_session_by_id).forEach((client_ctl) => {
-    client_ctl.send_json({
-      path: CLIENT_PATHS.ping,
-    })
-  });
 
 
   // Clean up when client disconnects
