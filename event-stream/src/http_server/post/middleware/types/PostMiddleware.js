@@ -8,7 +8,7 @@ const { shared_service } = require('../../../shared_service');
 
 /**
  * @typedef {Object} PostMiddleware
- * @prop {HttpControllerParams} httpParams
+ * @prop {HttpControllerParams} http_params
  * @prop {typeof shared_service} shared_service
  */
 

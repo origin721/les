@@ -1,6 +1,6 @@
 // @ts-check
 
-const { create_add } = require('./add.js/create_add');
+const { create_add } = require('./add/create_add');
 const { create_connection_ref } = require('./connection_ref');
 const { create_get_by_id } = require('./get_by_id');
 const { create_registration } = require('./registration/create_registration');

@@ -4,9 +4,7 @@ const {create_server_side_event_connection} = require('./server_side_event_conne
 /**
  * @type {SharedService}
  */
-const shared_service = {
-  connection_service: create_server_side_event_connection(),
-};
+const shared_service = create_server_side_event_connection();
 
 module.exports = {
   shared_service,

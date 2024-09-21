@@ -1,4 +1,5 @@
 // @ts-check
+const { shared_service } = require('../../shared_service');
 
 /**
  * @typedef {import('../../../types/HttpControllerParams.js')} HttpControllerParams
@@ -10,7 +11,7 @@
 /**
  * @typedef {Object} CreateEventSocketParams
  * @prop {HttpControllerParams} http_params
- * @prop {AppRef} app_ref
+ * @prop {typeof shared_service} shared_service
  */
 
 /**

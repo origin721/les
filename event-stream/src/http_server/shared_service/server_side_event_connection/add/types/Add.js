@@ -1,7 +1,7 @@
 // @ts-check
-
+const {create_add} = require('../create_add');
 /**
- * @typedef {(p: AddParams) => void} Add
+ * @typedef {(p: AddParams) => ReturnType<ReturnType<typeof create_add>>} Add
  */
 
 /**

@@ -2,7 +2,6 @@
 
 /**
  * @typedef {Object} AddParams
- * @prop {ServerSideEventConnectionItem['connection_id']} connection_id
  * @prop {import('../../../../../types/HttpControllerParams')} http_params
  */
 

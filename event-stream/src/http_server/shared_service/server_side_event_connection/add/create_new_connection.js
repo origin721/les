@@ -9,13 +9,13 @@ module.exports = {create_new_connection};
  * @param {import('./types/CreateNewConnection')} http_params
  */
 function create_new_connection(http_params) {
-  const session_id = uuid();
+  const connection_id = uuid();
 
   /**
    * @type {import("../types/SseClientService")}
    */
   const new_client = {
-    connection_id: session_id,
+    connection_id,
     // TODO: доработать получшение ip клиента
     pub_key_client: null,
     send_json: (p) => {

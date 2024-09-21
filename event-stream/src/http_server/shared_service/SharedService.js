@@ -1,8 +1,7 @@
 // @ts-check
 
 /**
- * @typedef {Object} SharedService
- * @prop {ServerSideEventConnection} connection_service
+ * @typedef {ServerSideEventConnection} SharedService
  */
 /**
  * @type {SharedService}

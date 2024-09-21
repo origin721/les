@@ -15,12 +15,12 @@ function create_http_server(p) {
     /**
      * @type {HttpControllerParams}
      */
-    const httpParams = { req, res };
+    const http_params = { req, res };
     if (req.url === '/events' && req.method === 'POST') {
-      post_middleware({httpParams, shared_service});
+      post_middleware({http_params: http_params, shared_service});
     }
     else if (req.url === '/events') {
-      create_event_socket({httpParams, shared_service});
+      create_event_socket({httpParams: http_params, shared_service});
     }
     else { // TODO: поменять на 404
       res.writeHead(200, { 'Content-Type': 'text/plain' });

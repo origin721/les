@@ -14,21 +14,23 @@ module.exports = {
 
 
 /**
- * @typedef {import('./types/CreateEventSocketParams')} CreateEventSocketParams
- */
-/**
-* @param {CreateEventSocketParams} p
+* @param {import('./types/CreateEventSocketParams')} p
 */
-function create_event_socket({ http_params: httpParams, app_ref }) {
+function create_event_socket({ http_params, shared_service }) {
   // Set headers for SSE
-  httpParams.res.writeHead(200, {
+  http_params.res.writeHead(200, {
     'Content-Type': 'text/event-stream',
     'Cache-Control': 'no-cache',
     'Connection': 'keep-alive',
     'Access-Control-Allow-Origin': '*', // Enable CORS if needed
   });
 
+  const connection_id = uuid()
 
+  shared_service.add({
+    connection_id,
+    http_params,
+  })
 
   /**
    * @type {PayloadByPing}
@@ -43,10 +45,10 @@ function create_event_socket({ http_params: httpParams, app_ref }) {
 
 
   // Clean up when client disconnects
-  httpParams.req.on('close', () => {
+  http_params.req.on('close', () => {
     delete app_ref.clients_session_by_id[new_client_id]
     ensureResOk();
-    httpParams.res.end();
+    http_params.res.end();
   });
 }
 

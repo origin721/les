@@ -1,6 +1,6 @@
 // @ts-check
 /**
- * @typedef {import('../add.js/types/SendJson')} SendJson
+ * @typedef {import('../add/types/SendJson')} SendJson
  */
 
 /**

@@ -25,17 +25,21 @@ function create_add(connection_ref) {
   }
 }
 
+/**
+ * @typedef {Object} AddCoreResult
+ * @prop {string} connection_id
+ */
 
 /**
  * @param {import('./types/AddCoreParams')} p
- * @returns {import('../../../../validation/types/SafeResult').SafeResult<null>}
+ * @returns {AddCoreResult}
  */
 function add_core(p) {
   const { params } = p;
-  const {http_params} = params;
-  const _v = validation(params);
+  const { http_params } = params;
+  // const _v = validation(params);
 
-  if (!_v.is_ok) return _v;
+  // if (!_v.is_ok) return _v;
 
   /**
    * @type {import("../types/SseClientService")}
@@ -44,9 +48,17 @@ function add_core(p) {
 
   p
     .connection_ref
-    .connection_by_id[params.connection_id] = new_connection_item;
+    .connection_by_id[new_connection_item.connection_id] = new_connection_item;
 
-  return _v;
+
+  /**
+   * @type AddCoreResult
+   */
+  const result = {
+    connection_id: new_connection_item.connection_id
+  }
+
+  return result;
 };
 
 /**
