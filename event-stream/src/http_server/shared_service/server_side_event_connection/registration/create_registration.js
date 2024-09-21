@@ -1,6 +1,7 @@
 // @ts-check
 
 const { create_empty_entity, ERROR_TYPES } = require("../../../../validation");
+const { REFS_BY_PUB_KEY_CLIENT_STATUSES } = require("../REFS_BY_PUB_KEY_CLIENT_STATUSES");
 
 module.exports = {
   create_registration,
@@ -127,7 +128,8 @@ function get_new_pub_key_client(p, param_pub_key_client) {
   
   return {
     pub_key_client: param_pub_key_client,
-    connection_id: [params.connection_id],
+    connection_id: params.connection_id,
+    status: REFS_BY_PUB_KEY_CLIENT_STATUSES.AWAITING_REGISTRATION,
   }
 }
 

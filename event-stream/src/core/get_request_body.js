@@ -1,7 +1,7 @@
 // @ts-nocheck
 const http = require('http');
 
-module.export = {
+module.exports = {
   get_request_body,
 }
 
