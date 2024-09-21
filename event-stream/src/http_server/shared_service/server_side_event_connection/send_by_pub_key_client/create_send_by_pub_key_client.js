@@ -1,5 +1,6 @@
 // @ts-check
 
+const { uuid } = require("../../../../libs");
 const { create_empty_entity, ERROR_TYPES } = require("../../../../validation");
 
 module.exports = {
@@ -27,20 +28,37 @@ function create_send_by_pub_key_client(connection_ref) {
 
 
 /**
- * @param {import('./types/SendByPubKeyClientCoreParams')} p 
+ * @param {import('./types/SendByPubKeyClientCoreParams')} core_params 
  */
-function send_by_pub_key_client_core(p) {
-  const _v = validation(p.params);
+function send_by_pub_key_client_core(core_params) {
+  const _v = validation(core_params.params);
 
   if(!_v.is_ok) return Promise.resolve(_v);
 
-  const {params, connection_ref} = p;
+  const {params, connection_ref} = core_params;
 
-  const sse_session = connection_ref.connection_by_id[params.pub_key_client];
+  const sse_session = connection_ref.connection_by_id[params.pub_key_client_receives_response];
 
-  sse_session.pub_key_client = params.pub_key_client;
+  // sse_session.pub_key_client = params.pub_key_client_receives_response;
+
+  /**
+   * @type {import('../types/ByResponseAwaitingItem')}
+   */
+  const new_response_item = {
+    response_id: uuid(),
+    body: params.body,
+  }
+// Есть идея создать структуру где ключи 
+// клиента отправляемого через __ и получаемого клиента id
+// И что бы 1 ту 1 не отправляло много данных пока клиент не получил
+// Но пока будет проще
+  connection_ref.by_response_awaiting[new_response_item.response_id] = new_response_item;
 
   return new Promise((res) => {
+    const id_interval = setTimeout(() => {
+      // if()
+      clearInterval(id_interval);
+    }, 1_000);
     res(_v)
   });
 };
@@ -59,7 +77,7 @@ function validation(params) {
   const _v = create_empty_entity();
 
   try {
-    if(typeof params.pub_key_client !== 'string') {
+    if(typeof params.pub_key_client_receives_response !== 'string') {
       _v.err_messages.push({
         type: ERROR_TYPES.INVALID_PARAMS,
         message: '.pub_key_client не строка'
@@ -75,4 +93,16 @@ function validation(params) {
 
   
   return _v;
+}
+
+/**
+ * @param {import('./types/SendByPubKeyClientCoreParams')} core_params 
+ */
+function check_is_exist_client_session(core_params) {
+  const {
+    params: {pub_key_client_receives_response},
+    connection_ref
+  } = core_params;
+
+  return !!connection_ref[pub_key_client_receives_response];
 }
