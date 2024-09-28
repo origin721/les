@@ -30,6 +30,10 @@ function events_post_middleware(params) {
       registration(params);
       break;
     }
+    case PATHS_POST.send_by_connection_id: {
+      send_by_connection_id(http_params);
+      break;
+    }
     // case PATHS_POST.create_room: {
     //   // TODO: перебирать в массиве
     //   params.app_ref.rooms_by_id[params.body.payload.room_id] = params.body.payload;
