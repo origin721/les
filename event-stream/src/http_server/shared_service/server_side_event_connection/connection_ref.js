@@ -15,8 +15,9 @@ function create_connection_ref() {
   
   return connection_ref;
 };
+const connection_ref = create_connection_ref();
 
-module.exports = { create_connection_ref };
+module.exports = { connection_ref };
 
 /**
  * @typedef {import('./types/ConnectionRef')} ConnectionRef

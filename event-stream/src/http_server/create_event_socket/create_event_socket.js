@@ -25,7 +25,8 @@ function create_event_socket({ http_params, shared_service }) {
     'Access-Control-Allow-Origin': '*', // Enable CORS if needed
   });
 
-  shared_service.add({
+  // TODO: Метод add должен давать connection_id что бы потом отписываться
+  const session = shared_service.add({
     http_params,
   })
 
@@ -33,8 +34,11 @@ function create_event_socket({ http_params, shared_service }) {
 
   // Clean up when client disconnects
   http_params.req.on('close', () => {
-    delete app_ref.clients_session_by_id[new_client_id]
-    ensureResOk();
+    // TODO:
+    // Так же создать таймер на удаление сущьности регистрации
+    // delete app_ref.clients_session_by_id[new_client_id]
+    // ensureResOk();
+    shared_service.remove_client_by_id(session);
     http_params.res.end();
   });
 }

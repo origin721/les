@@ -7,8 +7,8 @@
 
 /**
  * @typedef {Object} RegistrationParams
- * @prop {HttpControllerParams} httpParams
- * @prop {import('./RegistrationRequest')} request
+ * @prop {HttpControllerParams} http_params
+ * @prop {import('./RegistrationRequest')} body
  */
 /**
  * @type {RegistrationParams}

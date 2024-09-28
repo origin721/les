@@ -40,7 +40,7 @@ function registration_core(p) {
   /**
    * @type {string}
    */
-  const param_pub_key_client = params.client_id;
+  const param_pub_key_client = params.pub_key_client;
 
   const sse_session = connection_ref.connection_by_id[params.connection_id];
 
@@ -50,6 +50,7 @@ function registration_core(p) {
    * @type {RefsByPubKeyClient} 
    */
   const new_pub_key_client = get_new_pub_key_client(p, param_pub_key_client);
+  new_pub_key_client.status = REFS_BY_PUB_KEY_CLIENT_STATUSES.ONLINE;
 
   connection_ref.by_pub_key_client[param_pub_key_client] = new_pub_key_client;
 
@@ -73,7 +74,7 @@ function validation({ params, connection_ref }) {
   const _v = create_empty_entity();
 
   try {
-    if (typeof params.client_id !== 'string') {
+    if (typeof params.pub_key_client !== 'string') {
       _v.err_messages.push({
         type: ERROR_TYPES.INVALID_PARAMS,
         message: '.client_id не строка'

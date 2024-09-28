@@ -3,7 +3,7 @@
 /**
  * @typedef {Object} RegistrationParams
  * @prop {SseClientService['connection_id']} connection_id
- * @prop {SseClientService['pub_key_client']} client_id
+ * @prop {SseClientService['pub_key_client']} pub_key_client
  */
 
 /**

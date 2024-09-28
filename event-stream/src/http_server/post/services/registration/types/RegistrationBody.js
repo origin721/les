@@ -2,6 +2,8 @@
 /**
  * @typedef {Object} RegistrationBody
  * @prop {ServerSideEventConnectionItem['connection_id']} connection_id
+ * @prop {string} pub_key_client
+ * TODO: привязать актуальные типы
  */
 
 /**

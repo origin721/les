@@ -1,13 +1,14 @@
 // @ts-check
 
 const { create_add } = require('./add/create_add');
-const { create_connection_ref } = require('./connection_ref');
+const { connection_ref } = require('./connection_ref');
 const { create_get_by_id } = require('./get_by_id');
 const { create_registration } = require('./registration/create_registration');
+const { create_remove_client_by_id } = require('./remove_client_by_id/create_remove_client_by_id');
 const { create_send_by_pub_key_client: create_send_by_client_id } = require('./send_by_pub_key_client');
 
+
 function create_server_side_event_connection() {
-  const connection_ref = create_connection_ref();
 
   /**
  * @type {import('./types/ServerSideEventConnection')}
@@ -31,6 +32,11 @@ function create_server_side_event_connection() {
      * Для отправки сообщения клиенту по его id(публичному ключу в будущем)
      */
     send_by_pub_key_client: create_send_by_client_id(connection_ref),
+
+    /**
+     * Удаляет сесию
+     */
+    remove_client_by_id: create_remove_client_by_id(connection_ref),
   }
 
   return server_side_event_connection;

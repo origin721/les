@@ -9,20 +9,17 @@ module.exports = { events_post_middleware };
 /**
  * @typedef {import('../types/EventsReqBody')} EventsReqBody
  */
-/**
- * @typedef {import('./types/EventsPostMiddlewareParams')} EventsPostMiddlewareParams
- */
 
 /**
- * @param {EventsPostMiddlewareParams} params
+ * @param {import('./types/EventsPostMiddlewareParams')} params
  */
 function events_post_middleware(params) {
   const _v = events_post_middleware_validation(params.body);
-  const {httpParams} = params
+  const {http_params} = params
 
   if (!_v.is_ok) {
-    httpParams.res.writeHead(400);
-    httpParams.res.end("400 Bad Request");
+    http_params.res.writeHead(400);
+    http_params.res.end("400 Bad Request");
 
     return;
   }
@@ -30,7 +27,7 @@ function events_post_middleware(params) {
 
   switch (params.body.path) {
     case PATHS_POST.server_event_registration: {
-      registration({httpParams, request: params.body});
+      registration(params);
       break;
     }
     // case PATHS_POST.create_room: {
@@ -42,8 +39,8 @@ function events_post_middleware(params) {
     // }
     //   break;
     default:
-      params.httpParams.res.writeHead(404);
-      params.httpParams.res.write("");
+      params.http_params.res.writeHead(404);
+      params.http_params.res.write("");
   };
   return;
 };
