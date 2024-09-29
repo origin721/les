@@ -6,7 +6,7 @@ module.exports = {create_new_connection};
 
 /**
  * 
- * @param {import('./types/CreateNewConnection')} http_params
+ * @param {import('../add/types/CreateNewConnection')} http_params
  */
 function create_new_connection(http_params) {
   const connection_id = uuid();
@@ -20,20 +20,20 @@ function create_new_connection(http_params) {
     pub_key_client: null,
     send_json: (p) => {
       if (!p) return;
-      const response_id = uuid();
+      // const response_id = uuid();
 
       /**
-       * @type {import("../../types/ServerSideEventResponse/SSEResponse")}
+       * type {import("../../types/ServerSideEventResponse/SSEResponse")}
        */
-      const _response = {
-        path: p.path,
-        response_id,
-        created_date: new Date(),
-        // active_users: Object.keys(connection_ref.connection_by_id).length,
-        body: p.body,
-      };
+      // const _response = {
+      //   path: p.path,
+      //   response_id,
+      //   created_date: new Date(),
+      //   // active_users: Object.keys(connection_ref.connection_by_id).length,
+      //   body: p.body,
+      // };
       
-      const message = `data: ${JSON.stringify(_response)}\n\n`;
+      const message = `data: ${JSON.stringify(p)}\n\n`;
       http_params.res.write(message);
     }
   };

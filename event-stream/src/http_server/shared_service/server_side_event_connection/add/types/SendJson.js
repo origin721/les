@@ -5,7 +5,7 @@
  */
 
 /**
- * @typedef {(p: SendJsonDtoParams) => void} SendJson
+ * @typedef {(p: unknown) => void} SendJson
  */
 
 

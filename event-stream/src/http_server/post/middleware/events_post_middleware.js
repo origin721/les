@@ -3,6 +3,7 @@ const { PATHS_POST } = require('../../constants');
 const { check_validation } = require("../../../core");
 const { create_empty_entity, ERROR_TYPES } = require('../../../validation');
 const { registration } = require('../services');
+const { shared_service } = require('./types/EventsPostMiddlewareParams');
 
 module.exports = { events_post_middleware };
 
@@ -30,8 +31,8 @@ function events_post_middleware(params) {
       registration(params);
       break;
     }
-    case PATHS_POST.send_by_connection_id: {
-      send_by_connection_id(http_params);
+    case PATHS_POST.send_by_pub_key: {
+      send_by_pub_key(http_params, shared_service, params.body);
       break;
     }
     // case PATHS_POST.create_room: {

@@ -1,7 +1,8 @@
 // @ts-check
 
 /**
- * @typedef {Promise<SafeResult>} SendByPubKeyClientResult
+ * @typedef {void|SafeResult} SendByPubKeyClientResult
+ * typedef {Promise<SafeResult>} SendByPubKeyClientResult
  */
 
 /**

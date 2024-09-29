@@ -4,6 +4,7 @@ const { shared_service } = require('../../../shared_service');
 
 /**
  * @typedef {import('../../types/EventsReqBody')} EventsReqBody
+ * @typedef {import('../../services/send_by_pub_key/types/ReqParam')} SendByPubKeyReqParam
  */
 /**
  * @typedef {import('../../../../types/HttpControllerParams')} HttpControllerParams
@@ -12,7 +13,7 @@ const { shared_service } = require('../../../shared_service');
 /**
  * @typedef {Object} EventsPostMiddlewareParams
  * @prop {HttpControllerParams} http_params 
- * @prop {EventsReqBody} body
+ * @prop {EventsReqBody|SendByPubKeyReqParam} body
  * @prop {typeof shared_service} shared_service
  */
 

@@ -2,7 +2,7 @@
 
 const { ERROR_TYPES } = require('../../../../validation');
 const { create_safe_result: create_empty_entity } = require('../../../../validation/create_safe_result');
-const { create_new_connection } = require('./create_new_connection');
+const { create_new_connection } = require('../send_by_pub_key_client/create_new_connection');
 
 module.exports = {
   create_add,

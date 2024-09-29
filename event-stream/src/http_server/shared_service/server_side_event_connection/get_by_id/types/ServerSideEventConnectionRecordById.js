@@ -4,7 +4,7 @@
 
 /**
  * @typedef {Record<
- * ClientData['session_id'],
+ * ClientData['connection_id'],
  * ClientData>
  * } ServerSideEventConnectionRecordById
  */

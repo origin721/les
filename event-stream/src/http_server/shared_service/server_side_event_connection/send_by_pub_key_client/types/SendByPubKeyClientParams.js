@@ -2,8 +2,7 @@
 
 /**
  * @typedef {Object} SendByPubKeyClientParams
- * @prop {RefsByPubKeyClient['pub_key_client']} pub_key_client_receives_response
- * @prop {RefsByPubKeyClient['pub_key_client']} pub_key_client_sending_data
+ * @prop {RefsByPubKeyClient['pub_key_client']} pub_key_client
  * @prop {unknown} body
  */
 
