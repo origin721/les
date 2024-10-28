@@ -4,6 +4,7 @@ const { check_validation } = require("../../../core");
 const { create_empty_entity, ERROR_TYPES } = require("../../../validation");
 const { registration } = require("../services");
 const { shared_service } = require("../../shared_service/");
+const { send_by_pub_key } = require("../services/send_by_pub_key/send_by_pub_key");
 
 module.exports = { events_post_middleware };
 

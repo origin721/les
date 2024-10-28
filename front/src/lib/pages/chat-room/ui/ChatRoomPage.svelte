@@ -1,8 +1,6 @@
 <script lang="ts">
   import { events_store } from "../../../processes/create_my_events/events_store";
 
-  // const
-
   import { Link, ROUTES } from "../../../routing";
   import { QUERY_PARAMS } from "../../../routing/constants";
   import { routingStore } from "../../../routing/stores";

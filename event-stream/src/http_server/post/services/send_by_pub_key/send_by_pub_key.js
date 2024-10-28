@@ -1,5 +1,8 @@
 // @ts-check
 
+module.exports = {
+  send_by_pub_key,
+}
 
 /**
  * param {string} connection_id
@@ -7,7 +10,11 @@
  * @param {import('../../../shared_service')['shared_service']} shared_service
  * @param {import("./types/ReqParam")} reqParam
  */
-const send_by_pub_key = (http_params, shared_service, reqParam) => {
+function send_by_pub_key(
+  http_params,
+  shared_service,
+  reqParam,
+) {
   const _v = shared_service.send_by_pub_key_client({
     pub_key_client: reqParam.pub_key_client,
     body: reqParam.body,
