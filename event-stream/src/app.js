@@ -2,8 +2,6 @@
 
 const { create_http_server } = require("./http_server");
 
-
-
 main();
 
 function main() {

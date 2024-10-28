@@ -16,7 +16,7 @@ const { shared_service } = require('../../shared_service');
 
 /**
  * @type {CreateEventSocketParams}
- */
+ */ // @ts-ignore
 const CreateEventSocketParams;
-
+// @ts-ignore
 module.exports = CreateEventSocketParams;

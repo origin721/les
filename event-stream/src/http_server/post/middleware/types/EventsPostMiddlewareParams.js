@@ -12,14 +12,14 @@ const { shared_service } = require('../../../shared_service');
 
 /**
  * @typedef {Object} EventsPostMiddlewareParams
- * @prop {HttpControllerParams} http_params 
+ * @prop {HttpControllerParams} http_params
  * @prop {EventsReqBody|SendByPubKeyReqParam} body
  * @prop {typeof shared_service} shared_service
  */
 
 /**
  * @type {EventsPostMiddlewareParams}
- */
+ */ // @ts-ignore
 const EventsPostMiddlewareParams;
-
+// @ts-ignore
 module.exports = EventsPostMiddlewareParams;

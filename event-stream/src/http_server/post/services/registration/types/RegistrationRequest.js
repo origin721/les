@@ -11,8 +11,7 @@ const { shared_service } = require("../../../../shared_service");
 
 /**
  * @type {RegistrationRequest}
- */
+ */ // @ts-ignore
 const RegistrationRequest;
-
+// @ts-ignore
 module.exports = RegistrationRequest;
-

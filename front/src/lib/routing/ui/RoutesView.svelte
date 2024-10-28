@@ -38,8 +38,6 @@
   <AesEncrPage />
 {:else if $routingStore.pathname === ROUTES.HOME}
   <HomePage />
-  <!-- {:else if $routingStore.pathname === ROUTES.AUTH}
-  <AuthPage /> -->
 {:else if $routingStore.pathname === ROUTES.SETTINGS}
   <SettingsPage />
 {:else if $routingStore.pathname === ROUTES.ACCOUNTS}

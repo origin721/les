@@ -14,7 +14,7 @@ const { shared_service } = require('../../../shared_service');
 
 /**
  * @type {PostMiddleware}
- */
+ */ // @ts-ignore
 const PostMiddleware;
-
+// @ts-ignore
 module.exports = PostMiddleware;
