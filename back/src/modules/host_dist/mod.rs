@@ -146,6 +146,7 @@ pub fn add_routes_to_scope(scope: Scope, dist_utils: DistFiles) -> Scope {
         );
     }
 
+    //new_scope = new_scope.route()
 
     new_scope
 }

@@ -93,8 +93,25 @@ pub async fn create_server(params: AppParams) -> Result<(), io::Error> {
 
     println!("Started server: {}", params.port);
 
+    let fined_index_html = dist_utils
+        .iter()
+        .find(|dist_item| dist_item.id == "/index.html");
+    //
+    let index_html = match fined_index_html {
+        Some(dist_item) => dist_item.file_content.clone(),
+        None => "404 error".to_string(),
+    };
+
+    // for dist_item in dist_utils {
+    //     if dist_item.id == "/index.html" {
+    //         index_html = dist_item.file_content.clone();
+    //     }
+    // }
+
 
     HttpServer::new(move || {
+        let index_html = index_html.clone();
+
         App::new()
             .app_data(counter.clone())
             .service(host_dist::add_routes_to_scope(
@@ -103,11 +120,16 @@ pub async fn create_server(params: AppParams) -> Result<(), io::Error> {
             ))
             // .route("/events", web::get().to(sse_handler))
             // .route("/events", web::get().to(my_events::sse_handler))
-            // .default_service(
-            //     web::to(move || async move {
-            //         HttpResponse::Ok().body(default_content.clone())
-            //     }),
-            // )
+            .default_service(
+                web::to(move || {
+                    let index_html = index_html.clone();
+                    
+                    async move {
+                        HttpResponse::Ok().body(index_html.clone())
+                    }
+                    }
+                ),
+            )
     
     })
     .bind(("127.0.0.1", params.port))?
