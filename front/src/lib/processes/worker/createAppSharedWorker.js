@@ -1,6 +1,9 @@
-export function createAppSharedWorker() {
+
+export async function createAppSharedWorker() {
+  const workerUrl = new URL('./process/sharedWorker.js', import.meta.url);
+  // const worker = new WorkerModule.default();
   // Создаем общий воркер
-  const sharedWorker = new SharedWorker('/src/lib/processes/worker/process/sharedWorker.js');
+  const sharedWorker = new SharedWorker(workerUrl, { type: 'module' });
 
   // Отправляем сообщение общему воркеру
   sharedWorker.port.postMessage({ message: "Hello, shared worker!" });
