@@ -14,7 +14,7 @@
   import { appAuthStore } from "../../stores";
   import { QUERY_PARAMS, ROUTES } from "../constants";
   import { routingStore } from "../stores";
-  import ChatRoomPage from "../../pages/chat-room/ui/ChatRoomPage.svelte";
+  import ChatRoomPage from "../../pages/chat_room/ui/ChatRoomPage.svelte";
   import { ChatRoomsAddPage } from "../../pages/chat_rooms_add";
   // console.log({aaa: $appAuthStore})
   // console.log('queryParams test: ', $routingStore.queryParams.get("aaa"));

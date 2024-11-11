@@ -1,1 +1,1 @@
-export { appProcessesMount } from './app-processes-mount';
+export { appProcessesMount } from './app_processes_mount';
