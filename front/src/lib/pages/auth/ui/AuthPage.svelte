@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { get, writable } from "svelte/store";
+  import { writable } from "svelte/store";
   import { appAuthStore } from "../../../stores";
   import { Link, ROUTES } from "../../../routing";
 
@@ -11,11 +11,16 @@
     function submit(e) {
         if(!pass) return;
         e.preventDefault()
-        appAuthStore.onLogin(get(pass)!);
+        appAuthStore.onLogin($pass!);
     }
+    // TODO: Доработать при добавление акаунта инфу что добавлен или ошибка
 
     // console.log($appAuthStore);
 </script>
+
+{#if Object.entries($appAuthStore.byId).length}
+    <Link href={ROUTES.ACCOUNTS}>Назад</Link>
+{/if}
 
 <form on:submit={submit} class="flex justify-center h-[100%] flex-col items-center" data-widget-name="AuthPage">
     <!-- <label class={labelClass}>

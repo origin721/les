@@ -1,1 +1,1 @@
-export { appAuthStore } from "./app-auth-store";
+export { appAuthStore } from "./app_auth_store";

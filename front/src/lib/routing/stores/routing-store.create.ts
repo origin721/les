@@ -5,7 +5,7 @@ export const createRoutingStore = () => {
 
   function setPath(newPathString: string) {
     // Создаем объект состояния, который будет сохранен в истории
-    const state = { additionalInformation: "Some data" };
+    const state = { };
 
     // Новый URL, который нужно установить
     const title = ""; // Вы можете установить заголовок страницы, если нужно
@@ -19,6 +19,10 @@ export const createRoutingStore = () => {
     store.set(getInitialValue());
 
   }
+
+  window.addEventListener('popstate', (event) => {
+    store.set(getInitialValue());
+  });
 
   return {
     subscribe: store.subscribe,

@@ -31,7 +31,9 @@
   {/if}
 {:else if $routingStore.pathname === ROUTES.CHAT_ROOMS_ADD}
   <ChatRoomsAddPage/>
-{:else if !$appAuthStore.length}
+{:else if !Object.entries($appAuthStore.byId).length}
+  <AuthPage />
+{:else if $routingStore.pathname === ROUTES.AUTH}
   <AuthPage />
 {:else if $routingStore.pathname === ROUTES.RANDOM}
   <RandomPage />

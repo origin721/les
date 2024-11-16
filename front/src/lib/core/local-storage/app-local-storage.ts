@@ -1,4 +1,5 @@
 import { AES } from "../../crypt";
+import { uuidv4 } from "../uuid";
 import { KEYS } from "./constants";
 
 /**
@@ -24,7 +25,7 @@ export const appLocalStorage = {
   /**
    * См. родительскую доку
    */
-  onLogin(pass: string) {
+  onLogin(pass: string): LoginItem[] {
     try {
       const authList = JSON.parse(localStorage.getItem(KEYS.SECRET) || "");
       if (!Array.isArray(authList)) return [];
@@ -47,8 +48,11 @@ export const appLocalStorage = {
       return [];
     }
   },
-  addSecret(item: { login: string; pass: string }) {
-    const newItem = AES.encrypt(JSON.stringify(item), item.pass);
+  addSecret(item: NewAccount) {
+    const newItem = AES.encrypt(JSON.stringify({
+      ...item,
+      id: uuidv4(),
+    }), item.pass);
     const newSecrets = appLocalStorage.getSecret();
     newSecrets.push(newItem);
     localStorage.setItem(KEYS.SECRET, JSON.stringify(newSecrets));
@@ -58,3 +62,20 @@ export const appLocalStorage = {
     localStorage.setItem(KEYS.SECRET, JSON.stringify(secrets));
   },
 } as const;
+
+export type NewAccount = {
+  login: string;
+  pass: string;
+};
+
+export type LoginItem = {
+  /**
+   * Используется для удаления
+   */
+  origin: string;
+  decr: {
+    pass: string;
+    login: string;
+    id: string;
+  };
+}

@@ -6,7 +6,7 @@
 <div class="" data-widget-name="HomePage">
     <ul>
         <li>
-            <Link href={ROUTES.ACCOUNTS}>Пользователи</Link>
+            <Link href={ROUTES.ACCOUNTS}>Акаунты</Link>
         </li>
         <li>
             <Link href={ROUTES.RANDOM}>Рандом</Link>
