@@ -9,13 +9,14 @@
     SettingsPage,
     RandomPage,
   } from "../../pages";
-  import AesEncrPage from "../../pages/aes-encr-page/ui/AesEncrPage.svelte";
-  import { ChatRoomsPage } from "../../pages/chat-rooms";
+  import AesEncrPage from "../../pages/aes_encr_page/ui/AesEncrPage.svelte";
+  import { ChatRoomsPage } from "../../pages/chat_rooms";
   import { appAuthStore } from "../../stores";
   import { QUERY_PARAMS, ROUTES } from "../constants";
   import { routingStore } from "../stores";
   import ChatRoomPage from "../../pages/chat_room/ui/ChatRoomPage.svelte";
   import { ChatRoomsAddPage } from "../../pages/chat_rooms_add";
+    import AccountSettingsPage from "../../pages/account_settings/ui/AccountSettingsPage.svelte";
   // console.log({aaa: $appAuthStore})
   // console.log('queryParams test: ', $routingStore.queryParams.get("aaa"));
 </script>
@@ -42,6 +43,8 @@
   <SettingsPage />
 {:else if $routingStore.pathname === ROUTES.ACCOUNTS}
   <AccountsPage />
+{:else if $routingStore.pathname === ROUTES.ACCOUNT_SETTINGS}
+  <AccountSettingsPage/>
 {:else}
   <Page404 />
 {/if}

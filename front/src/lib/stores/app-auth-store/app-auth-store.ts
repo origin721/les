@@ -16,6 +16,7 @@ type AppPass = {
   decr: {
     pass: string;
     login: string;
+    id: string;
   };
 };
 
@@ -36,6 +37,7 @@ function createAppPassStore() {
 
       store.update(prev => prev.filter(el => el.origin !== origin));
     },
+    //getById
   };
 
   return result;

@@ -3,6 +3,7 @@ export const ROUTES = {
     AUTH: '/auth',
     SETTINGS: '/settings',
     ACCOUNTS: '/accounts',
+    ACCOUNT_SETTINGS: '/account/settings',
     ACCOUNTS_NEW: '/accounts/new',
     RANDOM: '/RANDOM',
     AEC_ENCR: '/aec_encr',

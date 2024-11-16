@@ -17,6 +17,7 @@
       <li class="mt-[3rem] mb-[3rem]">
         <div>{authItem.decr.login}</div>
         <button on:click={() => appAuthStore.onDeleteSecret(authItem.origin)} class="text-red">удалить</button>
+        <Link href={ROUTES.ACCOUNT_SETTINGS}>settings</Link>
       </li>
     {/each}
   </ul>
