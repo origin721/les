@@ -1,5 +1,8 @@
 // sharedWorker.js
 
+import { toJson } from "../../../core";
+import { backMiddleware } from "../../../local_back/middleware";
+
 let counter = 0;
 
 self.onconnect = function (event) {
@@ -8,6 +11,8 @@ self.onconnect = function (event) {
         port.onmessage = function (e) {
             console.log("SharedWorker received:", e.data);
 
+            listener(e.data, port);
+
             // Ответ отправляем на порт, связанный с вкладкой
             port.postMessage((++counter)+"Shared worker response: " + e.data.message);
           };
@@ -15,3 +20,32 @@ self.onconnect = function (event) {
 
   };
   
+/**
+ * 
+ * @param {*} data
+ * @param {*} port
+ * @returns 
+ */
+async function listener(data, port) {
+  try {
+    /**
+     * @type {import("../../../local_back/middleware").BackMiddlewareProps}
+     */
+    const props = toJson(data.message);
+
+    if(
+      props.idRequest
+      && props.payload
+    ) {
+      if(props.type === 'fetch') {
+        port.postMessage({
+          idRequest: props.idRequest,
+          payload: JSON.stringify(await backMiddleware(props)),
+      });
+      }
+    }
+  }
+  catch(err) {
+    return null;
+  }
+};

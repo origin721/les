@@ -11,5 +11,6 @@
 <div data-widget-name="AccountsScreen">
   <div>
     <div><Link href={ROUTES.ACCOUNTS}>Назад</Link></div>
+    TODO: сделать настройки с добавлением серверов
   </div>
 </div>
