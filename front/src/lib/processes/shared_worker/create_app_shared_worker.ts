@@ -1,5 +1,8 @@
 import { toJson } from "../../core";
-import { backMiddleware, type BackMiddlewareEvent, type BackMiddlewareProps } from "../../local_back/middleware";
+import { 
+  type BackMiddlewareEvent,
+  type BackMiddlewareProps
+} from "../../local_back/middleware";
 import { shared_worker_store } from "./shared_worker_store";
 
 export async function createAppSharedWorker() {
