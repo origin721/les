@@ -34,7 +34,7 @@ async function listener(data, port) {
     const props = toJson(data.message);
 
     if(
-      (props.idRequest || typeof props.idRequest === 'number')
+      (props.idRequest || props.idRequest === 0)
       && props.payload
     ) {
       if(props.type === 'fetch') {

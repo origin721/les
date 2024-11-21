@@ -15,6 +15,9 @@ export const appProcessesMount = () => {
         shared_worker_store
           .fetch({payload: 'hi'})
           .then((p) => console.log('hiSwelteWorker',{p}));
+        shared_worker_store
+          .fetch({payload: 'hi'})
+          .then((p) => console.log('hiSwelteWorker',{p}));
         // appLocalStorage.setSecret('hihihi');
         // openpgp.generateKey({
         //     name: 'sdfsdf',
