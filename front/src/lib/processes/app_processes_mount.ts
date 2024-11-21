@@ -10,7 +10,7 @@ export const appProcessesMount = () => {
 
     onMount(() => {
         console.log(uuidv4());
-        //createAppSharedWorker();
+        createAppSharedWorker();
         create_my_events();
         shared_worker_store
           .fetch({payload: 'hi'})

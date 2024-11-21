@@ -33,15 +33,20 @@ async function listener(data, port) {
      */
     const props = toJson(data.message);
 
+        port.postMessage(JSON.stringify({
+          test:'test',
+        is: props.idRequest
+      && props.payload
+        }));
     if(
-      props.idRequest
+      (props.idRequest || typeof props.idRequest === 'number')
       && props.payload
     ) {
       if(props.type === 'fetch') {
-        port.postMessage({
+        port.postMessage(JSON.stringify({
           idRequest: props.idRequest,
-          payload: JSON.stringify(await backMiddleware(props)),
-      });
+          payload: await backMiddleware(props),
+      }));
       }
     }
   }
