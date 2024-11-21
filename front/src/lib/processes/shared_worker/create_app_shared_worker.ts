@@ -44,7 +44,7 @@ async function listener(
     const props = toJson(param) as BackMiddlewareProps;
 
     if(promiseResolves[props.idRequest]) {
-      promiseResolves[props.idRequest](param);
+      promiseResolves[props.idRequest](props);
       delete promiseResolves[props.idRequest];
     }
   }

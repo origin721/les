@@ -33,11 +33,6 @@ async function listener(data, port) {
      */
     const props = toJson(data.message);
 
-        port.postMessage(JSON.stringify({
-          test:'test',
-        is: props.idRequest
-      && props.payload
-        }));
     if(
       (props.idRequest || typeof props.idRequest === 'number')
       && props.payload
