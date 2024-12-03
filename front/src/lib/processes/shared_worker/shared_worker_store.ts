@@ -1,6 +1,7 @@
 import { writable } from "svelte/store";
 import type { BackMiddlewareProps } from "../../local_back/middleware";
 import { create_counter_generator } from "../../core/create_counter_generator";
+import { EVENT_TYPES } from "../../local_back/constant";
 
 const workerGeneratorIds = create_counter_generator();
 
@@ -21,7 +22,7 @@ function create_shared_worker_store() {
           data: {
             ...params,
             idRequest,
-            type: 'fetch',
+            type: EVENT_TYPES.FETCH,
           },
           res,
         });
@@ -35,7 +36,7 @@ function create_shared_worker_store() {
       return newStore.sendMessage({
         ...p,
         idRequest: workerGeneratorIds(),
-        type: 'fetch',
+        type: EVENT_TYPES.FETCH,
       });
     };
     for (
@@ -62,7 +63,7 @@ type _SendProps = {
 }
 type SendProps = FetchParams & {
   idRequest: any;
-  type: 'fetch';
+  type: typeof EVENT_TYPES['FETCH'];
 };
 type Store = {
   sendMessage: (p: SendProps) => Promise<BackMiddlewareProps>;

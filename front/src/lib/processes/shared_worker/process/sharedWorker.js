@@ -1,25 +1,24 @@
-// sharedWorker.js
-
 import { toJson } from "../../../core";
+import { EVENT_TYPES } from "../../../local_back/constant";
 import { backMiddleware } from "../../../local_back/middleware";
 
 let counter = 0;
 
 self.onconnect = function (event) {
-  
-    event.ports.forEach(port => {
-        port.onmessage = function (e) {
-            console.log("SharedWorker received:", e.data);
 
-            listener(e.data, port);
+  event.ports.forEach(port => {
+    port.onmessage = function (e) {
+      console.log("SharedWorker received:", e.data);
 
-            // Ответ отправляем на порт, связанный с вкладкой
-            port.postMessage((++counter)+"Shared worker response: " + e.data.message);
-          };
-    });
+      listener(e.data, port);
 
-  };
-  
+      // Ответ отправляем на порт, связанный с вкладкой
+      port.postMessage((++counter) + "Shared worker response: " + e.data.message);
+    };
+  });
+
+};
+
 /**
  * 
  * @param {*} data
@@ -33,19 +32,22 @@ async function listener(data, port) {
      */
     const props = toJson(data.message);
 
-    if(
+    if (
       (props.idRequest || props.idRequest === 0)
       && props.payload
     ) {
-      if(props.type === 'fetch') {
+      if (props.type === EVENT_TYPES.FETCH) {
         port.postMessage(JSON.stringify({
           idRequest: props.idRequest,
           payload: await backMiddleware(props),
-      }));
+        }));
+      }
+      else if(props.type === EVENT_TYPES.SUBSCRIBE) {
+
       }
     }
   }
-  catch(err) {
+  catch (err) {
     return null;
   }
 };

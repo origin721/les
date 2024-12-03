@@ -24,6 +24,21 @@ export const appProcessesMount = () => {
         //     pass: '123'
         // }).then(console.log);
     
+        const channel = new BroadcastChannel('my-channel');
+
+// Отправить сообщение всем вкладкам
+  channel.postMessage({ action: 'notify', data: 'Hello, tabs!' });
+
+
+channel.onmessage = (event) => {
+    console.log('Message received:', event.data);
+    if (event.data.action === 'notify') {
+        // Ответить на сообщение
+        channel.postMessage({ action: 'response', data: 'Received!' });
+    }
+};
+
+
     });
     // console.log(AES.decrypt(AES.encrypt("asdf", "sdf"), "sdf"));
 };

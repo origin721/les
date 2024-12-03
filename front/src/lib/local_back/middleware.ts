@@ -1,8 +1,8 @@
-import { PATHS } from "./constant";
+import { EVENT_TYPES, PATHS } from "./constant";
 
 type IdRequest = string | number;
 export type BackMiddlewareProps = {
-  type: 'fetch';
+  type: typeof EVENT_TYPES['FETCH'];
   payload: BackMiddlewarePayload;
   /**
    * Индификатор который вернётся в ответе
@@ -10,9 +10,7 @@ export type BackMiddlewareProps = {
    * что это ответ для этого запроса
    */
   idRequest: IdRequest;
-  listener: (cb: Listener) => void;
 }
-type Listener = (e: BackMiddlewareEvent) => void;
 type BackMiddlewarePayload = {
   path: keyof typeof PATHS;
   body: any;
@@ -20,18 +18,22 @@ type BackMiddlewarePayload = {
 
 export type BackMiddlewareEvent = {
   idRequest: IdRequest;
-  type: 'fetch';
+  type: typeof EVENT_TYPES['FETCH'];
   payload: any;
 }
+
+const channel = new BroadcastChannel('my-channel');
 
 export function backMiddleware(
   props: BackMiddlewareProps
 ) {
   console.log('worker-shared',{props});
   
+  channel.postMessage({ action: 'notify', data: 'Hello, tabs!1' });
   return new Promise((res, rej) => {
     setTimeout(() => {
-      res({aaa:'vvvv'});
+      res({aaa:'vvvv', props});
+  channel.postMessage({ action: 'notify', data: 'Hello, tabs!2' });
     }, 5000);
   });
 }
