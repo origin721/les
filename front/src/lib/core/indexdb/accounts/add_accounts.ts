@@ -2,7 +2,7 @@ import { AES } from "../../../crypt";
 import { uuidv4 } from "../../uuid";
 import { indexdb_wrapper } from "../indexdb_wrapper";
 
-type AccountEntity = {
+export type AccountEntity = {
   login: string;
   pass: string;
 }

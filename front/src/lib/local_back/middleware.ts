@@ -1,4 +1,6 @@
 import { CHANNEL_NAMES } from "../core/broadcast_channel/constants/CHANNEL_NAMES";
+import { add_accounts, type AccountEntity } from "../core/indexdb/accounts/add_accounts";
+import { delete_accounts } from "../core/indexdb/accounts/delete_accounts";
 import { get_accounts } from "../core/indexdb/accounts/get_accounts";
 import { EVENT_TYPES, PATHS } from "./constant";
 
@@ -14,6 +16,20 @@ export type BackMiddlewareProps = {
   idRequest: IdRequest;
 }
 
+export type AddAccountsPayload = {
+  path: typeof PATHS['ADD_ACCOUNTS'];
+  body: {
+    list: AccountEntity[];
+  };
+}
+
+export type DeleteAccountsPayload = {
+  path: typeof PATHS['DELETE_ACCOUNTS'];
+  body: {
+    ids: string[];
+  };
+}
+
 export type GetAccountsPayload = {
   path: typeof PATHS['GET_ACCOUNTS'];
   body: {
@@ -25,7 +41,11 @@ export type ResultByPath = {
   [key in typeof PATHS['GET_ACCOUNTS']]: ReturnType<typeof get_accounts>;
 };
 
-export type BackMiddlewarePayload = Extract<GetAccountsPayload,{
+export type BackMiddlewarePayload = Extract<
+  GetAccountsPayload
+  |DeleteAccountsPayload
+  |AddAccountsPayload
+,{
   path: keyof typeof PATHS;
   body: any;
 }>;
@@ -46,6 +66,12 @@ export async function backMiddleware(
   try {
     if (props.payload.path === PATHS.GET_ACCOUNTS) {
       return await get_accounts(props.payload.body.pass);
+    }
+    if (props.payload.path === PATHS.DELETE_ACCOUNTS) {
+      return await delete_accounts(props.payload.body.ids);
+    }
+    if (props.payload.path === PATHS.ADD_ACCOUNTS) {
+      return await add_accounts(props.payload.body.list);
     }
   }
   catch (err) {

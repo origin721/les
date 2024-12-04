@@ -1,9 +1,6 @@
 import { get, writable } from "svelte/store";
-import { appLocalStorage } from "../../core";
 import type { NewAccount } from "../../core/local-storage/app-local-storage";
-import { add_accounts } from "../../core/indexdb/accounts/add_accounts";
-import { get_accounts, type Account } from "../../core/indexdb/accounts/get_accounts";
-import { delete_accounts } from "../../core/indexdb/accounts/delete_accounts";
+import { type Account } from "../../core/indexdb/accounts/get_accounts";
 import { shared_worker_store } from "../../processes";
 import { PATHS } from "../../local_back";
 
@@ -36,7 +33,12 @@ function createAppAuthStore() {
     add: async(newAcc: NewAccount) => {
      //appLocalStorage.addSecret(newAcc);
      //const newList = appLocalStorage.onLogin(newAcc.pass);
-      await add_accounts([newAcc]);
+      await shared_worker_store.fetch({
+        path: PATHS.ADD_ACCOUNTS,
+        body: {
+          list: [newAcc],
+        }
+      });
       const newList = await shared_worker_store.fetch({
         path: PATHS.GET_ACCOUNTS,
         body: {
@@ -68,7 +70,13 @@ function createAppAuthStore() {
     async onDeleteSecret(id: string) {
       // TODO: доделать удаление
       // appLocalStorage.onDeleteSecret(storeData.byId[id].origin);
-      await delete_accounts([id]);
+     // await delete_accounts([id]);
+      await shared_worker_store.fetch({
+        path: PATHS.DELETE_ACCOUNTS,
+        body: {
+          ids: [id]
+        }
+      });
 
       store.update(prev => {
         const newData = {
