@@ -34,7 +34,7 @@ export function backMiddleware(
   return new Promise((res, rej) => {
     setTimeout(() => {
       res({aaa:'vvvv', props});
-  channel.postMessage({ action: 'notify', data: 'Hello, tabs!2' });
+      channel.postMessage({ action: 'notify', data: 'Hello, tabs!2' });
     }, 5000);
   });
 }

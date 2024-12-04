@@ -28,13 +28,13 @@ export const appProcessesMount = () => {
         // }).then(console.log);
     
         broadcast_middleware();
-        add_accounts([ {name: 'hi'} ]);
-        add_accounts([ {name: 'hi1'}, {name:'hi22343243'} ])
-          .then(() => {
+     // add_accounts([ {login: 'hi', pass: 'zzz'} ]);
+     // add_accounts([ {login: 'hi1', pass: 'zzz'}, {login:'hi22343243', pass: 'zzz'},  ])
+     //   .then(() => {
 
-            get_accounts().then(console.log);
-            get_accounts().then(console.log);
-          });
+     //     get_accounts('zzz').then(console.log);
+     //     get_accounts('zzz').then(console.log);
+     //   });
 
 
     });

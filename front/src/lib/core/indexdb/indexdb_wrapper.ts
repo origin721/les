@@ -20,7 +20,7 @@ export function indexdb_wrapper(
             if (!db.objectStoreNames.contains('accounts')) { // если хранилище "accounts" не существует
               const objectStore = db.createObjectStore('accounts', { keyPath: 'id' }); // создаём хранилище
               // Добавляем индекс для поля data
-              objectStore.createIndex("dataIndex", "data", { unique: false });
+              //objectStore.createIndex("dataIndex", "data", { unique: false });
             }
             break;
           case 1:

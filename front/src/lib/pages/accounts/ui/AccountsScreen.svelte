@@ -18,10 +18,10 @@
   <ul>
     {#each Object.values($appAuthStore.byId) as authItem}
       <li class="mt-[3rem] mb-[3rem]">
-        <div>{authItem.decr.login}</div>
-        <button on:click={() => appAuthStore.onDeleteSecret(authItem.decr.id)} class="text-red">удалить</button>
+        <div>{authItem.login}</div>
+        <button on:click={() => appAuthStore.onDeleteSecret(authItem.id)} class="text-red">удалить</button>
         <Link href={ROUTES.ACCOUNT_SETTINGS+'?'+search_params_to_string({
-          [SETTINGS_S_P_KEYS.ID]: authItem.decr.id,
+          [SETTINGS_S_P_KEYS.ID]: authItem.id,
         })}>settings</Link>
       </li>
     {/each}

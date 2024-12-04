@@ -1,8 +1,10 @@
+import { AES } from "../../../crypt";
 import { uuidv4 } from "../../uuid";
 import { indexdb_wrapper } from "../indexdb_wrapper";
 
 type AccountEntity = {
-  name: string;
+  login: string;
+  pass: string;
 }
 
 export function add_accounts(new_list: AccountEntity[]) {
@@ -10,10 +12,15 @@ export function add_accounts(new_list: AccountEntity[]) {
     return new Promise((res, rej) => {
       const transaction = db.transaction(["accounts"], "readwrite");
       const store = transaction.objectStore("accounts");
-
       // Добавляем запись
       for (let item of new_list) {
-        store.add({ id: uuidv4(), data: JSON.stringify(item) });
+        const newId = uuidv4();
+        const newData = AES.encrypt(JSON.stringify({
+          ...item,
+          id: newId,
+          date_created: new Date(),
+        }), item.pass);
+        store.add({ id: newId, data: newData });
       }
 
       transaction.oncomplete = function () {

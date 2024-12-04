@@ -1,6 +1,9 @@
 import { get, writable } from "svelte/store";
 import { appLocalStorage } from "../../core";
-import type { LoginItem, NewAccount } from "../../core/local-storage/app-local-storage";
+import type { NewAccount } from "../../core/local-storage/app-local-storage";
+import { add_accounts } from "../../core/indexdb/accounts/add_accounts";
+import { get_accounts, type Account } from "../../core/indexdb/accounts/get_accounts";
+import { delete_accounts } from "../../core/indexdb/accounts/delete_accounts";
 
 /**
  * @type {Object}
@@ -14,12 +17,12 @@ import type { LoginItem, NewAccount } from "../../core/local-storage/app-local-s
 export const appAuthStore = createAppAuthStore();
 
 type AppAuthStore = {
-  byId: Record<string, LoginItem>;
+  byId: Record<string, Account>;
 }
 
-function authListToRecordById(list: LoginItem[]) {
+function authListToRecordById(list: Account[]) {
   return Object.fromEntries(
-    list.map(el => [el.decr.id, el])
+    list.map(el => [el.id, el])
   )
 }
 
@@ -28,9 +31,12 @@ function createAppAuthStore() {
 
   const result = {
     subscribe: store.subscribe,
-    add: (newAcc: NewAccount) => {
-      appLocalStorage.addSecret(newAcc);
-      const newList = appLocalStorage.onLogin(newAcc.pass);
+    add: async(newAcc: NewAccount) => {
+     //appLocalStorage.addSecret(newAcc);
+     //const newList = appLocalStorage.onLogin(newAcc.pass);
+      await add_accounts([newAcc]);
+      const newList = await get_accounts(newAcc.pass);
+
       store.update(prev => ({
         byId: {
           ...prev.byId,
@@ -38,17 +44,19 @@ function createAppAuthStore() {
         }
       }));
     },
-    onLogin(pass: string) {
+    async onLogin(pass: string) {
+      const newList = await get_accounts(pass);
       store.update((prev) => ({
         byId: {
           ...prev.byId,
-          ...authListToRecordById(appLocalStorage.onLogin(pass)),
+          ...authListToRecordById(newList),
         }
       }));
     },
-    onDeleteSecret(id: string) {
-      const storeData = get(store);
-      appLocalStorage.onDeleteSecret(storeData.byId[id].origin);
+    async onDeleteSecret(id: string) {
+      // TODO: доделать удаление
+      // appLocalStorage.onDeleteSecret(storeData.byId[id].origin);
+      await delete_accounts([id]);
 
       store.update(prev => {
         const newData = {

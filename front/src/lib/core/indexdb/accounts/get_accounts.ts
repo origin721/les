@@ -1,7 +1,16 @@
+import { AES } from "../../../crypt";
 import { indexdb_wrapper } from "../indexdb_wrapper";
 
+export type Account = {
+  login: string;
+  pass: string;
+  id: string;
+  date_created: Date;
+};
 
-export function get_accounts() {
+export function get_accounts(
+  pass: string
+): Promise<Account[]> {
   return new Promise((mRes, rej) => {
     indexdb_wrapper((db) => {
       return new Promise((res, rej) => {
@@ -12,7 +21,7 @@ export function get_accounts() {
         let found = true;
 
         const request = store.openCursor();
-        const result = []
+        const result: Account[] = []
         request.onsuccess = function (event) {
           const cursor = event.target.result;
           if (cursor) {
@@ -20,7 +29,13 @@ export function get_accounts() {
               found = true; // Нашли нужный id
             }
             if (found) {
-              result.push(cursor.value);
+              try {
+
+                const decrData = JSON.parse(AES.decrypt(cursor.value.data, pass));
+                if (decrData)
+                  result.push(decrData);
+              }
+              catch(err) {}
               //console.log("Обработка записи:", cursor.value);
             }
             cursor.continue(); // Продолжаем обход
