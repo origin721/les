@@ -1,5 +1,5 @@
 import { writable } from "svelte/store";
-import type { BackMiddlewareProps } from "../../local_back/middleware";
+import type { BackMiddlewareEvent, BackMiddlewarePayload, BackMiddlewareProps, ResultByPath } from "../../local_back/middleware";
 import { create_counter_generator } from "../../core/create_counter_generator";
 import { EVENT_TYPES } from "../../local_back/constant";
 
@@ -14,7 +14,9 @@ function create_shared_worker_store() {
   const result = {
     subscribe: store.subscribe,
     set: store.set,
-    fetch: (params: FetchParams) => {
+    fetch: (
+      params: FetchParams
+    ): ResultByPath[typeof params['path']] => {
       return new Promise((res, rej) => {
 
         const idRequest = workerGeneratorIds();
@@ -32,12 +34,14 @@ function create_shared_worker_store() {
 
   store.subscribe(async (newStore) => {
     if(!newStore) return;
-    result.fetch = (p: FetchParams) => {
+    result.fetch = (
+      p: FetchParams
+    ): ResultByPath[typeof p['path']] => {
       return newStore.sendMessage({
-        ...p,
+        payload: p,
         idRequest: workerGeneratorIds(),
         type: EVENT_TYPES.FETCH,
-      });
+      }).then(v => v.payload);
     };
     for (
       let _item = requestBefore.pop();
@@ -56,15 +60,12 @@ function create_shared_worker_store() {
   return result;
 }
 
-type FetchParams = { payload: any };
+type FetchParams = BackMiddlewarePayload;
 type _SendProps = {
   data: SendProps;
   res: (p: SendProps) => void;
 }
-type SendProps = FetchParams & {
-  idRequest: any;
-  type: typeof EVENT_TYPES['FETCH'];
-};
+type SendProps = BackMiddlewareEvent;
 type Store = {
-  sendMessage: (p: SendProps) => Promise<BackMiddlewareProps>;
+  sendMessage: (p: SendProps) => Promise<ResultByPath[typeof p['payload']['path']]>;
 }

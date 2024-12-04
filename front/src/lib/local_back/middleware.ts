@@ -1,4 +1,5 @@
 import { CHANNEL_NAMES } from "../core/broadcast_channel/constants/CHANNEL_NAMES";
+import { get_accounts } from "../core/indexdb/accounts/get_accounts";
 import { EVENT_TYPES, PATHS } from "./constant";
 
 type IdRequest = string | number;
@@ -12,29 +13,51 @@ export type BackMiddlewareProps = {
    */
   idRequest: IdRequest;
 }
-type BackMiddlewarePayload = {
+
+export type GetAccountsPayload = {
+  path: typeof PATHS['GET_ACCOUNTS'];
+  body: {
+    pass: string;
+  };
+}
+
+export type ResultByPath = {
+  [key in typeof PATHS['GET_ACCOUNTS']]: ReturnType<typeof get_accounts>;
+};
+
+export type BackMiddlewarePayload = Extract<GetAccountsPayload,{
   path: keyof typeof PATHS;
   body: any;
-}
+}>;
 
 export type BackMiddlewareEvent = {
   idRequest: IdRequest;
   type: typeof EVENT_TYPES['FETCH'];
-  payload: any;
+  payload: BackMiddlewarePayload;
 }
 
 const channel = new BroadcastChannel(CHANNEL_NAMES.FRONT_MIDDLEWARE);
 
-export function backMiddleware(
+export async function backMiddleware(
   props: BackMiddlewareProps
-) {
-  console.log('worker-shared',{props});
+ ): ResultByPath[typeof props['payload']['path']] {
+  //console.log('worker-shared',{props});
   
-  channel.postMessage({ action: 'notify', data: 'Hello, tabs!1' });
-  return new Promise((res, rej) => {
-    setTimeout(() => {
-      res({aaa:'vvvv', props});
-      channel.postMessage({ action: 'notify', data: 'Hello, tabs!2' });
-    }, 5000);
-  });
+  try {
+    if (props.payload.path === PATHS.GET_ACCOUNTS) {
+      return await get_accounts(props.payload.body.pass);
+    }
+  }
+  catch (err) {
+    console.error(err);
+  }
+  
+  return null;
+ //channel.postMessage({ action: 'notify', data: 'Hello, tabs!1' });
+ //return new Promise((res, rej) => {
+ //  setTimeout(() => {
+ //    res({aaa:'vvvv', props});
+ //    channel.postMessage({ action: 'notify', data: 'Hello, tabs!2' });
+ //  }, 5000);
+ //});
 }

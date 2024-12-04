@@ -4,6 +4,8 @@ import type { NewAccount } from "../../core/local-storage/app-local-storage";
 import { add_accounts } from "../../core/indexdb/accounts/add_accounts";
 import { get_accounts, type Account } from "../../core/indexdb/accounts/get_accounts";
 import { delete_accounts } from "../../core/indexdb/accounts/delete_accounts";
+import { shared_worker_store } from "../../processes";
+import { PATHS } from "../../local_back";
 
 /**
  * @type {Object}
@@ -35,7 +37,12 @@ function createAppAuthStore() {
      //appLocalStorage.addSecret(newAcc);
      //const newList = appLocalStorage.onLogin(newAcc.pass);
       await add_accounts([newAcc]);
-      const newList = await get_accounts(newAcc.pass);
+      const newList = await shared_worker_store.fetch({
+        path: PATHS.GET_ACCOUNTS,
+        body: {
+          pass: newAcc.pass
+        }
+      });
 
       store.update(prev => ({
         byId: {
@@ -45,7 +52,12 @@ function createAppAuthStore() {
       }));
     },
     async onLogin(pass: string) {
-      const newList = await get_accounts(pass);
+      const newList = await shared_worker_store.fetch({
+        path: PATHS.GET_ACCOUNTS,
+        body: {
+          pass: pass
+        }
+      });
       store.update((prev) => ({
         byId: {
           ...prev.byId,

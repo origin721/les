@@ -1,0 +1,1 @@
+export {shared_worker_store} from './shared_worker_store';
