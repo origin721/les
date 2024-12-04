@@ -1,3 +1,4 @@
+import { CHANNEL_NAMES } from "../core/broadcast_channel/constants/CHANNEL_NAMES";
 import { EVENT_TYPES, PATHS } from "./constant";
 
 type IdRequest = string | number;
@@ -22,7 +23,7 @@ export type BackMiddlewareEvent = {
   payload: any;
 }
 
-const channel = new BroadcastChannel('my-channel');
+const channel = new BroadcastChannel(CHANNEL_NAMES.FRONT_MIDDLEWARE);
 
 export function backMiddleware(
   props: BackMiddlewareProps

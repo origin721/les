@@ -1,0 +1,1 @@
+export {MyEnum} from './MyEnum';

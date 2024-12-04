@@ -5,6 +5,7 @@ import { createAppSharedWorker } from './shared_worker/create_app_shared_worker'
 import { v4 as uuidv4 } from 'uuid';
 import { create_my_events } from "./create_my_events";
 import { shared_worker_store } from "./shared_worker/shared_worker_store";
+import { broadcast_middleware } from "./broadcast_middleware";
 
 export const appProcessesMount = () => {
 
@@ -24,20 +25,7 @@ export const appProcessesMount = () => {
         //     pass: '123'
         // }).then(console.log);
     
-        const channel = new BroadcastChannel('my-channel');
-
-// Отправить сообщение всем вкладкам
-  channel.postMessage({ action: 'notify', data: 'Hello, tabs!' });
-
-
-channel.onmessage = (event) => {
-    console.log('Message received:', event.data);
-    if (event.data.action === 'notify') {
-        // Ответить на сообщение
-        channel.postMessage({ action: 'response', data: 'Received!' });
-    }
-};
-
+        broadcast_middleware();
 
     });
     // console.log(AES.decrypt(AES.encrypt("asdf", "sdf"), "sdf"));
