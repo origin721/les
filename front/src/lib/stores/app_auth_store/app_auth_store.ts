@@ -1,8 +1,9 @@
 import { get, writable } from "svelte/store";
-import type { NewAccount } from "../../core/local-storage/app-local-storage";
 import { type Account } from "../../core/indexdb/accounts/get_accounts";
 import { shared_worker_store } from "../../processes";
 import { PATHS } from "../../local_back";
+import type { AccountEntity } from "../../core/indexdb/accounts/add_accounts";
+import type { AccountDto } from "../../local_back/middleware";
 
 /**
  * @type {Object}
@@ -16,10 +17,10 @@ import { PATHS } from "../../local_back";
 export const appAuthStore = createAppAuthStore();
 
 type AppAuthStore = {
-  byId: Record<string, Account>;
+  byId: Record<string, AccountDto>;
 }
 
-function authListToRecordById(list: Account[]) {
+export function authListToRecordById(list: AccountDto[]) {
   return Object.fromEntries(
     list.map(el => [el.id, el])
   )
@@ -30,7 +31,16 @@ function createAppAuthStore() {
 
   const result = {
     subscribe: store.subscribe,
-    add: async(newAcc: NewAccount) => {
+    _add: (newList: AccountDto[]) => {
+      store.update((prev) => ({
+        byId: {
+          ...prev.byId,
+          ...authListToRecordById(newList),
+        }
+      }));
+
+    },
+    add: async(newAcc: AccountEntity) => {
      //appLocalStorage.addSecret(newAcc);
      //const newList = appLocalStorage.onLogin(newAcc.pass);
       await shared_worker_store.fetch({
@@ -39,33 +49,41 @@ function createAppAuthStore() {
           list: [newAcc],
         }
       });
-      const newList = await shared_worker_store.fetch({
-        path: PATHS.GET_ACCOUNTS,
+      await shared_worker_store.fetch({
+        path: PATHS.LOGIN,
         body: {
           pass: newAcc.pass
         }
       });
 
-      store.update(prev => ({
-        byId: {
-          ...prev.byId,
-          ...authListToRecordById(newList),
-        }
-      }));
+     //store.update(prev => ({
+     //  byId: {
+     //    ...prev.byId,
+     //    ...authListToRecordById(newList),
+     //  }
+     //}));
     },
     async onLogin(pass: string) {
       const newList = await shared_worker_store.fetch({
-        path: PATHS.GET_ACCOUNTS,
+        path: PATHS.LOGIN,
         body: {
           pass: pass
         }
       });
-      store.update((prev) => ({
-        byId: {
-          ...prev.byId,
-          ...authListToRecordById(newList),
+    },
+    _onDeleteSecret(ids: string[]) {
+
+      store.update(prev => {
+        const newData = {
+          ...prev,
+          byId: {...prev.byId}
         }
-      }));
+        for(let id of ids) {
+          delete newData.byId[id];
+        }
+
+        return newData;
+      });
     },
     async onDeleteSecret(id: string) {
       // TODO: доделать удаление
@@ -74,22 +92,16 @@ function createAppAuthStore() {
       await shared_worker_store.fetch({
         path: PATHS.DELETE_ACCOUNTS,
         body: {
-          ids: [id]
+          ids: [id],
         }
-      });
-
-      store.update(prev => {
-        const newData = {
-          ...prev,
-          byId: {...prev.byId}
-        }
-        delete newData.byId[id];
-
-        return newData;
       });
     },
     //getById
   };
+
+  shared_worker_store.fetch({
+    path: PATHS.GET_ACCOUNTS,
+  });
 
   return result;
 }

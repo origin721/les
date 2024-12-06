@@ -5,7 +5,7 @@
   import { SEARCH_PARAMS_KEYS as SETTINGS_S_P_KEYS } from "../../account_settings/constants/SEARCH_PARAMS_KEYS";
 
   const checkboxStyle = "w-[1rem] h-[1rem] m-[0.5rem]";
-  
+  $: console.log($appAuthStore.byId);
 </script>
 
 <div data-widget-name="AccountsScreen">
@@ -18,7 +18,7 @@
   <ul>
     {#each Object.values($appAuthStore.byId) as authItem}
       <li class="mt-[3rem] mb-[3rem]">
-        <div>{authItem.login}</div>
+        <div>{authItem.namePub}</div>
         <button on:click={() => appAuthStore.onDeleteSecret(authItem.id)} class="text-red">удалить</button>
         <Link href={ROUTES.ACCOUNT_SETTINGS+'?'+search_params_to_string({
           [SETTINGS_S_P_KEYS.ID]: authItem.id,

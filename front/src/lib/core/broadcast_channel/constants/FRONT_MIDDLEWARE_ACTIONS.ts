@@ -1,11 +1,12 @@
 import type { MyEnum } from "../../../types/common";
 
-export const FRONT_MIDDLEWARE_ACTIONS: KeyEqualValue = getChannelNames();
+export const FrontMiddlewareActions: KeyEqualValue = getChannelNames();
 
 type KeyEqualValue = MyEnum<ReturnType<typeof getChannelNames>>;
 
 function getChannelNames() {
   return Object.freeze({
-    //TMP: 'FRONT_MIDDLEWARE',
+    ADD_ACCOUNTS: 'ADD_ACCOUNTS',
+    DELETE_ACCOUNTS: 'DELETE_ACCOUNTS',
   })
 }

@@ -9,5 +9,7 @@ function getChannelPaths() {
     GET_ACCOUNTS: 'GET_ACCOUNTS',
     DELETE_ACCOUNTS: 'DELETE_ACCOUNTS',
     ADD_ACCOUNTS: 'ADD_ACCOUNTS',
+    PUT_ACCOUNTS: 'PUT_ACCOUNTS',
+    LOGIN: 'LOGIN',
   })
 }

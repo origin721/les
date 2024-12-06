@@ -12,12 +12,6 @@ export const appProcessesMount = () => {
         //console.log(uuidv4());
         createAppSharedWorker();
         create_my_events();
-        shared_worker_store
-          .fetch({payload: 'hi'})
-          .then((p) => console.log('hiSwelteWorker',{p}));
-        shared_worker_store
-          .fetch({payload: 'hi'})
-          .then((p) => console.log('hiSwelteWorker',{p}));
     
         broadcast_middleware();
 

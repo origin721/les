@@ -1,13 +1,45 @@
 <script lang="ts">
+  import { writable } from "svelte/store";
   import { Link, ROUTES } from "../../../routing";
-    import { routingStore } from "../../../routing/stores";
-    import { SEARCH_PARAMS_KEYS } from "../constants/SEARCH_PARAMS_KEYS";
+  import { FieldHttpServers } from "../../../widgets";
+  import { appAuthStore } from "../../../stores";
+  import { routingStore } from "../../../routing/stores";
+  import { SEARCH_PARAMS_KEYS } from "../constants/SEARCH_PARAMS_KEYS";
+  import { shared_worker_store } from "../../../processes";
+  import { PATHS } from "../../../local_back";
 
+  const fieldHttpServers = writable([]);
+  $: idParam = $routingStore.queryParams.get(SEARCH_PARAMS_KEYS.ID);
+
+  function submit(e) {
+    e.preventDefault();
+    if (idParam && $appAuthStore.byId[idParam]) {
+      shared_worker_store.fetch({
+        path: PATHS.PUT_ACCOUNTS,
+        body: {
+          list: [
+            {
+              ...$appAuthStore.byId[idParam],
+              httpServers: $fieldHttpServers,
+            },
+          ],
+        },
+      });
+    }
+  }
+
+  $: if (idParam && $appAuthStore.byId[idParam]) {
+    fieldHttpServers.set($appAuthStore.byId[idParam].httpServers || []);
+  }
 </script>
 
 <div data-widget-name="AccountsScreen">
-  <div>
-    <div><Link href={ROUTES.ACCOUNTS}>Назад</Link></div>
-    TODO: сделать настройки с добавлением серверов
-  </div>
+  <div><Link href={ROUTES.ACCOUNTS}>Назад</Link></div>
+  <form
+    on:submit={submit}
+    class="flex justify-center h-[100%] flex-col items-center"
+  >
+    <FieldHttpServers {fieldHttpServers} />
+    <button class="mt-4" type="submit">Сохранить</button>
+  </form>
 </div>

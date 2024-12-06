@@ -1,7 +1,12 @@
 import { CHANNEL_NAMES } from "../core/broadcast_channel/constants/CHANNEL_NAMES";
+import { FrontMiddlewareActions } from "../core/broadcast_channel/constants/FRONT_MIDDLEWARE_ACTIONS";
+import type { PostMessageParamAddAccounts } from "../core/broadcast_channel/front_middleware_channel";
 import { add_accounts, type AccountEntity } from "../core/indexdb/accounts/add_accounts";
 import { delete_accounts } from "../core/indexdb/accounts/delete_accounts";
-import { get_accounts } from "../core/indexdb/accounts/get_accounts";
+import { get_accounts, type Account } from "../core/indexdb/accounts/get_accounts";
+import { login } from "../core/indexdb/accounts/login";
+import { put_accounts, type AccountEntityPut } from "../core/indexdb/accounts/put_accounts";
+import { back_store } from "./back_store";
 import { EVENT_TYPES, PATHS } from "./constant";
 
 type IdRequest = string | number;
@@ -30,11 +35,22 @@ export type DeleteAccountsPayload = {
   };
 }
 
-export type GetAccountsPayload = {
-  path: typeof PATHS['GET_ACCOUNTS'];
+export type PutAccountsPayload = {
+  path: typeof PATHS['PUT_ACCOUNTS'];
+  body: {
+    list: AccountEntityPut[];
+  };
+}
+
+export type LoginPayload = {
+  path: typeof PATHS['LOGIN'];
   body: {
     pass: string;
   };
+}
+
+export type GetAccountsPayload = {
+  path: typeof PATHS['GET_ACCOUNTS'];
 }
 
 export type ResultByPath = {
@@ -44,10 +60,12 @@ export type ResultByPath = {
 export type BackMiddlewarePayload = Extract<
   GetAccountsPayload
   |DeleteAccountsPayload
+  |PutAccountsPayload
   |AddAccountsPayload
+  |LoginPayload
 ,{
   path: keyof typeof PATHS;
-  body: any;
+  body?: any;
 }>;
 
 export type BackMiddlewareEvent = {
@@ -58,20 +76,59 @@ export type BackMiddlewareEvent = {
 
 const channel = new BroadcastChannel(CHANNEL_NAMES.FRONT_MIDDLEWARE);
 
+export type AccountDto = Omit<Account, 'pass'>;
+function accountToDto(a: Account): AccountDto {
+  return {
+    namePub: a.namePub,
+    id: a.id,
+    httpServers: a.httpServers,
+    date_created: a.date_created,
+    date_updated: a.date_updated,
+  }
+
+}
+
 export async function backMiddleware(
   props: BackMiddlewareProps
  ): ResultByPath[typeof props['payload']['path']] {
   //console.log('worker-shared',{props});
   
   try {
+    if (props.payload.path === PATHS.LOGIN) {
+      const accounts = await login(props.payload.body.pass);
+      for(let ac of accounts) {
+        back_store.accounts_by_id[ac.id] = ac;
+      }
+      const broadcast_event:PostMessageParamAddAccounts = {
+        action: FrontMiddlewareActions.ADD_ACCOUNTS,
+        data: {
+          list: accounts.map(accountToDto)
+        }
+      }
+      channel.postMessage(broadcast_event);
+      return;
+    }
     if (props.payload.path === PATHS.GET_ACCOUNTS) {
-      return await get_accounts(props.payload.body.pass);
+      await getAccounts();
+      return;
     }
     if (props.payload.path === PATHS.DELETE_ACCOUNTS) {
-      return await delete_accounts(props.payload.body.ids);
+      try {
+        await delete_accounts(props.payload.body.ids);
+        for(let id of props.payload.body.ids) {
+          delete back_store.accounts_by_id[id];
+        }
+      }
+      catch(err) {}
     }
     if (props.payload.path === PATHS.ADD_ACCOUNTS) {
       return await add_accounts(props.payload.body.list);
+    }
+    if (props.payload.path === PATHS.PUT_ACCOUNTS) {
+      await put_accounts(props.payload.body.list);
+
+      await getAccounts();
+      return;
     }
   }
   catch (err) {
@@ -86,4 +143,19 @@ export async function backMiddleware(
  //    channel.postMessage({ action: 'notify', data: 'Hello, tabs!2' });
  //  }, 5000);
  //});
+}
+
+
+async function getAccounts() {
+  const accounts = await get_accounts();
+  for (let ac of accounts) {
+    back_store.accounts_by_id[ac.id] = ac;
+  }
+  const broadcast_event: PostMessageParamAddAccounts = {
+    action: FrontMiddlewareActions.ADD_ACCOUNTS,
+    data: {
+      list: accounts.map(accountToDto)
+    }
+  }
+  channel.postMessage(broadcast_event);
 }

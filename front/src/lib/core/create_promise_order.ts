@@ -5,14 +5,14 @@ const order = create_promise_order();
 console.log(new Date());
 order((res) => {
   setTimeout(() => {
-    console.log('1_Ok');
+    console.log('1_Ok');// первым выполнится
     res();
     console.log(new Date());
   }, 2000)
 });
 order((res) => {
   setTimeout(() => {
-    console.log('2_Ok');
+    console.log('2_Ok');// вторым выполнится
     console.log(new Date());
     res();
   }, 1000)
