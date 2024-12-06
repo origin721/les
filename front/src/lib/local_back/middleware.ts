@@ -8,6 +8,7 @@ import { login } from "../core/indexdb/accounts/login";
 import { put_accounts, type AccountEntityPut } from "../core/indexdb/accounts/put_accounts";
 import { back_store } from "./back_store";
 import { EVENT_TYPES, PATHS } from "./constant";
+import { accounts_service } from "./modules/accounts_service";
 
 type IdRequest = string | number;
 export type BackMiddlewareProps = {
@@ -74,19 +75,7 @@ export type BackMiddlewareEvent = {
   payload: BackMiddlewarePayload;
 }
 
-const channel = new BroadcastChannel(CHANNEL_NAMES.FRONT_MIDDLEWARE);
 
-export type AccountDto = Omit<Account, 'pass'>;
-function accountToDto(a: Account): AccountDto {
-  return {
-    namePub: a.namePub,
-    id: a.id,
-    httpServers: a.httpServers,
-    date_created: a.date_created,
-    date_updated: a.date_updated,
-  }
-
-}
 
 export async function backMiddleware(
   props: BackMiddlewareProps
@@ -95,40 +84,20 @@ export async function backMiddleware(
   
   try {
     if (props.payload.path === PATHS.LOGIN) {
-      const accounts = await login(props.payload.body.pass);
-      for(let ac of accounts) {
-        back_store.accounts_by_id[ac.id] = ac;
-      }
-      const broadcast_event:PostMessageParamAddAccounts = {
-        action: FrontMiddlewareActions.ADD_ACCOUNTS,
-        data: {
-          list: accounts.map(accountToDto)
-        }
-      }
-      channel.postMessage(broadcast_event);
-      return;
+      return await accounts_service.onLogin(props.payload);
     }
     if (props.payload.path === PATHS.GET_ACCOUNTS) {
-      await getAccounts();
-      return;
+      return await accounts_service.getList();
     }
     if (props.payload.path === PATHS.DELETE_ACCOUNTS) {
-      try {
-        await delete_accounts(props.payload.body.ids);
-        for(let id of props.payload.body.ids) {
-          delete back_store.accounts_by_id[id];
-        }
-      }
-      catch(err) {}
+      return await accounts_service.delete(props.payload.body.ids);
     }
     if (props.payload.path === PATHS.ADD_ACCOUNTS) {
+      // TODO: вынести в сервис
       return await add_accounts(props.payload.body.list);
     }
     if (props.payload.path === PATHS.PUT_ACCOUNTS) {
-      await put_accounts(props.payload.body.list);
-
-      await getAccounts();
-      return;
+      return await accounts_service.put(props.payload.body.list);
     }
   }
   catch (err) {
@@ -136,26 +105,11 @@ export async function backMiddleware(
   }
   
   return null;
- //channel.postMessage({ action: 'notify', data: 'Hello, tabs!1' });
+
  //return new Promise((res, rej) => {
  //  setTimeout(() => {
  //    res({aaa:'vvvv', props});
  //    channel.postMessage({ action: 'notify', data: 'Hello, tabs!2' });
  //  }, 5000);
  //});
-}
-
-
-async function getAccounts() {
-  const accounts = await get_accounts();
-  for (let ac of accounts) {
-    back_store.accounts_by_id[ac.id] = ac;
-  }
-  const broadcast_event: PostMessageParamAddAccounts = {
-    action: FrontMiddlewareActions.ADD_ACCOUNTS,
-    data: {
-      list: accounts.map(accountToDto)
-    }
-  }
-  channel.postMessage(broadcast_event);
 }
