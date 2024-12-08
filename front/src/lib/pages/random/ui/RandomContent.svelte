@@ -2,8 +2,10 @@
   import { writable } from "svelte/store";
   import { copyTextToClipboard, defaultCharRanges, randomByRange } from "../../../core";
   import { Link, ROUTES } from "../../../routing";
+    import { gen_pass } from "../../../core/random/gen_pass";
   const randomString = writable(getNewRandomString());
   function getNewRandomString() {
+    return gen_pass();
     return randomByRange(defaultCharRanges, [40, 60]);
   };
 
