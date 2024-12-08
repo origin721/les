@@ -29,7 +29,7 @@
     {#each Object.values($events_store.rooms) as room}
         <div class="text-cyan-300">
             <Link href={`${ROUTES.CHAT_ROOMS}?${search_params_to_string({
-                [QUERY_PARAMS.ROOM_ID]: room.roomId
+                [QUERY_PARAMS.ROOM_ID]: room.room_id
             })}`}>
                 <h1 class="text-cyan-400">{room.name}</h1>
             </Link>

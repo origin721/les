@@ -1,5 +1,7 @@
 import * as CryptoJS from "crypto-js";
 
+console.log({CryptoJS});
+
 export const AES = {
   encrypt,
   decrypt,
