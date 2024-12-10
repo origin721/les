@@ -50,11 +50,11 @@ function create_events_store() {
   const add_message = (mParams: AddMessageParams) => {
     const messageId = uuidv4();
     store.update((prev) => {
-      let prev_messages = extractMessages({
-        data: prev,
-        roomId: mParams.roomId,
-        messageId: messageId,
-      });
+     //let prev_messages = extractMessages({
+     //  data: prev,
+     //  roomId: mParams.roomId,
+     //  messageId: messageId,
+     //});
       // const room
       // prev_room.push(data);
       const result = {
