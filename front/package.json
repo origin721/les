@@ -24,6 +24,7 @@
     "vite": "^5.1.0"
   },
   "dependencies": {
+    "@noble/post-quantum": "^0.2.1",
     "crypto-js": "^4.2.0",
     "openpgp": "^5.11.2",
     "uuid": "^11.0.3"
