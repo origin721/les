@@ -2,19 +2,21 @@ import { onMount } from "svelte";
 // import {worker} from './worker/worker';
 import { createAppSharedWorker } from './shared_worker/create_app_shared_worker';
 import { v4 as uuidv4 } from 'uuid';
-import { create_my_events } from "./create_my_events";
+//import { create_my_events } from "./create_my_events";
 import { shared_worker_store } from "./shared_worker/shared_worker_store";
 import { broadcast_middleware } from "./broadcast_middleware";
 import { getRandomInRange } from "../core/random/getRandomInRange";
 import { generateRandomString } from "../core/random/generateRandomString";
 import { gen_pass } from "../core/random/gen_pass";
+import { sse_connect } from "../api/sse/create_sse";
 
 export const appProcessesMount = () => {
 
     onMount(() => {
         //console.log(uuidv4());
         createAppSharedWorker();
-        create_my_events();
+        //create_my_events();
+        sse_connect();
     
         broadcast_middleware();
 

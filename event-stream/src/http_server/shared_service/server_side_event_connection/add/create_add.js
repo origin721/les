@@ -50,6 +50,8 @@ function add_core(p) {
     .connection_ref
     .connection_by_id[new_connection_item.connection_id] = new_connection_item;
 
+    new_connection_item.send_json({hi:'ok'})
+
 
   /**
    * @type AddCoreResult

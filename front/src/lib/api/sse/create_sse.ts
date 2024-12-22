@@ -1,12 +1,19 @@
 import { create_safe_result } from "../../core/validation/create_safe_result";
 
-export const create_my_events = () => {
+type CreateMyEventsProps = {
+  url: string;
+}
+
+export const sse_connect = (
+  p: CreateMyEventsProps,
+) => {
   // Создаем новый объект EventSource и указываем URL для подключения
   const eventSource = new EventSource("http://localhost:8000/events");
 
   // Обрабатываем события, когда сервер отправляет данные
   eventSource.onmessage = function (event) {
     const eventData = event.data;
+    console.log('sse: ', {eventData})
     // main_middleware(eventData);
     // console.log({list_connected});
 
