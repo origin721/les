@@ -11,7 +11,8 @@
   "license": "proprietarn",
   "type": "commonjs",
   "dependencies": {
-    "openpgp": "^5.11.2",
+    "@noble/post-quantum": "^0.2.1",
+    "openpgp": "^6.0.1",
     "uuid": "^10.0.0"
   }
 }
