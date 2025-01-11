@@ -1,7 +1,5 @@
 // @ts-check
-import sodium from 'libsodium-wrappers';
-import { uint8ArrayToString } from '../../uint8ArrayToString.js';
-
+import { sodium } from '../../../libs/index.js';
 
 export async function generate_keys_ed25519() {
   await sodium.ready;

@@ -10,7 +10,7 @@ import { verify_sign_ed25519 } from './verify_sign_ed25519.js';
 Function.apply.apply(async () => {
   const keypair1 = await generate_keys_ed25519();
 
-  const message = 'hello curve25519';
+  const message = 'hello ed25519';
 
   const signature = await sign_ed25519({
     privateKey: keypair1.privateKey,

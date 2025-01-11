@@ -27,4 +27,4 @@ back/target
 back/dist
 
 event-stream/node_modules
-event-stream/.secret
+event-stream/.appLocalStorage
