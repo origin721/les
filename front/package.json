@@ -24,8 +24,7 @@
     "vite": "^5.1.0"
   },
   "dependencies": {
-    "crypto-js": "^4.2.0",
-    "openpgp": "^5.11.2",
+    "libsodium-wrappers": "^0.7.15",
     "uuid": "^11.0.3"
   }
 }

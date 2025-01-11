@@ -1,6 +1,5 @@
 // @ts-check
 const http = require('http');
-const openpgp = require('openpgp');
 const { post_middleware } = require('./post/middleware');
 const { create_event_socket } = require('./create_event_socket');
 const {shared_service} = require('./shared_service');

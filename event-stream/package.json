@@ -4,15 +4,13 @@
   "description": "```sh node ./src/app.js ```",
   "main": "src/app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node --test",
     "start": "node src/app.js"
   },
   "author": "",
   "license": "proprietarn",
-  "type": "commonjs",
   "dependencies": {
-    "@noble/post-quantum": "^0.2.1",
-    "openpgp": "^6.0.1",
+    "libsodium-wrappers": "^0.7.15",
     "uuid": "^10.0.0"
   }
 }

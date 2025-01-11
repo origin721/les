@@ -5,7 +5,7 @@ module.exports = {
   generate_random_string,
 };
 
-//console.log('Сгенерированная строка:', generate_random_string());
+console.log('Сгенерированная строка:', generate_random_string());
 
 function generate_random_string({
   chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_-+=<>?/:;,.[]{}|`~'\"\\",
