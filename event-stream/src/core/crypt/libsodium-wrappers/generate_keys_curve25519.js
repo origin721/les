@@ -3,7 +3,7 @@ import sodium from 'libsodium-wrappers';
 import { uint8ArrayToString } from '../../uint8ArrayToString.js';
 
 
-export async function generate_keys() {
+export async function generate_keys_curve25519() {
   await sodium.ready;
 
   const keypair = sodium.crypto_box_keypair();

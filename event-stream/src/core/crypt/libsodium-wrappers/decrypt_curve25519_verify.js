@@ -8,6 +8,9 @@ import { uint8ArrayToString } from '../../uint8ArrayToString.js';
  * @prop {string|Uint8Array} senderPublicKey
  * @prop {string|Uint8Array} cipherText
  * @prop {string|Uint8Array} nonce
+ * @prop {boolean} [isDisableDebugger]
+ * Выключет сообщения о ошибках например при 
+ * брутфорсе можно отключать что бы не сыпались ошибки
  */
 /**
  * @param {Props} param0 
@@ -17,6 +20,7 @@ export async function decrypt_curve25519_verify({
   senderPublicKey,
   cipherText,
   nonce,
+  isDisableDebugger,
 }) {
   try {
     await sodium.ready;
@@ -48,7 +52,7 @@ export async function decrypt_curve25519_verify({
     return uint8ArrayToString(decryptedMessage);
   }
   catch (err) {
-    console.error(err);
+    if(!isDisableDebugger) console.error(err);
     return null;
   }
 }

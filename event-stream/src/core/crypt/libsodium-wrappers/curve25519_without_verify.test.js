@@ -3,17 +3,17 @@ import assert from 'assert'; // Встроенный модуль для про�
 
 import { decrypt_curve25519 } from "./decrypt_curve25519.js";
 import { encrypt_curve25519 } from "./encrypt_curve25519.js";
-import { generate_keys } from "./generate_keys.js";
+import { generate_keys_curve25519 } from "./generate_keys_curve25519.js";
 
 
 
 Function.apply.apply(async () => {
-  const keypair1 = await generate_keys();
+  const receiverKeyPair = await generate_keys_curve25519();
 
   const message = 'hello curve25519';
 
   const cipherText = await encrypt_curve25519({
-    receiverPublicKey: keypair1.publicKey,
+    receiverPublicKey: receiverKeyPair.publicKey,
     message,
   })
 
@@ -25,9 +25,19 @@ Function.apply.apply(async () => {
 
   const decryptedMessage = await decrypt_curve25519({
     cipherText,
-    receiverPrivateKey: keypair1.privateKey,
-    receiverPublicKey: keypair1.publicKey,
+    receiverPrivateKey: receiverKeyPair.privateKey,
+    receiverPublicKey: receiverKeyPair.publicKey,
   });
 
   assert.deepStrictEqual(decryptedMessage, message, 'Сообщение должно расшифроваться и быть идентичным');
+
+  const keyPairNew = await generate_keys_curve25519();
+
+  const decryptedMessageErr = await decrypt_curve25519({
+    cipherText,
+    receiverPrivateKey: keyPairNew.privateKey,
+    receiverPublicKey: keyPairNew.publicKey,
+  });
+
+  assert.deepStrictEqual(decryptedMessageErr, null, 'Сообщение не должно расшифроваться');
 })

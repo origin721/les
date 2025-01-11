@@ -1,11 +1,11 @@
 {
   "name": "event-stream",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "```sh node ./src/app.js ```",
   "main": "src/app.js",
   "scripts": {
-    "test": "node --test",
-    "start": "node src/app.js"
+    "test": "node --experimental-strip-types --test",
+    "start": "node --experimental-strip-types src/app.js"
   },
   "author": "",
   "license": "proprietarn",
