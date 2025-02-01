@@ -30,7 +30,6 @@ async function generateText(prompt) {
 generateText('Привет, как дела?');
 
 export const appProcessesMount = () => {
-
     onMount(() => {
         //console.log(uuidv4());
         createAppSharedWorker();
