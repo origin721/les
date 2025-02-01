@@ -6,6 +6,7 @@ export {
   encrypt_curve25519_verify,
   encrypt_curve25519,
   generate_keys_curve25519,
+  generate_keys_curve25519_from_password,
   generate_keys_ed25519,
   sign_ed25519,
   verify_sign_ed25519,
