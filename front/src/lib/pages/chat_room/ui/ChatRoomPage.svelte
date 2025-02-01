@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   import { events_store } from "../../../processes/create_my_events/events_store";
 
   import { Link, ROUTES } from "../../../routing";
@@ -6,13 +8,13 @@
   import { routingStore } from "../../../routing/stores";
   import Chat from "./Chat.svelte";
 
-  let room: ReturnType<typeof events_store.get_room_by_id> = null;
-  $: {
+  let room: ReturnType<typeof events_store.get_room_by_id> = $state(null);
+  run(() => {
     $events_store;
     room = events_store.get_room_by_id(
       $routingStore.queryParams.get(QUERY_PARAMS.ROOM_ID)!
     );
-  }
+  });
 </script>
 
 <h1 class="text-cyan-400 text-lg">Chat</h1>

@@ -1,4 +1,4 @@
-import { AES } from "../../../crypt";
+//import { AES } from "../../../crypt";
 import { gen_pass } from "../../random/gen_pass";
 import { uuidv4 } from "../../uuid";
 import { indexdb_wrapper } from "../indexdb_wrapper";
@@ -23,12 +23,15 @@ export function add_accounts(new_list: AccountEntity[]) {
       // Добавляем запись
       for (let item of new_list) {
         const newId = uuidv4();
-        const newData = AES.encrypt(JSON.stringify({
+        // TODO: нужно шифровать
+        const newData = //AES.encrypt(
+          JSON.stringify({
           ...item,
           id: newId,
           _pass: gen_pass(),
           date_created: new Date(),
-        }), item.pass);
+        });
+        //item.pass);
         store.add({ id: newId, data: newData });
       }
 

@@ -4,13 +4,17 @@
     import type { HttpServerParam } from "../../../core/indexdb/accounts/add_accounts";
     import { uuidv4 } from "../../../core/uuid";
 
-    export let fieldHttpServers: Writable<HttpServerParam[]>;
+  interface Props {
+    fieldHttpServers: Writable<HttpServerParam[]>;
+  }
+
+  let { fieldHttpServers }: Props = $props();
 
 </script>
 
 
 <div class="flex flex-col">
-  <button on:click={(e) => {
+  <button onclick={(e) => {
     submit_stop(e);
     
     fieldHttpServers.update((prev) => {
@@ -29,7 +33,7 @@
     <label class="flex-col flex">
       <input
         value={httpParam.url}
-        on:input={(e) => {
+        oninput={(e) => {
           fieldHttpServers.update((prev) => {
             return [
               ...prev.slice(0, index),
@@ -44,7 +48,7 @@
         }}
       />
     </label>
-    <button on:click={(e) => {
+    <button onclick={(e) => {
       submit_stop(e);
       
         fieldHttpServers.update(prev => {
@@ -55,7 +59,7 @@
         })
     }}>delete</button>
     <label>активность <input checked={httpParam.isActive}
-      on:click={(e) => {
+      onclick={(e) => {
         fieldHttpServers.update(prev => {
             return [
               ...prev.slice(0, index),

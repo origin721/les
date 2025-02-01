@@ -22,7 +22,7 @@
     <Link href={ROUTES.ACCOUNTS}>Назад</Link>
 {/if}
 
-<form on:submit={submit} class="flex justify-center h-[100%] flex-col items-center" data-widget-name="AuthPage">
+<form onsubmit={submit} class="flex justify-center h-[100%] flex-col items-center" data-widget-name="AuthPage">
     <!-- <label class={labelClass}>
         <span class="block">login</span>
         <input class={inputClass} type="text">

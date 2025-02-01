@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   import { writable } from "svelte/store";
   import { Link, ROUTES } from "../../../routing";
   import { FieldHttpServers } from "../../../widgets";
@@ -9,7 +11,7 @@
   import { PATHS } from "../../../local_back";
 
   const fieldHttpServers = writable([]);
-  $: idParam = $routingStore.queryParams.get(SEARCH_PARAMS_KEYS.ID);
+  let idParam = $derived($routingStore.queryParams.get(SEARCH_PARAMS_KEYS.ID));
 
   function submit(e) {
     e.preventDefault();
@@ -28,15 +30,17 @@
     }
   }
 
-  $: if (idParam && $appAuthStore.byId[idParam]) {
-    fieldHttpServers.set($appAuthStore.byId[idParam].httpServers || []);
-  }
+  run(() => {
+    if (idParam && $appAuthStore.byId[idParam]) {
+      fieldHttpServers.set($appAuthStore.byId[idParam].httpServers || []);
+    }
+  });
 </script>
 
 <div data-widget-name="AccountsScreen">
   <div><Link href={ROUTES.ACCOUNTS}>Назад</Link></div>
   <form
-    on:submit={submit}
+    onsubmit={submit}
     class="flex justify-center h-[100%] flex-col items-center"
   >
     <FieldHttpServers {fieldHttpServers} />

@@ -19,8 +19,8 @@
     <li>
       <Link href={ROUTES.HOME}>Назад</Link>
     </li>
-    <li><button on:click={() => randomString.set(getNewRandomString())}>regen</button></li>
-    <li><button on:click={handleClip}>clip</button></li>
+    <li><button onclick={() => randomString.set(getNewRandomString())}>regen</button></li>
+    <li><button onclick={handleClip}>clip</button></li>
     <li>{$randomString}</li>
 </ul>
 </div>

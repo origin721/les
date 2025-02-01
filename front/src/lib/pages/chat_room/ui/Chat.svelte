@@ -24,17 +24,21 @@
     });
   }
 
-  export let room: RoomData;
-  //   $: console.log("listMessages: ", Object.values(room.messages));
+  interface Props {
+    room: RoomData; //   $: console.log("listMessages: ", Object.values(room.messages));
+  }
+
+  let { room }: Props = $props();
+  
 </script>
 
 <Link className="text-yellow-500" href={ROUTES.CHAT_ROOMS}>
   <p>back</p>
 </Link>
 
-<textarea class="bg-blue-900 text-blue-200" bind:value={$messageTextField} />
+<textarea class="bg-blue-900 text-blue-200" bind:value={$messageTextField}></textarea>
 <button
-  on:click={() => {
+  onclick={() => {
     events_store.add_message({
       roomId: room.room_id,
       message: $messageTextField,
@@ -46,7 +50,7 @@
   send message
 </button>
 
-<button on:click={handle_send_message}> send </button>
+<button onclick={handle_send_message}> send </button>
 <div>
   <h1 class="text-2xl text-cyan-400">{room.name}</h1>
   <div>

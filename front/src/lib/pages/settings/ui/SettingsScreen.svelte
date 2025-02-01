@@ -12,7 +12,7 @@
             <Link href={ROUTES.HOME}>Назад</Link>
         </li>
         <li>
-            <button on:click={clearAllLocalStorage}>onClearLocalStorage</button>
+            <button onclick={clearAllLocalStorage}>onClearLocalStorage</button>
         </li>
     </ul>
 </div>

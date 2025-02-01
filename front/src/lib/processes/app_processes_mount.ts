@@ -10,12 +10,12 @@ import { generateRandomString } from "../core/random/generateRandomString";
 import { gen_pass } from "../core/random/gen_pass";
 import { sse_connect } from "../api/sse/create_sse";
 // Есть способ через webasembly
-import { RWKV } from 'rwkv';
+//import { RWKV } from 'rwkv';
 
 // Инициализируем RWKV с моделью
-const model = new RWKV({
-  modelPath: '/RWKV-4-Pile-430M-20220808-8066.pth', // Укажите путь к модели
-});
+// const model = new RWKV({
+//   modelPath: '/RWKV-4-Pile-430M-20220808-8066.pth', // Укажите путь к модели
+// });
 
 // Функция генерации текста
 async function generateText(prompt) {

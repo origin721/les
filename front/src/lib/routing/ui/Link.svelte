@@ -2,8 +2,13 @@
   import { routingStore } from "../stores";
 
 
-    export let href: undefined|string = undefined;
-    export let className: string = "";
+  interface Props {
+    href?: undefined|string;
+    className?: string;
+    children?: import('svelte').Snippet;
+  }
+
+  let { href = undefined, className = "", children }: Props = $props();
 
     function handleClick(event) {
         event.preventDefault();
@@ -13,4 +18,4 @@
 </script>
 
 
-<a href={href} on:click={handleClick} class={className}><slot/></a>
+<a href={href} onclick={handleClick} class={className}>{@render children?.()}</a>

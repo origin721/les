@@ -22,10 +22,10 @@
 
 <Link href={ROUTES.CHAT_ROOMS}>back</Link>
 
-<form on:submit={submit_stop}>
+<form onsubmit={submit_stop}>
   <label>
     <span>Имя комнаты</span>
     <input placeholder={defaultRoomName} bind:value={$name_field} />
   </label>
-  <button type="submit" on:click={handleSubmit}>Создать</button>
+  <button type="submit" onclick={handleSubmit}>Создать</button>
 </form>

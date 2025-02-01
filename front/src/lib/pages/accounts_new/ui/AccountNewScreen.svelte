@@ -2,7 +2,7 @@
   import { writable } from "svelte/store";
   import { Link, ROUTES } from "../../../routing";
   import { appAuthStore } from "../../../stores";
-  import { openpgp } from "../../../crypt";
+  //import { openpgp } from "../../../crypt";
   import { onMount } from "svelte";
   import { routingStore } from "../../../routing/stores";
   import { submit_stop } from "../../../svelte-default";
@@ -40,15 +40,15 @@
     return;
 
     // TODO: Добавить loading
-    openpgp
-      .generateKey(authSecret)
-      .then((secrets) => {
-        console.log({ secrets });
-        if (!secrets) return;
+   //openpgp
+   //  .generateKey(authSecret)
+   //  .then((secrets) => {
+   //    console.log({ secrets });
+   //    if (!secrets) return;
 
-        // appPassStore.add(secrets);
-      })
-      .catch((err) => alert("Err 14211233"));
+   //    // appPassStore.add(secrets);
+   //  })
+   //  .catch((err) => alert("Err 14211233"));
 
     // const un = appPassStore.subscribe((val) => {
     //   console.log({ val });
@@ -63,7 +63,7 @@
 <div><Link href={ROUTES.ACCOUNTS}>Назад</Link></div>
 
 <form
-  on:submit={submit}
+  onsubmit={submit}
   class="flex justify-center h-[100%] flex-col items-center"
   data-widget-name="AuthPage"
 >

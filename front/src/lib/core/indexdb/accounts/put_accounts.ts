@@ -1,4 +1,4 @@
-import { AES } from "../../../crypt";
+//import { AES } from "../../../crypt";
 import { back_store } from "../../../local_back/back_store";
 import { uuidv4 } from "../../uuid";
 import { indexdb_wrapper } from "../indexdb_wrapper";
@@ -20,11 +20,14 @@ export function put_accounts(new_list: AccountEntityPut[]) {
       const store = transaction.objectStore("accounts");
       // Добавляем запись
       for (let item of new_list) {
-        const newData = AES.encrypt(JSON.stringify({
+        // TODO: нужно шифровать
+        const newData = //AES.encrypt(
+          JSON.stringify({
           ...item,
           date_updated: new Date(),
           pass: back_store.accounts_by_id[item.id].pass,
-        }), back_store.accounts_by_id[item.id].pass);
+        });
+        //back_store.accounts_by_id[item.id].pass);
         store.put({ id: item.id, data: newData });
       }
 
