@@ -59,7 +59,7 @@ function events_post_middleware_validation(body) {
         message: ".path required",
       });
     }
-    if (_v.err_messages.length) _v.is_ok = true;
+    if (!_v.err_messages.length) _v.is_ok = true;
   } catch (err) {
     console.error("POST: ", { body, _v });
   }

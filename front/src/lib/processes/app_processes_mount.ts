@@ -27,7 +27,7 @@ async function generateText(prompt) {
 }
 
 // Пример вызова
-generateText('Привет, как дела?');
+//generateText('Привет, как дела?');
 
 export const appProcessesMount = () => {
     onMount(() => {

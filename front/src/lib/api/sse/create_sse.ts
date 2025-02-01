@@ -19,7 +19,7 @@ export const sse_connect = (
 
     // console.log(eventData);
     // Выводим полученные данные на страницу
-    //  document.getElementById('events').innerHTML += `<p>${eventData}</p>`;
+    //  documentmodel.getElementById('events').innerHTML += `<p>${eventData}</p>`;
   };
 
   // Обрабатываем ошибки

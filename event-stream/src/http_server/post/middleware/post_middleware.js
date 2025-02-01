@@ -27,7 +27,8 @@ export function post_middleware({http_params: http_params, shared_service}) {
 
     events_post_middleware({
       body: JSON.parse(_body),
-      http_params: http_params,shared_service
+      http_params,
+      shared_service,
     });
   }).catch(err => {
     http_params.res.writeHead(500);
