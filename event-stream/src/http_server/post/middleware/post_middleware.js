@@ -1,12 +1,9 @@
 // @ts-check
 
-const { get_request_body } = require("../../../core");
-const { events_post_middleware } = require("./events_post_middleware");
-
-// @ts-check
-module.exports = {
-  post_middleware,
-}
+import { get_request_body } from "../../../core/get_request_body.js";
+import { get_back_keys } from "../../../core/crypt/get_back_keys.js";
+import { decrypt_curve25519 } from "../../../core/crypt/libsodium-wrappers/decrypt_curve25519.js";
+import { events_post_middleware } from "./events_post_middleware.js";
 
 /**
  * @typedef {import('./types/PostMiddleware')} PostMiddleware
@@ -17,10 +14,19 @@ module.exports = {
  * 
  * @param {PostMiddleware} httpParams 
  */
-function post_middleware({http_params: http_params, shared_service}) {
-  return get_request_body(http_params.req).then((body) => {
+export function post_middleware({http_params: http_params, shared_service}) {
+  return get_request_body(http_params.req).then(async (body) => {
+    const secret_config = await get_back_keys();
+    const _body = await decrypt_curve25519({
+      receiverPrivateKey: secret_config.privateKeyCurve25519,
+      cipherText: body,
+      receiverPublicKey: secret_config.publicKeyCurve25519,
+    });
+
+    if(_body === null) throw new Error('Body не удалось расшифровать');
+
     events_post_middleware({
-      body,
+      body: JSON.parse(_body),
       http_params: http_params,shared_service
     });
   }).catch(err => {

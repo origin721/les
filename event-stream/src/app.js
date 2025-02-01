@@ -1,6 +1,6 @@
 // @ts-check
 
-const { create_http_server } = require("./http_server");
+import { create_http_server } from "./http_server/index.js";
 
 main();
 
