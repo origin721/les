@@ -1,5 +1,5 @@
 // @ts-check
-import { sodium } from '../../../libs/index.js';
+import { sodium } from '../../../libs/sodium.js';
 
 export async function generate_keys_ed25519() {
   await sodium.ready;

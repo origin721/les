@@ -1,4 +1,5 @@
 //import { AES } from "../../../crypt";
+import { decrypt_curve25519_from_pass } from "../../../crypt";
 import { back_store } from "../../../local_back/back_store";
 import { indexdb_wrapper } from "../indexdb_wrapper";
 import type { HttpServerParam } from "./add_accounts";
@@ -19,7 +20,7 @@ export function login(
 
         const request = store.openCursor();
         const result: Account[] = []
-        request.onsuccess = function (event) {
+        request.onsuccess = async function (event) {
           const cursor = event.target.result;
           if (cursor) {
             if (!found && cursor.value.id === targetId) {
@@ -27,12 +28,14 @@ export function login(
             }
             if (found) {
               try {
-                const decrData = JSON.parse(
-                  // TODO: нужно дешефровать
-                  //AES.decrypt(
-                    cursor.value.data,
-                    //pass)
-                );
+                const _item = await decrypt_curve25519_from_pass({
+                  pass,
+                  cipherText: cursor.value.data,
+                });
+                const decrData = !_item
+                  ? null
+                  : JSON.parse(_item);
+
                 if (decrData)
                   result.push(decrData);
               }
