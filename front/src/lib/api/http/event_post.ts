@@ -31,7 +31,9 @@ export const PATHS_POST_EVENTS = {
   response_ok: 'response_ok',
 } as const;
 
-export function event_post<T>(params: EventPostParams): Promise<T> {
+export function event_post<T>(
+  params: EventPostParams,
+): Promise<T> {
   const _body: EventPostParamsDto = {
     path: params.path,
     payload: params.payload,

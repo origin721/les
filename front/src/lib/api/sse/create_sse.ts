@@ -1,11 +1,18 @@
 import { create_safe_result } from "../../core/validation/create_safe_result";
+import { generate_keys_curve25519 } from "../../crypt";
 
 type CreateMyEventsProps = {
   url: string;
 }
+type Secure = {
+  pubKey: string;
+  privKey: string;
+}
+
 
 export const sse_connect = (
   p: CreateMyEventsProps,
+  secureParam: Secure,
 ) => {
   // Создаем новый объект EventSource и указываем URL для подключения
   const eventSource = new EventSource("http://localhost:8000/events");
@@ -38,6 +45,12 @@ export const sse_connect = (
     // }
   };
 };
+
+async function connect() {
+  const keys = await generate_keys_curve25519();
+
+
+}
 
 function validation() {
   const _v = create_safe_result();

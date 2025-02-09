@@ -12,7 +12,9 @@ module.exports = { registration }
  * param {import("./types/RegistrationParams")} params
  * @returns {void}
  */
-function registration({ http_params, body, shared_service }) {
+function registration({ http_params, body: _body, shared_service }) {
+  /** @type {import('./types/RegistrationRequest')} */
+  const body = _body;
   const _v = validation(body);
   if (!_v.is_ok) {
     http_params.res.writeHead(400);
@@ -49,25 +51,27 @@ function validation(body) {
         type: ERROR_TYPES.INVALID_PARAMS,
         message: `.path ${PATHS_POST.server_event_registration} !== ${body.path}`
       })
+      console.error(_v.err_messages.at(-1));
     };
-    if (typeof body.body.connection_id !== 'string') {
-      _v.err_messages.push({
-        type: ERROR_TYPES.INVALID_PARAMS,
-        message: '.connection_id обязательный'
-      })
-    };
+   //if (typeof body.body.connection_id !== 'string') {
+   //  _v.err_messages.push({
+   //    type: ERROR_TYPES.INVALID_PARAMS,
+   //    message: '.connection_id обязательный'
+   //  })
+   //  console.error(_v.err_messages.at(-1));
+   //};
     if (typeof body.body.pub_key_client !== 'string') {
       _v.err_messages.push({
         type: ERROR_TYPES.INVALID_PARAMS,
         message: '.pub_key_client обязательный'
       })
+      console.error(_v.err_messages.at(-1));
     };
 
     if (!_v.err_messages.length) _v.is_ok = true;
   }
   catch (err) {
     console.error(__filename, err);
-
   }
   console.log('Ошибка регистрации: ', _v);
   return _v;

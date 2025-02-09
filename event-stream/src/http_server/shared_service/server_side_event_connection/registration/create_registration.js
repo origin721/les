@@ -79,6 +79,7 @@ function validation({ params, connection_ref }) {
         type: ERROR_TYPES.INVALID_PARAMS,
         message: '.client_id не строка'
       })
+      console.error(_v.err_messages.at(-1));
       return _v;
     }
     if (typeof params.connection_id !== 'string') {
@@ -86,6 +87,7 @@ function validation({ params, connection_ref }) {
         type: ERROR_TYPES.INVALID_PARAMS,
         message: '.session_id не строка'
       })
+      console.error(_v.err_messages.at(-1));
       return _v;
     }
 
@@ -95,14 +97,16 @@ function validation({ params, connection_ref }) {
       _v.err_messages.push({
         type: ERROR_TYPES.INVALID_PARAMS,
         message: 'Клиент не найден'
-      })
+      });
+      console.error(_v.err_messages.at(-1));
       return _v;
     }
     if (sse_session.pub_key_client !== null) {
       _v.err_messages.push({
         type: ERROR_TYPES.INVALID_PARAMS,
         message: 'Клиент уже зарегестрирован'
-      })
+      });
+      console.error(_v.err_messages.at(-1));
       return _v;
     }
 

@@ -38,7 +38,12 @@ function create_event_socket({ http_params, shared_service }) {
     // Так же создать таймер на удаление сущьности регистрации
     // delete app_ref.clients_session_by_id[new_client_id]
     // ensureResOk();
-    shared_service.remove_client_by_id(session);
+    try {
+      shared_service.remove_client_by_id(session);
+    }
+    catch(err) {
+      console.error(err, 'не удалилось соединение');
+    }
     http_params.res.end();
   });
 }
