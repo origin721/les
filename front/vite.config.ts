@@ -12,5 +12,12 @@ export default defineConfig({
         // rewrite: (path) => path.replace(/^\/events/, ''), // Убирает /api из пути
       }
     }
-  }
+  },
+ ///build: {//sharedWorkerFix
+ ///  rollupOptions: {
+ ///    output: {
+ ///      inlineDynamicImports: false, // НЕ должно быть true!
+ ///    }
+ ///  }
+ ///}
 })
