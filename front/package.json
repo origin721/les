@@ -11,17 +11,17 @@
     "ncu": "npx npm-check-updates"
   },
   "devDependencies": {
-    "@sveltejs/vite-plugin-svelte": "^4.0.4",
+    "@sveltejs/vite-plugin-svelte": "^5.0.3",
     "@tsconfig/svelte": "^5.0.4",
     "autoprefixer": "^10.4.20",
     "express": "^4.21.2",
-    "postcss": "^8.4.49",
+    "postcss": "^8.5.2",
     "svelte": "^5.20.0",
     "svelte-check": "^4.1.4",
     "tailwindcss": "^3.4.15",
     "tslib": "^2.8.1",
     "typescript": "^5.7.3",
-    "vite": "^5.4.14"
+    "vite": "^6.1.0"
   },
   "dependencies": {
     "libsodium-wrappers": "^0.7.15",
