@@ -13,11 +13,11 @@ export default defineConfig({
       }
     }
   },
- ///build: {//sharedWorkerFix
- ///  rollupOptions: {
- ///    output: {
- ///      inlineDynamicImports: false, // НЕ должно быть true!
- ///    }
- ///  }
- ///}
+ // build: {
+ //  rollupOptions: {
+ //    output: {
+ //      assetFileNames: 'assets/[name]-[hash][extname]', // Для правильного именования файлов
+ //    },
+ //  },
+ //},
 })

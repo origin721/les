@@ -4,11 +4,15 @@ import {
   type BackMiddlewareProps
 } from "../../local_back/middleware";
 import { shared_worker_store } from "./shared_worker_store";
+import SharedWorkerConstructor from './process/sharedWorker.js?sharedworker';
 
 export async function createAppSharedWorker() {
-  const workerUrl = new URL('./process/sharedWorker.js', import.meta.url);
+  await sleep(3000);
+  //const workerUrl = new URL('./process/sharedWorker.js', import.meta.url);
   // Создаем общий воркер
-  const sharedWorker = new SharedWorker(workerUrl, { type: 'module' });
+  //const sharedWorker = new SharedWorker(workerUrl, { type: 'module' });
+  //const sharedWorker = new SharedWorker(workerUrl, { type: 'module' });
+  const sharedWorker = new SharedWorkerConstructor({ type: 'module' });
 
   // Отправляем сообщение общему воркеру
   sharedWorker.port.postMessage({ message: "Hello, shared worker!" });
