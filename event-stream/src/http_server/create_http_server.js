@@ -15,6 +15,7 @@ function create_http_server(p) {
      * @type {HttpControllerParams}
      */
     const http_params = { req, res };
+    
     if (req.url === '/events' && req.method === 'POST') {
       post_middleware({http_params, shared_service});
     }
@@ -35,5 +36,5 @@ function create_http_server(p) {
 
 
 /**
- * @typedef {import('../types/HttpControllerParams')} HttpControllerParams
+ * @typedef {import('../types/HttpControllerParams.js')} HttpControllerParams
  */

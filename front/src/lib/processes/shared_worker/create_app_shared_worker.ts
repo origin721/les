@@ -1,4 +1,4 @@
-import { toJson } from "../../core";
+import { sleep, toJson } from "../../core";
 import { 
   type BackMiddlewareEvent,
   type BackMiddlewareProps
@@ -7,6 +7,8 @@ import { shared_worker_store } from "./shared_worker_store";
 
 export async function createAppSharedWorker() {
   const workerUrl = new URL('./process/sharedWorker.js', import.meta.url);
+  console.log({workerUrl});
+  await sleep(1000);
   // const worker = new WorkerModule.default();
   // Создаем общий воркер
   const sharedWorker = new SharedWorker(workerUrl, { type: 'module' });

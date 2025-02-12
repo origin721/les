@@ -1,5 +1,8 @@
 // @ts-check
 
+import { encrypt_curve25519, encrypt_curve25519_verify } from "../../crypt";
+import { PATHS_POST } from "./constants";
+
 type EventPostParamsPayload = {
   message: string;
   room_ids: string[];
@@ -11,6 +14,14 @@ type EventPostParamsPayload = {
 type ResponseOkPayload = {
   response_id: string;
 }
+
+type EventServerEventRegistration = {
+  path: typeof PATHS_POST['server_event_registration'];
+  body: {
+    connection_id: string;
+  }
+}
+PATHS_POST.server_event_registration;
 
 type EventPostParams = {
   payload: ResponseOkPayload|EventPostParamsPayload;
@@ -25,22 +36,62 @@ type EventPostParamsDto = {
   payload: EventPostParams["payload"];
 };
 
+
+
 export const PATHS_POST_EVENTS = {
   create_room: "create_room",
   ping: "ping",
   response_ok: 'response_ok',
 } as const;
 
-export function event_post<T>(
-  params: EventPostParams,
+/**
+ * Для регистрации не нужн приватный ключ для подписи
+ * Нужен публичный ключ подписи
+ */
+type SecureParamReg = {
+  pub_key_curve25519_client: string,
+  priv_key_curve25519_client: string,
+  pub_key_ed25519_client: string,
+  pub_key_curve25519_server: string,
+};
+/**
+ * Обычный запрос нужен ключ подписи
+ */
+type SecureParamComm = {
+  pub_key_curve25519_client: string,
+  priv_key_curve25519_client: string,
+  priv_key_ed25519_client: string,
+  pub_key_curve25519_server: string,
+};
+type SecureParam = SecureParamComm|SecureParamReg;
+
+export async function event_post<T>(
+  params: EventServerEventRegistration,
+  secureParam: SecureParam,
 ): Promise<T> {
-  const _body: EventPostParamsDto = {
-    path: params.path,
-    payload: params.payload,
-    params: {
-      created_date: new Date(),
-    },
-  };
+  let _body;
+  if(params.path === PATHS_POST.server_event_registration) {
+    const _secureParam: SecureParamReg = secureParam as any;
+    _body = await encrypt_curve25519({
+      receiverPublicKey: _secureParam.pub_key_curve25519_server,
+      message: JSON.stringify({
+        path: params.path,
+        body: await encrypt_curve25519_verify({
+          receiverPublicKey: _secureParam.pub_key_curve25519_server,
+          senderPrivateKey: _secureParam.priv_key_curve25519_client,
+          message: JSON.stringify({
+            connection_id: params.body.connection_id,
+            pub_key_ed25519_client: _secureParam.pub_key_ed25519_client,
+            created_date: new Date(),
+          })
+        }),
+        pub_key_curve25519_client: _secureParam.pub_key_curve25519_client,
+      })
+    });
+  }
+  else {
+    console.error('не существует метода');
+  }
 
   return fetch("/events", {
     method: "POST",

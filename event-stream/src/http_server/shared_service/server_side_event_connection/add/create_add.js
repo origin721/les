@@ -50,7 +50,9 @@ function add_core(p) {
     .connection_ref
     .connection_by_id[new_connection_item.connection_id] = new_connection_item;
 
-    new_connection_item.send_json({hi:'ok'})
+    new_connection_item.send_json({
+      connection_id: new_connection_item.connection_id,
+    });
 
 
   /**
@@ -80,7 +82,7 @@ function validation(params) {
        */
       const _err = {
         type: ERROR_TYPES.INVALID_PARAMS,
-        message: '.connection_id обязательный для добавления'
+        message: '.connection_id обязательный для добавления',
       }
       result.err_messages.push(_err);
     };

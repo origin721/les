@@ -4,6 +4,7 @@ import { get_request_body } from "../../../core/get_request_body.js";
 import { get_back_keys } from "../../../core/crypt/get_back_keys.js";
 import { decrypt_curve25519 } from "../../../core/crypt/libsodium-wrappers/decrypt_curve25519.js";
 import { events_post_middleware } from "./events_post_middleware.js";
+import { jsonParse } from "../../../core/jsonParse.js";
 
 /**
  * @typedef {import('./types/PostMiddleware')} PostMiddleware
@@ -26,7 +27,7 @@ export function post_middleware({http_params: http_params, shared_service}) {
     if(_body === null) throw new Error('Body не удалось расшифровать');
 
     events_post_middleware({
-      body: JSON.parse(_body),
+      body: jsonParse(_body),
       http_params,
       shared_service,
     });

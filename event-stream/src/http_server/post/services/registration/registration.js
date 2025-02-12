@@ -9,7 +9,6 @@ module.exports = { registration }
 
 /**
  * @param {import("../../middleware/types/EventsPostMiddlewareParams")} params
- * param {import("./types/RegistrationParams")} params
  * @returns {void}
  */
 function registration({ http_params, body: _body, shared_service }) {
