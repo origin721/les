@@ -5,7 +5,7 @@ const { PATHS_POST } = require("../../constants");
 
 /**
  * @typedef {Object} CommonEventReq
- * @prop {'server_event_registration'} path
+ * @prop {typeof PATHS_POST['server_event_registration']} path
  * 
  * @typedef {CommonEventReq|(
  * import('../services/registration/types/RegistrationRequest')

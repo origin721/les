@@ -15,10 +15,11 @@ import { check_ed25519_valid_keys } from './libsodium-wrappers/check_ed25519_val
 
 let cache_result = null;
 
-get_back_keys().then(console.log);
+//get_back_keys().then(console.log);
 
 /**
  * Если ключей не было то создаёт и добавляет в секреты, если были то читает
+ * @returns {Promise<SecretConfig>}
  */
 export async function get_back_keys() {
     if(cache_result) {

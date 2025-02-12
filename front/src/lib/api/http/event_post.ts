@@ -72,18 +72,20 @@ export async function event_post<T>(
   let _body;
   if(params.path === PATHS_POST.server_event_registration) {
     const _secureParam: SecureParamReg = secureParam as any;
+    const payload = JSON.stringify({
+      connection_id: params.body.connection_id,
+      pub_key_ed25519_client: _secureParam.pub_key_ed25519_client,
+      created_date: new Date(),
+    })
     _body = await encrypt_curve25519({
       receiverPublicKey: _secureParam.pub_key_curve25519_server,
       message: JSON.stringify({
         path: params.path,
-        body: await encrypt_curve25519_verify({
+        body: payload,
+        bodySignature: await encrypt_curve25519_verify({
           receiverPublicKey: _secureParam.pub_key_curve25519_server,
           senderPrivateKey: _secureParam.priv_key_curve25519_client,
-          message: JSON.stringify({
-            connection_id: params.body.connection_id,
-            pub_key_ed25519_client: _secureParam.pub_key_ed25519_client,
-            created_date: new Date(),
-          })
+          message: payload
         }),
         pub_key_curve25519_client: _secureParam.pub_key_curve25519_client,
       })
