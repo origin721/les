@@ -100,7 +100,7 @@ export async function event_post<T>(
     headers: {
       "Content-Type": "application/json", // Указываем, что отправляем JSON
     },
-    body: JSON.stringify(_body), // Преобразуем объект в строку JSON
+    body: _body,
   })
     .then((response) => response.json()) // Обрабатываем ответ как JSON
     .then((result) => {

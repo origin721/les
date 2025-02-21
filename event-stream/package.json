@@ -6,12 +6,13 @@
   "scripts": {
     "test": "node --experimental-strip-types --test",
     "start": "node src/app.js",
-    "ts": "node --experimental-strip-types src/app.js"
+    "ts": "node --experimental-strip-types src/app.js",
+    "debug": "node --inspect ./src/app.js"
   },
   "author": "",
   "license": "proprietarn",
   "dependencies": {
     "libsodium-wrappers": "^0.7.15",
-    "uuid": "^10.0.0"
+    "uuid": "^11.1.0"
   }
 }

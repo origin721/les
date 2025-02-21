@@ -70,8 +70,6 @@ export const sse_connect = (
 
 async function connect() {
   const keys = await generate_keys_curve25519();
-
-
 }
 
 function validation() {
