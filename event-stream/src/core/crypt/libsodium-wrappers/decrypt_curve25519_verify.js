@@ -3,6 +3,7 @@ import { sodium } from '../../../libs/sodium.js';
 import { uint8ArrayToString } from '../../uint8ArrayToString.js';
 
 /**
+ * Расшифровать
  * @typedef {Object} Props
  * @prop {string|Uint8Array} receiverPrivateKey
  * @prop {string|Uint8Array} senderPublicKey

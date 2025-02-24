@@ -1,5 +1,6 @@
 // @ts-check
 
+import { uuidv4 } from "../../core/uuid";
 import { encrypt_curve25519, encrypt_curve25519_verify } from "../../crypt";
 import { PATHS_POST } from "./constants";
 
@@ -73,16 +74,19 @@ export async function event_post<T>(
   if(params.path === PATHS_POST.server_event_registration) {
     const _secureParam: SecureParamReg = secureParam as any;
     const payload = JSON.stringify({
-      connection_id: params.body.connection_id,
-      pub_key_ed25519_client: _secureParam.pub_key_ed25519_client,
-      created_date: new Date(),
+      path: params.path,
+      body: {
+        connection_id: params.body.connection_id,
+        pub_key_ed25519_client: _secureParam.pub_key_ed25519_client,
+        uuid: uuidv4(),
+        created_date: new Date(),
+      }
     })
     _body = await encrypt_curve25519({
       receiverPublicKey: _secureParam.pub_key_curve25519_server,
       message: JSON.stringify({
-        path: params.path,
-        body: payload,
-        bodySignature: await encrypt_curve25519_verify({
+        //payload: payload,
+        payloadSignature: await encrypt_curve25519_verify({
           receiverPublicKey: _secureParam.pub_key_curve25519_server,
           senderPrivateKey: _secureParam.priv_key_curve25519_client,
           message: payload

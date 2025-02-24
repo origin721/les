@@ -12,27 +12,21 @@ module.exports = { registration }
 
 /**
  * @param {import("../../middleware/types/EventsPostMiddlewareParams")} params
+ * @param {PayloadRequest} payloadRequest
  * @returns {Promise<void>}
  */
-async function registration({ http_params, body: _body, shared_service }) {
+async function registration(
+  {
+    http_params,
+    shared_service,
+    body,
+  },
+  payloadRequest,
+) {
   try {
-    /** @type {import('./types/RegistrationRequest')} */
-    const body = _body;
     const backKeys = await get_back_keys();
-    /**
-     * @type {import('./types/RegistrationBody')}
-     */
-    const encryptedBody = JSON.parse(
-      await decrypt_curve25519_verify({
-        receiverPrivateKey: backKeys.privateKeyCurve25519,
-        senderPublicKey: body.pub_key_curve25519_client,
-        cipherText: body.body.cipherText,
-        nonce: body.body.nonce,
-      })
-    );
-    // TODO: недописал регистрацию
-    console.log({encryptedBody});
-    const _v = validation(encryptedBody);
+
+    const _v = validation(payloadRequest);
     if (!_v.is_ok) {
       http_params.res.writeHead(400);
       http_params.res.write("invalid params");
@@ -41,8 +35,8 @@ async function registration({ http_params, body: _body, shared_service }) {
     }
 
     const service_v = shared_service.registration({
-      connection_id: body.body.connection_id,
-      pub_key_client: body.body.pub_key_client,
+      connection_id: payloadRequest.body.connection_id,
+      pub_key_client: body.pub_key_curve25519_client,
     });
 
     if(service_v.is_ok) {
@@ -62,17 +56,15 @@ async function registration({ http_params, body: _body, shared_service }) {
 
 /**
  * 
- * @param {import('./types/RegistrationRequest')} body 
- * @param {import('./types/RegistrationBody')} bodyEncrtypted
- * @returns 
+ * @param {PayloadRequest} payloadRequest
  */
-function validation(body) {
+function validation(payloadRequest) {
   const _v = create_empty_entity();
   try {
-    if (body.path === PATHS_POST.server_event_registration) {
+    if (payloadRequest.path !== PATHS_POST.server_event_registration) {
       _v.err_messages.push({
         type: ERROR_TYPES.INVALID_PARAMS,
-        message: `.path ${PATHS_POST.server_event_registration} !== ${body.path}`
+        message: `.path ${PATHS_POST.server_event_registration} !== ${payloadRequest.path}`
       })
       console.error(_v.err_messages.at(-1));
     };
@@ -83,7 +75,21 @@ function validation(body) {
    //  })
    //  console.error(_v.err_messages.at(-1));
    //};
-    if (typeof body.body.pub_key_client !== 'string') {
+    if (typeof payloadRequest.body.pub_key_ed25519_client !== 'string') {
+      _v.err_messages.push({
+        type: ERROR_TYPES.INVALID_PARAMS,
+        message: '.pub_key_client обязательный'
+      })
+      console.error(_v.err_messages.at(-1));
+    };
+    if (typeof payloadRequest.body.connection_id !== 'string') {
+      _v.err_messages.push({
+        type: ERROR_TYPES.INVALID_PARAMS,
+        message: '.pub_key_client обязательный'
+      })
+      console.error(_v.err_messages.at(-1));
+    };
+    if (payloadRequest.body.created_date.valueOf() > (Date.now() + 7000)) {
       _v.err_messages.push({
         type: ERROR_TYPES.INVALID_PARAMS,
         message: '.pub_key_client обязательный'
@@ -99,3 +105,14 @@ function validation(body) {
   console.log('Ошибка регистрации: ', _v);
   return _v;
 }
+
+
+/**
+ * @typedef {Object} PayloadRequest
+ * @prop {string} path
+ * @prop {Object} body
+ * @prop {string} body.connection_id
+ * @prop {string} body.pub_key_ed25519_client
+ * @prop {string} body.uuid
+ * @prop {Date} body.created_date
+ */

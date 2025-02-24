@@ -1,10 +1,13 @@
 // @ts-check
 const { PATHS_POST } = require("../../constants");
-const { check_validation } = require("../../../core");
+const { check_validation, jsonParse } = require("../../../core");
 const { create_empty_entity, ERROR_TYPES } = require("../../../validation");
 const { registration } = require("../services");
 const { shared_service } = require("../../shared_service/");
 const { send_by_pub_key } = require("../services/send_by_pub_key/send_by_pub_key");
+const { encrypt_curve25519_verify } = require("../../../core/crypt/libsodium-wrappers/encrypt_curve25519_verify");
+const { decrypt_curve25519_verify } = require("../../../core/crypt/libsodium-wrappers/decrypt_curve25519_verify");
+const { get_back_keys } = require("../../../core/crypt/get_back_keys");
 
 module.exports = { events_post_middleware };
 
@@ -15,7 +18,7 @@ module.exports = { events_post_middleware };
 /**
  * @param {import('./types/EventsPostMiddlewareParams')} params
  */
-function events_post_middleware(params) {
+async function events_post_middleware(params) {
   const _v = events_post_middleware_validation(params.body);
   const { http_params } = params;
 
@@ -26,13 +29,36 @@ function events_post_middleware(params) {
     return;
   }
 
-  switch (params.body.path) {
+  const secret_config = await get_back_keys();
+
+  /**
+   * @type {import("../services/registration/registration").PayloadRequest}
+   */
+  const payloadRequest = jsonParse(await decrypt_curve25519_verify({
+    receiverPrivateKey: secret_config.privateKeyCurve25519,
+    senderPublicKey: params.body.pub_key_curve25519_client,
+    cipherText: params.body.payloadSignature.cipherText, 
+    nonce: params.body.payloadSignature.nonce,
+  }));
+
+  const payload_v = payload_validation(payloadRequest);
+
+  if (!payload_v.is_ok) {
+    http_params.res.writeHead(400);
+    http_params.res.end("400 Bad Request");
+
+    return;
+  }
+
+
+  switch (payloadRequest.path) {
     case PATHS_POST.server_event_registration: {
-      registration(params);
+      registration(params, payloadRequest);
       break;
     }
     case PATHS_POST.send_by_pub_key: {
-      send_by_pub_key(http_params, shared_service, params.body);
+      // TODO: код не правильный потом дописать
+      send_by_pub_key(http_params, shared_service, payloadRequest);
       break;
     }
     // case PATHS_POST.create_room: {
@@ -50,13 +76,43 @@ function events_post_middleware(params) {
   return;
 }
 
+function payload_validation(payload) {
+  const _v = create_empty_entity();
+  try {
+    if (typeof payload.path !== "string") {
+      _v.err_messages.push({
+        type: ERROR_TYPES.INVALID_PARAMS,
+        message: "payload.path required",
+      });
+    }
+    if (!_v.err_messages.length) _v.is_ok = true;
+  } catch (err) {
+    console.error("POST: ", { payload, _v });
+  }
+
+  return _v;
+}
+
+
 function events_post_middleware_validation(body) {
   const _v = create_empty_entity();
   try {
-    if (typeof body.path !== "string") {
+    if (typeof body.payloadSignature.nonce !== "string") {
       _v.err_messages.push({
         type: ERROR_TYPES.INVALID_PARAMS,
-        message: ".path required",
+        message: ".payloadSignature.nonce required",
+      });
+    }
+    if (typeof body.payloadSignature.cipherText !== "string") {
+      _v.err_messages.push({
+        type: ERROR_TYPES.INVALID_PARAMS,
+        message: ".payloadSignature.cipherText required",
+      });
+    }
+    if (typeof body.pub_key_curve25519_client !== "string") {
+      _v.err_messages.push({
+        type: ERROR_TYPES.INVALID_PARAMS,
+        message: ".pub_key_curve25519_client required",
       });
     }
     if (!_v.err_messages.length) _v.is_ok = true;

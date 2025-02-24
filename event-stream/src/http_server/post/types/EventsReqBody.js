@@ -7,9 +7,11 @@ const { PATHS_POST } = require("../../constants");
  * @typedef {Object} CommonEventReq
  * @prop {typeof PATHS_POST['server_event_registration']} path
  * 
- * @typedef {CommonEventReq|(
- * import('../services/registration/types/RegistrationRequest')
- * )} EventsReqBody
+ * @typedef {Object} EventsReqBody
+ * @prop {string} pub_key_curve25519_client
+ * @prop {Object} payloadSignature
+ * @prop {string} payloadSignature.cipherText
+ * @prop {string} payloadSignature.nonce
  */
 
 
