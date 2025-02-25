@@ -1,3 +1,4 @@
+import { jsonParse } from "../../core";
 import { create_safe_result } from "../../core/validation/create_safe_result";
 import { generate_keys_curve25519, generate_keys_ed25519 } from "../../crypt";
 import { PATHS_POST } from "../http/constants";
@@ -11,6 +12,8 @@ type Secure = {
   privKey: string;
 }
 
+const c25519 = await generate_keys_curve25519();
+const e25519 = await generate_keys_ed25519();
 
 export const sse_connect = (
   p: CreateMyEventsProps,
@@ -25,16 +28,17 @@ export const sse_connect = (
     console.log('sse: ', {eventData});
     // main_middleware(eventData);
     // console.log({list_connected});
+    const responseData = jsonParse(eventData);
 
     (async() => {
-      const c25519 = await generate_keys_curve25519();
-      const e25519 = await generate_keys_ed25519();
 
-      event_post(
+      if(!responseData?.connection_id) return;
+
+      await event_post(
         {
           path: PATHS_POST.server_event_registration,
           body: {
-            connection_id: 'sdfsdf',
+            connection_id: responseData.connection_id,
           }
         },
         {
@@ -44,6 +48,38 @@ export const sse_connect = (
           pub_key_curve25519_server: 'fcd046db8e4dd8248259c12db085dee9e5b8854c9e49894e3d4f48cf1853c16a',
         }
       );
+
+      await event_post(
+        {
+          path: PATHS_POST.send_by_pub_key,
+          body: {
+            pub_key_client: c25519.publicKey,
+            message: 'hi!!))))'
+          }
+        },
+        {
+          pub_key_curve25519_client: c25519.publicKey,
+          priv_key_curve25519_client: c25519.privateKey,
+          pub_key_ed25519_client: e25519.publicKey,
+          pub_key_curve25519_server: 'fcd046db8e4dd8248259c12db085dee9e5b8854c9e49894e3d4f48cf1853c16a',
+        }
+      )
+
+      await event_post(
+        {
+          path: PATHS_POST.send_by_pub_key,
+          body: {
+            pub_key_client: c25519.publicKey,
+            message: 'hi))'
+          }
+        },
+        {
+          pub_key_curve25519_client: c25519.publicKey,
+          priv_key_curve25519_client: c25519.privateKey,
+          pub_key_ed25519_client: e25519.publicKey,
+          pub_key_curve25519_server: 'fcd046db8e4dd8248259c12db085dee9e5b8854c9e49894e3d4f48cf1853c16a',
+        }
+      )
     })();
 
     // console.log(eventData);

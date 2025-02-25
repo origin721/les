@@ -16,13 +16,23 @@ type ResponseOkPayload = {
   response_id: string;
 }
 
-type EventServerEventRegistration = {
+type EventServerSendByPubKey = {
+  path: typeof PATHS_POST['send_by_pub_key'];
+  body: {
+    pub_key_client: string;
+    message: string;
+  }
+}
+type EventServerRegistration = {
   path: typeof PATHS_POST['server_event_registration'];
   body: {
     connection_id: string;
   }
 }
-PATHS_POST.server_event_registration;
+
+type EventServerParam = 
+  | EventServerSendByPubKey
+  | EventServerRegistration;
 
 type EventPostParams = {
   payload: ResponseOkPayload|EventPostParamsPayload;
@@ -67,7 +77,7 @@ type SecureParamComm = {
 type SecureParam = SecureParamComm|SecureParamReg;
 
 export async function event_post<T>(
-  params: EventServerEventRegistration,
+  params: EventServerParam,
   secureParam: SecureParam,
 ): Promise<T> {
   let _body;
@@ -75,17 +85,16 @@ export async function event_post<T>(
     const _secureParam: SecureParamReg = secureParam as any;
     const payload = JSON.stringify({
       path: params.path,
+      uuid: uuidv4(),
+      created_date: new Date(),
       body: {
         connection_id: params.body.connection_id,
         pub_key_ed25519_client: _secureParam.pub_key_ed25519_client,
-        uuid: uuidv4(),
-        created_date: new Date(),
       }
     })
     _body = await encrypt_curve25519({
       receiverPublicKey: _secureParam.pub_key_curve25519_server,
       message: JSON.stringify({
-        //payload: payload,
         payloadSignature: await encrypt_curve25519_verify({
           receiverPublicKey: _secureParam.pub_key_curve25519_server,
           senderPrivateKey: _secureParam.priv_key_curve25519_client,
@@ -94,10 +103,30 @@ export async function event_post<T>(
         pub_key_curve25519_client: _secureParam.pub_key_curve25519_client,
       })
     });
+   }
+   else if(params.path === PATHS_POST.send_by_pub_key) {
+    const _secureParam: SecureParamReg = secureParam as any;
+    const payload = JSON.stringify({
+      path: params.path,
+      uuid: uuidv4(),
+      created_date: new Date(),
+      body: params.body,
+    })
+    _body = await encrypt_curve25519({
+      receiverPublicKey: _secureParam.pub_key_curve25519_server,
+      message: JSON.stringify({
+        payloadSignature: await encrypt_curve25519_verify({
+          receiverPublicKey: _secureParam.pub_key_curve25519_server,
+          senderPrivateKey: _secureParam.priv_key_curve25519_client,
+          message: payload
+        }),
+        pub_key_curve25519_client: _secureParam.pub_key_curve25519_client,
+      })
+    })
   }
   else {
-    console.error('не существует метода');
-  }
+     console.error('не существует метода');
+   }
 
   return fetch("/events", {
     method: "POST",
@@ -106,13 +135,13 @@ export async function event_post<T>(
     },
     body: _body,
   })
-    .then((response) => response.json()) // Обрабатываем ответ как JSON
-    .then((result) => {
-      console.log("Success:", result);
-      return result;
-    })
-    .catch((error) => {
-      console.error("Error:", error);
-      return null;
-    });
+//   .then((response) => response.json()) // Обрабатываем ответ как JSON
+//   .then((result) => {
+//     console.log("Success:", result);
+//     return result;
+//   })
+//   .catch((error) => {
+//     console.error("Error:", error);
+//     return null;
+//   });
 }

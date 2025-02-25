@@ -41,7 +41,7 @@ async function registration(
 
     if(service_v.is_ok) {
       http_params.res.writeHead(201);
-      http_params.res.write("");
+      http_params.res.write("ok");
     }
     else {
       http_params.res.writeHead(400);
@@ -78,21 +78,14 @@ function validation(payloadRequest) {
     if (typeof payloadRequest.body.pub_key_ed25519_client !== 'string') {
       _v.err_messages.push({
         type: ERROR_TYPES.INVALID_PARAMS,
-        message: '.pub_key_client обязательный'
+        message: '.pub_key_ed25519_client обязательный'
       })
       console.error(_v.err_messages.at(-1));
     };
     if (typeof payloadRequest.body.connection_id !== 'string') {
       _v.err_messages.push({
         type: ERROR_TYPES.INVALID_PARAMS,
-        message: '.pub_key_client обязательный'
-      })
-      console.error(_v.err_messages.at(-1));
-    };
-    if (payloadRequest.body.created_date.valueOf() > (Date.now() + 7000)) {
-      _v.err_messages.push({
-        type: ERROR_TYPES.INVALID_PARAMS,
-        message: '.pub_key_client обязательный'
+        message: '.connection_id обязательный'
       })
       console.error(_v.err_messages.at(-1));
     };
@@ -110,9 +103,9 @@ function validation(payloadRequest) {
 /**
  * @typedef {Object} PayloadRequest
  * @prop {string} path
+ * @prop {string} uuid
+ * @prop {Date} created_date
  * @prop {Object} body
  * @prop {string} body.connection_id
  * @prop {string} body.pub_key_ed25519_client
- * @prop {string} body.uuid
- * @prop {Date} body.created_date
  */

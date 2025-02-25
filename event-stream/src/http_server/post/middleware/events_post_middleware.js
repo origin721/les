@@ -32,7 +32,7 @@ async function events_post_middleware(params) {
   const secret_config = await get_back_keys();
 
   /**
-   * @type {import("../services/registration/registration").PayloadRequest}
+   * @type {PayloadRequest}
    */
   const payloadRequest = jsonParse(await decrypt_curve25519_verify({
     receiverPrivateKey: secret_config.privateKeyCurve25519,
@@ -85,6 +85,13 @@ function payload_validation(payload) {
         message: "payload.path required",
       });
     }
+    if (payload.created_date.valueOf() > (Date.now() + 7000)) {
+      _v.err_messages.push({
+        type: ERROR_TYPES.INVALID_PARAMS,
+        message: '.pub_key_client обязательный'
+      })
+      console.error(_v.err_messages.at(-1));
+    };
     if (!_v.err_messages.length) _v.is_ok = true;
   } catch (err) {
     console.error("POST: ", { payload, _v });
@@ -122,3 +129,11 @@ function events_post_middleware_validation(body) {
 
   return _v;
 }
+
+
+/**
+ * @typedef {(
+ * import("../services/registration/registration").PayloadRequest
+ * |import('../services/send_by_pub_key/send_by_pub_key').PayloadRequest
+ * )} PayloadRequest
+ */
