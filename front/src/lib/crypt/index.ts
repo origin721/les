@@ -1,6 +1,8 @@
 //export { AES } from "./AES";
 //export { openpgp } from "./openpgp";
 
+export {ADMIN_KEYS} from './constants';
+
 export {
   decrypt_curve25519,
   decrypt_curve25519_verify,

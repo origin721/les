@@ -4,19 +4,8 @@ import { uuidv4 } from "../../core/uuid";
 import { encrypt_curve25519, encrypt_curve25519_verify } from "../../crypt";
 import { PATHS_POST } from "./constants";
 
-type EventPostParamsPayload = {
-  message: string;
-  room_ids: string[];
-  registration_id: string;
-  owner_id: string;
-  user_ids: string[];
-};
 
-type ResponseOkPayload = {
-  response_id: string;
-}
-
-type EventServerSendByPubKey = {
+export type EventServerSendByPubKey = {
   path: typeof PATHS_POST['send_by_pub_key'];
   body: {
     pub_key_client: string;
@@ -33,19 +22,6 @@ type EventServerRegistration = {
 type EventServerParam = 
   | EventServerSendByPubKey
   | EventServerRegistration;
-
-type EventPostParams = {
-  payload: ResponseOkPayload|EventPostParamsPayload;
-  path: keyof typeof PATHS_POST_EVENTS;
-};
-
-type EventPostParamsDto = {
-  path: keyof typeof PATHS_POST_EVENTS;
-  params: {
-    created_date: Date;
-  };
-  payload: EventPostParams["payload"];
-};
 
 
 
@@ -74,7 +50,7 @@ type SecureParamComm = {
   priv_key_ed25519_client: string,
   pub_key_curve25519_server: string,
 };
-type SecureParam = SecureParamComm|SecureParamReg;
+export type SecureParam = SecureParamComm|SecureParamReg;
 
 export async function event_post<T>(
   params: EventServerParam,

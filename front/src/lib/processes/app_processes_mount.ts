@@ -8,7 +8,8 @@ import { broadcast_middleware } from "./broadcast_middleware";
 import { getRandomInRange } from "../core/random/getRandomInRange";
 import { generateRandomString } from "../core/random/generateRandomString";
 import { gen_pass } from "../core/random/gen_pass";
-import { sse_connect } from "../api/sse/create_sse";
+import { create_sse } from "../api/sse/create_sse";
+import { ADMIN_KEYS, generate_keys_curve25519, generate_keys_ed25519 } from "../crypt";
 // Есть способ через webasembly
 //import { RWKV } from 'rwkv';
 
@@ -29,17 +30,41 @@ async function generateText(prompt) {
 // Пример вызова
 //generateText('Привет, как дела?');
 
-export const appProcessesMount = () => {
-    onMount(() => {
-        //console.log(uuidv4());
-        createAppSharedWorker();
-        //create_my_events();
-        sse_connect();
-    
-        broadcast_middleware();
+const c25519 = await generate_keys_curve25519();
+const e25519 = await generate_keys_ed25519();
 
-//console.log(getRandomInRange(1, 100)); // Случайное число от 1 до 100
-console.log(gen_pass());
-    });
+export const appProcessesMount = () => {
+  onMount(() => {
+    //console.log(uuidv4());
+    createAppSharedWorker();
+    //create_my_events();
+    const sseCtl = create_sse(
+      {
+        url: "http://localhost:8000/events",
+      },
+      {
+        pub_key_curve25519_client: c25519.publicKey,
+        priv_key_curve25519_client: c25519.privateKey,
+        pub_key_ed25519_client: e25519.publicKey,
+        pub_key_curve25519_server: ADMIN_KEYS.PUB_KEY_CURVE25519_SERVER,
+      },
+    );
+    sseCtl.connect()
+      .then(() => {
+        sseCtl.sendByPubKey({
+          pub_key_client: c25519.publicKey,
+          message: 'hi!dd!))))'
+        });
+        sseCtl.sendByPubKey({
+          pub_key_client: c25519.publicKey,
+          message: 'hi!!))))'
+        });
+      });
+
+    broadcast_middleware();
+
+    //console.log(getRandomInRange(1, 100)); // Случайное число от 1 до 100
+    console.log(gen_pass());
+  });
     // console.log(AES.decrypt(AES.encrypt("asdf", "sdf"), "sdf"));
 };
