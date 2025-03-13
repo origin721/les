@@ -1,9 +1,31 @@
 import { indexdb_order } from "./indexdb_order";
 
+const counterInfo = {
+  open: 0,
+  close: 0,
+  success: 0,
+  error: 0,
+}
+
 export function indexdb_wrapper(
   onChange: (db: IDBDatabase) => Promise<void>,
 ) {
-  const resultPromise = new Promise((res, rej) => {
+  ++counterInfo.open;
+  console.log({counterInfo});
+  const resultPromise = new Promise((_res, _rej) => {
+    const res = (_data: any) => {
+      // TODO: Добавить флаг что бы только при дебаг режиме было это
+      _res(_data);
+      ++counterInfo.close;
+      ++counterInfo.success;
+      console.log({counterInfo});
+    }
+    const rej = (_err: any) => {
+      _rej(_err);
+      ++counterInfo.close;
+      ++counterInfo.error;
+      console.log({counterInfo});
+    }
     indexdb_order(onFinishOrder => {
 
       resultPromise.finally(onFinishOrder);
