@@ -4,7 +4,7 @@
 
   interface Props {
     href?: undefined|string;
-    className?: string;
+    className?: string|string[];
     children?: import('svelte').Snippet;
   }
 
@@ -25,7 +25,10 @@ rel="nofollow" для ненадёжных ссылок
   data-widget-name="Link"
   href={href}
   onclick={handleClick}
-  class={className}
+  class={[
+    className,
+    "text-white"
+  ].flat()}
   rel="noopener noreferrer"
   referrerpolicy="no-referrer"
 >
