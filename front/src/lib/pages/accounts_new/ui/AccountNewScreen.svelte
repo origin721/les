@@ -5,7 +5,7 @@
   //import { openpgp } from "../../../crypt";
   import { onMount } from "svelte";
   import { routingStore } from "../../../routing/stores";
-  import { submit_stop } from "../../../svelte-default";
+  import { submit_stop } from "../../../svelte_default";
   import { uuidv4 } from "../../../core/uuid";
   import type { HttpServerParam } from "../../../core/indexdb/accounts/add_accounts";
     import { FieldHttpServers } from "../../../widgets";

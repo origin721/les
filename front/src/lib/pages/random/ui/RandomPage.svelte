@@ -1,5 +1,5 @@
 <script>
-  import AppHeader from "../../../widgets/app-header/AppHeader.svelte";
+  import AppHeader from "../../../widgets/app_header/AppHeader.svelte";
   import RandomContent from "./RandomContent.svelte";
 
 </script>

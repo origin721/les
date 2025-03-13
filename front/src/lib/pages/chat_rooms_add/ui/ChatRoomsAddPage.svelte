@@ -1,7 +1,7 @@
 <script>
   import { writable } from "svelte/store";
   import { Link, ROUTES } from "../../../routing";
-  import { submit_stop } from "../../../svelte-default";
+  import { submit_stop } from "../../../svelte_default";
   import { events_store } from "../../../processes/create_my_events/events_store";
   import { routingStore } from "../../../routing/stores";
   import { QUERY_PARAMS } from "../../../routing/constants";

@@ -17,5 +17,17 @@
     }
 </script>
 
-
-<a href={href} onclick={handleClick} class={className}>{@render children?.()}</a>
+<!--
+rel="nofollow" для ненадёжных ссылок
+и можно другое почитать про параметры
+-->
+<a
+  data-widget-name="Link"
+  href={href}
+  onclick={handleClick}
+  class={className}
+  rel="noopener noreferrer"
+  referrerpolicy="no-referrer"
+>
+  {@render children?.()}
+</a>

@@ -1,6 +1,6 @@
 <script lang="ts">
     import type { Writable } from "svelte/store";
-    import { submit_stop } from "../../../svelte-default";
+    import { submit_stop } from "../../../svelte_default";
     import type { HttpServerParam } from "../../../core/indexdb/accounts/add_accounts";
     import { uuidv4 } from "../../../core/uuid";
 

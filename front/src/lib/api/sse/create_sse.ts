@@ -1,4 +1,4 @@
-import { deferred, jsonParse } from "../../core";
+import { jsonParse, PromiseWithResolvers } from "../../core";
 import { create_safe_result } from "../../core/validation/create_safe_result";
 import { generate_keys_curve25519, generate_keys_ed25519 } from "../../crypt";
 import { PATHS_POST } from "../http/constants";
@@ -71,7 +71,7 @@ export const create_sse = (
     // Создаем новый объект EventSource и указываем URL для подключения
     const eventSource = new EventSource(p.url);
 
-    const deferredCtl = deferred();
+    const deferred = PromiseWithResolvers();
 
     // Обрабатываем события, когда сервер отправляет данные
     eventSource.onmessage = function (event) {
@@ -101,7 +101,7 @@ export const create_sse = (
         catch (err) {
           _connectedStatus = CONNECTED_STATUSES.DISCONNECTED
           // TODO: написать ошибку с url
-          deferredCtl.reject(err);
+          deferred.reject(err);
           return;
           //throw err;
         }
@@ -118,7 +118,7 @@ export const create_sse = (
 
         _connectedStatus = CONNECTED_STATUSES.CONNECTED;
 
-        deferredCtl.resolve(null);
+        deferred.resolve(null);
 
        //await event_post(
        //  {
@@ -157,7 +157,7 @@ export const create_sse = (
       // }
     };
 
-    return deferredCtl.promise;
+    return deferred.promise;
   }
 
   return result;

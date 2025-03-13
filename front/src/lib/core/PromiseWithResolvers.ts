@@ -1,4 +1,7 @@
 /**
+ * @deprecated2030 появился Promise.withResolvers()
+ * Появилась только в 2024 году так что пока пользуемся этой
+ * 
  * @example Пример использования
  * ```ts
  * const deferredCtl = deferred<number>();
@@ -21,7 +24,7 @@
  * // deferredCtl.reject(new Error("Something went wrong"));
  * ```
  */
-export function deferred<T>(): {
+export function PromiseWithResolvers<T>(): {
   promise: Promise<T>;
   resolve: (value: T | PromiseLike<T>) => void;
   reject: (reason?: any) => void;

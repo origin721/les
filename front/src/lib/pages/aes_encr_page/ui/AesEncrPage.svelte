@@ -1,7 +1,7 @@
 <script>
   import { ROUTES } from "../../../routing";
   import Link from "../../../routing/ui/Link.svelte";
-  import { submit_stop } from "../../../svelte-default";
+  import { submit_stop } from "../../../svelte_default";
 
 
 </script>
