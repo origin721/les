@@ -12,7 +12,7 @@
             <Link href={ROUTES.RANDOM}>Рандом</Link>
         </li>
         <li>
-            <Link href={ROUTES.AEC_ENCR}>AES</Link>
+            <Link href={ROUTES.CURVE_25519}>curve25519</Link>
         </li>
         <li>
             <Link href={ROUTES.CHAT_ROOMS}>Чаты</Link>

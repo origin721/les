@@ -12,7 +12,7 @@ export async function createAppSharedWorker() {
   // Создаем общий воркер
   //const sharedWorker = new SharedWorker(workerUrl, { type: 'module' });
   //const sharedWorker = new SharedWorker(workerUrl, { type: 'module' });
-  const sharedWorker = new SharedWorkerConstructor({ type: 'module' });
+  const sharedWorker = new SharedWorkerConstructor();
 
   // Отправляем сообщение общему воркеру
   sharedWorker.port.postMessage({ message: "Hello, shared worker!" });

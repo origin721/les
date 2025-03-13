@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { get } from "svelte/store";
   import {
     AccountNewPage,
     AccountsPage,
@@ -8,6 +7,7 @@
     Page404,
     SettingsPage,
     RandomPage,
+    Curve25519Page,
   } from "../../pages";
   import AesEncrPage from "../../pages/aes_encr_page/ui/AesEncrPage.svelte";
   import { ChatRoomsPage } from "../../pages/chat_rooms";
@@ -35,10 +35,10 @@
   <AuthPage />
 {:else if $routingStore.pathname === ROUTES.AUTH}
   <AuthPage />
+{:else if $routingStore.pathname === ROUTES.CURVE_25519}
+  <Curve25519Page/>
 {:else if $routingStore.pathname === ROUTES.RANDOM}
   <RandomPage />
-{:else if $routingStore.pathname === ROUTES.AEC_ENCR}
-  <AesEncrPage />
 {:else if $routingStore.pathname === ROUTES.HOME}
   <HomePage />
 {:else if $routingStore.pathname === ROUTES.SETTINGS}
