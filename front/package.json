@@ -25,6 +25,10 @@
     "vite": "^6.2.1"
   },
   "dependencies": {
+    "@chainsafe/libp2p-noise": "^16.0.3",
+    "@chainsafe/libp2p-yamux": "^7.0.1",
+    "@libp2p/tcp": "^10.1.7",
+    "libp2p": "^2.8.1",
     "libsodium-wrappers": "^0.7.15",
     "uuid": "^11.1.0"
   }
