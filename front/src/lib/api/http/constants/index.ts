@@ -1,1 +1,0 @@
-export {PATHS_POST} from '../../../../../../event-stream/src/http_server/constants/PATHS_POST';
