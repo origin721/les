@@ -7,21 +7,32 @@ const counterInfo = {
   error: 0,
 }
 
+const isDebugMode = false;
+
 export function indexdb_wrapper(
   onChange: (db: IDBDatabase) => Promise<void>,
 ) {
-  ++counterInfo.open;
-  console.log({counterInfo});
+  if(!isDebugMode) {
+    ++counterInfo.open;
+    console.log({counterInfo});
+  }
+
   const resultPromise = new Promise((_res, _rej) => {
     const res = (_data: any) => {
       // TODO: Добавить флаг что бы только при дебаг режиме было это
       _res(_data);
+      
+      if(!isDebugMode) return
+
       ++counterInfo.close;
       ++counterInfo.success;
       console.log({counterInfo});
     }
     const rej = (_err: any) => {
       _rej(_err);
+
+      if(!isDebugMode) return
+
       ++counterInfo.close;
       ++counterInfo.error;
       console.log({counterInfo});

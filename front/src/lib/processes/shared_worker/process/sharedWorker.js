@@ -2,18 +2,17 @@ import { toJson } from "../../../core";
 import { EVENT_TYPES } from "../../../local_back/constant";
 import { backMiddleware } from "../../../local_back/middleware";
 
-let counter = 0;
 
 self.onconnect = function (event) {
 
   event.ports.forEach(port => {
     port.onmessage = function (e) {
-      console.log("SharedWorker received:", e.data);
+      //console.log("SharedWorker received:", e.data);
 
       listener(e.data, port);
 
       // Ответ отправляем на порт, связанный с вкладкой
-      port.postMessage((++counter) + "Shared worker response: " + e.data.message);
+      //port.postMessage((++counter) + "Shared worker response: " + e.data.message);
     };
   });
 
