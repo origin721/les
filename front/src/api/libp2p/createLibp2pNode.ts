@@ -1,19 +1,32 @@
-import { createLibp2p } from 'libp2p'
-import { noise } from '@chainsafe/libp2p-noise'
-import { yamux } from '@chainsafe/libp2p-yamux'
-import { webSockets } from '@libp2p/websockets'
+import { createLibp2p } from 'libp2p';
+import { noise } from '@chainsafe/libp2p-noise';
+import { yamux } from '@chainsafe/libp2p-yamux';
+import { webSockets } from '@libp2p/websockets';
+import { webRTC } from '@libp2p/webrtc';
+import * as filters from '@libp2p/websockets/filters';
+import { mdns } from '@libp2p/mdns';
+import { circuitRelayTransport } from '@libp2p/circuit-relay-v2';
 
 
 export const createLibp2pNode = async () => {
   const node = await createLibp2p({
-   //start: false,
-   //addresses: {
-   //  // add a listen address (localhost) to accept TCP connections on a random port
-   //  listen: ['/ip4/127.0.0.1/tcp/8000/ws']
-   //},
-    transports: [webSockets()],
+    start: false,
+    addresses: {
+      // add a listen address (localhost) to accept TCP connections on a random port
+      listen: ['/p2p-circuit', '/webrtc'],
+    },
+    transports: [
+      webSockets(),
+      webRTC(),
+
+      circuitRelayTransport()
+    ],
     connectionEncrypters: [noise()],
-    streamMuxers: [yamux()]
+    streamMuxers: [yamux()],
+   //peerDiscovery: [
+   //  // Для локальных соединений 
+   //  mdns()
+   //],
   })
 
     // start libp2p
