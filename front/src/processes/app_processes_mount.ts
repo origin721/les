@@ -72,7 +72,7 @@ export const appProcessesMount = () => {
     broadcast_middleware();
 
     //console.log(getRandomInRange(1, 100)); // Случайное число от 1 до 100
-    console.log(gen_pass());
+    //console.log(gen_pass());
   });
   // console.log(AES.decrypt(AES.encrypt("asdf", "sdf"), "sdf"));
 };
