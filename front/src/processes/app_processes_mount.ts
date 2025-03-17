@@ -37,7 +37,7 @@ export const appProcessesMount = () => {
     createAppSharedWorker();
     //create_my_events();
 
-    createLibp2pNode();
+    //createLibp2pNode();
 
     Promise.all([
       generate_keys_curve25519(),
