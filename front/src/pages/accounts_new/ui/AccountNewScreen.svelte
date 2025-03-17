@@ -7,7 +7,7 @@
   import { routingStore } from "../../../routing/stores";
   import { submit_stop } from "../../../core/svelte_default";
   import { uuidv4 } from "../../../core/uuid";
-  import type { HttpServerParam } from "../../../core/indexdb/accounts/add_accounts";
+  import type { HttpServerParam } from "../../../indexdb/accounts/add_accounts";
     import { FieldHttpServers } from "../../../widgets";
 
   const labelClass = "mt-3 mb-3";
