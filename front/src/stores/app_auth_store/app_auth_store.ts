@@ -1,8 +1,8 @@
 import { get, writable } from "svelte/store";
-import { type Account } from "../../core/indexdb/accounts/get_accounts";
+import { type Account } from "../../indexdb/accounts/get_accounts";
 import { shared_worker_store } from "../../processes";
 import { PATHS } from "../../local_back";
-import type { AccountEntity } from "../../core/indexdb/accounts/add_accounts";
+import type { AccountEntity } from "../../indexdb/accounts/add_accounts";
 import type { AccountDto } from "../../local_back/middleware";
 
 /**

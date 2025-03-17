@@ -1,11 +1,11 @@
 import { CHANNEL_NAMES } from "../../core/broadcast_channel/constants/CHANNEL_NAMES";
 import { FrontMiddlewareActions } from "../../core/broadcast_channel/constants/FRONT_MIDDLEWARE_ACTIONS";
 import type { PostMessageParamAddAccounts, PostMessageParamDeleteAccounts } from "../../core/broadcast_channel/front_middleware_channel";
-import type { AccountEntity } from "../../core/indexdb/accounts/add_accounts";
-import { delete_accounts } from "../../core/indexdb/accounts/delete_accounts";
-import { get_accounts, type Account } from "../../core/indexdb/accounts/get_accounts";
-import { login } from "../../core/indexdb/accounts/login";
-import { put_accounts, type AccountEntityPut } from "../../core/indexdb/accounts/put_accounts";
+import type { AccountEntity } from "../../indexdb/accounts/add_accounts";
+import { delete_accounts } from "../../indexdb/accounts/delete_accounts";
+import { get_accounts, type Account } from "../../indexdb/accounts/get_accounts";
+import { login } from "../../indexdb/accounts/login";
+import { put_accounts, type AccountEntityPut } from "../../indexdb/accounts/put_accounts";
 import { back_store } from "../back_store";
 import type { LoginPayload } from "../middleware";
 
