@@ -12,7 +12,6 @@ export const createLibp2pNode = async () => {
   const node = await createLibp2p({
     start: false,
     addresses: {
-      // add a listen address (localhost) to accept TCP connections on a random port
       listen: [
         '/p2p-circuit',
         '/webrtc'

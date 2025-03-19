@@ -29,7 +29,7 @@ export async function createAppSharedWorker() {
 
   // Получаем ответ от общего воркера
   sharedWorker.port.onmessage = function (event) {
-    console.log('Received from shared worker:', event.data);
+    //console.log('Received from shared worker:', event.data);
     listener(event.data, promiseResolves);
   };
 
