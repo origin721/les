@@ -12,6 +12,7 @@ import { create_sse } from "../api/sse/create_sse";
 import { ADMIN_KEYS, generate_keys_curve25519, generate_keys_ed25519 } from "../core/crypt";
 //import { createLibp2pNode } from "../api/libp2p/createLibp2pNode";
 import { tmpTest } from "../api/libp2p/tmp";
+import { createLibp2pNode } from "../api/libp2p/createLibp2pNode";
 // Есть способ через webasembly
 //import { RWKV } from 'rwkv';
 
@@ -37,6 +38,7 @@ export const appProcessesMount = () => {
     //console.log(uuidv4());
     createAppSharedWorker();
     //create_my_events();
+    createLibp2pNode();
 
     //tmpTest();
     //createLibp2pNode();
