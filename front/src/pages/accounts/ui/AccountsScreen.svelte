@@ -1,15 +1,10 @@
 <script lang="ts">
-  import { run } from 'svelte/legacy';
-
   import { search_params_to_string } from "../../../core";
   import { Link, ROUTES } from "../../../routing";
   import { appAuthStore } from "../../../stores";
   import { SEARCH_PARAMS_KEYS as SETTINGS_S_P_KEYS } from "../../account_settings/constants/SEARCH_PARAMS_KEYS";
 
   const checkboxStyle = "w-[1rem] h-[1rem] m-[0.5rem]";
-  run(() => {
-    console.log($appAuthStore.byId);
-  });
 </script>
 
 <div data-widget-name="AccountsScreen">

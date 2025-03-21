@@ -8,7 +8,7 @@
   import { submit_stop } from "../../../core/svelte_default";
   import { uuidv4 } from "../../../core/uuid";
   import type { HttpServerParam } from "../../../indexdb/accounts/add_accounts";
-    import { FieldHttpServers } from "../../../widgets";
+  import { FieldHttpServers } from "../../../widgets";
 
   const labelClass = "mt-3 mb-3";
   const inputClass = "text-slate-800 bg-slate-400";

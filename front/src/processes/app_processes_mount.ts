@@ -11,8 +11,8 @@ import { gen_pass } from "../core/random/gen_pass";
 import { create_sse } from "../api/sse/create_sse";
 import { ADMIN_KEYS, generate_keys_curve25519, generate_keys_ed25519 } from "../core/crypt";
 //import { createLibp2pNode } from "../api/libp2p/createLibp2pNode";
-import { tmpTest } from "../api/libp2p/tmp";
-import { createLibp2pNode } from "../api/libp2p/createLibp2pNode";
+//import { tmpTest } from "../api/libp2p/tmp";
+//import { createLibp2pNode } from "../api/libp2p/createLibp2pNode";
 // Есть способ через webasembly
 //import { RWKV } from 'rwkv';
 
@@ -37,8 +37,10 @@ export const appProcessesMount = () => {
   onMount(() => {
     //console.log(uuidv4());
     createAppSharedWorker();
+    broadcast_middleware();
+
     //create_my_events();
-    createLibp2pNode();
+    //createLibp2pNode();
 
     //tmpTest();
     //createLibp2pNode();
@@ -72,8 +74,6 @@ export const appProcessesMount = () => {
 
     });
 
-
-    broadcast_middleware();
 
     //console.log(getRandomInRange(1, 100)); // Случайное число от 1 до 100
     //console.log(gen_pass());

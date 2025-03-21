@@ -12,7 +12,7 @@ const isDebugMode = false;
 export function indexdb_wrapper(
   onChange: (db: IDBDatabase) => Promise<void>,
 ) {
-  if(!isDebugMode) {
+  if(isDebugMode) {
     ++counterInfo.open;
     console.log({counterInfo});
   }
@@ -82,8 +82,8 @@ export function indexdb_wrapper(
 
         db.onversionchange = function () {
           db.close();
-          console.log("База данных устарела, пожалуйста, перезагрузите страницу.");
-          rej();
+          //console.log("База данных устарела, пожалуйста, перезагрузите страницу.");
+          //rej();
         };
 
         // продолжить работу с базой данных, используя объект db

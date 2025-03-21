@@ -81,7 +81,7 @@ export const create_sse = (
       // console.log({list_connected});
       const responseData = jsonParse(eventData);
 
-      console.log({sseMess: responseData});
+      //console.log({sseMess: responseData});
 
       (async () => {
 

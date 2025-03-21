@@ -60,6 +60,13 @@
   }
 </script>
 
+<label>
+  Выберете акаунт
+  <select class="text-slate-800 bg-slate-400">
+    <option value="xxx">hisdoisdf</option>
+    <option value="yyy">11hisdoisdf</option>
+  </select>
+</label>
 
 <label>
   С проверкой подписи
