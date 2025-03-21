@@ -25,17 +25,17 @@
     "vite": "^6.2.2"
   },
   "dependencies": {
-    "@chainsafe/libp2p-noise": "^16.0.3",
+    "@chainsafe/libp2p-noise": "^16.1.0",
     "@chainsafe/libp2p-yamux": "^7.0.1",
     "@libp2p/bootstrap": "^11.0.32",
-    "@libp2p/circuit-relay-v2": "^3.2.7",
-    "@libp2p/identify": "^3.0.26",
-    "@libp2p/kad-dht": "^14.2.14",
-    "@libp2p/mdns": "^11.0.31",
+    "@libp2p/circuit-relay-v2": "^3.2.8",
+    "@libp2p/identify": "^3.0.27",
+    "@libp2p/kad-dht": "^14.2.15",
+    "@libp2p/mdns": "^11.0.32",
     "@libp2p/peer-id-factory": "^4.2.4",
-    "@libp2p/webrtc": "^5.2.8",
-    "@libp2p/websockets": "^9.2.7",
-    "libp2p": "^2.8.1",
+    "@libp2p/webrtc": "^5.2.9",
+    "@libp2p/websockets": "^9.2.8",
+    "libp2p": "^2.8.2",
     "libsodium-wrappers": "^0.7.15",
     "uuid": "^11.1.0"
   }
