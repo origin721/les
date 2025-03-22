@@ -1,12 +1,19 @@
 <script lang="ts">
     import { encrypt_curve25519, encrypt_curve25519_verify, generate_keys_curve25519 } from "../../../core/crypt";
   import { Link, ROUTES } from "../../../routing";
+    import { appAuthStore } from "../../../stores";
   import { btn } from "../../../styles/button";
 
   const myKeys = $state({
     pub:'',
     priv: '',
     loading: false,
+  });
+  const widgetCtl = $state({
+    selectedAccId: null as null|string,
+    clearAcc: () => {
+      widgetCtl.selectedAccId = null;
+    },
   });
 
   const consumerKeys = $state({
@@ -58,14 +65,19 @@
   function clearEncryptedText() {
     encryptedText = '';
   }
+
+
+  console.log({appAuthStore: $appAuthStore});
 </script>
 
 <label>
   Выберете акаунт
-  <select class="text-slate-800 bg-slate-400">
-    <option value="xxx">hisdoisdf</option>
-    <option value="yyy">11hisdoisdf</option>
+  <select bind:value={widgetCtl.selectedAccId} class="text-slate-800 bg-slate-400">
+    {#each Object.values($appAuthStore.byId) as account}
+      <option value={account.id}>{account.namePub} {account.id.slice(0,3)}</option>
+    {/each}
   </select>
+  <button onclick={widgetCtl.clearAcc}>X</button>
 </label>
 
 <label>
