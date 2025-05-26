@@ -1,31 +1,26 @@
-//import { AES } from "../../../crypt";
 import { decrypt_curve25519_from_pass } from "../../core/crypt";
 import { back_store } from "../../local_back/back_store";
 import { indexdb_wrapper } from "../indexdb_wrapper";
-import type { HttpServerParam } from "./add_accounts";
 
-export type Account = {
-  namePub: string;
-  pass: string;
-  id: string;
-  httpServers: HttpServerParam[];
-  date_created: Date;
-  date_updated?: Date;
+export type PageCurveEntity = {
+  account_id: string;
+  curve25519_pub_key: string;
+  curve25519_priv_key: string;
 };
 
-export function get_accounts(
-): Promise<Account[]> {
+export function get_page_curve25519(
+): Promise<PageCurveEntity[]> {
   return new Promise((mRes, rej) => {
     indexdb_wrapper((db) => {
       return new Promise((res, rej) => {
-        const transaction = db.transaction(["accounts"], "readwrite");
-        const store = transaction.objectStore("accounts");
+        const transaction = db.transaction(["page_curve25519"], "readwrite");
+        const store = transaction.objectStore("page_curve25519");
 
         const targetId = 5; // Искомый id
         let found = true;
 
         const request = store.openCursor();
-        const result: Account[] = []
+        const result: PageCurveEntity[] = []
         request.onsuccess = async function (event) {
           const cursor = event.target.result;
           if (cursor) {
@@ -34,7 +29,6 @@ export function get_accounts(
            //}
             if (found) {
               try {
-
                 const passwords = new Set<string>();
                 for(let ac of Object.values(back_store.accounts_by_id)) {
                   passwords.add(ac.pass);
