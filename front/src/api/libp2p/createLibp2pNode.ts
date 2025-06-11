@@ -5,6 +5,7 @@ import { mdns } from '@libp2p/mdns';
 import { kadDHT } from '@libp2p/kad-dht';
 import { gossipsub } from '@chainsafe/libp2p-gossipsub';
 import { yamux } from '@chainsafe/libp2p-yamux';
+import { ping } from '@libp2p/ping';
 
 const node = await createLibp2p({
   addresses: {
@@ -14,7 +15,6 @@ const node = await createLibp2p({
     ],
   },
   transports: [
-    tcp(),
     webSockets()
   ],
   streamMuxers: [yamux()],
@@ -22,6 +22,7 @@ const node = await createLibp2p({
   peerDiscovery: [mdns()],
   services: {
     dht: kadDHT(),
-    pubsub: gossipsub()
+    pubsub: gossipsub(),
+    ping: ping(),
   }
 });
