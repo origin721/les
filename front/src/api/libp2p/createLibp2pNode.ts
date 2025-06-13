@@ -9,12 +9,33 @@ import { bootstrap } from "@libp2p/bootstrap";
 import { identify } from "@libp2p/identify";
 import { webRTC } from '@libp2p/webrtc';
 import { circuitRelayTransport } from '@libp2p/circuit-relay-v2';
+import { createEd25519PeerId } from '@libp2p/peer-id-factory'
+import { peerIdFromString } from '@libp2p/peer-id'
+
 
 export async function connectionLibp2p() {
-  
+ const peerId = await createEd25519PeerId();
+ const peerIdStr = peerId.toString()
+
+ // setLogLevel('error'); // Устанавливаем уровень логирования на 'error', чтобы отключить вывод отладочной информации
+
+
+  //localStorage.setItem('debug', '');
+
+  console.log('New PeerId:', peerIdStr);
+
+  // Десериализация при повторном запуске
+  const restoredPeerId = await peerIdFromString(peerIdStr)
+
+  console.log({restoredPeerId});
+
   const node = await createLibp2p({
     transports: [
-      webSockets(),
+      webSockets({
+       //websocket: {
+       //  
+       //}
+      }),
       webRTC(),
       circuitRelayTransport(),
     ],
@@ -24,10 +45,16 @@ export async function connectionLibp2p() {
       bootstrap({
         list: [
           // IPFS Bootstrap nodes
+          "/dnsaddr/bootstrap.libp2p.io/p2p/QmNnooDu7bfjPFoTZYCg7AmQr5gBMFfSTnH5sD8uq78kKq9AoK",
+          "/dnsaddr/bootstrap.libp2p.io/p2p/QmQCU2Ecstfv8FzDp4E8t8C8XQDdL8c8jD7J9y9qy9Dv3g",
+          // IPFS test?
           "/dnsaddr/bootstrap.libp2p.io/ipfs/QmNnooDu7bfjPFoTZYxMNLWUQJyrVwtbZg5gBMjTezGAJN",
           "/dnsaddr/bootstrap.libp2p.io/ipfs/QmQCU2EcMqAqQPR2i9bChDtGNJchTbq5TbXJJ16u19uLTa",
 
           // Ethereum Bootstrap nodes (example)
+          "/ip4/13.251.106.93/tcp/30303/p2p/16Uiu2HAmJXsLTpD9A1HcX1oV1Yd111111111111111111111",
+          "/ip4/13.251.106.94/tcp/30303/p2p/16Uiu2HAmV6vQWcqj1sQpD7D7D7D7D7D7D7D7D7D7D7D7D7D7",
+          // Ethereum test?
           "/dnsaddr/eth-mainnet.bootstrap.libp2p.io/ipfs/QmXoj2e1mQm6aFL7XQ87zB3RQj3KQ51xirW9JCc72XQpT",
           "/dnsaddr/eth-mainnet.bootstrap.libp2p.io/ipfs/QmYyQocm7U7KdL93FLGRW8UfSXWgKPaxX8jTGKHxQKmA4D",
 
@@ -36,15 +63,17 @@ export async function connectionLibp2p() {
           "/dnsaddr/bootstrap.libp2p.io/ipfs/QmNnooDu7bfjPFoTZYxMNLWUQJyrVwtbZg5gBMjTezGAJN",
 
           // Polkadot & Substrate
-          "/dns4/p2p-1.dotters.network/tcp/30333/ws/p2p/12D3KooWSCrVyhV8UvkuE6Qz5GX734pAH6xLX1X7499toQhgEJXG",
-          "/dns4/p2p-2.dotters.network/tcp/30333/ws/p2p/12D3KooWQnwGADyVK4XffC4RTpM1DgH2KKQx7yHjXqQKZYFqTRX7",
-          "/dns4/p2p-3.dotters.network/tcp/30333/ws/p2p/12D3KooWQXkuK9dMW9NXadzDgS7KxMGqf4NcG9i9SasLL8RN4XjW",
+          "/dns/p2p-relay-0.polkadot.io/tcp/30333/p2p/12D3KooWJvyP3VJvV21ccL6pX16LcD5J3c3Z7v1cD7j1jLjJ96V7",
 
-          // Filecoin
+          // // Filecoin
+          "/ip4/3.228.170.170/tcp/1347/p2p/12D3KooWJZqV129r1gk8qj1JpD7D7D7D7D7D7D7D7D7D7D7D7D7D7",
+          "/ip4/3.228.170.171/tcp/1347/p2p/12D3KooWJZqV129r1gk8qj1JpD7D7D7D7D7D7D7D7D7D7D7D7D7D8",
+          // test?
           "/dns4/bootstrap-0.filecoin.io/tcp/1347/p2p/QmNnooDu7bfjPFoTZYxMNLWUQJyrVwtbZg5gBMjTezGAJN",
           "/dns4/bootstrap-1.filecoin.io/tcp/1347/p2p/QmQCU2EcMqAqQPR2i9bChDtGNJchTbq5TbXJJ16u19uLTa",
           "/dns4/bootstrap-2.filecoin.io/tcp/1347/p2p/QmNnooDu7bfjPFoTZYxMNLWUQJyrVwtbZg5gBMjTezGAJN",
           "/dns4/bootstrap-3.filecoin.io/tcp/1347/p2p/QmQCU2EcMqAqQPR2i9bChDtGNJchTbq5TbXJJ16u19uLTa",
+
         ],
       }),
     ],
@@ -54,11 +83,13 @@ export async function connectionLibp2p() {
       pubsub: gossipsub(),
       ping: ping(),
     },
-    
+   //logger: {
+   //}
   });
 
   node.addEventListener("peer:discovery", (event) => {
     const peerId = event.detail.id;
     console.log(`Discovered new peer: ${peerId.toString()}`);
+    //console.log(`${peerId.toString()}`);
   });
 }
