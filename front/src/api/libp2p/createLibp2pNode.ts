@@ -9,12 +9,13 @@ import { bootstrap } from "@libp2p/bootstrap";
 import { identify } from "@libp2p/identify";
 import { webRTC } from '@libp2p/webrtc';
 import { circuitRelayTransport } from '@libp2p/circuit-relay-v2';
-import { createEd25519PeerId } from '@libp2p/peer-id-factory'
+import { peerIdFromPrivateKey } from '@libp2p/peer-id'
 import { 
   privateKeyFromString,
   recommendedGenerateKeyPair,
 } from "../../libs/libp2p";
 
+  //const peerId = await peerIdFromPrivateKey(keyPair);
 
 type Props = {
   keyPair?: string;
