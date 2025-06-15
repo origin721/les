@@ -29,7 +29,7 @@
         //   name: $fieldLogin,
         //   pass: $fieldPass,
         // };
-        console.log("subbb", $fieldHttpServers);
+        //console.log("subbb", $fieldHttpServers);
         appAuthStore.add({
             namePub: $fieldLogin,
             pass: $fieldPass,

@@ -17,6 +17,7 @@
     import ChatRoomPage from "../../pages/chat_room/ui/ChatRoomPage.svelte";
     import { ChatRoomsAddPage } from "../../pages/chat_rooms_add";
     import AccountSettingsPage from "../../pages/account_settings/ui/AccountSettingsPage.svelte";
+    import { AddFriendPage } from "../../pages/add_friend_page";
     // console.log({aaa: $appAuthStore})
     // console.log('queryParams test: ', $routingStore.queryParams.get("aaa"));
 </script>
@@ -37,6 +38,8 @@
     <AuthPage />
 {:else if $routingStore.pathname === ROUTES.CURVE_25519}
     <Curve25519Page />
+{:else if $routingStore.pathname === ROUTES.ADD_FRIEND}
+    <AddFriendPage />
 {:else if $routingStore.pathname === ROUTES.RANDOM}
     <RandomPage />
 {:else if $routingStore.pathname === ROUTES.HOME}

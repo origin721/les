@@ -1,0 +1,1 @@
+export {AddFriendPage} from './ui';

@@ -10,32 +10,34 @@ import { identify } from "@libp2p/identify";
 import { webRTC } from '@libp2p/webrtc';
 import { circuitRelayTransport } from '@libp2p/circuit-relay-v2';
 import { createEd25519PeerId } from '@libp2p/peer-id-factory'
-import { peerIdFromString } from '@libp2p/peer-id'
+import { 
+  privateKeyFromString,
+  recommendedGenerateKeyPair,
+} from "../../libs/libp2p";
 
 
-export async function connectionLibp2p() {
- const peerId = await createEd25519PeerId();
- const peerIdStr = peerId.toString()
+type Props = {
+  keyPair?: string;
+}
 
- // setLogLevel('error'); // Устанавливаем уровень логирования на 'error', чтобы отключить вывод отладочной информации
-
-
-  //localStorage.setItem('debug', '');
-
-  console.log('New PeerId:', peerIdStr);
-
-  // Десериализация при повторном запуске
-  const restoredPeerId = await peerIdFromString(peerIdStr)
-
-  console.log({restoredPeerId});
+export async function connectionLibp2p(
+  props?: Props,
+) {
+  const keyPair = await (() => {
+    if (typeof props?.keyPair === 'string') {
+      return privateKeyFromString(props.keyPair);
+    }
+    else if (props?.keyPair) {
+      return props.keyPair;
+    }
+    // Случай если keyPair будет не обязательным
+    return recommendedGenerateKeyPair();
+ })()
 
   const node = await createLibp2p({
+    privateKey: keyPair,
     transports: [
-      webSockets({
-       //websocket: {
-       //  
-       //}
-      }),
+      webSockets(),
       webRTC(),
       circuitRelayTransport(),
     ],
@@ -84,12 +86,13 @@ export async function connectionLibp2p() {
       ping: ping(),
     },
    //logger: {
+   //   forComponent: () => new MyService(),
    //}
   });
 
-  node.addEventListener("peer:discovery", (event) => {
-    const peerId = event.detail.id;
-    console.log(`Discovered new peer: ${peerId.toString()}`);
-    //console.log(`${peerId.toString()}`);
-  });
+ //node.addEventListener("peer:discovery", (event) => {
+ //  const peerId = event.detail.id;
+ //  console.log(`Discovered new peer: ${peerId.toString()}`);
+ //  //console.log(`${peerId.toString()}`);
+ //});
 }
