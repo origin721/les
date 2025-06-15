@@ -3,9 +3,11 @@ import { FrontMiddlewareActions } from "../../core/broadcast_channel/constants/F
 import type { PostMessageParamAddAccounts, PostMessageParamDeleteAccounts } from "../../core/broadcast_channel/front_middleware_channel";
 import type { AccountEntity } from "../../indexdb/accounts/add_accounts";
 import { delete_accounts } from "../../indexdb/accounts/delete_accounts";
+import { get_account_by_id } from "../../indexdb/accounts/get_account_by_id";
 import { get_accounts, type Account } from "../../indexdb/accounts/get_accounts";
 import { login } from "../../indexdb/accounts/login";
 import { put_accounts, type AccountEntityPut } from "../../indexdb/accounts/put_accounts";
+import { privateKeyStringToPeerId } from "../../libs/libp2p";
 import { back_store } from "../back_store";
 import type { LoginPayload } from "../middleware";
 
@@ -60,10 +62,16 @@ export const accounts_service = {
         }
       }
       channel.postMessage(broadcast_event);
-  }
+  },
+  async getPeerIdForLibp2p(accId: string) {
+    const acc = await get_account_by_id(accId);
+    const peerId = privateKeyStringToPeerId(acc._libp2p_keyPair);
+
+    return peerId.toString();
+  },
 }
 
-export type AccountDto = Omit<Account, 'pass'>;
+export type AccountDto = Omit<Account, 'pass'|'_libp2p_keyPair'>;
 function accountToDto(a: Account): AccountDto {
   return {
     namePub: a.namePub,

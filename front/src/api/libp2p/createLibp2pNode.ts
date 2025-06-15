@@ -35,6 +35,8 @@ export async function connectionLibp2p(
     return recommendedGenerateKeyPair();
  })()
 
+ return;
+
   const node = await createLibp2p({
     privateKey: keyPair,
     transports: [

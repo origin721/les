@@ -1,9 +1,9 @@
 //import { AES } from "../../../core/crypt";
-import { createEd25519PeerId } from "@libp2p/peer-id-factory";
 import { encrypt_curve25519_from_pass } from "../../core/crypt";
 import { gen_pass } from "../../core/random/gen_pass";
 import { uuidv4 } from "../../core/uuid";
 import { indexdb_wrapper } from "../indexdb_wrapper";
+import { privateKeyToString, recommendedGenerateKeyPair } from "../../libs/libp2p";
 
 export type HttpServerParam = {
   url: string;
@@ -25,7 +25,7 @@ export function add_accounts(new_list: AccountEntity[]) {
       // Добавляем запись
       for (let item of new_list) {
         const newId = uuidv4();
-        const peerId = await createEd25519PeerId();
+        const libp2p_keyPair = await recommendedGenerateKeyPair();
         
         const newData = await encrypt_curve25519_from_pass({
           pass: item.pass,
@@ -33,7 +33,7 @@ export function add_accounts(new_list: AccountEntity[]) {
             ...item,
             id: newId,
             _pass: gen_pass(),
-            _libp2p_peerId: peerId.toString(),
+            _libp2p_keyPair: privateKeyToString(libp2p_keyPair),
             date_created: new Date(),
           }),
         });

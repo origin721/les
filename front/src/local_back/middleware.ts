@@ -54,6 +54,13 @@ export type GetAccountsPayload = {
   path: typeof PATHS['GET_ACCOUNTS'];
 }
 
+export type GetPeerIdByAccIdForLibp2pPayload = {
+  path: typeof PATHS['GET_PEER_ID_BY_ACC_ID_FOR_LIBP2P'];
+  body: {
+    accId: string;
+  }
+}
+
 export type ResultByPath = {
   [key in typeof PATHS['GET_ACCOUNTS']]: ReturnType<typeof get_accounts>;
 };
@@ -63,6 +70,7 @@ export type BackMiddlewarePayload = Extract<
   |DeleteAccountsPayload
   |PutAccountsPayload
   |AddAccountsPayload
+  |GetPeerIdByAccIdForLibp2pPayload
   |LoginPayload
 ,{
   path: keyof typeof PATHS;
@@ -85,6 +93,9 @@ export async function backMiddleware(
   try {
     if (props.payload.path === PATHS.LOGIN) {
       return await accounts_service.onLogin(props.payload);
+    }
+    if (props.payload.path === PATHS.GET_PEER_ID_BY_ACC_ID_FOR_LIBP2P) {
+      return await accounts_service.getPeerIdForLibp2p(props.payload.body.accId);
     }
     if (props.payload.path === PATHS.GET_ACCOUNTS) {
       return await accounts_service.getList();
