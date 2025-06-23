@@ -73,6 +73,23 @@
     else if(!Object.entries(p.apauState.byId).length) {
         componentPromise = import(`../../pages/auth/ui/AuthPage.svelte`);
     }
+/*
+{:else if routState.state.pathname === ROUTES.AUTH}
+    <AuthPage />
+{:else if routState.state.pathname === ROUTES.CURVE_25519}
+    <Curve25519Page />
+{:else if routState.state.pathname === ROUTES.ADD_FRIEND}
+    <AddFriendPage />
+{:else if routState.state.pathname === ROUTES.RANDOM}
+    <RandomPage />
+{:else if routState.state.pathname === ROUTES.HOME}
+    <HomePage />
+{:else if routState.state.pathname === ROUTES.SETTINGS}
+    <SettingsPage />
+{:else if routState.state.pathname === ROUTES.ACCOUNTS}
+    <AccountsPage />
+{:else if routState.state.pathname === ROUTES.ACCOUNT_SETTINGS}
+    <AccountSettingsPage />*/
     else {
       componentPromise = import(`../../pages/404/ui/Page404.svelte`);
     }
