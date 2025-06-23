@@ -16,7 +16,7 @@ import type { AccountDto } from "../../local_back/middleware";
  */
 export const appAuthStore = createAppAuthStore();
 
-type AppAuthStore = {
+export type AppAuthStore = {
   byId: Record<string, AccountDto>;
 }
 
