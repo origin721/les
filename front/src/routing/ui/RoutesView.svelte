@@ -1,55 +1,127 @@
 <script lang="ts">
     import {
-        AccountNewPage,
+        //AccountNewPage,
         AccountsPage,
-        AuthPage,
+        //AuthPage,
         HomePage,
-        Page404,
+        //Page404,
         SettingsPage,
         RandomPage,
         Curve25519Page,
     } from "../../pages";
     import AesEncrPage from "../../pages/aes_encr_page/ui/AesEncrPage.svelte";
-    import { ChatRoomsPage } from "../../pages/chat_rooms";
+    //import { ChatRoomsPage } from "../../pages/chat_rooms";
     import { appAuthStore } from "../../stores";
     import { QUERY_PARAMS, ROUTES } from "../constants";
     import { routingStore } from "../stores";
-    import ChatRoomPage from "../../pages/chat_room/ui/ChatRoomPage.svelte";
-    import { ChatRoomsAddPage } from "../../pages/chat_rooms_add";
+    //import ChatRoomPage from "../../pages/chat_room/ui/ChatRoomPage.svelte";
+    //import { ChatRoomsAddPage } from "../../pages/chat_rooms_add";
     import AccountSettingsPage from "../../pages/account_settings/ui/AccountSettingsPage.svelte";
     import { AddFriendPage } from "../../pages/add_friend_page";
+    import { writableToState } from "../../core/svelte_default/runs/writableToState.svelte";
+    import { tick } from "svelte";
+    //import AuthPage from "../../pages/auth/ui/AuthPage.svelte";
+    //import ChatRoomsAddPage from "../../pages/chat_rooms_add/ui/ChatRoomsAddPage.svelte";
+    //import ChatRoomsPage from "../../pages/chat_rooms/ui/ChatRoomsPage.svelte";
+    //import ChatRoomPage from "../../pages/chat_room/ui/ChatRoomPage.svelte";
+    //import AccountNewPage from "../../pages/accounts_new/ui/AccountNewPage.svelte";
+    //import Page404 from "../../pages/404/ui/Page404.svelte";
     // console.log({aaa: $appAuthStore})
     // console.log('queryParams test: ', $routingStore.queryParams.get("aaa"));
+
+    const routState = writableToState(routingStore);
+
+    const appAuthState = writableToState(appAuthStore);
+
+    $effect(() => {
+        //console.log({routState}, routState.state);
+        onChangePath({
+            rState: routState.state,
+            apauState: appAuthState.state,
+        });
+    });
+
+  let componentPromise = $state<any>(null);
+
+  async function onChangePath(p: {
+    rState: typeof routState['state'];
+    apauState: typeof appAuthState['state'];
+  }) {
+    componentPromise = null;
+    //type = null;
+    await tick(); // подождать 1 кадр, чтобы отрендерилось "ничего"
+
+    await new Promise(r => setTimeout(r, 1000)); // ещё 1 секунда
+
+    //type = typeName;
+
+    if(p.rState.pathname === ROUTES.ACCOUNTS_NEW) {
+      componentPromise = import(`../../pages/accounts_new/ui/AccountNewPage.svelte`);
+    }
+    else if (p.rState.pathname === ROUTES.CHAT_ROOMS) {
+      if(p.rState.queryParams.get(QUERY_PARAMS.ROOM_ID)) {
+        componentPromise = import(`../../pages/chat_room/ui/ChatRoomPage.svelte`);
+      }
+      else {
+        componentPromise = import(`../../pages/chat_rooms/ui/ChatRoomsPage.svelte`);
+      };
+    }
+    else if(p.rState.pathname === ROUTES.CHAT_ROOMS_ADD) {
+        // TODO: проверить что до логина не все страницы могут быть
+      componentPromise = import(`../../pages/chat_rooms_add/ui/ChatRoomsAddPage.svelte`);
+    }
+    else if(!Object.entries(p.apauState.byId).length) {
+        componentPromise = import(`../../pages/auth/ui/AuthPage.svelte`);
+    }
+    else {
+      componentPromise = import(`../../pages/404/ui/Page404.svelte`);
+    }
+   //if (type === 'one') {
+   //} else if (type === 'two') {
+   //  //componentPromise = import(`./TwoComponent.svelte`);
+   //}
+  }
 </script>
 
-{#if $routingStore.pathname === ROUTES.ACCOUNTS_NEW}
+
+{#if componentPromise}
+  {#await componentPromise then mod}
+    <svelte:component this={mod.default} />
+  {/await}
+{:else}
+    <div>loading... TODO: сделать анимацию классную</div>
+{/if}
+
+<!--
+{#if routState.state.pathname === ROUTES.ACCOUNTS_NEW}
     <AccountNewPage />
-{:else if $routingStore.pathname === ROUTES.CHAT_ROOMS}
-    {#if $routingStore.queryParams.get(QUERY_PARAMS.ROOM_ID)}
+{:else if routState.state.pathname === ROUTES.CHAT_ROOMS}
+    {#if routState.state.queryParams.get(QUERY_PARAMS.ROOM_ID)}
         <ChatRoomPage />
     {:else}
         <ChatRoomsPage />
     {/if}
-{:else if $routingStore.pathname === ROUTES.CHAT_ROOMS_ADD}
+{:else if routState.state.pathname === ROUTES.CHAT_ROOMS_ADD}
     <ChatRoomsAddPage />
 {:else if !Object.entries($appAuthStore.byId).length}
     <AuthPage />
-{:else if $routingStore.pathname === ROUTES.AUTH}
+{:else if routState.state.pathname === ROUTES.AUTH}
     <AuthPage />
-{:else if $routingStore.pathname === ROUTES.CURVE_25519}
+{:else if routState.state.pathname === ROUTES.CURVE_25519}
     <Curve25519Page />
-{:else if $routingStore.pathname === ROUTES.ADD_FRIEND}
+{:else if routState.state.pathname === ROUTES.ADD_FRIEND}
     <AddFriendPage />
-{:else if $routingStore.pathname === ROUTES.RANDOM}
+{:else if routState.state.pathname === ROUTES.RANDOM}
     <RandomPage />
-{:else if $routingStore.pathname === ROUTES.HOME}
+{:else if routState.state.pathname === ROUTES.HOME}
     <HomePage />
-{:else if $routingStore.pathname === ROUTES.SETTINGS}
+{:else if routState.state.pathname === ROUTES.SETTINGS}
     <SettingsPage />
-{:else if $routingStore.pathname === ROUTES.ACCOUNTS}
+{:else if routState.state.pathname === ROUTES.ACCOUNTS}
     <AccountsPage />
-{:else if $routingStore.pathname === ROUTES.ACCOUNT_SETTINGS}
+{:else if routState.state.pathname === ROUTES.ACCOUNT_SETTINGS}
     <AccountSettingsPage />
 {:else}
     <Page404 />
 {/if}
+-->

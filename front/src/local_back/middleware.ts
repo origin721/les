@@ -43,6 +43,13 @@ export type PutAccountsPayload = {
   };
 }
 
+export type PutFriendsPayload = {
+  path: typeof PATHS['PUT_FRIENDS'];
+  body: {
+    list: AccountEntityPut[];
+  };
+}
+
 export type LoginPayload = {
   path: typeof PATHS['LOGIN'];
   body: {
@@ -89,7 +96,7 @@ export async function backMiddleware(
   props: BackMiddlewareProps
  ): ResultByPath[typeof props['payload']['path']] {
   //console.log('worker-shared',{props});
-  
+
   try {
     if (props.payload.path === PATHS.LOGIN) {
       return await accounts_service.onLogin(props.payload);
@@ -114,7 +121,7 @@ export async function backMiddleware(
   catch (err) {
     console.error(err);
   }
-  
+
   return null;
 
  //return new Promise((res, rej) => {

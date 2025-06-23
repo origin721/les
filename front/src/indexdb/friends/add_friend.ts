@@ -5,16 +5,12 @@ import { uuidv4 } from "../../core/uuid";
 import { indexdb_wrapper } from "../indexdb_wrapper";
 import { privateKeyToString, recommendedGenerateKeyPair } from "../../libs/libp2p";
 
-export type HttpServerParam = {
-  url: string;
-  isActive: boolean;
-  id: string;
-}
 
 export type FriendEntity = {
   namePub: string;
-  pass: string;
-  httpServers: HttpServerParam[];
+  // TODO: сделать проверку что расшифрованный accId соотвествует если буду по той таблице идти
+  myAccId: string;
+  friendPubKey: string;
 }
 
 export function add_friend(new_list: FriendEntity[]) {

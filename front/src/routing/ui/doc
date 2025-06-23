@@ -1,0 +1,30 @@
+<script>
+  import { tick } from 'svelte';
+  let componentPromise = null;
+  let type = null;
+
+  async function select(typeName) {
+    componentPromise = null;
+    type = null;
+    await tick(); // подождать 1 кадр, чтобы отрендерилось "ничего"
+
+    await new Promise(r => setTimeout(r, 1000)); // ещё 1 секунда
+
+    type = typeName;
+
+    if (type === 'one') {
+      componentPromise = import(`./OneComponent.svelte`);
+    } else if (type === 'two') {
+      componentPromise = import(`./TwoComponent.svelte`);
+    }
+  }
+</script>
+
+<button on:click={() => select('one')}>One</button>
+<button on:click={() => select('two')}>Two</button>
+
+{#if componentPromise}
+  {#await componentPromise then mod}
+    <svelte:component this={mod.default} />
+  {/await}
+{/if}
