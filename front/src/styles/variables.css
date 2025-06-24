@@ -1,0 +1,12 @@
+@custom-media --fold (max-width: 24rem);
+@custom-media --mobile (max-width: 30rem);
+@custom-media --tablet (max-width: 48rem);
+@custom-media --laptop (max-width: 64rem);
+@custom-media --desktop (max-width: 768rem);
+@custom-media --large-desktop (min-width: 1024rem);
+
+/*
+@media (--fold) {
+
+}
+*/
