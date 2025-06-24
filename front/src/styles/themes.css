@@ -1,0 +1,51 @@
+/*
+ * Theming System
+ *
+ * This file defines the color schemes for different themes in the application.
+ * Themes are applied by setting the `data-theme` attribute on a root element (e.g., <body>).
+ *
+ * For detailed documentation on the variables and their usage, see /docs/themes.md.
+ */
+
+/* 1. Light Theme */
+[data-theme="light"] {
+  --les-bg-primary: #FFFFFF;
+  --les-bg-secondary: #F0F0F0;
+  --les-text-primary: #111111;
+  --les-text-secondary: #555555;
+  --les-accent-primary: #007BFF;
+  --les-accent-secondary: #0056b3;
+  --les-border-primary: #DDDDDD;
+  --les-success: #28a745;
+  --les-warning: #ffc107;
+  --les-error: #dc3545;
+}
+
+/* 2. Dark Theme */
+[data-theme="dark"] {
+  --les-bg-primary: #121212;
+  --les-bg-secondary: #1E1E1E;
+  --les-text-primary: #E0E0E0;
+  --les-text-secondary: #A0A0A0;
+  --les-accent-primary: #BB86FC;
+  --les-accent-secondary: #3700B3;
+  --les-border-primary: #272727;
+  --les-success: #4CAF50;
+  --les-warning: #FFEB3B;
+  --les-error: #F44336;
+}
+
+/* 3. Cyberpunk Theme */
+/* Inspired by Watch Dogs and general cyberpunk aesthetics. */
+[data-theme="cyberpunk"] {
+  --les-bg-primary: #0A0A1A;
+  --les-bg-secondary: #14142E;
+  --les-text-primary: #00FFC6;
+  --les-text-secondary: #99FFDD;
+  --les-accent-primary: #F9E400;
+  --les-accent-secondary: #D7C300;
+  --les-border-primary: #00FFC6;
+  --les-success: #00FF00;
+  --les-warning: #FFA500;
+  --les-error: #FF003C;
+}
