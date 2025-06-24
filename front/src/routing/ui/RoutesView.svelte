@@ -45,75 +45,84 @@
         });
     });
 
-  let componentPromise = $state<any>(null);
+    let componentPromise = $state<any>(null);
 
-  async function onChangePath(p: {
-    rState: typeof routState['state'];
-    apauState: typeof appAuthState['state'];
-  }) {
-    componentPromise = null;
-    //type = null;
-    await tick(); // подождать 1 кадр, чтобы отрендерилось "ничего"
+    async function onChangePath(p: {
+        rState: (typeof routState)["state"];
+        apauState: (typeof appAuthState)["state"];
+    }) {
+        componentPromise = null;
+        //type = null;
+        await tick(); // подождать 1 кадр, чтобы отрендерилось "ничего"
 
-    await new Promise(r => setTimeout(r, 1000)); // ещё 1 секунда
+        await new Promise((r) => setTimeout(r, 1000)); // ещё 1 секунда
 
-    //type = typeName;
+        //type = typeName;
 
-    // TODO: сделать защиту от рендера если  данные не менялись сохранив prev в ссылку
-    if(p.rState.pathname === ROUTES.ACCOUNTS_NEW) {
-      componentPromise = import(`../../pages/accounts_new/ui/AccountNewPage.svelte`);
+        // TODO: сделать защиту от рендера если  данные не менялись сохранив prev в ссылку
+        if (p.rState.pathname === ROUTES.ACCOUNTS_NEW) {
+            componentPromise = import(
+                `../../pages/accounts_new/ui/AccountNewPage.svelte`
+            );
+        } else if (p.rState.pathname === ROUTES.CHAT_ROOMS) {
+            if (p.rState.queryParams.get(QUERY_PARAMS.ROOM_ID)) {
+                componentPromise = import(
+                    `../../pages/chat_room/ui/ChatRoomPage.svelte`
+                );
+            } else {
+                componentPromise = import(
+                    `../../pages/chat_rooms/ui/ChatRoomsPage.svelte`
+                );
+            }
+        } else if (p.rState.pathname === ROUTES.CHAT_ROOMS_ADD) {
+            // TODO: проверить что до логина не все страницы могут быть
+            componentPromise = import(
+                `../../pages/chat_rooms_add/ui/ChatRoomsAddPage.svelte`
+            );
+        } else if (!Object.entries(p.apauState.byId).length) {
+            componentPromise = import(`../../pages/auth/ui/AuthPage.svelte`);
+        } else if (p.rState.pathname === ROUTES.AUTH) {
+            componentPromise = import(`../../pages/auth/ui/AuthPage.svelte`);
+        } else if (p.rState.pathname === ROUTES.CURVE_25519) {
+            componentPromise = import(
+                `../../pages/curve25519_page/ui/Curve25519Page.svelte`
+            );
+        } else if (p.rState.pathname === ROUTES.ADD_FRIEND) {
+            componentPromise = import(
+                `../../pages/add_friend_page/ui/AddFriendPage.svelte`
+            );
+        } else if (p.rState.pathname === ROUTES.RANDOM) {
+            componentPromise = import(
+                `../../pages/random/ui/RandomPage.svelte`
+            );
+        } else if (p.rState.pathname === ROUTES.HOME) {
+            componentPromise = import(`../../pages/home/ui/HomePage.svelte`);
+        } else if (p.rState.pathname === ROUTES.SETTINGS) {
+            componentPromise = import(
+                `../../pages/settings/ui/SettingsPage.svelte`
+            );
+        } else if (p.rState.pathname === ROUTES.ACCOUNTS) {
+            componentPromise = import(
+                `../../pages/accounts/ui/AccountsPage.svelte`
+            );
+        } else if (p.rState.pathname === ROUTES.ACCOUNT_SETTINGS) {
+            componentPromise = import(
+                `../../pages/account_settings/ui/AccountSettingsPage.svelte`
+            );
+        } else {
+            componentPromise = import(`../../pages/404/ui/Page404.svelte`);
+        }
+        //if (type === 'one') {
+        //} else if (type === 'two') {
+        //  //componentPromise = import(`./TwoComponent.svelte`);
+        //}
     }
-    else if (p.rState.pathname === ROUTES.CHAT_ROOMS) {
-      if(p.rState.queryParams.get(QUERY_PARAMS.ROOM_ID)) {
-        componentPromise = import(`../../pages/chat_room/ui/ChatRoomPage.svelte`);
-      }
-      else {
-        componentPromise = import(`../../pages/chat_rooms/ui/ChatRoomsPage.svelte`);
-      };
-    }
-    else if(p.rState.pathname === ROUTES.CHAT_ROOMS_ADD) {
-        // TODO: проверить что до логина не все страницы могут быть
-      componentPromise = import(`../../pages/chat_rooms_add/ui/ChatRoomsAddPage.svelte`);
-    }
-    else if(!Object.entries(p.apauState.byId).length) {
-        componentPromise = import(`../../pages/auth/ui/AuthPage.svelte`);
-    }
-    else if (p.rState.pathname === ROUTES.AUTH) {
-        componentPromise = import(`../../pages/auth/ui/AuthPage.svelte`);
-    }
-    else if (p.rState.pathname === ROUTES.CURVE_25519) {
-        componentPromise = import(`../../pages/curve25519_page/ui/Curve25519Page.svelte`);
-    }
-    else if (p.rState.pathname === ROUTES.ADD_FRIEND) {
-        componentPromise = import(`../../pages/add_friend_page/ui/AddFriendPage.svelte`);
-    }
-    else if (p.rState.pathname === ROUTES.RANDOM) {
-        componentPromise = import(`../../pages/random/ui/RandomPage.svelte`);
-    }
-    else if (p.rState.pathname === ROUTES.HOME) {
-        componentPromise = import(`../../pages/home/ui/HomePage.svelte`);
-    }
-/*
-{:else if routState.state.pathname === ROUTES.SETTINGS}
-    <SettingsPage />
-{:else if routState.state.pathname === ROUTES.ACCOUNTS}
-    <AccountsPage />
-{:else if routState.state.pathname === ROUTES.ACCOUNT_SETTINGS}
-    <AccountSettingsPage />*/
-    else {
-      componentPromise = import(`../../pages/404/ui/Page404.svelte`);
-    }
-   //if (type === 'one') {
-   //} else if (type === 'two') {
-   //  //componentPromise = import(`./TwoComponent.svelte`);
-   //}
-  }
 </script>
 
 {#if componentPromise}
-  {#await componentPromise then mod}
-    <svelte:component this={mod.default} />
-  {/await}
+    {#await componentPromise then mod}
+        <svelte:component this={mod.default} />
+    {/await}
 {:else}
     <div>loading... TODO: сделать анимацию классную</div>
 {/if}
