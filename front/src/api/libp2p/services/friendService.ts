@@ -1,7 +1,21 @@
-import { add_friend } from "../../../indexdb/friends/add_friend";
+import { PATHS } from "../../../local_back";
+import { shared_worker_store } from "../../../processes";
 
 export const friendService = {
-  add_friends,
+  add_friend,
 };
 
-function add_friends({ new_friends: [], libp2pNode }) {}
+type AddFriendProps = {
+  friendPeerId: string;
+  accId: string;
+};
+
+function add_friend({ friendPeerId, accId }: AddFriendProps) {
+  return shared_worker_store.fetch({
+    path: PATHS.ADD_FRIEND_AND_SEND_HI,
+    body: {
+      friendPeerId,
+      accId,
+    },
+  });
+}

@@ -1,18 +1,25 @@
 import { CHANNEL_NAMES } from "../core/broadcast_channel/constants/CHANNEL_NAMES";
 import { FrontMiddlewareActions } from "../core/broadcast_channel/constants/FRONT_MIDDLEWARE_ACTIONS";
 import type { PostMessageParamAddAccounts } from "../core/broadcast_channel/front_middleware_channel";
-import { add_accounts, type AccountEntity } from "../indexdb/accounts/add_accounts";
+import {
+  add_accounts,
+  type AccountEntity,
+} from "../indexdb/accounts/add_accounts";
 import { delete_accounts } from "../indexdb/accounts/delete_accounts";
 import { get_accounts, type Account } from "../indexdb/accounts/get_accounts";
 import { login } from "../indexdb/accounts/login";
-import { put_accounts, type AccountEntityPut } from "../indexdb/accounts/put_accounts";
+import {
+  put_accounts,
+  type AccountEntityPut,
+} from "../indexdb/accounts/put_accounts";
 import { back_store } from "./back_store";
 import { EVENT_TYPES, PATHS } from "./constant";
 import { accounts_service } from "./modules/accounts_service";
+import { TextEncoder, TextDecoder } from "util";
 
 type IdRequest = string | number;
 export type BackMiddlewareProps = {
-  type: typeof EVENT_TYPES['FETCH'];
+  type: (typeof EVENT_TYPES)["FETCH"];
   payload: BackMiddlewarePayload;
   /**
    * Индификатор который вернётся в ответе
@@ -20,81 +27,89 @@ export type BackMiddlewareProps = {
    * что это ответ для этого запроса
    */
   idRequest: IdRequest;
-}
+};
 
 export type AddAccountsPayload = {
-  path: typeof PATHS['ADD_ACCOUNTS'];
+  path: (typeof PATHS)["ADD_ACCOUNTS"];
   body: {
     list: AccountEntity[];
   };
-}
+};
 
 export type DeleteAccountsPayload = {
-  path: typeof PATHS['DELETE_ACCOUNTS'];
+  path: (typeof PATHS)["DELETE_ACCOUNTS"];
   body: {
     ids: string[];
   };
-}
+};
 
 export type PutAccountsPayload = {
-  path: typeof PATHS['PUT_ACCOUNTS'];
+  path: (typeof PATHS)["PUT_ACCOUNTS"];
   body: {
     list: AccountEntityPut[];
   };
-}
+};
 
 export type PutFriendsPayload = {
-  path: typeof PATHS['PUT_FRIENDS'];
+  path: (typeof PATHS)["PUT_FRIENDS"];
   body: {
     list: AccountEntityPut[];
   };
-}
+};
 
 export type LoginPayload = {
-  path: typeof PATHS['LOGIN'];
+  path: (typeof PATHS)["LOGIN"];
   body: {
     pass: string;
   };
-}
+};
 
 export type GetAccountsPayload = {
-  path: typeof PATHS['GET_ACCOUNTS'];
-}
+  path: (typeof PATHS)["GET_ACCOUNTS"];
+};
 
 export type GetPeerIdByAccIdForLibp2pPayload = {
-  path: typeof PATHS['GET_PEER_ID_BY_ACC_ID_FOR_LIBP2P'];
+  path: (typeof PATHS)["GET_PEER_ID_BY_ACC_ID_FOR_LIBP2P"];
   body: {
     accId: string;
-  }
-}
+  };
+};
+
+export type AddFriendAndSendHi = {
+  path: (typeof PATHS)["ADD_FRIEND_AND_SEND_HI"];
+  body: {
+    friendPeerId: string;
+    accId: string;
+  };
+};
 
 export type ResultByPath = {
-  [key in typeof PATHS['GET_ACCOUNTS']]: ReturnType<typeof get_accounts>;
+  [key in (typeof PATHS)["GET_ACCOUNTS"]]: ReturnType<typeof get_accounts>;
 };
 
 export type BackMiddlewarePayload = Extract<
-  GetAccountsPayload
-  |DeleteAccountsPayload
-  |PutAccountsPayload
-  |AddAccountsPayload
-  |GetPeerIdByAccIdForLibp2pPayload
-  |LoginPayload
-,{
-  path: keyof typeof PATHS;
-  body?: any;
-}>;
+  | GetAccountsPayload
+  | DeleteAccountsPayload
+  | PutAccountsPayload
+  | AddAccountsPayload
+  | GetPeerIdByAccIdForLibp2pPayload
+  | AddFriendAndSendHi
+  | LoginPayload,
+  {
+    path: keyof typeof PATHS;
+    body?: any;
+  }
+>;
 
 export type BackMiddlewareEvent = {
   idRequest: IdRequest;
-  type: typeof EVENT_TYPES['FETCH'];
+  type: (typeof EVENT_TYPES)["FETCH"];
   payload: BackMiddlewarePayload;
-}
-
-
+};
 
 export async function backMiddleware(
-  props: BackMiddlewareProps
- ): ResultByPath[typeof props['payload']['path']] {
+  props: BackMiddlewareProps,
+): ResultByPath[(typeof props)["payload"]["path"]] {
   //console.log('worker-shared',{props});
 
   try {
@@ -102,7 +117,39 @@ export async function backMiddleware(
       return await accounts_service.onLogin(props.payload);
     }
     if (props.payload.path === PATHS.GET_PEER_ID_BY_ACC_ID_FOR_LIBP2P) {
-      return await accounts_service.getPeerIdForLibp2p(props.payload.body.accId);
+      return await accounts_service.getPeerIdForLibp2p(
+        props.payload.body.accId,
+      );
+    }
+    if (props.payload.path === PATHS.ADD_FRIEND_AND_SEND_HI) {
+      const { friendPeerId, accId } = props.payload.body;
+      const libp2p_node = back_store.get(accId);
+      if (!libp2p_node) {
+        // TODO: может быть тут нужно создать ноду если ее нет
+        throw new Error(`Node not found for accId: ${accId}`);
+      }
+      await libp2p_node.dial(friendPeerId);
+      console.log(`Соединение с другом установлено: ${friendPeerId}`);
+
+      const stream = await libp2p_node.dialProtocol(
+        friendPeerId,
+        "/les/0.0.0alfa",
+      );
+      const writer = stream.sink;
+      const reader = stream.source;
+
+      const encoder = new TextEncoder();
+      const data = encoder.encode("hi");
+
+      await writer.write(data);
+      console.log('Отправлено "hi" другу');
+
+      const decoder = new TextDecoder();
+      for await (const chunk of reader) {
+        // Получено сообщение от друга
+        console.log("Получено:", decoder.decode(chunk));
+      }
+      return null;
     }
     if (props.payload.path === PATHS.GET_ACCOUNTS) {
       return await accounts_service.getList();
@@ -117,17 +164,16 @@ export async function backMiddleware(
     if (props.payload.path === PATHS.PUT_ACCOUNTS) {
       return await accounts_service.put(props.payload.body.list);
     }
-  }
-  catch (err) {
+  } catch (err) {
     console.error(err);
   }
 
   return null;
 
- //return new Promise((res, rej) => {
- //  setTimeout(() => {
- //    res({aaa:'vvvv', props});
- //    channel.postMessage({ action: 'notify', data: 'Hello, tabs!2' });
- //  }, 5000);
- //});
+  //return new Promise((res, rej) => {
+  //  setTimeout(() => {
+  //    res({aaa:'vvvv', props});
+  //    channel.postMessage({ action: 'notify', data: 'Hello, tabs!2' });
+  //  }, 5000);
+  //});
 }
