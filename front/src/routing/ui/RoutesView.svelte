@@ -20,9 +20,7 @@
     //import { AddFriendPage } from "../../pages/add_friend_page";
     import { writableToState } from "../../core/svelte_default/runs/writableToState.svelte";
     import { tick } from "svelte";
-    import LoadingSpinner1 from "../../components/widgets/LoadingSpinner1.svelte";
-    import LoadingSpinner2 from "../../components/widgets/LoadingSpinner2.svelte";
-    import LoadingSpinner3 from "../../components/widgets/LoadingSpinner3.svelte";
+    import LoadingSequence from "../../components/widgets/LoadingSequence.svelte";
     //import HomePage from "../../pages/home/ui/HomePage.svelte";
     //import RandomPage from "../../pages/random/ui/RandomPage.svelte";
     //import AddFriendPage from "../../pages/add_friend_page/ui/AddFriendPage.svelte";
@@ -58,9 +56,7 @@
         //type = null;
         await tick(); // подождать 1 кадр, чтобы отрендерилось "ничего"
 
-        await new Promise((r) => setTimeout(r, 100000)); // ещё 1 секунда
-
-        //type = typeName;
+        await new Promise((r) => setTimeout(r, 100000));
 
         // TODO: сделать защиту от рендера если  данные не менялись сохранив prev в ссылку
         if (p.rState.pathname === ROUTES.ACCOUNTS_NEW) {
@@ -127,12 +123,7 @@
         <svelte:component this={mod.default} />
     {/await}
 {:else}
-    <LoadingSpinner1 />
-    <LoadingSpinner2 />
-    <LoadingSpinner3 />
-    <!--
-    <div>loading... TODO: сделать анимацию классную</div>
-     -->
+    <LoadingSequence />
 {/if}
 
 <!--
