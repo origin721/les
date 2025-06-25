@@ -1,0 +1,15 @@
+:root {
+    --background-color: #0c0c0c;
+    --text-color: #00ff00;
+    --primary-color: #ff00ff;
+    --secondary-color: #00ffff;
+    --border-color: #00ff00;
+    --input-background: #1a1a1a;
+    --input-text: #00ff00;
+    --button-background: #ff00ff;
+    --button-text: #0c0c0c;
+    --button-hover-background: #00ff00;
+    --button-hover-text: #0c0c0c;
+    --link-color: #00ffff;
+    --link-hover-color: #ff00ff;
+}
