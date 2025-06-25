@@ -16,11 +16,11 @@
 
 <div class="loading-sequence-container">
     {#if phase === 1}
-        <LoadingPhase2 />
-    {:else if phase === 2}
-        <LoadingPhase1 />
-    {:else}
         <LoadingPhase3 />
+    {:else if phase === 2}
+        <LoadingPhase2 />
+    {:else}
+        <LoadingPhase1 />
     {/if}
 </div>
 
