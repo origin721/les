@@ -2,6 +2,13 @@
     import LoadingSpinner2 from "../widgets/LoadingSpinner2.svelte";
 </script>
 
+<div class="loading-screen">
+    <div class="loading-screen-content">
+        <h2>Loading...</h2>
+        <LoadingSpinner2 />
+    </div>
+</div>
+
 <style>
     .loading-screen {
         display: flex;
@@ -32,12 +39,3 @@
         }
     }
 </style>
-
-<div class="loading-screen">
-    <div class="loading-screen-content">
-        <h2>Loading...</h2>
-        <LoadingSpinner2 />
-    </div>
-</div>
-```
-</content>

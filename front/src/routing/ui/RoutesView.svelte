@@ -21,6 +21,11 @@
     import { writableToState } from "../../core/svelte_default/runs/writableToState.svelte";
     import { tick } from "svelte";
     import LoadingSequence from "../../components/widgets/LoadingSequence.svelte";
+
+    import "../../styles/cyberpunk.css";
+    import "../../styles/watchdogs.css";
+    import "../../styles/pixel.css";
+
     //import HomePage from "../../pages/home/ui/HomePage.svelte";
     //import RandomPage from "../../pages/random/ui/RandomPage.svelte";
     //import AddFriendPage from "../../pages/add_friend_page/ui/AddFriendPage.svelte";
@@ -56,7 +61,7 @@
         //type = null;
         await tick(); // подождать 1 кадр, чтобы отрендерилось "ничего"
 
-        await new Promise((r) => setTimeout(r, 1000));
+        await new Promise((r) => setTimeout(r, 5000));
 
         // TODO: сделать защиту от рендера если  данные не менялись сохранив prev в ссылку
         if (p.rState.pathname === ROUTES.ACCOUNTS_NEW) {

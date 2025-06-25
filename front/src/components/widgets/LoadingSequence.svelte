@@ -5,13 +5,20 @@
 
     let phase = $state(1);
 
-    setTimeout(() => {
-        phase = 2;
-    }, 2000); // Duration of phase 1
+    $effect(() => {
+        const phase2Timer = setTimeout(() => {
+            phase = 2;
+        }, 2000); // Duration of phase 1
 
-    setTimeout(() => {
-        phase = 3;
-    }, 4000); // Duration of phase 1 + phase 2
+        const phase3Timer = setTimeout(() => {
+            phase = 3;
+        }, 4000); // Duration of phase 1 + phase 2
+
+        return () => {
+            clearTimeout(phase2Timer);
+            clearTimeout(phase3Timer);
+        };
+    });
 </script>
 
 <div class="loading-sequence-container">
