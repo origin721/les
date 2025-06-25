@@ -1,7 +1,21 @@
+<div class="spinner3"></div>
 
+<style>
+    .spinner3 {
+        width: 40px;
+        height: 40px;
+        background-color: var(--primary-color);
+        border-radius: 100%;
+        animation: pulse 1s infinite ease-in-out;
+    }
 
-<instructions>
-- The user wants a third loading spinner component for Svelte.
-- It should be a simple spinner with a different animation from the previous two.
-- It should use the primary color from the theme file.
-</instructions>
+    @keyframes pulse {
+        0% {
+            transform: scale(0);
+        }
+        100% {
+            transform: scale(1);
+            opacity: 0;
+        }
+    }
+</style>

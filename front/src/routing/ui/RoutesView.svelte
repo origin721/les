@@ -22,6 +22,7 @@
     import { tick } from "svelte";
     import LoadingSpinner1 from "../../components/widgets/LoadingSpinner1.svelte";
     import LoadingSpinner2 from "../../components/widgets/LoadingSpinner2.svelte";
+    import LoadingSpinner3 from "../../components/widgets/LoadingSpinner3.svelte";
     //import HomePage from "../../pages/home/ui/HomePage.svelte";
     //import RandomPage from "../../pages/random/ui/RandomPage.svelte";
     //import AddFriendPage from "../../pages/add_friend_page/ui/AddFriendPage.svelte";
@@ -57,7 +58,7 @@
         //type = null;
         await tick(); // подождать 1 кадр, чтобы отрендерилось "ничего"
 
-        await new Promise((r) => setTimeout(r, 1000)); // ещё 1 секунда
+        await new Promise((r) => setTimeout(r, 100000)); // ещё 1 секунда
 
         //type = typeName;
 
@@ -128,6 +129,7 @@
 {:else}
     <LoadingSpinner1 />
     <LoadingSpinner2 />
+    <LoadingSpinner3 />
     <!--
     <div>loading... TODO: сделать анимацию классную</div>
      -->
