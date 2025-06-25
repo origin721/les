@@ -92,3 +92,24 @@ export const countStore = writable(0);
 В этом примере `countStore` является глобальным хранилищем, которое можно использовать в любом компоненте вашего приложения. Вы можете обновлять и читать значение хранилища с помощью методов `update` и `$` соответственно.
 
 Если вы хотите использовать новый синтаксис `$state` для создания глобального состояния, вам нужно будет подождать дальнейших обновлений и документации от команды Svelte, так как на данный момент это не поддерживается напрямую.
+
+
+Пример как в react только на правильном svelte 5 синтаксисе вынеса в отдельный файл логику
+import { onDestroy } from 'svelte';
+import type { Readable } from 'svelte/store';
+
+export function writableToState<T>(store: Readable<T>): {state: T} {
+  let state = $state<T>();
+
+  const unsubscribe = store.subscribe(value => {
+    state = value;
+  });
+
+  onDestroy(unsubscribe);
+
+  return {
+    get state() { return state },
+    set(value: T) { state = value }
+  };
+}
+лежит в проекте актуальный но это образцовый как минимум
