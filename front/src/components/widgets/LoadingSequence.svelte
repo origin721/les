@@ -3,31 +3,32 @@
     import LoadingPhase2 from "./LoadingPhase2.svelte";
     import LoadingPhase3 from "./LoadingPhase3.svelte";
 
-    let phase = $state(1);
+    const phase = Math.floor(Math.random() * 2) + 1;
+    //let phase = $state(1);
 
-    $effect(() => {
-        const phase2Timer = setTimeout(() => {
-            phase = 2;
-        }, 2000); // Duration of phase 1
+    //$effect(() => {
+    //    const phase2Timer = setTimeout(() => {
+    //        phase = 2;
+    //    }, 2000); // Duration of phase 1
 
-        const phase3Timer = setTimeout(() => {
-            phase = 3;
-        }, 4000); // Duration of phase 1 + phase 2
+    //    const phase3Timer = setTimeout(() => {
+    //        phase = 3;
+    //    }, 4000); // Duration of phase 1 + phase 2
 
-        return () => {
-            clearTimeout(phase2Timer);
-            clearTimeout(phase3Timer);
-        };
-    });
+    //    return () => {
+    //        clearTimeout(phase2Timer);
+    //        clearTimeout(phase3Timer);
+    //    };
+    //});
 </script>
 
 <div class="loading-sequence-container">
     {#if phase === 1}
-        <LoadingPhase3 />
+        <LoadingPhase1 />
     {:else if phase === 2}
         <LoadingPhase2 />
     {:else}
-        <LoadingPhase1 />
+        <LoadingPhase3 />
     {/if}
 </div>
 

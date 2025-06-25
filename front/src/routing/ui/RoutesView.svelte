@@ -61,7 +61,7 @@
         //type = null;
         await tick(); // подождать 1 кадр, чтобы отрендерилось "ничего"
 
-        await new Promise((r) => setTimeout(r, 5000));
+        await new Promise((r) => setTimeout(r, 1000));
 
         // TODO: сделать защиту от рендера если  данные не менялись сохранив prev в ссылку
         if (p.rState.pathname === ROUTES.ACCOUNTS_NEW) {
