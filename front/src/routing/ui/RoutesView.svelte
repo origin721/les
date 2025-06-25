@@ -20,6 +20,8 @@
     //import { AddFriendPage } from "../../pages/add_friend_page";
     import { writableToState } from "../../core/svelte_default/runs/writableToState.svelte";
     import { tick } from "svelte";
+    import LoadingSpinner1 from "../../components/widgets/LoadingSpinner1.svelte";
+    import LoadingSpinner2 from "../../components/widgets/LoadingSpinner2.svelte";
     //import HomePage from "../../pages/home/ui/HomePage.svelte";
     //import RandomPage from "../../pages/random/ui/RandomPage.svelte";
     //import AddFriendPage from "../../pages/add_friend_page/ui/AddFriendPage.svelte";
@@ -124,7 +126,11 @@
         <svelte:component this={mod.default} />
     {/await}
 {:else}
+    <LoadingSpinner1 />
+    <LoadingSpinner2 />
+    <!--
     <div>loading... TODO: сделать анимацию классную</div>
+     -->
 {/if}
 
 <!--
