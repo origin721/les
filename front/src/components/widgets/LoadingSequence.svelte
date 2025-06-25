@@ -1,9 +1,12 @@
 <script lang="ts">
+    import { randomByRange } from "../../core";
+    import { generateRandomString } from "../../core/random/generateRandomString";
+    import { getRandomInRange } from "../../core/random/getRandomInRange";
     import LoadingPhase1 from "./LoadingPhase1.svelte";
     import LoadingPhase2 from "./LoadingPhase2.svelte";
     import LoadingPhase3 from "./LoadingPhase3.svelte";
 
-    const phase = Math.floor(Math.random() * 2) + 1;
+    const phase = getRandomInRange(1, 3);
     //let phase = $state(1);
 
     //$effect(() => {
