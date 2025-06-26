@@ -1,3 +1,4 @@
+(window as any).location = { search: "" };
 import { render } from "@testing-library/svelte";
 import { expect, test } from "vitest";
 import App from "../App.svelte";
