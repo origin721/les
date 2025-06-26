@@ -15,7 +15,6 @@ import {
   generate_keys_ed25519,
 } from "../core/crypt";
 import { connectionLibp2p } from "../api/libp2p/createLibp2pNode";
-import { appAuthStore } from "../stores";
 //import { createLibp2pNode } from "../api/libp2p/createLibp2pNode";
 //import { tmpTest } from "../api/libp2p/tmp";
 //import { createLibp2pNode } from "../api/libp2p/createLibp2pNode";
@@ -43,34 +42,34 @@ export const appProcessesMount = () => {
   onMount(() => {
     //console.log(uuidv4());
     createAppSharedWorker();
-    appAuthStore.init();
     broadcast_middleware();
 
-    //Promise.all([generate_keys_curve25519(), generate_keys_ed25519()]).then(
-    //  ([c25519, e25519]) => {
-    //    const sseCtl = create_sse(
-    //      {
-    //        url: "http://localhost:8000/events",
-    //      },
-    //      {
-    //        pub_key_curve25519_client: c25519.publicKey,
-    //        priv_key_curve25519_client: c25519.privateKey,
-    //        pub_key_ed25519_client: e25519.publicKey,
-    //        pub_key_curve25519_server: ADMIN_KEYS.PUB_KEY_CURVE25519_SERVER,
-    //      },
-    //    );
-    //    sseCtl.connect().then(() => {
-    //      sseCtl.sendByPubKey({
-    //        pub_key_client: c25519.publicKey,
-    //        message: "hi!dd!))))",
-    //      });
-    //      sseCtl.sendByPubKey({
-    //        pub_key_client: c25519.publicKey,
-    //        message: "hi!!))))",
-    //      });
-    //    });
-    //  },
-    //);
+
+   //Promise.all([generate_keys_curve25519(), generate_keys_ed25519()]).then(
+   //  ([c25519, e25519]) => {
+   //    const sseCtl = create_sse(
+   //      {
+   //        url: "http://localhost:8000/events",
+   //      },
+   //      {
+   //        pub_key_curve25519_client: c25519.publicKey,
+   //        priv_key_curve25519_client: c25519.privateKey,
+   //        pub_key_ed25519_client: e25519.publicKey,
+   //        pub_key_curve25519_server: ADMIN_KEYS.PUB_KEY_CURVE25519_SERVER,
+   //      },
+   //    );
+   //    sseCtl.connect().then(() => {
+   //      sseCtl.sendByPubKey({
+   //        pub_key_client: c25519.publicKey,
+   //        message: "hi!dd!))))",
+   //      });
+   //      sseCtl.sendByPubKey({
+   //        pub_key_client: c25519.publicKey,
+   //        message: "hi!!))))",
+   //      });
+   //    });
+   //  },
+   //);
 
     connectionLibp2p();
 

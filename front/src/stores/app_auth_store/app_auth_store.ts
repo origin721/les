@@ -29,11 +29,6 @@ function createAppAuthStore() {
 
   const result = {
     subscribe: store.subscribe,
-    init: () => {
-      shared_worker_store.fetch({
-        path: PATHS.GET_ACCOUNTS,
-      });
-    },
     _add: (newList: AccountDto[]) => {
       store.update((prev) => ({
         byId: {
@@ -99,6 +94,10 @@ function createAppAuthStore() {
     },
     //getById
   };
+
+  // shared_worker_store.fetch({
+  //   path: PATHS.GET_ACCOUNTS,
+  // });
 
   return result;
 }

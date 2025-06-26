@@ -7,36 +7,43 @@ import { yamux } from "@chainsafe/libp2p-yamux";
 import { ping } from "@libp2p/ping";
 import { bootstrap } from "@libp2p/bootstrap";
 import { identify } from "@libp2p/identify";
-import { webRTC } from "@libp2p/webrtc";
-import { circuitRelayTransport } from "@libp2p/circuit-relay-v2";
-import { peerIdFromPrivateKey } from "@libp2p/peer-id";
-import {
+import { webRTC } from '@libp2p/webrtc';
+import { circuitRelayTransport } from '@libp2p/circuit-relay-v2';
+import { peerIdFromPrivateKey } from '@libp2p/peer-id'
+import { 
   privateKeyFromString,
   recommendedGenerateKeyPair,
 } from "../../libs/libp2p";
 
-//const peerId = await peerIdFromPrivateKey(keyPair);
+  //const peerId = await peerIdFromPrivateKey(keyPair);
 
 type Props = {
   keyPair?: string;
-};
+}
 
-export async function connectionLibp2p(props?: Props) {
+export async function connectionLibp2p(
+  props?: Props,
+) {
   const keyPair = await (() => {
-    if (typeof props?.keyPair === "string") {
+    if (typeof props?.keyPair === 'string') {
       return privateKeyFromString(props.keyPair);
-    } else if (props?.keyPair) {
+    }
+    else if (props?.keyPair) {
       return props.keyPair;
     }
     // Случай если keyPair будет не обязательным
     return recommendedGenerateKeyPair();
-  })();
+ })()
 
-  //return;
+ return;
 
   const node = await createLibp2p({
     privateKey: keyPair,
-    transports: [webSockets(), webRTC(), circuitRelayTransport()],
+    transports: [
+      webSockets(),
+      webRTC(),
+      circuitRelayTransport(),
+    ],
     streamMuxers: [yamux()],
     connectionEncrypters: [noise()],
     peerDiscovery: [
@@ -71,6 +78,7 @@ export async function connectionLibp2p(props?: Props) {
           "/dns4/bootstrap-1.filecoin.io/tcp/1347/p2p/QmQCU2EcMqAqQPR2i9bChDtGNJchTbq5TbXJJ16u19uLTa",
           "/dns4/bootstrap-2.filecoin.io/tcp/1347/p2p/QmNnooDu7bfjPFoTZYxMNLWUQJyrVwtbZg5gBMjTezGAJN",
           "/dns4/bootstrap-3.filecoin.io/tcp/1347/p2p/QmQCU2EcMqAqQPR2i9bChDtGNJchTbq5TbXJJ16u19uLTa",
+
         ],
       }),
     ],
@@ -80,14 +88,14 @@ export async function connectionLibp2p(props?: Props) {
       pubsub: gossipsub(),
       ping: ping(),
     },
-    //logger: {
-    //   forComponent: () => new MyService(),
-    //}
+   //logger: {
+   //   forComponent: () => new MyService(),
+   //}
   });
 
-  //node.addEventListener("peer:discovery", (event) => {
-  //  const peerId = event.detail.id;
-  //  console.log(`Discovered new peer: ${peerId.toString()}`);
-  //  //console.log(`${peerId.toString()}`);
-  //});
+ //node.addEventListener("peer:discovery", (event) => {
+ //  const peerId = event.detail.id;
+ //  console.log(`Discovered new peer: ${peerId.toString()}`);
+ //  //console.log(`${peerId.toString()}`);
+ //});
 }

@@ -2,19 +2,21 @@
   "name": "secure-message",
   "private": true,
   "version": "0.0.0",
+  "main": "src/main.ts",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "vitest",
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-check --tsconfig ./tsconfig.json --watch",
-    "ncu": "npx npm-check-updates"
+    "ncu": "npx npm-check-updates",
+    "test": "vitest"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^5.1.0",
     "@tailwindcss/postcss": "^4.1.9",
+    "@testing-library/svelte": "^5.2.8",
     "@tsconfig/svelte": "^5.0.4",
     "autoprefixer": "^10.4.21",
     "jsdom": "^26.1.0",
@@ -40,7 +42,6 @@
     "@libp2p/ping": "^2.0.33",
     "@libp2p/webrtc": "^5.2.16",
     "@libp2p/websockets": "^9.2.14",
-    "@testing-library/svelte": "^5.2.8",
     "libp2p": "^2.8.9",
     "libsodium-wrappers": "^0.7.15",
     "uuid": "^11.1.0"
