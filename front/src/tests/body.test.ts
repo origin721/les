@@ -3,9 +3,8 @@ import { expect, test } from "vitest";
 import App from "../App.svelte";
 
 test("проверка, что в body нет текста", () => {
-  const { container } = render(App, { target: document.body });
-  const body = container.querySelector("body");
-  expect(body).toBeEmptyDOMElement();
+  const { container } = render(App);
+  expect(container.textContent).toBe("");
 });
 
 // test('проверка на отображение svelte', () => {
