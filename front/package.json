@@ -40,6 +40,7 @@
     "@libp2p/ping": "^2.0.33",
     "@libp2p/webrtc": "^5.2.16",
     "@libp2p/websockets": "^9.2.14",
+    "@testing-library/svelte": "^5.2.8",
     "libp2p": "^2.8.9",
     "libsodium-wrappers": "^0.7.15",
     "uuid": "^11.1.0"
