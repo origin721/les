@@ -5,7 +5,7 @@
     import LoadingPhase1 from "./LoadingPhase1.svelte";
     import LoadingPhase2 from "./LoadingPhase2.svelte";
     import LoadingPhase3 from "./LoadingPhase3.svelte";
-
+    
     const phase = getRandomInRange(1, 3);
     //let phase = $state(1);
 
