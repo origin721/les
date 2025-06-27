@@ -9,27 +9,40 @@ import { bootstrap } from "@libp2p/bootstrap";
 import { identify } from "@libp2p/identify";
 import { webRTC } from '@libp2p/webrtc';
 import { circuitRelayTransport } from '@libp2p/circuit-relay-v2';
-import { peerIdFromPrivateKey } from '@libp2p/peer-id'
 import { 
   privateKeyFromString,
   recommendedGenerateKeyPair,
 } from "../../libs/libp2p";
 
-  //const peerId = await peerIdFromPrivateKey(keyPair);
-
-type Props = {
+export interface CreateLibp2pNodeOptions {
+  /** Строка приватного ключа для создания PeerId. Если не указан, генерируется новый */
   keyPair?: string;
 }
 
+/**
+ * Создает и настраивает LibP2P ноду для P2P коммуникации
+ * 
+ * @param options - Опции для создания ноды
+ * @returns Настроенная LibP2P нода
+ * 
+ * @example
+ * ```typescript
+ * // Создание ноды с существующим ключом
+ * const node = await connectionLibp2p({ keyPair: "existing_key" });
+ * 
+ * // Создание ноды с новым ключом
+ * const node = await connectionLibp2p();
+ * ```
+ */
 export async function connectionLibp2p(
-  props?: Props,
+  options?: CreateLibp2pNodeOptions,
 ) {
   const keyPair = await (() => {
-    if (typeof props?.keyPair === 'string') {
-      return privateKeyFromString(props.keyPair);
+    if (typeof options?.keyPair === 'string') {
+      return privateKeyFromString(options.keyPair);
     }
-    else if (props?.keyPair) {
-      return props.keyPair;
+    else if (options?.keyPair) {
+      return options.keyPair;
     }
     // Случай если keyPair будет не обязательным
     return recommendedGenerateKeyPair();
