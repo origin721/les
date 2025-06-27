@@ -11,6 +11,8 @@ export type Account = {
   httpServers: HttpServerParam[];
   date_created: Date;
   date_updated?: Date;
+  _pass: string;
+  _libp2p_keyPair: string;
 };
 
 export function get_accounts(
