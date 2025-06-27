@@ -1,244 +1,34 @@
-В Svelte 5, который пока находится в стадии preview, управление состоянием (state) можно осуществлять с помощью нового API, основанного на реактивных переменных и функциях. Вот пример того, как можно создать и управлять состоянием в Svelte 5:
+# Контекстный файл проекта secure-message
 
-1. **Создание реактивного состояния**: Используйте переменные с префиксом `$` для создания реактивных состояний.
+Для экономии токенов детальная информация вынесена в папку `llm/`:
 
-```svelte
-<script>
-    let count = $state(0);
+## Справочные файлы:
+- **llm/rules.md** - ЧИТАТЬ ВСЕГДА (9 обязательных правил проекта)
+- **llm/svelte5.md** - читать при работе с компонентами Svelte ($state, $derived, $effect, stores)
+- **llm/libp2p.md** - читать при работе с сетевыми функциями (НЕ УСТАНАВЛИВАТЬ без необходимости!)
+- **llm/testing.md** - читать при написании/запуске тестов (только `npm run test`)
 
-    function increment() {
-        count += 1;
-    }
-</script>
+## Краткие напоминания:
 
-<button on:click={increment}>
-    Clicked {count} {count === 1 ? 'time' : 'times'}
-</button>
-```
+### Структура проекта:
+- Компоненты в `Widgets/`, не `components/`
+- Единицы: `rem`, не `px`
+- Цвета: `text-[var(--...)]`
+- Язык: русский
 
-2. **Использование реактивных выражений**: Вы можете создавать реактивные выражения, которые автоматически обновляются при изменении зависимостей.
-
+### Svelte 5 (кратко):
 ```svelte
 <script>
     let count = $state(0);
     let double = $derived(count * 2);
-
-    function increment() {
-        count += 1;
-    }
-</script>
-
-<button on:click={increment}>
-    Clicked {count} {count === 1 ? 'time' : 'times'}, double is {double}
-</button>
-```
-
-3. **Использование эффектов**: Для выполнения побочных эффектов при изменении состояния используйте `$effect`.
-
-```svelte
-<script>
-    let count = $state(0);
-
+    
     $effect(() => {
-        console.log(`Count is now ${count}`);
+        console.log(`Count: ${count}`);
     });
-
-    function increment() {
-        count += 1;
-    }
 </script>
-
-<button on:click={increment}>
-    Clicked {count} {count === 1 ? 'time' : 'times'}
-</button>
 ```
 
-Эти примеры показывают основные способы создания и управления состоянием в Svelte 5. Для более сложных сценариев вы можете использовать дополнительные возможности, предоставляемые Svelte, такие как хранилища (stores) и контексты (contexts).
+### Актуальный пример из проекта:
+`src/core/svelte_default/runs/writableToState.svelte.ts` - образцовый файл для вынесения логики.
 
-В Svelte 5, который находится в стадии preview, концепция хранилищ (stores) остается важной частью управления состоянием. Однако, новый синтаксис с использованием `$state` предназначен для упрощения работы с реактивными состояниями внутри компонентов.
-
-Если вы хотите создать глобальное состояние, которое можно использовать в нескольких компонентах, вы можете использовать традиционные хранилища Svelte. Вот пример того, как можно создать и использовать хранилище в отдельном файле:
-
-1. **Создание хранилища в отдельном файле**:
-
-Создайте файл, например, `stores.js`:
-
-```javascript
-// stores.js
-import { writable } from 'svelte/store';
-
-// Создаем хранилище
-export const countStore = writable(0);
-```
-
-2. **Использование хранилища в компоненте**:
-
-Теперь вы можете использовать это хранилище в любом компоненте:
-
-```svelte
-<script>
-    import { countStore } from './stores.js';
-
-    function increment() {
-        countStore.update(n => n + 1);
-    }
-</script>
-
-<button on:click={increment}>
-    Clicked {$countStore} {$countStore === 1 ? 'time' : 'times'}
-</button>
-```
-
-В этом примере `countStore` является глобальным хранилищем, которое можно использовать в любом компоненте вашего приложения. Вы можете обновлять и читать значение хранилища с помощью методов `update` и `$` соответственно.
-
-Если вы хотите использовать новый синтаксис `$state` для создания глобального состояния, вам нужно будет подождать дальнейших обновлений и документации от команды Svelte, так как на данный момент это не поддерживается напрямую.
-
-
-Пример как в react только на правильном svelte 5 синтаксисе вынеса в отдельный файл логику
-import { onDestroy } from 'svelte';
-import type { Readable } from 'svelte/store';
-
-export function writableToState<T>(store: Readable<T>): {state: T} {
-  let state = $state<T>();
-
-  const unsubscribe = store.subscribe(value => {
-    state = value;
-  });
-
-  onDestroy(unsubscribe);
-
-  return {
-    get state() { return state },
-    set(value: T) { state = value }
-  };
-}
-лежит в проекте актуальный но это образцовый как минимум
-
-# Правила и указания:
-# 1. Для компонентов используй директорию `Widgets`, а не `components`.
-# 2. Не меняй кардинально существующий код. Подстраивайся под стиль, чтобы упростить ревью.
-# 3. Не запускай тесты, если не просят. Используй только команду `npm run test`.
-# 4. Используй `rem` как единицу измерения, а не `px`.
-# 5. Для цветов используй переменные Tailwind: `text-[var(--...)]`.
-# 6. Всегда отвечай на русском языке.
-# 7. При анализе вывода тестов обращай внимание на слово `failed`.
-# 8. Если ошибка повторяется, попробуй `npm install` и `npm run test`.
-# 9. Если ошибка не исчезла, используй `git checkout HEAD~` для поиска рабочего состояния. После нахождения проблемы, верни актуальный `llm_prompt` с помощью `git checkout -- front/llm_prompt` и исправь ошибку в актуальной версии.
-
-Для работы с libp2p в Node.js и выполнения задач, таких как добавление пира по его PeerId и отправка/получение сообщения "hi", вам потребуется установить и настроить библиотеку libp2p. Вот пример актуального синтаксиса для выполнения этих задач:
-
-1. Установите необходимые пакеты:
-
-```bash
-npm install libp2p @libp2p/tcp @libp2p/webrtc-star @libp2p/websockets @libp2p/bootstrap
-```
-
-2. Создайте и настройте узел libp2p:
-
-```javascript
-const { createLibp2p } = require('libp2p');
-const { TCP } = require('@libp2p/tcp');
-const { WebSockets } = require('@libp2p/websockets');
-const { Bootstrap } = require('@libp2p/bootstrap');
-const { NOISE } = require('@chainsafe/libp2p-noise');
-const { Mplex } = require('@libp2p/mplex');
-
-async function createNode() {
-  const node = await createLibp2p({
-    addresses: {
-      listen: ['/ip4/0.0.0.0/tcp/0', '/ip4/0.0.0.0/tcp/0/ws']
-    },
-    transports: [new TCP(), new WebSockets()],
-    connectionEncryption: [new NOISE()],
-    streamMuxers: [new Mplex()],
-    peerDiscovery: [new Bootstrap({
-      list: [
-        '/dnsaddr/bootstrap.libp2p.io/p2p/QmNnooDu7bfjPFoTZYxMNLWUQJyrVwtbZg5gBMjTezGAJN',
-        '/dnsaddr/bootstrap.libp2p.io/p2p/QmQCU2EcMqAqQPR2i9bChDtGNJchTbq5TbXJJ16u19uLTa'
-      ]
-    })]
-  });
-
-  await node.start();
-  console.log('Libp2p node started with id:', node.peerId.toString());
-
-  return node;
-}
-```
-
-3. Добавьте пира по его PeerId и отправьте сообщение "hi":
-
-```javascript
-async function connectAndSendHi(node, peerId) {
-  try {
-    await node.dial(peerId);
-    console.log(`Connected to peer: ${peerId}`);
-
-    const stream = await node.dialProtocol(peerId, '/your-protocol/1.0.0');
-    const writer = stream.sink;
-    const reader = stream.source;
-
-    const encoder = new TextEncoder();
-    const data = encoder.encode('hi');
-
-    await writer.write(data);
-    console.log('Sent "hi" to peer');
-
-    const decoder = new TextDecoder();
-    for await (const chunk of reader) {
-      console.log('Received:', decoder.decode(chunk));
-    }
-  } catch (err) {
-    console.error('Error:', err);
-  }
-}
-```
-
-4. Основной код для запуска:
-
-```javascript
-(async () => {
-  const node = await createNode();
-  const peerId = 'QmPeerIdToConnectTo'; // Замените на реальный PeerId
-  await connectAndSendHi(node, peerId);
-})();
-```
-
-
-Этот пример показывает, как создать узел libp2p, подключиться к другому пиру по его PeerId и отправить/получить сообщение "hi". Убедитесь, что вы заменили `'QmPeerIdToConnectTo'` на реальный PeerId, к которому вы хотите подключиться, и `'/your-protocol/1.0.0'` на реальный идентификатор протокола, который вы используете.
-
-### **Тестирование с помощью Vitest (Обновленная информация)**
-
-Для проверки того, что в элементе `body` нет текста с использованием Vitest и Svelte, можно воспользоваться следующим примером. Этот пример остается актуальным, однако подход к конфигурации Vitest был обновлен.
-
-**Пример теста:**
-```javascript
-import { render } from '@testing-library/svelte';
-import { expect, test } from 'vitest';
-import App from './App.svelte';
-
-test('проверка, что в body нет текста', () => {
-  const { container } = render(App);
-  const body = container.querySelector('body');
-  expect(body).toBeEmptyDOMElement();
-});
-```
-
-**Ключевые моменты по актуальной настройке Vitest:**
-
-1.  **Установка:** `npm install -D vitest`. *Важно: Требуется Vite >=v5.0.0 и Node.js >=v18.0.0.*
-2.  **Конфигурация:** Настройка производится в `vite.config.ts` через свойство `test`, что обеспечивает единую конфигурацию с Vite.
-3.  **Обновление типов:** Ссылка на типы в `vite.config.ts` обновилась. **Устаревший вариант:** `/// <reference types="vitest" />`. **Актуальный вариант:** `/// <reference types="vitest/config" />`.
-
-    ```typescript
-    // vite.config.ts
-    /// <reference types="vitest/config" />
-    import { defineConfig } from 'vite'
-
-    export default defineConfig({
-      test: {
-        // ... опции Vitest
-      },
-    })
-    ```
-*Эта информация заменяет предыдущие, более краткие инструкции, так как отражает последние изменения в Vitest.*
+**ВАЖНО**: Всегда читай `llm/rules.md` перед началом работы!
