@@ -10,7 +10,7 @@ export type FriendEntity = {
   namePub: string;
   // TODO: сделать проверку что расшифрованный accId соотвествует если буду по той таблице идти
   myAccId: string;
-  friendPubKey: string;
+  friendPubKeyLibp2p: string;
 }
 
 export function add_friend(new_list: FriendEntity[]) {
