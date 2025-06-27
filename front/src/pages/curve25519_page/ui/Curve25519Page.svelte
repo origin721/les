@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Link, ROUTES } from "../../../routing";
   import Curve25519PageEncrypt from "./Curve25519PageEncrypt.svelte";
+  import Curve25519PageDecrypt from "./Curve25519PageDecrypt.svelte";
 
   const PAGE_TABS = {
     ENCRYPT: "ENCRYPT",
@@ -38,6 +39,6 @@
   {#if pageTab === PAGE_TABS.ENCRYPT}
     <Curve25519PageEncrypt />
   {:else}
-    TODO
+    <Curve25519PageDecrypt />
   {/if}
 </main>

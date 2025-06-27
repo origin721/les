@@ -126,7 +126,8 @@
 
 {#if componentPromise}
     {#await componentPromise then mod}
-        <svelte:component this={mod.default} />
+        {@const Component = mod.default}
+        <Component />
     {/await}
 {:else}
     <LoadingSequence />
