@@ -35,8 +35,6 @@ export function add_friend(
           message: JSON.stringify({
             ...item,
             id: newId,
-            //_pass: gen_pass(),
-            //_libp2p_keyPair: privateKeyToString(libp2p_keyPair),
             date_created: new Date(),
           }),
         });
