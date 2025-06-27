@@ -8,6 +8,7 @@ export const ROUTES = {
     RANDOM: '/random',
     //AEC_ENCR: '/aec_encr',
     CURVE_25519: '/curve25519',
+    API_KEYS: '/api-keys',
     CHAT_ROOMS: '/chat-rooms',
     CHAT_ROOMS_ADD: '/chat-rooms/add',
     ADD_FRIEND: '/add-friend',

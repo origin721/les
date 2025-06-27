@@ -92,6 +92,10 @@
             componentPromise = import(
                 `../../pages/curve25519_page/ui/Curve25519Page.svelte`
             );
+        } else if (p.rState.pathname === ROUTES.API_KEYS) {
+            componentPromise = import(
+                `../../pages/api_keys_page/ui/ApiKeysPage.svelte`
+            );
         } else if (p.rState.pathname === ROUTES.ADD_FRIEND) {
             componentPromise = import(
                 `../../pages/add_friend_page/ui/AddFriendPage.svelte`
