@@ -1,7 +1,4 @@
-import { add_friend, type FriendEntity, type FriendEntityFull } from "../../indexdb/friends/add_friend";
-import { get_friends } from "../../indexdb/friends/get_friends";
 import { get_account_by_id } from "../../indexdb/accounts/get_account_by_id";
-import { privateKeyStringToPeerId } from "../../libs/libp2p";
 import { connectionLibp2p } from "../../api/libp2p/createLibp2pNode";
 
 export interface CreateFriendsLibp2pServiceOptions {
