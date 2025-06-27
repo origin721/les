@@ -69,9 +69,22 @@ export const friends_libp2p_service = (options: FriendsLibp2pServiceOptions) => 
 
   return {
     // Core friend management
-    async addFriend(friendData: FriendEntity) {
+    async addFriend(friendData: FriendEntity): Promise<FriendEntityFull> {
       await add_friend([{ ...friendData, myAccId: accId }]);
       await this.loadFriendsList();
+      
+      // Получаем добавленного друга из памяти
+      const friends = Object.values(back_store.friends_by_account[accId] || {});
+      const addedFriend = friends.find(friend => 
+        friend.namePub === friendData.namePub && 
+        friend.friendPubKeyLibp2p === friendData.friendPubKeyLibp2p
+      );
+      
+      if (!addedFriend) {
+        throw new Error('Failed to add friend');
+      }
+      
+      return addedFriend;
     },
 
     async removeFriend(friendId: string) {
