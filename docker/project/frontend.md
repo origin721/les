@@ -75,5 +75,4 @@ docker run -d -p 3000:5173 \
 ```
 front/node_modules
 front/dist
-front/.svelte-kit
-front/build
+```

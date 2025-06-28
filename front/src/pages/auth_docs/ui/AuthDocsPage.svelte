@@ -27,7 +27,7 @@
     <div class="docs-container" data-widget-name="AuthDocsPage">
         <header class="docs-header">
             <div class="back-link-container">
-                <Link href={ROUTES.AUTH} className="back-link">
+                <Link href={ROUTES.HOME} className="back-link">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="24"
