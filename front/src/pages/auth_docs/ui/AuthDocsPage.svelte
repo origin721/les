@@ -130,7 +130,6 @@
                             <h3>LIBSODIUM</h3>
                             <p>Основная криптографическая библиотека для клиентского шифрования.</p>
                             <div class="tech-details">
-                                <span class="tech-tag">ChaCha20-Poly1305</span>
                                 <span class="tech-tag">Curve25519</span>
                                 <span class="tech-tag">Ed25519</span>
                             </div>
@@ -225,7 +224,7 @@
         </main>
 
         <footer class="docs-footer">
-            <p>// SECURE_DOCUMENTATION_TERMINAL_v0.1.0 //</p>
+            <p>// SECURE_DOCUMENTATION_TERMINAL_v0.0.1 //</p>
         </footer>
     </div>
 </div>
