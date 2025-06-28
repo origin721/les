@@ -2,46 +2,17 @@
     import {
         encrypt_curve25519,
         encrypt_curve25519_verify,
-        generate_keys_curve25519,
     } from "../../../core/crypt";
-    import { Link, ROUTES } from "../../../routing";
-    import { appAuthStore } from "../../../stores";
+    import { apiKeysStore } from "../../../stores";
     import { btn } from "../../../styles/button";
 
-    const myKeys = $state({
-        pub: "",
-        priv: "",
-        loading: false,
-    });
-    const widgetCtl = $state({
-        selectedAccId: null as null | string,
-        clearAcc: () => {
-            widgetCtl.selectedAccId = null;
-        },
-    });
-
-    const consumerKeys = $state({
-        pub: "",
-    });
-
-    /**
-     * Зашифрованный
-     */
+    let selectedMyKeyId = $state("");
+    let selectedPartnerKeyId = $state("");
     let encryptedText = $state("");
-
     let isVerifyEncrypt = $state(false);
-
     let sourceMessage = $state("");
 
-    async function generateKeys() {
-        if (myKeys.loading) return;
-
-        myKeys.loading = true;
-        const curve2559 = await generate_keys_curve25519();
-        myKeys.priv = curve2559.privateKey;
-        myKeys.pub = curve2559.publicKey;
-        myKeys.loading = false;
-    }
+    const store = $derived($apiKeysStore);
 
     type SubmitParam = SubmitEvent & {
         currentTarget: EventTarget & HTMLFormElement;
@@ -49,20 +20,31 @@
 
     async function onEncrypt(e: SubmitParam) {
         e.preventDefault();
-        //e.stopPropagation();
+
+        const partnerKey = store.partnerKeys.find(k => k.id === selectedPartnerKeyId);
+        if (!partnerKey) {
+            alert("Выберите ключ партнера");
+            return;
+        }
 
         if (isVerifyEncrypt) {
+            const myKey = store.myKeys.find(k => k.id === selectedMyKeyId);
+            if (!myKey) {
+                alert("Выберите свой ключ для подписи");
+                return;
+            }
+
             encryptedText = JSON.stringify(
                 await encrypt_curve25519_verify({
-                    receiverPublicKey: consumerKeys.pub,
-                    senderPrivateKey: myKeys.priv,
+                    receiverPublicKey: partnerKey.publicKey,
+                    senderPrivateKey: myKey.privateKey,
                     message: sourceMessage,
                 }),
             );
         } else {
             encryptedText = JSON.stringify(
                 await encrypt_curve25519({
-                    receiverPublicKey: consumerKeys.pub,
+                    receiverPublicKey: partnerKey.publicKey,
                     message: sourceMessage,
                 }),
             );
@@ -73,61 +55,81 @@
         encryptedText = "";
     }
 
-    console.log({ appAuthStore: $appAuthStore });
+    async function copyEncryptedText() {
+        if (!encryptedText) {
+            alert("Нет текста для копирования");
+            return;
+        }
+        
+        try {
+            await navigator.clipboard.writeText(encryptedText);
+            alert("Зашифрованный текст скопирован в буфер обмена");
+        } catch (err) {
+            console.error("Ошибка копирования:", err);
+            alert("Ошибка копирования в буфер обмена");
+        }
+    }
 </script>
 
-<label>
-    Выберете акаунт
-    <select
-        bind:value={widgetCtl.selectedAccId}
-        class="text-slate-800 bg-slate-400"
-    >
-        {#each Object.values($appAuthStore.byId) as account}
-            <option value={account.id}
-                >{account.namePub} {account.id.slice(0, 3)}</option
-            >
-        {/each}
-    </select>
-    <button onclick={widgetCtl.clearAcc}>X</button>
-</label>
-
-<label>
-    С проверкой подписи
-    <input bind:checked={isVerifyEncrypt} type="checkbox" />
-</label>
-
-{#if isVerifyEncrypt}
-    <div>
-        <button class={btn} type="button" onclick={generateKeys}
-            >Сгенерировать ключи</button
-        >
-        <button class={btn} type="button">Показать приватный ключ</button>
-    </div>
-{/if}
-
-<form onsubmit={onEncrypt} class="flex-col flex gap-4">
-    {#if isVerifyEncrypt}
-        <label class="flex-col flex">
-            Ваш публичный ключ
-            <input bind:value={myKeys.pub} required />
+<div class="flex flex-col gap-4">
+    {#if store.partnerKeys.length === 0}
+        <div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded">
+            <p>Сначала добавьте ключи партнеров на вкладке "Управление ключами"</p>
+        </div>
+    {:else}
+        <label>
+            С проверкой подписи
+            <input bind:checked={isVerifyEncrypt} type="checkbox" />
         </label>
+
+        <form onsubmit={onEncrypt} class="flex-col flex gap-4">
+            {#if isVerifyEncrypt}
+                <label class="flex-col flex">
+                    Выберите свой ключ для подписи
+                    <select bind:value={selectedMyKeyId} required class="border border-gray-300 rounded px-3 py-2">
+                        <option value="">-- Выберите ключ --</option>
+                        {#each store.myKeys as myKey}
+                            <option value={myKey.id}>{myKey.name}</option>
+                        {/each}
+                    </select>
+                </label>
+            {/if}
+
+            <label class="flex-col flex">
+                Выберите ключ партнера для шифрования
+                <select bind:value={selectedPartnerKeyId} required class="border border-gray-300 rounded px-3 py-2">
+                    <option value="">-- Выберите партнера --</option>
+                    {#each store.partnerKeys as partnerKey}
+                        <option value={partnerKey.id}>{partnerKey.name}</option>
+                    {/each}
+                </select>
+            </label>
+
+            <label class="flex-col flex">
+                Текст для шифрования
+                <textarea 
+                    bind:value={sourceMessage} 
+                    class="min-h-[5rem] border border-gray-300 rounded px-3 py-2"
+                    placeholder="Введите сообщение для шифрования"
+                    required
+                ></textarea>
+            </label>
+
+            <button class={btn} type="submit">Зашифровать</button>
+
+            <label class="flex-col flex">
+                Зашифрованный текст
+                <textarea
+                    bind:value={encryptedText}
+                    disabled
+                    class="min-h-[5rem] border border-gray-300 rounded px-3 py-2 bg-gray-100"
+                    placeholder="Здесь появится зашифрованное сообщение"
+                ></textarea>
+                <div class="flex gap-2">
+                    <button class={btn} onclick={copyEncryptedText} type="button" disabled={!encryptedText}>Копировать</button>
+                    <button class={btn} onclick={clearEncryptedText} type="button">Очистить</button>
+                </div>
+            </label>
+        </form>
     {/if}
-
-    <label class="flex-col flex">
-        Публичный ключ собиседника
-        <input bind:value={consumerKeys.pub} required />
-    </label>
-
-    <label class="flex-col flex">
-        Текст для шифрования
-        <textarea bind:value={sourceMessage} class="min-h-[5rem]"></textarea>
-    </label> <button class={btn} type="submit">Зашифровать</button>
-    <label class="flex-col flex">
-        Зашифрованный текст <textarea
-            bind:value={encryptedText}
-            disabled
-            class="min-h-[5rem]"
-        ></textarea>
-        <button onclick={clearEncryptedText} type="button">Отчистить</button>
-    </label>
-</form>
+</div>

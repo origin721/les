@@ -1,4 +1,5 @@
 import { writable } from 'svelte/store';
+import { apiKeysStorage } from '../core/local-storage';
 
 export interface KeyPair {
   id: string;
@@ -21,13 +22,32 @@ interface ApiKeysState {
   partnerKeys: PartnerKey[];
 }
 
-const initialState: ApiKeysState = {
-  myKeys: [],
-  partnerKeys: []
+// Загружаем данные из localStorage при инициализации
+const loadInitialState = (): ApiKeysState => {
+  if (typeof window === 'undefined') {
+    // SSR защита
+    return { myKeys: [], partnerKeys: [] };
+  }
+  
+  return {
+    myKeys: apiKeysStorage.loadMyKeys(),
+    partnerKeys: apiKeysStorage.loadPartnerKeys()
+  };
 };
 
 function createApiKeysStore() {
-  const { subscribe, set, update } = writable<ApiKeysState>(initialState);
+  const { subscribe, set, update } = writable<ApiKeysState>(loadInitialState());
+
+  // Автосохранение при изменениях
+  const saveToStorage = (state: ApiKeysState) => {
+    if (typeof window !== 'undefined') {
+      apiKeysStorage.saveMyKeys(state.myKeys);
+      apiKeysStorage.savePartnerKeys(state.partnerKeys);
+    }
+  };
+
+  // Подписываемся на изменения для автосохранения
+  subscribe(saveToStorage);
 
   return {
     subscribe,
@@ -103,7 +123,11 @@ function createApiKeysStore() {
 
     // Очистка всех данных
     clearAll: () => {
-      set(initialState);
+      const emptyState = { myKeys: [], partnerKeys: [] };
+      set(emptyState);
+      if (typeof window !== 'undefined') {
+        apiKeysStorage.clearAllKeys();
+      }
     },
 
     // Получение статистики

@@ -1,3 +1,5 @@
 export const KEYS = {
     SECRET: 'SECRET',
+    API_KEYS_MY_KEYS: 'API_KEYS_MY_KEYS',
+    API_KEYS_PARTNER_KEYS: 'API_KEYS_PARTNER_KEYS',
 } as const;
