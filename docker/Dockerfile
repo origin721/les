@@ -33,7 +33,7 @@ WORKDIR /app/back
 RUN cargo build --release
 
 # Запускаем только Rust сервер
-ENTRYPOINT ["./target/release/back"]
+ENTRYPOINT ["./back/target/release/back"]
 
 # Открываем порт 8080
 EXPOSE 8080
