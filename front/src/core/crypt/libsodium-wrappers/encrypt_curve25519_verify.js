@@ -1,6 +1,6 @@
 // @ts-check
 
-import { sodium } from "../../../libs/sodium.js";
+import sodium from 'libsodium-wrappers';
 
 /**
  * Зашифровать
@@ -51,4 +51,3 @@ export async function encrypt_curve25519_verify({
     return null;
   }
 }
-

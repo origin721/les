@@ -1,6 +1,6 @@
 // @ts-check
 
-import { sodium } from "../../../libs/sodium.js";
+import sodium from 'libsodium-wrappers';
 
 /**
  * 

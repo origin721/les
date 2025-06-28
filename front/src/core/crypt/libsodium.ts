@@ -10,4 +10,4 @@ export {
   generate_keys_ed25519,
   sign_ed25519,
   verify_sign_ed25519,
-} from '../../../../event-stream/src/core/crypt/libsodium-wrappers/index.js';
+} from './libsodium-wrappers/index.js';

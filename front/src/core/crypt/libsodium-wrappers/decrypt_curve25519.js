@@ -1,5 +1,5 @@
 // @ts-check
-import { sodium } from '../../../libs/sodium.js';
+import sodium from 'libsodium-wrappers';
 import { uint8ArrayToString } from '../../uint8ArrayToString.js';
 
 /**

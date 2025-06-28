@@ -1,5 +1,5 @@
 // @ts-check
-import { sodium } from '../../../libs/sodium.js';
+import sodium from 'libsodium-wrappers';
 import { uint8ArrayToString } from '../../uint8ArrayToString.js';
 import { generate_keys_curve25519_from_password } from './generate_keys_curve25519_from_password.js';
 

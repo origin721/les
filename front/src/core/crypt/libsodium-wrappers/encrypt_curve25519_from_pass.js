@@ -41,4 +41,3 @@ export async function encrypt_curve25519_from_pass({
     return null;
   }
 }
-
