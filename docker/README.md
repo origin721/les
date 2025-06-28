@@ -22,7 +22,7 @@ docker-compose exec alpine-dev sh
 ```bash
 # Клонировать репозиторий
 git clone <repository-url>
-cd secure-message
+cd les-scripton
 
 # Запустить все сервисы
 docker-compose up -d
