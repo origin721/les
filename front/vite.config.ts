@@ -13,11 +13,14 @@ export default defineConfig({
       }
     }
   },
- // build: {
- //  rollupOptions: {
- //    output: {
- //      assetFileNames: 'assets/[name]-[hash][extname]', // Для правильного именования файлов
- //    },
- //  },
- //},
+  build: {
+    rollupOptions: {
+      output: {
+        assetFileNames: 'assets/[name]-[hash][extname]', // Для правильного именования файлов
+      },
+    },
+  },
+  optimizeDeps: {
+    include: ['libsodium-wrappers']
+  }
 })
