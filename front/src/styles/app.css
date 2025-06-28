@@ -15,6 +15,20 @@
     font-size: 28px;
 }
 
+/* Адаптивность для телефонов - уменьшение базового размера шрифта */
+@media (max-width: 30rem) {
+    :root {
+        font-size: 12px;
+    }
+}
+
+/* Дополнительная адаптивность для очень маленьких экранов */
+@media (max-width: 24rem) {
+    :root {
+        font-size: 10px;
+    }
+}
+
 button,
 input,
 select,
