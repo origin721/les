@@ -1,6 +1,7 @@
 export const ROUTES = {
     HOME: '/home',
     AUTH: '/auth',
+    AUTH_DOCS: '/auth/docs',
     SETTINGS: '/settings',
     ACCOUNTS: '/accounts',
     ACCOUNT_SETTINGS: '/account/settings',

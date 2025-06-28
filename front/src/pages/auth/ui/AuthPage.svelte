@@ -114,6 +114,9 @@
                     <Link className="create-link" href={ROUTES.ACCOUNTS_NEW}
                         >[CREATE_NEW_ID]</Link
                     >
+                    <Link className="docs-link" href={ROUTES.AUTH_DOCS}
+                        >[SYSTEM_DOCUMENTATION]</Link
+                    >
                 </div>
             </form>
         </main>
@@ -323,7 +326,8 @@
     }
 
     .submit-btn,
-    .create-link {
+    .create-link,
+    .docs-link {
         width: 100%;
         padding: 0.75rem;
         border: 1px solid var(--border-color);
@@ -338,10 +342,22 @@
     }
 
     .submit-btn:hover,
-    .create-link:hover {
+    .create-link:hover,
+    .docs-link:hover {
         background-color: var(--button-hover-background);
         color: var(--button-hover-text);
         box-shadow: 0 0 10px var(--button-hover-background);
+    }
+
+    .docs-link {
+        background-color: transparent;
+        border-style: dashed;
+        opacity: 0.8;
+    }
+
+    .docs-link:hover {
+        opacity: 1;
+        border-style: solid;
     }
 
     .auth-footer {
