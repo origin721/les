@@ -45,9 +45,9 @@
                 return;
             }
 
-            // Преобразуем формат {nonce, cipherText} в {cipher, nonce}
+            // Правильный формат для расшифровки с подписью
             encryptedText = JSON.stringify({
-                cipher: result.cipherText,
+                cipherText: result.cipherText,
                 nonce: result.nonce,
             });
         } else {
@@ -61,10 +61,8 @@
                 return;
             }
 
-            // Для простого шифрования создаем JSON с cipher (без nonce)
-            encryptedText = JSON.stringify({
-                cipher: result,
-            });
+            // Для простого шифрования - только hex-строка
+            encryptedText = result;
         }
     }
 

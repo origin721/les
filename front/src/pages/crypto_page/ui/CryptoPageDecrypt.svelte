@@ -36,42 +36,72 @@
         }
 
         try {
-            const encryptedData = JSON.parse(encryptedMessage);
             let decryptionSuccessful = false;
+
+            // Определяем тип шифрования по формату входных данных
+            let isJsonFormat = false;
+            let encryptedData: any = null;
+            
+            try {
+                encryptedData = JSON.parse(encryptedMessage);
+                isJsonFormat = true;
+            } catch {
+                // Это простая hex-строка
+                isJsonFormat = false;
+            }
 
             // Перебираем все мои ключи для расшифровки
             for (const myKey of store.myKeys) {
                 try {
                     decryptionLog = [...decryptionLog, `Попытка расшифровки ключом: ${myKey.name}`];
 
-                    let result: string;
+                    let result: string | null = null;
 
-                    if (isVerifyDecrypt) {
+                    if (isVerifyDecrypt && isJsonFormat) {
+                        // Расшифровка с подписью
                         const senderKey = store.partnerKeys.find(k => k.id === selectedSenderKeyId);
                         if (!senderKey) {
                             decryptionLog = [...decryptionLog, `Ошибка: ключ отправителя не найден`];
                             continue;
                         }
 
+                        if (!encryptedData.cipherText || !encryptedData.nonce) {
+                            decryptionLog = [...decryptionLog, `Ошибка: неверный формат JSON для шифрования с подписью`];
+                            continue;
+                        }
+
                         result = await decrypt_curve25519_verify({
                             receiverPrivateKey: myKey.privateKey,
                             senderPublicKey: senderKey.publicKey,
-                            encryptedMessage: encryptedData.encryptedMessage,
-                            nonce: encryptedData.nonce,
-                            signature: encryptedData.signature
-                        });
-                    } else {
-                        result = await decrypt_curve25519({
-                            receiverPrivateKey: myKey.privateKey,
-                            encryptedMessage: encryptedData.encryptedMessage,
+                            cipherText: encryptedData.cipherText,
                             nonce: encryptedData.nonce
                         });
+                    } else if (!isVerifyDecrypt && !isJsonFormat) {
+                        // Простое шифрование (hex-строка) - новый формат v0.0.5
+                        result = await decrypt_curve25519({
+                            receiverPrivateKey: myKey.privateKey,
+                            receiverPublicKey: myKey.publicKey,
+                            cipherText: encryptedMessage
+                        });
+                    } else if (!isVerifyDecrypt && isJsonFormat && encryptedData.cipher) {
+                        // Простое шифрование (старый формат v0.0.4) - {"cipher": "hex"}
+                        decryptionLog = [...decryptionLog, `Обнаружен старый формат v0.0.4: {"cipher": "hex"}`];
+                        result = await decrypt_curve25519({
+                            receiverPrivateKey: myKey.privateKey,
+                            receiverPublicKey: myKey.publicKey,
+                            cipherText: encryptedData.cipher
+                        });
+                    } else {
+                        decryptionLog = [...decryptionLog, `Ошибка: несоответствие типа шифрования и формата данных`];
+                        continue;
                     }
 
-                    decryptedText = result;
-                    decryptionLog = [...decryptionLog, `✅ Успешно расшифровано ключом: ${myKey.name}`];
-                    decryptionSuccessful = true;
-                    break;
+                    if (result) {
+                        decryptedText = result;
+                        decryptionLog = [...decryptionLog, `✅ Успешно расшифровано ключом: ${myKey.name}`];
+                        decryptionSuccessful = true;
+                        break;
+                    }
 
                 } catch (error) {
                     decryptionLog = [...decryptionLog, `❌ Ошибка с ключом ${myKey.name}: ${error}`];
@@ -84,7 +114,7 @@
             }
 
         } catch (error) {
-            console.error("Ошибка парсинга JSON:", error);
+            console.error("Ошибка расшифровки:", error);
             decryptedText = "Ошибка: неверный формат зашифрованного сообщения";
         }
     }
@@ -126,11 +156,11 @@
             {/if}
 
             <label class="flex-col flex">
-                Зашифрованное сообщение (JSON)
+                Зашифрованное сообщение
                 <textarea 
                     bind:value={encryptedMessage} 
                     class="min-h-[5rem] border border-gray-300 rounded px-3 py-2" 
-                    placeholder="Вставьте зашифрованное сообщение в формате JSON"
+                    placeholder="Вставьте зашифрованное сообщение (hex-строка для простого шифрования или JSON для шифрования с подписью)"
                     required
                 ></textarea>
             </label>
