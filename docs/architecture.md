@@ -1,5 +1,7 @@
 # 🏗️ Архитектура системы
 
+**[🏠 ← Главная навигация](../links.md)**
+
 ```mermaid
 graph TB
     subgraph "les.scripton.app Ecosystem"
