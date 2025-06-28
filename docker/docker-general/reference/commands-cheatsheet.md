@@ -52,6 +52,18 @@ docker-compose logs -f
 
 # Пересобрать
 docker-compose up --build
+
+# Полная очистка
+docker-compose down --volumes --rmi all --remove-orphans
+
+# Остановить и удалить тома
+docker-compose down --volumes
+
+# Остановить и удалить образы
+docker-compose down --rmi all
+
+# Удалить осиротевшие контейнеры
+docker-compose down --remove-orphans
 ```
 
 ## Очистка

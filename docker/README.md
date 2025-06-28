@@ -64,6 +64,26 @@ docker-compose logs -f
 docker-compose exec les-scripton sh
 ```
 
+### Команды очистки
+```bash
+# Полная очистка (удаляет контейнеры, тома, образы, сети)
+docker-compose down --volumes --rmi all --remove-orphans
+
+# Остановить и удалить тома
+docker-compose down --volumes
+
+# Остановить и удалить образы
+docker-compose down --rmi all
+
+# Удалить осиротевшие контейнеры
+docker-compose down --remove-orphans
+
+# Общая очистка Docker системы
+docker system prune -a
+```
+
+**⚠️ Внимание:** Команды с `--volumes` удалят все данные из базы данных!
+
 ### Отдельные сервисы
 ```bash
 # Запустить les-scripton контейнер для разработки

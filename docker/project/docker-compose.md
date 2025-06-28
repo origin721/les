@@ -85,6 +85,34 @@ docker-compose up frontend
 docker-compose up --scale backend=3 -d
 ```
 
+## Команды очистки
+
+```bash
+# Полная очистка проекта (удаляет контейнеры, тома, образы, сети)
+docker-compose down --volumes --rmi all --remove-orphans
+
+# Остановить и удалить только тома (данные БД будут потеряны!)
+docker-compose down --volumes
+
+# Остановить и удалить образы
+docker-compose down --rmi all
+
+# Удалить осиротевшие контейнеры
+docker-compose down --remove-orphans
+
+# Очистить только том базы данных
+docker volume rm secure-message_postgres_data
+
+# Посмотреть используемые тома
+docker volume ls
+```
+
+### ⚠️ Предупреждения
+
+- `--volumes` удалит **ВСЕ данные** из базы данных PostgreSQL
+- `--rmi all` удалит все образы проекта, потребуется пересборка
+- Перед полной очисткой убедитесь, что важные данные сохранены
+
 ## Для разработки
 
 ```yaml
