@@ -9,14 +9,108 @@
 - `/api/rooms` - управление комнатами
 
 ### Методы шифрования
-- `Curve25519.generateKeys()` - генерация ключей Curve25519
-- `encrypt_curve25519()` - шифрование Curve25519
-- `decrypt_curve25519()` - расшифровка Curve25519
-- `encrypt_curve25519_verify()` - шифрование с верификацией
-- `decrypt_curve25519_verify()` - расшифровка с верификацией
-- `generate_keys_ed25519()` - генерация ключей Ed25519 для подписи
-- `sign_ed25519()` - цифровая подпись Ed25519
-- `verify_sign_ed25519()` - проверка подписи Ed25519
+
+#### Curve25519 (шифрование)
+
+**`generate_keys_curve25519()`** - генерация пары ключей
+```javascript
+const keys = await generate_keys_curve25519();
+// Возвращает: { privateKey: string, publicKey: string, keyType: string }
+```
+
+**`encrypt_curve25519({ receiverPublicKey, message })`** - простое шифрование
+```javascript
+const encrypted = await encrypt_curve25519({
+  receiverPublicKey: "hex-строка публичного ключа получателя",
+  message: "текст сообщения"
+});
+// Возвращает: hex-строку зашифрованного сообщения
+```
+
+**`decrypt_curve25519({ receiverPrivateKey, receiverPublicKey, cipherText })`** - расшифровка
+```javascript
+const decrypted = await decrypt_curve25519({
+  receiverPrivateKey: "hex-строка приватного ключа получателя",
+  receiverPublicKey: "hex-строка публичного ключа получателя", 
+  cipherText: "hex-строка зашифрованного сообщения"
+});
+// Возвращает: расшифрованный текст или null при ошибке
+```
+
+**`encrypt_curve25519_verify({ receiverPublicKey, senderPrivateKey, message })`** - шифрование с аутентификацией
+```javascript
+const encrypted = await encrypt_curve25519_verify({
+  receiverPublicKey: "hex-строка публичного ключа получателя",
+  senderPrivateKey: "hex-строка приватного ключа отправителя",
+  message: "текст сообщения"
+});
+// Возвращает: { nonce: string, cipherText: string }
+```
+
+**`decrypt_curve25519_verify({ receiverPrivateKey, senderPublicKey, cipherText, nonce })`** - расшифровка с проверкой
+```javascript
+const decrypted = await decrypt_curve25519_verify({
+  receiverPrivateKey: "hex-строка приватного ключа получателя",
+  senderPublicKey: "hex-строка публичного ключа отправителя",
+  cipherText: "hex-строка зашифрованного сообщения",
+  nonce: "hex-строка nonce"
+});
+// Возвращает: расшифрованный текст или null при ошибке
+```
+
+#### Ed25519 (цифровые подписи)
+
+**`generate_keys_ed25519()`** - генерация ключей для подписи
+```javascript
+const keys = await generate_keys_ed25519();
+// Возвращает: { privateKey: string, publicKey: string, keyType: string }
+```
+
+**`sign_ed25519({ privateKey, message })`** - создание цифровой подписи
+```javascript
+const signature = await sign_ed25519({
+  privateKey: "hex-строка приватного ключа",
+  message: "текст для подписи"
+});
+// Возвращает: hex-строку подписи или null при ошибке
+```
+
+**`verify_sign_ed25519({ publicKey, message, signature })`** - проверка подписи
+```javascript
+const isValid = await verify_sign_ed25519({
+  publicKey: "hex-строка публичного ключа",
+  message: "оригинальный текст",
+  signature: "hex-строка подписи"
+});
+// Возвращает: true/false или null при ошибке
+```
+
+#### Использование в проекте
+```javascript
+import { 
+  generate_keys_curve25519, 
+  encrypt_curve25519, 
+  decrypt_curve25519,
+  generate_keys_ed25519,
+  sign_ed25519,
+  verify_sign_ed25519
+} from '../core/crypt/libsodium';
+
+// Пример: безопасная отправка сообщения
+const senderKeys = await generate_keys_curve25519();
+const receiverKeys = await generate_keys_curve25519();
+
+const encrypted = await encrypt_curve25519({
+  receiverPublicKey: receiverKeys.publicKey,
+  message: "Секретное сообщение"
+});
+
+const decrypted = await decrypt_curve25519({
+  receiverPrivateKey: receiverKeys.privateKey,
+  receiverPublicKey: receiverKeys.publicKey,
+  cipherText: encrypted
+});
+```
 
 **Deprecated (не используются):**
 - ~~AES-256~~ - устаревший, не поддерживается
