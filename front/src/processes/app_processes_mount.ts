@@ -71,7 +71,7 @@ export const appProcessesMount = () => {
    //  },
    //);
 
-    connectionLibp2p();
+    // connectionLibp2p(); // Временно закомментировано - логи мешают
 
     //console.log(getRandomInRange(1, 100)); // Случайное число от 1 до 100
     //console.log(gen_pass());
