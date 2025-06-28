@@ -10,7 +10,8 @@
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-check --tsconfig ./tsconfig.json --watch",
     "test": "vitest",
-    "ncu": "npx npm-check-updates"
+    "ncu": "npx npm-check-updates",
+    "kill-dev": "pkill -f \"npm run dev\""
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^5.1.0",

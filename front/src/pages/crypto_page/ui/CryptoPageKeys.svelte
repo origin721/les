@@ -3,19 +3,36 @@
   import { apiKeysStore } from "../../../stores/api_keys_store";
   import { btn } from "../../../styles/button";
   import { copyTextToClipboard } from "../../../core/clip";
+  import { validateCurve25519PublicKey, validateKeyName } from "../../../core/validation";
 
   let isGenerating = $state(false);
   let newKeyName = $state("");
   let newPartnerKeyName = $state("");
   let newPartnerPublicKey = $state("");
   let showPrivateKeys = $state<Record<string, boolean>>({});
+  
+  // Состояния для валидации
+  let keyNameError = $state("");
+  let partnerNameError = $state("");
+  let partnerKeyError = $state("");
 
   const store = $derived($apiKeysStore);
 
   async function generateNewKey() {
-    if (isGenerating || !newKeyName.trim()) return;
+    if (isGenerating) return;
 
+    // Валидация имени ключа
+    const existingNames = store.myKeys.map(key => key.name);
+    const nameValidation = validateKeyName(newKeyName, existingNames);
+    
+    if (!nameValidation.isValid) {
+      keyNameError = nameValidation.error || "";
+      return;
+    }
+
+    keyNameError = "";
     isGenerating = true;
+    
     try {
       const keyPair = await generate_keys_curve25519();
       
@@ -29,6 +46,7 @@
       newKeyName = "";
     } catch (error) {
       console.error("Ошибка генерации ключей:", error);
+      keyNameError = "Ошибка генерации ключей";
     } finally {
       isGenerating = false;
     }
