@@ -99,6 +99,7 @@
                     if (result) {
                         decryptedText = result;
                         decryptionLog = [...decryptionLog, `✅ Успешно расшифровано ключом: ${myKey.name}`];
+                        decryptionLog = [...decryptionLog, `🔓 Шкатулка открыта! Ключ "${myKey.name}" использован для расшифровки`];
                         decryptionSuccessful = true;
                         break;
                     }

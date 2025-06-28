@@ -3,11 +3,13 @@
   import CryptoPageEncrypt from "./CryptoPageEncrypt.svelte";
   import CryptoPageDecrypt from "./CryptoPageDecrypt.svelte";
   import CryptoPageKeys from "./CryptoPageKeys.svelte";
+  import CryptoPageSign from "./CryptoPageSign.svelte";
 
   const PAGE_TABS = {
     KEYS: "KEYS",
     ENCRYPT: "ENCRYPT",
     DECRYPT: "DECRYPT",
+    SIGN: "SIGN",
   };
 
   let pageTab = $state(PAGE_TABS.KEYS);
@@ -46,13 +48,25 @@
         value={PAGE_TABS.DECRYPT}
       />
     </label>
+
+    <label>
+      Подпись
+      <input
+        type="radio"
+        bind:group={pageTab}
+        name="page-tab"
+        value={PAGE_TABS.SIGN}
+      />
+    </label>
   </div>
 
   {#if pageTab === PAGE_TABS.KEYS}
     <CryptoPageKeys />
   {:else if pageTab === PAGE_TABS.ENCRYPT}
     <CryptoPageEncrypt />
-  {:else}
+  {:else if pageTab === PAGE_TABS.DECRYPT}
     <CryptoPageDecrypt />
+  {:else if pageTab === PAGE_TABS.SIGN}
+    <CryptoPageSign />
   {/if}
 </main>
