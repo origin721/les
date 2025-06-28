@@ -20,7 +20,4 @@ export default defineConfig({
       },
     },
   },
-  optimizeDeps: {
-    include: ['libsodium-wrappers']
-  }
 })

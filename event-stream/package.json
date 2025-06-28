@@ -14,5 +14,8 @@
   "dependencies": {
     "libsodium-wrappers": "^0.7.15",
     "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "@types/libsodium-wrappers": "^0.7.14"
   }
 }
