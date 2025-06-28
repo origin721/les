@@ -120,10 +120,10 @@ interface PartnerKey {
 В проекте доступны готовые loading компоненты для показа состояний загрузки:
 
 ### LoadingSequence.svelte
-**Путь:** `src/components/widgets/LoadingSequence.svelte`
+**Путь:** `src/widgets/LoadingSequence.svelte` (⚠️ Компоненты из components/ нужно перенести в widgets/)
 **Описание:** Основной компонент последовательной загрузки с тремя фазами
 ```javascript
-import LoadingSequence from "../../components/widgets/LoadingSequence.svelte";
+import LoadingSequence from "../../widgets/LoadingSequence.svelte";
 ```
 
 **Особенности:**
@@ -192,7 +192,7 @@ import { Link, ROUTES } from "../../../routing";
 ### Стили и темы
 ```javascript
 import { theme } from "../../../stores/theme";
-import ThemeSwitcher from "../../../components/ThemeSwitcher.svelte";
+import ThemeSwitcher from "../../../widgets/ThemeSwitcher.svelte";
 
 // CSS файлы тем
 import "../../../styles/cyberpunk.css";

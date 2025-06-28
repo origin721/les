@@ -57,8 +57,8 @@ npm run test       # Запуск тестов
 
 ```
 src/
-├── components/      # UI компоненты где существует эта папка в это ошибка для front
-├── widgets/         # Бизнес-компоненты
+├── components/      # ⚠️ Нужно перенести в widgets/ - не создавайте новые!
+├── widgets/         # ✅ Рекомендуемые компоненты для UI и бизнес-логики
 ├── pages/          # Страницы приложения
 ├── stores/         # Svelte stores
 ├── api/           # HTTP, LibP2P, SSE

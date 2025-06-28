@@ -7,8 +7,8 @@
 ## Структура
 ```
 src/
-├── components/     # UI элементы
-├── widgets/        # Бизнес-компоненты + data-widget-name
+├── components/     # ⚠️ Нужно перенести в widgets/ - не создавайте новые!
+├── widgets/        # ✅ Все компоненты + data-widget-name
 ├── pages/         # Страницы: ui/, stores/, index.ts
 ├── api/libp2p/    # P2P соединения
 ├── indexdb/       # База данных
