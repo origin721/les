@@ -14,7 +14,7 @@ cd docker
 docker-compose up --build
 
 # Подключиться к контейнеру
-docker-compose exec alpine-dev sh
+docker-compose exec les-scripton sh
 ```
 
 ### Запуск полного проекта
@@ -36,7 +36,6 @@ docker-compose ps
 ### 🏗️ Контейнеры проекта
 - [Frontend контейнер](./project/frontend.md) - Контейнеризация Svelte приложения
 - [Backend контейнер](./project/backend.md) - Контейнеризация Rust приложения
-- [Event-stream сервис](./project/event-stream.md) - Контейнеризация Node.js сервиса
 - [Docker Compose настройка](./project/docker-compose.md) - Конфигурация всех сервисов
 - [Alpine Linux Setup](./alpine-setup.md) - Минимальный контейнер для разработки
 
@@ -61,28 +60,20 @@ docker-compose up --build
 # Посмотреть логи
 docker-compose logs -f
 
-# Подключиться к Alpine контейнеру
-docker-compose exec alpine-dev sh
+# Подключиться к les-scripton контейнеру
+docker-compose exec les-scripton sh
 ```
 
 ### Отдельные сервисы
 ```bash
-# Запустить только frontend
-docker-compose up frontend
-
-# Запустить только backend
-docker-compose up backend
-
-# Запустить только event-stream
-docker-compose up event-stream
+# Запустить les-scripton контейнер для разработки
+docker-compose up les-scripton
 ```
 
 ## Порты сервисов
 
-- **Frontend**: http://localhost:3000
-- **Backend**: http://localhost:8080
-- **Event-stream**: http://localhost:3001
-- **Alpine Dev**: интерактивный контейнер
+- **Backend**: http://localhost:8080 (после сборки в les-scripton контейнере)
+- **Les-scripton**: интерактивный контейнер для разработки
 
 ## Общая документация Docker
 

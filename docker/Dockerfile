@@ -17,5 +17,23 @@ WORKDIR /app
 # Копируем файлы проекта
 COPY . .
 
-# Команда по умолчанию
-CMD ["sh"]
+# Переходим в директорию фронтенда и собираем его
+WORKDIR /app/front
+RUN npm install
+RUN npm run build
+
+# Удаляем старую папку dist в back (если существует) и копируем новую
+RUN rm -rf ../back/dist
+RUN cp -r ./dist ../back/dist
+
+# Переходим в директорию бэкенда
+WORKDIR /app/back
+
+# Собираем Rust приложение
+RUN cargo build --release
+
+# Открываем порт 8080
+EXPOSE 8080
+
+# Запускаем только Rust сервер
+CMD ["./target/release/back"]
