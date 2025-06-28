@@ -7,7 +7,7 @@ export const ROUTES = {
     ACCOUNTS_NEW: '/accounts/new',
     RANDOM: '/random',
     //AEC_ENCR: '/aec_encr',
-    CURVE_25519: '/curve25519',
+    CRYPTO: '/crypto',
     API_KEYS: '/api-keys',
     CHAT_ROOMS: '/chat-rooms',
     CHAT_ROOMS_ADD: '/chat-rooms/add',

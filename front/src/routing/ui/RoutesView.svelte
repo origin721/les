@@ -100,9 +100,9 @@
             componentPromise = import(`../../pages/auth/ui/AuthPage.svelte`);
         } else if (p.rState.pathname === ROUTES.AUTH) {
             componentPromise = import(`../../pages/auth/ui/AuthPage.svelte`);
-        } else if (p.rState.pathname === ROUTES.CURVE_25519) {
+        } else if (p.rState.pathname === ROUTES.CRYPTO) {
             componentPromise = import(
-                `../../pages/curve25519_page/ui/Curve25519Page.svelte`
+                `../../pages/crypto_page/ui/CryptoPage.svelte`
             );
         } else if (p.rState.pathname === ROUTES.API_KEYS) {
             componentPromise = import(
@@ -164,8 +164,8 @@
     <AuthPage />
 {:else if routState.state.pathname === ROUTES.AUTH}
     <AuthPage />
-{:else if routState.state.pathname === ROUTES.CURVE_25519}
-    <Curve25519Page />
+{:else if routState.state.pathname === ROUTES.CRYPTO}
+    <CryptoPage />
 {:else if routState.state.pathname === ROUTES.ADD_FRIEND}
     <AddFriendPage />
 {:else if routState.state.pathname === ROUTES.RANDOM}

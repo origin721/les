@@ -12,7 +12,7 @@
             <Link href={ROUTES.RANDOM}>Рандом</Link>
         </li>
         <li>
-            <Link href={ROUTES.CURVE_25519}>curve25519</Link>
+            <Link href={ROUTES.CRYPTO}>Шифрование</Link>
         </li>
         <li>
             <Link href={ROUTES.API_KEYS}>API Ключи</Link>

@@ -6,5 +6,5 @@ export { AccountsPage } from './accounts';
 export { AccountNewPage } from './accounts_new';
 export { RandomPage } from './random';
 export { AesEncrPage } from './aes_encr_page';
-export { Curve25519Page } from './curve25519_page';
+export { CryptoPage } from './crypto_page';
 export { ApiKeysPage } from './api_keys_page';
