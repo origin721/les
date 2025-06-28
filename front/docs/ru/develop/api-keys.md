@@ -3,6 +3,36 @@
 ## Обзор
 Страница API ключей предоставляет интерфейс для управления криптографическими ключами Curve25519 в оперативной памяти.
 
+## Стиль дизайна (ориентир на auth)
+При разработке новых страниц рекомендуется ориентироваться на стиль auth-страницы (`src/pages/auth/ui/AuthPage.svelte`) как хороший пример:
+
+### Характеристики стиля auth:
+- **Киберпанк дизайн** с тремя темами: cyberpunk, watchdogs, pixel
+- **Глитч-эффекты** для логотипов и заголовков
+- **Монокодировочные шрифты** (Courier New)
+- **Неоновые акценты** и свечения через box-shadow
+- **Терминальный интерфейс** с ASCII элементами
+- **Адаптивная верстка** с медиа-запросами
+- **CSS переменные** для темизации
+- **Анимации** и плавные переходы
+
+### Структура стилей auth:
+```css
+.theme-{$theme} {
+  /* CSS переменные для цветов */
+  --background-color: #0a0a0a;
+  --text-color: #00ff00;
+  --primary-color: #ff00ff;
+  /* ... остальные переменные */
+}
+```
+
+### Компоненты layout auth:
+- Header с навигацией и переключателем тем
+- Логотип с глитч-анимацией
+- Основная форма по центру
+- Footer с системной информацией
+
 ## Структура файлов
 ```
 src/pages/api_keys_page/
@@ -85,6 +115,90 @@ interface PartnerKey {
 - Алгоритм: Curve25519
 - Функции: generate_keys_curve25519()
 - Экспорт из: ../../../../event-stream/src/core/crypt/libsodium-wrappers
+
+## Переиспользуемые Loading компоненты
+В проекте доступны готовые loading компоненты для показа состояний загрузки:
+
+### LoadingSequence.svelte
+**Путь:** `src/components/widgets/LoadingSequence.svelte`
+**Описание:** Основной компонент последовательной загрузки с тремя фазами
+```javascript
+import LoadingSequence from "../../components/widgets/LoadingSequence.svelte";
+```
+
+**Особенности:**
+- Случайная фаза загрузки (1-3)
+- Полноэкранный overlay
+- Готовые анимации для каждой фазы
+
+### Индивидуальные фазы загрузки:
+- `LoadingPhase1.svelte` - первая фаза
+- `LoadingPhase2.svelte` - вторая фаза  
+- `LoadingPhase3.svelte` - третья фаза
+
+### Дополнительные спиннеры:
+- `LoadingSpinner1.svelte`
+- `LoadingSpinner2.svelte`
+- `LoadingSpinner3.svelte`
+
+### Экраны загрузки:
+- `LoadingScreen1.svelte`
+- `LoadingScreen2.svelte`
+- `LoadingScreen3.svelte`
+
+## Полезные утилиты для реализации
+
+### Криптографические утилиты
+```javascript
+// Генерация ключей Curve25519
+import { generate_keys_curve25519 } from "../../../core/crypt/libsodium";
+
+// Основные крипто-функции
+import { /* нужные функции */ } from "../../../core/crypt";
+```
+
+### Копирование в буфер
+```javascript
+import { copyTextToClipboard } from "../../../core/clip";
+
+// Использование:
+await copyTextToClipboard(text);
+```
+
+### Генерация ID и случайных значений
+```javascript
+import { uuid } from "../../../core/uuid";
+import { getRandomInRange } from "../../../core/random/getRandomInRange";
+import { generateRandomString } from "../../../core/random/generateRandomString";
+```
+
+### Вспомогательные функции
+```javascript
+import { sleep } from "../../../core/sleep";
+import { jsonParse } from "../../../core/jsonParse";
+import { toJson } from "../../../core/toJson";
+```
+
+### Svelte утилиты
+```javascript
+import { writableToState } from "../../../core/svelte_default/runs/writableToState.svelte";
+```
+
+### Роутинг и навигация
+```javascript
+import { Link, ROUTES } from "../../../routing";
+```
+
+### Стили и темы
+```javascript
+import { theme } from "../../../stores/theme";
+import ThemeSwitcher from "../../../components/ThemeSwitcher.svelte";
+
+// CSS файлы тем
+import "../../../styles/cyberpunk.css";
+import "../../../styles/watchdogs.css";
+import "../../../styles/pixel.css";
+```
 
 ## UI/UX
 - Табличная навигация (радио-кнопки)

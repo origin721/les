@@ -52,12 +52,24 @@
     });
 
     let componentPromise = $state<any>(null);
-        
+    let prevRoutParams = $state<{
+        rState: (typeof routState)["state"];
+        apauState: (typeof appAuthState)["state"];
+    } | null>(null);
 
     async function onChangePath(p: {
         rState: (typeof routState)["state"];
         apauState: (typeof appAuthState)["state"];
     }) {
+        if(prevRoutParams && 
+           p.rState.pathname === prevRoutParams.rState.pathname &&
+           Object.keys(p.apauState.byId).length === Object.keys(prevRoutParams.apauState.byId).length &&
+           p.rState.queryParams.toString() === prevRoutParams.rState.queryParams.toString()) {
+            return
+        }
+
+        prevRoutParams = p;
+
         componentPromise = null;
         //type = null;
         await tick(); // подождать 1 кадр, чтобы отрендерилось "ничего"
