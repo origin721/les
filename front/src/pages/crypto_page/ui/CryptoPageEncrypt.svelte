@@ -34,20 +34,37 @@
                 return;
             }
 
-            encryptedText = JSON.stringify(
-                await encrypt_curve25519_verify({
-                    receiverPublicKey: partnerKey.publicKey,
-                    senderPrivateKey: myKey.privateKey,
-                    message: sourceMessage,
-                }),
-            );
+            const result = await encrypt_curve25519_verify({
+                receiverPublicKey: partnerKey.publicKey,
+                senderPrivateKey: myKey.privateKey,
+                message: sourceMessage,
+            });
+
+            if (!result) {
+                alert("Ошибка шифрования");
+                return;
+            }
+
+            // Преобразуем формат {nonce, cipherText} в {cipher, nonce}
+            encryptedText = JSON.stringify({
+                cipher: result.cipherText,
+                nonce: result.nonce,
+            });
         } else {
-            encryptedText = JSON.stringify(
-                await encrypt_curve25519({
-                    receiverPublicKey: partnerKey.publicKey,
-                    message: sourceMessage,
-                }),
-            );
+            const result = await encrypt_curve25519({
+                receiverPublicKey: partnerKey.publicKey,
+                message: sourceMessage,
+            });
+
+            if (!result) {
+                alert("Ошибка шифрования");
+                return;
+            }
+
+            // Для простого шифрования создаем JSON с cipher (без nonce)
+            encryptedText = JSON.stringify({
+                cipher: result,
+            });
         }
     }
 
