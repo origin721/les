@@ -16,16 +16,16 @@
 }
 
 /* Адаптивность для телефонов - уменьшение базового размера шрифта */
-@media (max-width: 30rem) {
+@media (max-width: 36rem) {
     :root {
-        font-size: 12px;
+        font-size: 14px;
     }
 }
 
 /* Дополнительная адаптивность для очень маленьких экранов */
-@media (max-width: 24rem) {
+@media (max-width: 28rem) {
     :root {
-        font-size: 10px;
+        font-size: 12px;
     }
 }
 
