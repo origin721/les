@@ -54,6 +54,80 @@ docker rm <container>         # Удалить контейнер
 - Создания изолированной среды разработки
 - Упрощения развертывания
 
+## Анализ Dockerfile проекта
+
+### Структура Dockerfile
+```dockerfile
+FROM alpine:latest
+
+# Обновляем пакеты Alpine
+RUN apk update && apk upgrade
+
+# Устанавливаем необходимые пакеты
+RUN apk add --no-cache \
+    git \
+    nodejs \
+    npm \
+    cargo \
+    rust
+
+# Создаем рабочую директорию
+WORKDIR /app
+
+# Копируем файлы проекта
+COPY . .
+
+# Переходим в директорию фронтенда и собираем его
+WORKDIR /app/front
+RUN npm install
+RUN npm run build
+
+# Удаляем старую папку dist в back (если существует) и копируем новую
+RUN rm -rf ../back/dist
+RUN cp -r ./dist ../back/dist
+
+# Переходим в директорию бэкенда
+WORKDIR /app/back
+
+# Собираем Rust приложение
+RUN cargo build --release
+
+# Запускаем только Rust сервер
+ENTRYPOINT ["./back/target/release/back"]
+
+# Открываем порт 8080
+EXPOSE 8080
+```
+
+### Особенности архитектуры
+1. **Multi-stage build**: Сборка frontend и backend в одном контейнере
+2. **Alpine Linux**: Легковесный базовый образ
+3. **Статическая сборка**: Frontend собирается и копируется в backend
+4. **Rust backend**: Основное приложение на Rust
+
+### Docker Compose конфигурация
+```yaml
+services:
+  les-scripton:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: les-scripton-development
+    ports:
+      - "8080:8080"
+    volumes:
+      - ../:/app
+    working_dir: /app
+    stdin_open: true
+    tty: true
+    command: sh
+```
+
+### Особенности Docker Compose
+- **Development mode**: Контейнер запускается с shell для разработки
+- **Volume mounting**: Код проекта монтируется для live reload
+- **Port mapping**: Порт 8080 проброшен на хост
+
 ## Файлы проекта
 
 - `docker/Dockerfile` - Dockerfile для backend

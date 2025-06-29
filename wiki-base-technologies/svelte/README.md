@@ -73,6 +73,75 @@ Svelte 5 вводит новую систему реактивности с по
 - Создания интерактивных компонентов
 - Управления состоянием приложения
 
+## Анализ реального компонента
+
+### Структура App.svelte
+```svelte
+<script lang="ts">
+  import { appProcessesMount } from "./processes";
+  import { RoutesView } from "./routing";
+
+  appProcessesMount();
+</script>
+
+<RoutesView />
+```
+
+### Пример компонента с Svelte 5 runes
+Компонент `CryptoPageEncrypt.svelte` демонстрирует использование новых runes:
+
+```svelte
+<script lang="ts">
+    // Svelte 5 runes для состояния
+    let selectedMyKeyId = $state("");
+    let selectedPartnerKeyId = $state("");
+    let encryptedText = $state("");
+    let isVerifyEncrypt = $state(false);
+    let sourceMessage = $state("");
+
+    // Derived state
+    const store = $derived($apiKeysStore);
+
+    // Обработчик событий
+    async function onEncrypt(e: SubmitParam) {
+        e.preventDefault();
+        // Логика шифрования...
+    }
+</script>
+
+<!-- Условный рендеринг -->
+{#if store.partnerKeys.length === 0}
+    <div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded">
+        <p>Сначала добавьте ключи партнеров на вкладке "Управление ключами"</p>
+    </div>
+{:else}
+    <!-- Форма с привязкой данных -->
+    <form onsubmit={onEncrypt} class="flex-col flex gap-4">
+        <select bind:value={selectedPartnerKeyId} required>
+            <option value="">-- Выберите партнера --</option>
+            {#each store.partnerKeys as partnerKey}
+                <option value={partnerKey.id}>{partnerKey.name}</option>
+            {/each}
+        </select>
+        
+        <textarea 
+            bind:value={sourceMessage} 
+            class="min-h-[5rem] border border-gray-300 rounded px-3 py-2"
+            required
+        ></textarea>
+        
+        <button class={btn} type="submit">Зашифровать</button>
+    </form>
+{/if}
+```
+
+### Особенности использования в проекте
+1. **TypeScript**: Все компоненты используют TypeScript
+2. **Svelte 5 runes**: `$state()`, `$derived()` для реактивности
+3. **Tailwind CSS**: Для стилизации компонентов
+4. **Stores**: Глобальное состояние через stores
+5. **Event handling**: Современный синтаксис обработки событий
+
 ## Файлы проекта
 
 - `front/src/App.svelte` - Главный компонент
