@@ -17,9 +17,9 @@
   4. Запуск backend сервера на порту 8080
 
 ### 🏷️ Переименование сервисов
-- **docker-compose.yml:** `alpine-dev` → `les-scripton`
-- **Контейнер:** `alpine-development` → `les-scripton-development`
-- **Команды:** `docker-compose exec alpine-dev sh` → `docker-compose exec les-scripton sh`
+- **docker-compose.yml:** `alpine-dev` → `lec-scripton`
+- **Контейнер:** `alpine-development` → `lec-scripton-development`
+- **Команды:** `docker-compose exec alpine-dev sh` → `docker-compose exec lec-scripton sh`
 
 ## 🔧 Обновления документации
 
@@ -38,7 +38,7 @@
 - Обновленная документация
 
 ### ⚠️ Изменения для разработчиков:
-- Новое имя контейнера: `les-scripton`
+- Новое имя контейнера: `lec-scripton`
 - Новые команды подключения
 - Автоматическая сборка при запуске контейнера
 

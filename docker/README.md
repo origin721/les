@@ -14,7 +14,7 @@ cd docker
 docker-compose up --build
 
 # Подключиться к контейнеру
-docker-compose exec les-scripton sh
+docker-compose exec lec-scripton sh
 ```
 
 ### Запуск полного проекта
@@ -22,7 +22,7 @@ docker-compose exec les-scripton sh
 ```bash
 # Клонировать репозиторий
 git clone <repository-url>
-cd les-scripton
+cd lec-scripton
 
 # Запустить все сервисы
 docker-compose up -d
@@ -60,8 +60,8 @@ docker-compose up --build
 # Посмотреть логи
 docker-compose logs -f
 
-# Подключиться к les-scripton контейнеру
-docker-compose exec les-scripton sh
+# Подключиться к lec-scripton контейнеру
+docker-compose exec lec-scripton sh
 ```
 
 ### Команды очистки
@@ -86,14 +86,14 @@ docker system prune -a
 
 ### Отдельные сервисы
 ```bash
-# Запустить les-scripton контейнер для разработки
-docker-compose up les-scripton
+# Запустить lec-scripton контейнер для разработки
+docker-compose up lec-scripton
 ```
 
 ## Порты сервисов
 
-- **Backend**: http://localhost:8080 (после сборки в les-scripton контейнере)
-- **Les-scripton**: интерактивный контейнер для разработки
+- **Backend**: http://localhost:8080 (после сборки в lec-scripton контейнере)
+- **Lec-scripton**: интерактивный контейнер для разработки
 
 ## Общая документация Docker
 

@@ -55,10 +55,31 @@
   function addPartnerKey() {
     if (!newPartnerKeyName.trim() || !newPartnerPublicKey.trim()) return;
 
-    if (apiKeysStore.hasPartnerKey(newPartnerPublicKey.trim())) {
-      alert("Этот ключ уже добавлен");
+    // Валидация имени партнера
+    const existingPartnerNames = store.partnerKeys.map(key => key.name);
+    const nameValidation = validateKeyName(newPartnerKeyName, existingPartnerNames);
+    
+    if (!nameValidation.isValid) {
+      partnerNameError = nameValidation.error || "";
       return;
     }
+
+    // Валидация публичного ключа
+    const keyValidation = validateCurve25519PublicKey(newPartnerPublicKey);
+    
+    if (!keyValidation.isValid) {
+      partnerKeyError = keyValidation.error || "";
+      return;
+    }
+
+    if (apiKeysStore.hasPartnerKey(newPartnerPublicKey.trim())) {
+      partnerKeyError = "Этот ключ уже добавлен";
+      return;
+    }
+
+    // Очищаем ошибки
+    partnerNameError = "";
+    partnerKeyError = "";
 
     apiKeysStore.addPartnerKey({
       name: newPartnerKeyName.trim(),
@@ -107,6 +128,19 @@
       minute: '2-digit'
     }).format(date);
   }
+
+  // Очистка ошибок при изменении полей
+  function clearKeyNameError() {
+    keyNameError = "";
+  }
+
+  function clearPartnerNameError() {
+    partnerNameError = "";
+  }
+
+  function clearPartnerKeyError() {
+    partnerKeyError = "";
+  }
 </script>
 
 <div class="flex flex-col gap-6">
@@ -122,7 +156,11 @@
           placeholder="Введите название для нового ключа"
           class="border border-gray-300 rounded px-3 py-2"
           disabled={isGenerating}
+          oninput={clearKeyNameError}
         />
+        {#if keyNameError}
+          <span class="text-red-500 text-sm mt-1">{keyNameError}</span>
+        {/if}
       </label>
       
       <button 
@@ -217,16 +255,24 @@
           bind:value={newPartnerKeyName} 
           placeholder="Введите имя партнера"
           class="border border-gray-300 rounded px-3 py-2"
+          oninput={clearPartnerNameError}
         />
+        {#if partnerNameError}
+          <span class="text-red-500 text-sm mt-1">{partnerNameError}</span>
+        {/if}
       </label>
       
       <label class="flex flex-col">
         Публичный ключ партнера
         <textarea 
           bind:value={newPartnerPublicKey} 
-          placeholder="Вставьте публичный ключ партнера"
+          placeholder="Вставьте публичный ключ партнера в hex формате (64 символа)"
           class="border border-gray-300 rounded px-3 py-2 min-h-[4rem]"
+          oninput={clearPartnerKeyError}
         ></textarea>
+        {#if partnerKeyError}
+          <span class="text-red-500 text-sm mt-1">{partnerKeyError}</span>
+        {/if}
       </label>
       
       <button 

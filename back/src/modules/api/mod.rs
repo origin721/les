@@ -1,4 +1,4 @@
-use actix_web::{post, web::{self, Data}, App, HttpResponse, HttpServer, Responder, Scope};
+use actix_web::{post, web::{self}, HttpResponse, Responder, Scope};
 use std::sync::Mutex;
 
 

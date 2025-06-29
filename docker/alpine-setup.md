@@ -29,10 +29,10 @@ docker-compose up -d --build
 
 ```bash
 # Подключиться к запущенному контейнеру
-docker-compose exec alpine-dev sh
+docker-compose exec lec-scripton sh
 
 # Или если контейнер не запущен
-docker-compose run alpine-dev sh
+docker-compose run lec-scripton sh
 ```
 
 ### Остановка контейнера

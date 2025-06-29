@@ -26,5 +26,8 @@ front/*.sw?
 back/target
 back/dist
 
+# Root dist folder (created by GitHub Actions)
+#dist
+
 event-stream/node_modules
 event-stream/.appLocalStorage

@@ -1,12 +1,10 @@
 use actix_web::{
-    post,
-    web::{self, Data},
-    App, HttpResponse, HttpServer, Responder, Scope,
+    web::{self},
+    App, HttpResponse, HttpServer,
 };
-use std::{fs, io, sync::Mutex};
-use tokio::time::{sleep, Duration};
+use std::{io, sync::Mutex};
 
-use crate::{utils::{get_absolute_path_dir, RelativePathParams, RelativePathParamsBase}, AppParams};
+use crate::{utils::{get_absolute_path_dir, RelativePathParamsBase}, AppParams};
 mod api;
 pub mod host_dist;
 pub mod my_events;
@@ -17,7 +15,6 @@ pub struct AppStateWithCounter {
 }
 
 
-#[actix_web::main]
 pub async fn create_server(params: AppParams) -> Result<(), io::Error> {
     let counter = api::create_count();
 

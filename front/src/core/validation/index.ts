@@ -9,7 +9,7 @@ export interface ValidationResult {
 
 /**
  * Валидация публичного ключа Curve25519
- * Curve25519 публичные ключи должны быть 32 байта в base64 кодировке
+ * Curve25519 публичные ключи должны быть 32 байта в hex кодировке
  */
 export function validateCurve25519PublicKey(publicKey: string): ValidationResult {
   if (!publicKey?.trim()) {
@@ -18,21 +18,18 @@ export function validateCurve25519PublicKey(publicKey: string): ValidationResult
 
   const trimmedKey = publicKey.trim();
   
-  // Проверка base64 формата
-  const base64Regex = /^[A-Za-z0-9+/]*={0,2}$/;
-  if (!base64Regex.test(trimmedKey)) {
-    return { isValid: false, error: 'Публичный ключ должен быть в формате base64' };
+  // Проверка hex формата
+  const hexRegex = /^[0-9a-fA-F]+$/;
+  if (!hexRegex.test(trimmedKey)) {
+    return { isValid: false, error: 'Публичный ключ должен быть в формате hex (только цифры 0-9 и буквы a-f)' };
   }
 
-  try {
-    const decoded = atob(trimmedKey);
-    if (decoded.length !== 32) {
-      return { isValid: false, error: 'Публичный ключ Curve25519 должен быть 32 байта' };
-    }
-    return { isValid: true };
-  } catch {
-    return { isValid: false, error: 'Неверный формат base64' };
+  // Проверка длины: 32 байта = 64 hex символа
+  if (trimmedKey.length !== 64) {
+    return { isValid: false, error: 'Публичный ключ Curve25519 должен быть 32 байта (64 hex символа)' };
   }
+
+  return { isValid: true };
 }
 
 /**
@@ -62,7 +59,7 @@ export function validateKeyName(name: string, existingNames: string[] = []): Val
 
 /**
  * Валидация публичного ключа ED25519 для подписей
- * ED25519 публичные ключи также 32 байта в base64
+ * ED25519 публичные ключи также 32 байта в hex кодировке
  */
 export function validateED25519PublicKey(publicKey: string): ValidationResult {
   // ED25519 имеет такой же формат как Curve25519

@@ -1,11 +1,22 @@
+version: '3.3'
+
 services:
-  les-scripton:
+  lec-scripton:
     build:
       context: ..
       dockerfile: docker/Dockerfile
-    container_name: les-scripton-development
+      args:
+        LES_CONTAINER_PORT: ${LES_CONTAINER_PORT}
+    container_name: lec-scripton-development
+    env_file:
+      - .env
+    environment:
+      - LES_CONTAINER_PORT=${LES_CONTAINER_PORT}
     ports:
-      - "8080:8080"
+      # Проброс портов: "хост_порт:контейнер_порт"
+      # LES_HOST_PORT - порт на хост машине (доступен извне)
+      # LES_CONTAINER_PORT - внутренний порт контейнера (приложение слушает этот порт)
+      - "${LES_HOST_PORT}:${LES_CONTAINER_PORT}"
     volumes:
       - ../:/app
     working_dir: /app

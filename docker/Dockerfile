@@ -32,8 +32,11 @@ WORKDIR /app/back
 # Собираем Rust приложение
 RUN cargo build --release
 
+# Аргумент для порта контейнера
+ARG LES_CONTAINER_PORT=8080
+
 # Запускаем только Rust сервер
 ENTRYPOINT ["./back/target/release/back"]
 
-# Открываем порт 8080
-EXPOSE 8080
+# Открываем порт из переменной окружения
+EXPOSE ${LES_CONTAINER_PORT}
