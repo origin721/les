@@ -1,0 +1,1 @@
+import{f as l,a as m,x as o,b as c,ac as d,y as f,c as i}from"./index-DpvnbML9.js";var n=l('<header data-widget-name="AppHeader" class="pl-3 text-center m-3"> </header> <span class="ml-auto mr-auto mb-3 w-[90%] h-1 bg-slate-700 block"></span>',1);function x(e,t){let r=d(t,"titleText",3,"");var a=n(),s=m(a),p=i(s);o(()=>f(p,r())),c(e,a)}export{x as A};
