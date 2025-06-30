@@ -1,1 +1,0 @@
-import{f as o,a as s,a3 as i,e as n,b as f}from"./index-DpvnbML9.js";import{A as m}from"./AppHeader-ClBHd1wA.js";var p=o("<!> <!>",1);function l(t){var a=p(),e=s(a);m(e,{titleText:"Настройки"});var r=n(e,2);i(r,{}),f(t,a)}export{l as default};
