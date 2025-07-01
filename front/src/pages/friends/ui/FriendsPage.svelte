@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { onMount } from "svelte";
     import { api } from "../../../api";
     import type { FriendEntityFull } from "../../../indexdb/friends/add_friend";
     import { Link, ROUTES } from "../../../routing";
@@ -16,123 +15,177 @@
     let loading = $state(true);
     let error = $state<string | null>(null);
 
-    onMount(async () => {
-        try {
-            friends = await api.friends.getList();
-            loading = false;
-        } catch (err) {
-            error = "Ошибка загрузки списка друзей";
-            loading = false;
-        }
+    // Загружаем друзей при инициализации
+    $effect(() => {
+        loadFriends();
     });
+
+    async function loadFriends() {
+        console.log('🔄 FriendsPage: Начинаем загрузку друзей...');
+        loading = true;
+        error = null;
+
+        try {
+            console.log('📞 FriendsPage: Вызываем api.friends.getList()...');
+            const friendsList = await api.friends.getList();
+            console.log('✅ FriendsPage: Получен список друзей:', friendsList);
+            
+            friends = friendsList || [];
+            console.log(`📊 FriendsPage: Количество друзей: ${friends.length}`);
+            
+            if (friends.length === 0) {
+                console.log('📭 FriendsPage: Список друзей пуст');
+            } else {
+                console.log('👥 FriendsPage: Имена друзей:', friends.map(f => f.namePub));
+            }
+        } catch (err) {
+            console.error('❌ FriendsPage: Ошибка загрузки друзей:', err);
+            error = `Ошибка загрузки списка друзей: ${(err as any)?.message || String(err)}`;
+            friends = [];
+        } finally {
+            // Минимум 500ms загрузки для анимации
+            setTimeout(() => {
+                loading = false;
+                console.log('🏁 FriendsPage: Загрузка завершена');
+            }, 500);
+        }
+    }
 
     async function handleDeleteFriend(friendId: string) {
         if (confirm("Вы уверены, что хотите удалить этого друга?")) {
             try {
+                console.log('🗑️ FriendsPage: Удаляем друга с ID:', friendId);
                 await api.friends.delete([friendId]);
                 friends = friends.filter(friend => friend.id !== friendId);
+                console.log('✅ FriendsPage: Друг удален успешно');
             } catch (err) {
+                console.error('❌ FriendsPage: Ошибка при удалении друга:', err);
                 error = "Ошибка при удалении друга";
             }
         }
     }
+
+    function handleRefresh() {
+        console.log('🔄 FriendsPage: Принудительное обновление списка');
+        loadFriends();
+    }
 </script>
 
 <div class="theme-{$theme}">
-    <BasePage title="ДРУЗЬЯ" subtitle="Управление списком друзей">
-        <ContentSection title="СИСТЕМА ДРУЗЕЙ">
-            <div class="friends-container" data-widget-name="FriendsPage">
-                <!-- Status Message -->
-                <div class="status-message">
-                    <div class="status-indicator">
-                        <span class="status-dot active"></span>
-                        <span class="status-text">OK - СИСТЕМА ДРУЗЕЙ АКТИВНА</span>
-                    </div>
-                </div>
-
-                <!-- Action Buttons -->
-                <div class="action-buttons">
-                    <Link href={ROUTES.ADD_FRIEND} className="action-button primary">
-                        <span class="button-icon">👥</span>
-                        <span class="button-text">ДОБАВИТЬ ДРУГА</span>
-                    </Link>
-                </div>
-
-                <!-- Friends List -->
-                <div class="friends-list">
-                    <h2 class="section-title">
-                        <span class="title-icon">📋</span>
-                        СПИСОК ДРУЗЕЙ
-                    </h2>
-
-                    {#if loading}
-                        <div class="loading-state">
-                            <div class="loading-animation">⧗</div>
-                            <span>Загрузка списка друзей...</span>
+    <BasePage 
+        title="ДРУЗЬЯ" 
+        subtitle="Управление списком друзей"
+        pageName="FriendsPage"
+        footerVersion="// FRIENDS_SYSTEM_v2.0 //"
+        footerStatus="MODE: SVELTE5"
+    >
+        {#snippet children()}
+            <ContentSection title="СИСТЕМА ДРУЗЕЙ">
+                {#snippet children()}
+                    <div class="friends-container" data-widget-name="FriendsPage">
+                        <!-- Status Message -->
+                        <div class="status-message">
+                            <div class="status-indicator">
+                                <span class="status-dot active"></span>
+                                <span class="status-text">OK - СИСТЕМА ДРУЗЕЙ АКТИВНА</span>
+                            </div>
                         </div>
-                    {:else if error}
-                        <div class="error-state">
-                            <div class="error-icon">⚠</div>
-                            <span>{error}</span>
-                        </div>
-                    {:else if friends.length === 0}
-                        <div class="empty-state">
-                            <div class="empty-icon">👥</div>
-                            <h3>Список друзей пуст</h3>
-                            <p>Добавьте первого друга, чтобы начать общение</p>
-                            <Link href={ROUTES.ADD_FRIEND} className="empty-action-button">
-                                Добавить друга
+
+                        <!-- Action Buttons -->
+                        <div class="action-buttons">
+                            <Link href={ROUTES.ADD_FRIEND} className="action-button primary">
+                                <span class="button-icon">👥</span>
+                                <span class="button-text">ДОБАВИТЬ ДРУГА</span>
                             </Link>
+                            
+                            <button class="action-button secondary" onclick={handleRefresh} disabled={loading}>
+                                <span class="button-icon">{loading ? '⟳' : '🔄'}</span>
+                                <span class="button-text">ОБНОВИТЬ</span>
+                            </button>
                         </div>
-                    {:else}
-                        <div class="friends-grid">
-                            {#each friends as friend (friend.id)}
-                                <div class="friend-card">
-                                    <div class="friend-header">
-                                        <div class="friend-avatar">
-                                            <span class="avatar-text">{friend.namePub.charAt(0).toUpperCase()}</span>
-                                        </div>
-                                        <div class="friend-info">
-                                            <h3 class="friend-name">{friend.namePub}</h3>
-                                            <span class="friend-id">ID: {friend.id.slice(0, 8)}...</span>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="friend-details">
-                                        <div class="detail-row">
-                                            <span class="detail-label">Аккаунт:</span>
-                                            <span class="detail-value">{friend.myAccId.slice(0, 8)}...</span>
-                                        </div>
-                                        <div class="detail-row">
-                                            <span class="detail-label">P2P Ключ:</span>
-                                            <span class="detail-value">{friend.friendPubKeyLibp2p.slice(0, 16)}...</span>
-                                        </div>
-                                    </div>
 
-                                    <div class="friend-actions">
-                                        <button class="action-btn chat" onclick={() => {}}>
-                                            <span class="btn-icon">💬</span>
-                                            <span class="btn-text">Чат</span>
-                                        </button>
-                                        <button class="action-btn delete" onclick={() => handleDeleteFriend(friend.id)}>
-                                            <span class="btn-icon">🗑</span>
-                                            <span class="btn-text">Удалить</span>
-                                        </button>
-                                    </div>
+                        <!-- Friends List -->
+                        <div class="friends-list">
+                            <h2 class="section-title">
+                                <span class="title-icon">📋</span>
+                                СПИСОК ДРУЗЕЙ
+                            </h2>
+
+                            {#if loading}
+                                <div class="loading-state">
+                                    <div class="loading-animation">⧗</div>
+                                    <span>Загрузка списка друзей...</span>
                                 </div>
-                            {/each}
-                        </div>
-                    {/if}
-                </div>
+                            {:else if error}
+                                <div class="error-state">
+                                    <div class="error-icon">⚠</div>
+                                    <span>{error}</span>
+                                    <button class="retry-button" onclick={handleRefresh}>
+                                        Повторить попытку
+                                    </button>
+                                </div>
+                            {:else if friends.length === 0}
+                                <div class="empty-state">
+                                    <div class="empty-icon">👥</div>
+                                    <h3>Список друзей пуст</h3>
+                                    <p>Добавьте первого друга, чтобы начать общение</p>
+                                    <Link href={ROUTES.ADD_FRIEND} className="empty-action-button">
+                                        Добавить друга
+                                    </Link>
+                                </div>
+                            {:else}
+                                <div class="friends-grid">
+                                    {#each friends as friend (friend.id)}
+                                        <div class="friend-card">
+                                            <div class="friend-header">
+                                                <div class="friend-avatar">
+                                                    <span class="avatar-text">{friend.namePub.charAt(0).toUpperCase()}</span>
+                                                </div>
+                                                <div class="friend-info">
+                                                    <h3 class="friend-name">{friend.namePub}</h3>
+                                                    <span class="friend-id">ID: {friend.id.slice(0, 8)}...</span>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="friend-details">
+                                                <div class="detail-row">
+                                                    <span class="detail-label">Аккаунт:</span>
+                                                    <span class="detail-value">{friend.myAccId.slice(0, 8)}...</span>
+                                                </div>
+                                                <div class="detail-row">
+                                                    <span class="detail-label">P2P Ключ:</span>
+                                                    <span class="detail-value">
+                                                        {friend.friendPubKeyLibp2p ? friend.friendPubKeyLibp2p.slice(0, 16) + '...' : 'Не настроен'}
+                                                    </span>
+                                                </div>
+                                            </div>
 
-                <!-- Footer Status -->
-                <div class="footer-status">
-                    <span class="footer-info">
-                        // FRIENDS_SYSTEM_v1.0 // STATUS: {friends.length} ДРУЗЕЙ //
-                    </span>
-                </div>
-            </div>
-        </ContentSection>
+                                            <div class="friend-actions">
+                                                <button class="action-btn chat" onclick={() => {}}>
+                                                    <span class="btn-icon">💬</span>
+                                                    <span class="btn-text">Чат</span>
+                                                </button>
+                                                <button class="action-btn delete" onclick={() => handleDeleteFriend(friend.id)}>
+                                                    <span class="btn-icon">🗑</span>
+                                                    <span class="btn-text">Удалить</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    {/each}
+                                </div>
+                            {/if}
+                        </div>
+
+                        <!-- Footer Status -->
+                        <div class="footer-status">
+                            <span class="footer-info">
+                                // FRIENDS_SYSTEM_v2.0 // STATUS: {friends.length} ДРУЗЕЙ // SVELTE5 //
+                            </span>
+                        </div>
+                    </div>
+                {/snippet}
+            </ContentSection>
+        {/snippet}
     </BasePage>
 </div>
 
@@ -230,6 +283,7 @@
     .action-buttons {
         display: flex;
         justify-content: center;
+        gap: 1rem;
         margin-bottom: 2rem;
     }
 
@@ -249,15 +303,40 @@
         cursor: pointer;
     }
 
-    :global(.action-button:hover) {
+    :global(.action-button:hover:not(:disabled)) {
         background: var(--primary-color);
         color: var(--background-color);
         box-shadow: 0 0 20px var(--primary-color);
         transform: translateY(-2px);
     }
 
+    :global(.action-button:disabled) {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .action-button.secondary {
+        border-color: var(--secondary-color);
+        color: var(--secondary-color);
+    }
+
+    .action-button.secondary:hover:not(:disabled) {
+        background: var(--secondary-color);
+        color: var(--background-color);
+        box-shadow: 0 0 20px var(--secondary-color);
+    }
+
     .button-icon {
         font-size: 1.2rem;
+    }
+
+    .action-button:disabled .button-icon {
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
     }
 
     .button-text {
@@ -302,11 +381,6 @@
         color: var(--accent-color);
     }
 
-    @keyframes spin {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(360deg); }
-    }
-
     .error-icon,
     .empty-icon {
         font-size: 3rem;
@@ -319,6 +393,27 @@
 
     .empty-icon {
         color: var(--secondary-color);
+    }
+
+    .error-state span {
+        margin-bottom: 1rem;
+        color: var(--error-color);
+    }
+
+    .retry-button {
+        padding: 0.8rem 1.5rem;
+        background: var(--error-color);
+        color: var(--background-color);
+        border: none;
+        border-radius: 4px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .retry-button:hover {
+        box-shadow: 0 0 15px var(--error-color);
+        transform: translateY(-2px);
     }
 
     .empty-state h3 {
@@ -526,6 +621,7 @@
         
         .action-buttons {
             margin-bottom: 1.5rem;
+            flex-direction: column;
         }
         
         :global(.action-button) {

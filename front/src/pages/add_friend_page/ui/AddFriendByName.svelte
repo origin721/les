@@ -1,19 +1,39 @@
 <script lang="ts">
     import { BasePage, ContentSection } from "../../../components/page_templates";
     import { Link, ROUTES } from "../../../routing";
-    import { add_friend } from "../../../indexdb/friends/add_friend";
-    import { uuidv4 } from "../../../core/uuid";
-    import { back_store } from "../../../local_back/back_store";
+    import { api } from "../../../api";
+    import { appAuthStore } from "../../../stores/app_auth_store/app_auth_store";
+    import { writableToState } from "../../../core/svelte_default/runs/writableToState.svelte";
 
-    let friendName = '';
-    let friendNickname = '';
-    let loading = false;
-    let message = '';
-    let messageType: 'success' | 'error' | '' = '';
+    let friendName = $state('');
+    let friendNickname = $state('');
+    let selectedAccountId = $state('');
+    let loading = $state(false);
+    let message = $state('');
+    let messageType = $state<'success' | 'error' | ''>('');
+
+    // Используем writableToState для работы с appAuthStore в Svelte 5 стиле
+    const appAuthState = writableToState(appAuthStore);
+
+    // Получаем аккаунты из store
+    const accounts = $derived(Object.values(appAuthState.state?.byId || {}));
+
+    // Автоматически выбираем первый аккаунт, если он доступен и не выбран
+    $effect(() => {
+        if (accounts.length > 0 && !selectedAccountId) {
+            selectedAccountId = accounts[0].id;
+        }
+    });
 
     async function handleAddFriend() {
         if (!friendName.trim()) {
             message = 'Введите имя друга';
+            messageType = 'error';
+            return;
+        }
+
+        if (!selectedAccountId) {
+            message = 'Выберите аккаунт';
             messageType = 'error';
             return;
         }
@@ -23,17 +43,40 @@
         messageType = '';
 
         try {
-            // Получаем текущий аккаунт
-            const currentAccountId = Object.keys(back_store.accounts_by_id)[0];
-            if (!currentAccountId) {
-                throw new Error('Нет активного аккаунта');
+            console.log('🔄 Начинаем добавление друга...');
+            
+            // Сначала попытаемся войти в аккаунт, чтобы загрузить пароли в SharedWorker
+            const selectedAccount = accounts.find(acc => acc.id === selectedAccountId);
+            console.log('👤 Выбранный аккаунт:', selectedAccount);
+            
+            if (selectedAccount) {
+                // Запрашиваем пароль у пользователя для добавления друга
+                console.log('🔑 Запрашиваем пароль...');
+                const password = prompt(`Для добавления друга требуется пароль от аккаунта "${selectedAccount.namePub}"`);
+                if (!password) {
+                    console.log('❌ Пароль не введен');
+                    message = 'Для добавления друга необходимо ввести пароль аккаунта';
+                    messageType = 'error';
+                    loading = false;
+                    return;
+                }
+
+                console.log('🔄 Выполняем login...');
+                // Логинимся с паролем, чтобы загрузить аккаунты в SharedWorker
+                await api.accounts.login(password);
+                console.log('✅ Login выполнен успешно');
             }
 
-            await add_friend([{
+            console.log('🔄 Добавляем друга через API...');
+            const friendData = {
                 namePub: friendName.trim(),
-                myAccId: currentAccountId,
+                myAccId: selectedAccountId,
                 friendPubKeyLibp2p: '' // Будет заполнен позже
-            }]);
+            };
+            console.log('📝 Данные друга:', friendData);
+
+            await api.friends.add([friendData]);
+            console.log('✅ Друг добавлен успешно');
 
             message = `Друг "${friendName}" добавлен в список контактов`;
             messageType = 'success';
@@ -42,16 +85,23 @@
             friendName = '';
             friendNickname = '';
         } catch (error) {
-            console.error('Ошибка добавления друга:', error);
-            message = 'Ошибка при добавлении друга';
+            console.error('❌ Ошибка добавления друга:', error);
+            console.error('❌ Полная ошибка:', {
+                message: (error as any)?.message,
+                stack: (error as any)?.stack,
+                name: (error as any)?.name,
+                error
+            });
+            message = `Ошибка при добавлении друга: ${(error as any)?.message || String(error)}`;
             messageType = 'error';
         } finally {
+            console.log('🏁 Завершение процесса добавления друга');
             loading = false;
         }
     }
 
     function handleKeydown(event: KeyboardEvent) {
-        if (event.key === 'Enter') {
+        if (event.key === 'Enter' && !loading) {
             handleAddFriend();
         }
     }
@@ -78,6 +128,35 @@
                         </div>
 
                         <div class="form-content">
+                            <div class="input-group">
+                                <label for="account-select" class="input-label">
+                                    <span class="label-icon">👤</span>
+                                    <span class="label-text">ВЫБЕРИТЕ АККАУНТ *</span>
+                                </label>
+                                {#if accounts.length === 0}
+                                    <div class="no-accounts">
+                                        <span class="warning-icon">⚠️</span>
+                                        <span>Нет доступных аккаунтов</span>
+                                        <Link href={ROUTES.ACCOUNTS_NEW} className="create-account-link">
+                                            Создать аккаунт
+                                        </Link>
+                                    </div>
+                                {:else}
+                                    <select
+                                        id="account-select"
+                                        bind:value={selectedAccountId}
+                                        class="form-select"
+                                        disabled={loading}
+                                    >
+                                        {#each accounts as account}
+                                            <option value={account.id}>
+                                                {account.namePub} (ID: {account.id.slice(0, 8)}...)
+                                            </option>
+                                        {/each}
+                                    </select>
+                                {/if}
+                            </div>
+
                             <div class="input-group">
                                 <label for="friend-name" class="input-label">
                                     <span class="label-icon">📝</span>
@@ -252,6 +331,68 @@
     .form-input::placeholder {
         color: var(--secondary-color);
         opacity: 0.7;
+    }
+
+    .form-select {
+        background: rgba(0, 0, 0, 0.4);
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        color: var(--text-color);
+        font-size: 1rem;
+        padding: 0.75rem 1rem;
+        transition: all 0.3s ease;
+        outline: none;
+        cursor: pointer;
+    }
+
+    .form-select:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 15px rgba(var(--primary-color-rgb), 0.3);
+    }
+
+    .form-select:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .form-select option {
+        background: rgba(0, 0, 0, 0.9);
+        color: var(--text-color);
+        padding: 0.5rem;
+    }
+
+    .no-accounts {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1.5rem;
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        border-radius: 6px;
+        color: #ef4444;
+        text-align: center;
+    }
+
+    .warning-icon {
+        font-size: 1.5rem;
+    }
+
+    :global(.create-account-link) {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.9rem;
+        padding: 0.5rem 1rem;
+        border: 1px solid var(--primary-color);
+        border-radius: 4px;
+        transition: all 0.3s ease;
+    }
+
+    :global(.create-account-link:hover) {
+        background: var(--primary-color);
+        color: #000;
+        box-shadow: 0 0 15px var(--primary-color);
     }
 
     .message {
