@@ -1,276 +1,154 @@
-# Testing
-On this page
-Testing
-Unit and integration testing using Vitest
-E2E tests using Playwright
-Testing helps you write and maintain your code and guard against regressions. Testing frameworks help you with that, allowing you to describe assertions or expectations about how your code should behave. Svelte is unopinionated about which testing framework you use — you can write unit tests, integration tests, and end-to-end tests using solutions like Vitest, Jasmine, Cypress and Playwright.
+# Тестирование - Руководство для LLM
 
-## Unit and integration testing using Vitest
-Unit tests allow you to test small isolated parts of your code. Integration tests allow you to test parts of your application to see if they work together. If you're using Vite (including via SvelteKit), we recommend using Vitest. You can use the Svelte CLI to setup Vitest either during project creation or later on.
+## 🧪 Обзор тестирования в проекте
+- **Vitest** - юнит и интеграционное тестирование
+- **Playwright** - E2E тестирование
+- **Svelte 5 runes** - особенности тестирования новых возможностей
 
-To setup Vitest manually, first install it:
+## 🔧 Настройка Vitest
 
+Vitest уже настроен в проекте. Проверь файлы:
+- `vitest.config.ts` - основная конфигурация
+- `vitest.workspace.ts` - workspace настройки
+
+### Команды для тестирования:
 ```bash
-npm install -D vitest
+npm run test          # запуск всех тестов
+npm run test:watch    # watch режим
+npm run test:ui       # UI интерфейс для тестов
 ```
 
-Then adjust your vite.config.js:
+## 📁 Структура тестов в проекте
 
-**vite.config**
+```
+src/tests/           # основные тесты
+src/widgets/         # тесты компонентов (если есть)
+src/stores/          # тесты стора (*.test.ts)
+src/pages/           # тесты страниц
+```
 
-```js
-import { defineConfig } from 'vitest/config';
+## 🎯 Примеры тестов для проекта
 
-export default defineConfig({
-	// ...
-	// Tell Vitest to use the `browser` entry points in `package.json` files, even though it's running in Node
-	resolve: process.env.VITEST
-		? {
-				conditions: ['browser']
-			}
-		: undefined
+### Тестирование криптографии
+```typescript
+import { test, expect } from 'vitest';
+import { encrypt_curve25519, decrypt_curve25519, generate_keys_curve25519 } from 'src/core/crypt';
+
+test('Curve25519 шифрование/расшифровка', () => {
+  const { publicKey, privateKey } = generate_keys_curve25519();
+  const message = 'секретное сообщение';
+  
+  const encrypted = encrypt_curve25519(message, publicKey, privateKey);
+  const decrypted = decrypt_curve25519(encrypted, publicKey, privateKey);
+  
+  expect(decrypted).toBe(message);
 });
 ```
 
-If loading the browser version of all your packages is undesirable, because (for example) you also test backend libraries, you may need to resort to an alias configuration
+### Тестирование IndexedDB
+```typescript
+import { test, expect } from 'vitest';
+import { add_account, get_account_by_id } from 'src/indexdb/accounts';
 
-You can now write unit tests for code inside your .js/.ts files:
+test('Добавление и получение аккаунта', async () => {
+  const account = {
+    name: 'test_user',
+    publicKey: 'test_key',
+    privateKey: 'test_private'
+  };
+  
+  const id = await add_account(account);
+  const retrieved = await get_account_by_id(id);
+  
+  expect(retrieved.name).toBe(account.name);
+});
+```
 
-**multiplier.svelte.test**
-
-```js
+### Тестирование Svelte 5 runes
+```typescript
+import { test, expect } from 'vitest';
 import { flushSync } from 'svelte';
-import { expect, test } from 'vitest';
-import { multiplier } from './multiplier.svelte.js';
 
-test('Multiplier', () => {
-	let double = multiplier(0, 2);
-
-	expect(double.value).toEqual(0);
-
-	double.set(5);
-
-	expect(double.value).toEqual(10);
+test('Тестирование $state rune', () => {
+  let count = $state(0);
+  
+  expect(count).toBe(0);
+  
+  count = 5;
+  flushSync();
+  
+  expect(count).toBe(5);
 });
 ```
 
-**multiplier.svelte**
+### Тестирование виджетов
+```typescript
+import { test, expect } from 'vitest';
+import { mount, unmount } from 'svelte';
+import LoadingSequence from 'src/components/widgets/LoadingSequence.svelte';
 
-```js
-export function multiplier(initial: number, k: number) {
-	let count = $state(initial);
-
-	return {
-		get value() {
-			return count * k;
-		},
-
-		set: (c: number) => {
-			count = c;
-		}
-	};
-}
-```
-
-## Using runes inside your test files
-Since Vitest processes your test files the same way as your source files, you can use runes inside your tests as long as the filename includes .svelte:
-
-**multiplier.svelte.test**
-
-```js
-import { flushSync } from 'svelte';
-import { expect, test } from 'vitest';
-import { multiplier } from './multiplier.svelte.js';
-
-test('Multiplier', () => {
-	let count = $state(0);
-	let double = multiplier(() => count, 2);
-
-	expect(double.value).toEqual(0);
-
-	count = 5;
-
-	expect(double.value).toEqual(10);
+test('LoadingSequence компонент', () => {
+  const component = mount(LoadingSequence, {
+    target: document.body,
+    props: { text: 'Загрузка...' }
+  });
+  
+  expect(document.body.textContent).toContain('Загрузка...');
+  
+  unmount(component);
 });
 ```
 
-**multiplier.svelte**
+## 🎭 E2E тестирование с Playwright
 
-```js
-export function multiplier(getCount: () => number, k: number) {
-	return {
-		get value() {
-			return getCount() * k;
-		}
-	};
-}
-```
-
-If the code being tested uses effects, you need to wrap the test inside $effect.root:
-
-**logger.svelte.test**
-
-```js
-import { flushSync } from 'svelte';
-import { expect, test } from 'vitest';
-import { logger } from './logger.svelte.js';
-
-test('Effect', () => {
-	const cleanup = $effect.root(() => {
-		let count = $state(0);
-
-		// logger uses an $effect to log updates of its input
-		let log = logger(() => count);
-
-		// effects normally run after a microtask,
-		// use flushSync to execute all pending effects synchronously
-		flushSync();
-		expect(log).toEqual([0]);
-
-		count = 1;
-		flushSync();
-
-		expect(log).toEqual([0, 1]);
-	});
-
-	cleanup();
-});
-```
-
-**logger.svelte**
-
-```js
-export function logger(getValue: () => any) {
-	let log: any[] = [];
-
-	$effect(() => {
-		log.push(getValue());
-	});
-
-	return log;
-}
-```
-
-## Component testing
-It is possible to test your components in isolation using Vitest.
-
-Before writing component tests, think about whether you actually need to test the component, or if it's more about the logic inside the component. If so, consider extracting out that logic to test it in isolation, without the overhead of a component
-
-To get started, install jsdom (a library that shims DOM APIs):
-
-```bash
-npm install -D jsdom
-```
-
-Then adjust your vite.config.js:
-
-**vite.config**
-
-```js
-import { defineConfig } from 'vitest/config';
-
-export default defineConfig({
-	plugins: [
-		/* ... */
-	],
-	test: {
-		// If you are testing components client-side, you need to setup a DOM environment.
-		// If not all your files should have this environment, you can use a
-		// `// @vitest-environment jsdom` comment at the top of the test files instead.
-		environment: 'jsdom'
-	},
-	// Tell Vitest to use the `browser` entry points in `package.json` files, even though it's running in Node
-	resolve: process.env.VITEST
-		? {
-				conditions: ['browser']
-			}
-		: undefined
-});
-```
-
-After that, you can create a test file in which you import the component to test, interact with it programmatically and write expectations about the results:
-
-**component.test**
-
-```js
-import { flushSync, mount, unmount } from 'svelte';
-import { expect, test } from 'vitest';
-import Component from './Component.svelte';
-
-test('Component', () => {
-	// Instantiate the component using Svelte's `mount` API
-	const component = mount(Component, {
-		target: document.body, // `document` exists because of jsdom
-		props: { initial: 0 }
-	});
-
-	expect(document.body.innerHTML).toBe('<button>0</button>');
-
-	// Click the button, then flush the changes so you can synchronously write expectations
-	document.body.querySelector('button').click();
-	flushSync();
-
-	expect(document.body.innerHTML).toBe('<button>1</button>');
-
-	// Remove the component from the DOM
-	unmount(component);
-});
-```
-
-While the process is very straightforward, it is also low level and somewhat brittle, as the precise structure of your component may change frequently. Tools like @testing-library/svelte can help streamline your tests. The above test could be rewritten like this:
-
-**component.test**
-
-```js
-import { render, screen } from '@testing-library/svelte';
-import userEvent from '@testing-library/user-event';
-import { expect, test } from 'vitest';
-import Component from './Component.svelte';
-
-test('Component', async () => {
-	const user = userEvent.setup();
-	render(Component);
-
-	const button = screen.getByRole('button');
-	expect(button).toHaveTextContent(0);
-
-	await user.click(button);
-	expect(button).toHaveTextContent(1);
-});
-```
-
-When writing component tests that involve two-way bindings, context or snippet props, it's best to create a wrapper component for your specific test and interact with that. @testing-library/svelte contains some examples.
-
-## E2E tests using Playwright
-E2E (short for 'end to end') tests allow you to test your full application through the eyes of the user. This section uses Playwright as an example, but you can also use other solutions like Cypress or NightwatchJS.
-
-You can use the Svelte CLI to setup Playwright either during project creation or later on. You can also set it up with npm init playwright. Additionally, you may also want to install an IDE plugin such as the VS Code extension to be able to execute tests from inside your IDE.
-
-If you've run npm init playwright or are not using Vite, you may need to adjust the Playwright config to tell Playwright what to do before running the tests - mainly starting your application at a certain port. For example:
-
-**playwright.config**
-
-```js
+### Настройка уже есть в проекте:
+```javascript
+// playwright.config.js
 const config = {
-	webServer: {
-		command: 'npm run build && npm run preview',
-		port: 4173
-	},
-	testDir: 'tests',
-	testMatch: /(.+\.)?(test|spec)\.[jt]s/
+  webServer: {
+    command: 'npm run dev',
+    port: 5173,
+    reuseExistingServer: !process.env.CI
+  },
+  testDir: 'tests',
+  use: {
+    baseURL: 'http://localhost:5173'
+  }
 };
-
-export default config;
 ```
 
-You can now start writing tests. These are totally unaware of Svelte as a framework, so you mainly interact with the DOM and write assertions.
+### Пример E2E теста
+```typescript
+import { test, expect } from '@playwright/test';
 
-**tests/hello-world.spec**
-
-```js
-import { expect, test } from '@playwright/test';
-
-test('home page has expected h1', async ({ page }) => {
-	await page.goto('/');
-	await expect(page.locator('h1')).toBeVisible();
+test('Главная страница загружается', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('h1')).toBeVisible();
 });
+
+test('Авторизация работает', async ({ page }) => {
+  await page.goto('/auth');
+  await page.fill('[data-testid="username"]', 'test_user');
+  await page.fill('[data-testid="password"]', 'test_pass');
+  await page.click('[data-testid="login-btn"]');
+  
+  await expect(page).toHaveURL('/home');
+});
+```
+
+## ⚠️ Важные моменты для LLM
+
+1. **Используй data-testid** атрибуты для стабильного тестирования
+2. **Тестируй криптографию** - это критично для безопасности  
+3. **IndexedDB тесты** требуют настройки fake indexeddb
+4. **Svelte 5 runes** требуют `flushSync()` для синхронного тестирования
+5. **Виджеты НЕ компоненты** - тестируй файлы из `src/widgets/`
+
+## 🚀 Команды для запуска
+
+```bash
+npm run test                    # все тесты
+npm run test src/tests/         # только юнит тесты  
+npm run test:e2e               # только E2E тесты
+npm run test:coverage          # с покрытием кода
+```
