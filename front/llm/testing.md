@@ -29,13 +29,33 @@ test('проверка, что в body нет текста', () => {
    - **Устаревший вариант**: `/// <reference types="vitest" />`
    - **Актуальный вариант**: `/// <reference types="vitest/config" />`
 
+4. **Workspace конфигурация**: Для разных окружений тестирования используется `vitest.workspace.ts`
+   - Криптографические тесты запускаются в Node.js окружении
+   - UI тесты запускаются в jsdom окружении
+
+## Доступные команды тестирования
+
+- `npm run test` - запуск тестов в watch режиме
+- `npm run test:run` - однократный запуск всех тестов
+- `npm run test:coverage` - запуск тестов с анализом покрытия кода
+- `npm run test:ui` - запуск тестов с веб-интерфейсом
+
+## Актуальная конфигурация
+
 ```typescript
-// vite.config.ts
+// vitest.config.ts
 /// <reference types="vitest/config" />
 import { defineConfig } from 'vite'
 
 export default defineConfig({
   test: {
-    // ... опции Vitest
+    environment: 'jsdom',
+    globals: true,
+    setupFiles: ['./src/tests/setup.ts'],
+    workspace: './vitest.workspace.ts',
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json', 'html']
+    }
   },
 })

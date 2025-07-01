@@ -10,6 +10,9 @@
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-check --tsconfig ./tsconfig.json --watch",
     "test": "vitest",
+    "test:coverage": "vitest --coverage",
+    "test:ui": "vitest --ui",
+    "test:run": "vitest run",
     "ncu": "npx npm-check-updates",
     "kill-dev": "pkill -f \"npm run dev\""
   },
@@ -18,6 +21,7 @@
     "@tailwindcss/postcss": "^4.1.9",
     "@testing-library/svelte": "^5.2.8",
     "@tsconfig/svelte": "^5.0.4",
+    "@vitest/ui": "^3.2.4",
     "autoprefixer": "^10.4.21",
     "happy-dom": "^18.0.1",
     "jsdom": "^26.1.0",
