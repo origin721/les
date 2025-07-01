@@ -112,7 +112,7 @@ export type ResultByPath = {
   [PATHS.LOGIN]: void;
   [PATHS.GET_PEER_ID_BY_ACC_ID_FOR_LIBP2P]: string;
   [PATHS.GET_FRIENDS]: ReturnType<typeof friends_service.getList>;
-  [PATHS.ADD_FRIENDS]: void;
+  [PATHS.ADD_FRIENDS]: ReturnType<typeof friends_service.add>;
   [PATHS.DELETE_FRIENDS]: void;
   [PATHS.GET_FRIENDS_BY_ACCOUNT_ID]: ReturnType<typeof friends_service.getFriendsByAccountId>;
   [PATHS.GET_FRIEND_BY_ID]: ReturnType<typeof friends_service.getFriendById>;

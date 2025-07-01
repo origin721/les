@@ -11,9 +11,9 @@ import { back_store } from "../back_store";
 const channel = new BroadcastChannel(CHANNEL_NAMES.FRONT_MIDDLEWARE);
 
 export const friends_service = {
-  async add(list: FriendEntity[]) {
+  async add(list: FriendEntity[]): Promise<FriendEntityFull[]> {
     await add_friend(list);
-    await friends_service.getList();
+    return await friends_service.getList();
   },
 
   async delete(ids: string[]) {
@@ -41,7 +41,7 @@ export const friends_service = {
     }
   },
 
-  async getList() {
+  async getList(): Promise<FriendEntityFull[]> {
     try {
       const friends = await get_friends();
       
@@ -61,9 +61,13 @@ export const friends_service = {
         }
       }
       channel.postMessage(broadcast_event);
+      
+      // Возвращаем список друзей
+      return friends;
     }
     catch(err) {
       console.error('Error getting friends list:', err);
+      return [];
     }
   },
 

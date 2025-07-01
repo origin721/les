@@ -5,6 +5,10 @@
     import { theme } from "../../../stores/theme";
     import BasePage from "../../../components/page_templates/BasePage.svelte";
     import ContentSection from "../../../components/page_templates/ContentSection.svelte";
+    import { CHANNEL_NAMES } from "../../../core/broadcast_channel/constants/CHANNEL_NAMES";
+    import { FrontMiddlewareActions } from "../../../core/broadcast_channel/constants/FRONT_MIDDLEWARE_ACTIONS";
+    import type { PostMessageParam } from "../../../core/broadcast_channel/front_middleware_channel";
+    import { fade } from "svelte/transition";
 
     // Import theme styles
     import "../../../styles/cyberpunk.css";
@@ -14,17 +18,61 @@
     let friends = $state<FriendEntityFull[]>([]);
     let loading = $state(true);
     let error = $state<string | null>(null);
+    let broadcastChannel: BroadcastChannel | null = null;
 
-    // Загружаем друзей при инициализации
+    // Загружаем друзей при инициализации и настраиваем broadcast канал
     $effect(() => {
         loadFriends();
+        setupBroadcastChannel();
+        
+        // Cleanup функция для закрытия канала
+        return () => {
+            if (broadcastChannel) {
+                broadcastChannel.close();
+                broadcastChannel = null;
+            }
+        };
     });
+
+    function setupBroadcastChannel() {
+        try {
+            broadcastChannel = new BroadcastChannel(CHANNEL_NAMES.FRONT_MIDDLEWARE);
+            broadcastChannel.addEventListener('message', handleBroadcastMessage);
+            console.log('📡 FriendsPage: Broadcast канал настроен');
+        } catch (err) {
+            console.error('❌ FriendsPage: Ошибка настройки broadcast канала:', err);
+        }
+    }
+
+    function handleBroadcastMessage(event: MessageEvent<PostMessageParam>) {
+        const { action, data } = event.data;
+        console.log('📢 FriendsPage: Получено broadcast сообщение:', action, data);
+
+        if (action === FrontMiddlewareActions.ADD_FRIENDS) {
+            console.log('➕ FriendsPage: Обновляем список друзей через broadcast напрямую');
+            // Используем данные из broadcast события напрямую, не вызываем loadFriends()
+            if (data.list && Array.isArray(data.list)) {
+                friends = data.list as FriendEntityFull[];
+                console.log(`📊 FriendsPage: Обновлено через broadcast: ${friends.length} друзей`);
+            } else {
+                console.log('⚠️ FriendsPage: Некорректные данные в broadcast, перезагружаем через API');
+                loadFriends();
+            }
+        } else if (action === FrontMiddlewareActions.DELETE_FRIENDS) {
+            console.log('➖ FriendsPage: Удаляем друзей через broadcast:', data.ids);
+            // Удаляем друзей из текущего списка
+            friends = friends.filter(friend => !data.ids.includes(friend.id));
+        }
+    }
 
     async function loadFriends() {
         console.log('🔄 FriendsPage: Начинаем загрузку друзей...');
         loading = true;
         error = null;
 
+        // Гарантируем отключение loading через 1000ms независимо от результата
+        const startTime = Date.now();
+        
         try {
             console.log('📞 FriendsPage: Вызываем api.friends.getList()...');
             const friendsList = await api.friends.getList();
@@ -41,14 +89,17 @@
         } catch (err) {
             console.error('❌ FriendsPage: Ошибка загрузки друзей:', err);
             error = `Ошибка загрузки списка друзей: ${(err as any)?.message || String(err)}`;
-            friends = [];
-        } finally {
-            // Минимум 500ms загрузки для анимации
-            setTimeout(() => {
-                loading = false;
-                console.log('🏁 FriendsPage: Загрузка завершена');
-            }, 500);
+            // При ошибке оставляем старые данные, не обнуляем friends
         }
+
+        // Гарантируем минимум 1000ms загрузки
+        const elapsed = Date.now() - startTime;
+        const remainingTime = Math.max(0, 1000 - elapsed);
+        
+        setTimeout(() => {
+            loading = false;
+            console.log('🏁 FriendsPage: Загрузка завершена через', elapsed + remainingTime, 'ms');
+        }, remainingTime);
     }
 
     async function handleDeleteFriend(friendId: string) {
@@ -111,69 +162,78 @@
                                 СПИСОК ДРУЗЕЙ
                             </h2>
 
-                            {#if loading}
-                                <div class="loading-state">
-                                    <div class="loading-animation">⧗</div>
-                                    <span>Загрузка списка друзей...</span>
-                                </div>
-                            {:else if error}
-                                <div class="error-state">
-                                    <div class="error-icon">⚠</div>
-                                    <span>{error}</span>
-                                    <button class="retry-button" onclick={handleRefresh}>
-                                        Повторить попытку
-                                    </button>
-                                </div>
-                            {:else if friends.length === 0}
-                                <div class="empty-state">
-                                    <div class="empty-icon">👥</div>
-                                    <h3>Список друзей пуст</h3>
-                                    <p>Добавьте первого друга, чтобы начать общение</p>
-                                    <Link href={ROUTES.ADD_FRIEND} className="empty-action-button">
-                                        Добавить друга
-                                    </Link>
-                                </div>
-                            {:else}
-                                <div class="friends-grid">
-                                    {#each friends as friend (friend.id)}
-                                        <div class="friend-card">
-                                            <div class="friend-header">
-                                                <div class="friend-avatar">
-                                                    <span class="avatar-text">{friend.namePub.charAt(0).toUpperCase()}</span>
+                            <!-- Content Container with relative positioning for overlay -->
+                            <div class="content-container">
+                                <!-- Main Content -->
+                                {#if error}
+                                    <div class="error-state">
+                                        <div class="error-icon">⚠</div>
+                                        <span>{error}</span>
+                                        <button class="retry-button" onclick={handleRefresh}>
+                                            Повторить попытку
+                                        </button>
+                                    </div>
+                                {:else if friends.length === 0}
+                                    <div class="empty-state">
+                                        <div class="empty-icon">👥</div>
+                                        <h3>Список друзей пуст</h3>
+                                        <p>Добавьте первого друга, чтобы начать общение</p>
+                                        <Link href={ROUTES.ADD_FRIEND} className="empty-action-button">
+                                            Добавить друга
+                                        </Link>
+                                    </div>
+                                {:else}
+                                    <div class="friends-grid">
+                                        {#each friends as friend (friend.id)}
+                                            <div class="friend-card">
+                                                <div class="friend-header">
+                                                    <div class="friend-avatar">
+                                                        <span class="avatar-text">{friend.namePub.charAt(0).toUpperCase()}</span>
+                                                    </div>
+                                                    <div class="friend-info">
+                                                        <h3 class="friend-name">{friend.namePub}</h3>
+                                                        <span class="friend-id">ID: {friend.id.slice(0, 8)}...</span>
+                                                    </div>
                                                 </div>
-                                                <div class="friend-info">
-                                                    <h3 class="friend-name">{friend.namePub}</h3>
-                                                    <span class="friend-id">ID: {friend.id.slice(0, 8)}...</span>
+                                                
+                                                <div class="friend-details">
+                                                    <div class="detail-row">
+                                                        <span class="detail-label">Аккаунт:</span>
+                                                        <span class="detail-value">{friend.myAccId.slice(0, 8)}...</span>
+                                                    </div>
+                                                    <div class="detail-row">
+                                                        <span class="detail-label">P2P Ключ:</span>
+                                                        <span class="detail-value">
+                                                            {friend.friendPubKeyLibp2p ? friend.friendPubKeyLibp2p.slice(0, 16) + '...' : 'Не настроен'}
+                                                        </span>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            
-                                            <div class="friend-details">
-                                                <div class="detail-row">
-                                                    <span class="detail-label">Аккаунт:</span>
-                                                    <span class="detail-value">{friend.myAccId.slice(0, 8)}...</span>
-                                                </div>
-                                                <div class="detail-row">
-                                                    <span class="detail-label">P2P Ключ:</span>
-                                                    <span class="detail-value">
-                                                        {friend.friendPubKeyLibp2p ? friend.friendPubKeyLibp2p.slice(0, 16) + '...' : 'Не настроен'}
-                                                    </span>
-                                                </div>
-                                            </div>
 
-                                            <div class="friend-actions">
-                                                <button class="action-btn chat" onclick={() => {}}>
-                                                    <span class="btn-icon">💬</span>
-                                                    <span class="btn-text">Чат</span>
-                                                </button>
-                                                <button class="action-btn delete" onclick={() => handleDeleteFriend(friend.id)}>
-                                                    <span class="btn-icon">🗑</span>
-                                                    <span class="btn-text">Удалить</span>
-                                                </button>
+                                                <div class="friend-actions">
+                                                    <button class="action-btn chat" onclick={() => {}}>
+                                                        <span class="btn-icon">💬</span>
+                                                        <span class="btn-text">Чат</span>
+                                                    </button>
+                                                    <button class="action-btn delete" onclick={() => handleDeleteFriend(friend.id)}>
+                                                        <span class="btn-icon">🗑</span>
+                                                        <span class="btn-text">Удалить</span>
+                                                    </button>
+                                                </div>
                                             </div>
+                                        {/each}
+                                    </div>
+                                {/if}
+
+                                <!-- Loading Overlay -->
+                                {#if loading}
+                                    <div class="loading-overlay" transition:fade={{duration: 300}}>
+                                        <div class="loading-content">
+                                            <div class="loading-animation">⧗</div>
+                                            <span>Загрузка списка друзей...</span>
                                         </div>
-                                    {/each}
-                                </div>
-                            {/if}
+                                    </div>
+                                {/if}
+                            </div>
                         </div>
 
                         <!-- Footer Status -->
@@ -359,8 +419,62 @@
         font-size: 1.8rem;
     }
 
+    /* Content Container */
+    .content-container {
+        position: relative;
+        min-height: 200px;
+    }
+
+    /* Loading Background Overlay */
+    .loading-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(2px);
+        z-index: 1;
+        pointer-events: none;
+    }
+
+    .loading-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        background: rgba(26, 26, 26, 0.9);
+        border: 2px solid var(--accent-color);
+        border-radius: 8px;
+        box-shadow: 0 0 40px var(--accent-color);
+        opacity: 0.95;
+        backdrop-filter: blur(5px);
+        pointer-events: auto;
+    }
+
+    .loading-content span {
+        color: var(--accent-color);
+        font-weight: bold;
+        margin-top: 1rem;
+        text-shadow: 0 0 10px var(--accent-color);
+        font-size: 1rem;
+        animation: text-glow 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes text-glow {
+        from {
+            text-shadow: 0 0 5px var(--accent-color);
+        }
+        to {
+            text-shadow: 0 0 15px var(--accent-color), 0 0 25px var(--accent-color);
+        }
+    }
+
     /* Loading, Error, Empty States */
-    .loading-state,
     .error-state,
     .empty-state {
         display: flex;
