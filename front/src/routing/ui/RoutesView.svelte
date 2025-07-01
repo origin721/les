@@ -114,6 +114,18 @@
             componentPromise = import(
                 `../../pages/add_friend_page/ui/AddFriendPage.svelte`
             );
+        } else if (p.rState.pathname === ROUTES.ADD_FRIEND_ENCRYPTION) {
+            componentPromise = import(
+                `../../pages/add_friend_page/ui/AddFriendEncryption.svelte`
+            );
+        } else if (p.rState.pathname === ROUTES.ADD_FRIEND_PEER_TO_PEER) {
+            componentPromise = import(
+                `../../pages/add_friend_page/ui/AddFriendPeerToPeer.svelte`
+            );
+        } else if (p.rState.pathname === ROUTES.ADD_FRIEND_SSE) {
+            componentPromise = import(
+                `../../pages/add_friend_page/ui/AddFriendSSE.svelte`
+            );
         } else if (p.rState.pathname === ROUTES.ADD_PEER) {
             componentPromise = import(
                 `../../pages/add_peer_page/ui/AddPeerPage.svelte`

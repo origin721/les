@@ -1,4 +1,6 @@
 <script lang="ts">
+    // TODO: файл не используется используется ./HomePage
+    // Не удаляем пока но потом удалим
   import { Link, ROUTES } from "../../../routing";
 
 </script>
