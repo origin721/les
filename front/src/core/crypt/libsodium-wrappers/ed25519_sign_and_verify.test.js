@@ -1,13 +1,11 @@
 // @ts-check
-import assert from 'assert'; // Встроенный модуль для проверок
+import { test, expect } from 'vitest';
 
 import { sign_ed25519 } from './sign_ed25519.js';
 import { generate_keys_ed25519 } from './generate_keys_ed25519.js';
 import { verify_sign_ed25519 } from './verify_sign_ed25519.js';
 
-
-
-Function.apply.apply(async () => {
+test('ed25519 sign and verify', async () => {
   const keypair1 = await generate_keys_ed25519();
 
   const message = 'hello ed25519';
@@ -19,8 +17,8 @@ Function.apply.apply(async () => {
 
   //console.log({signature});
 
+  expect(signature).not.toBeNull();
   if(!signature) {
-    assert.notStrictEqual(signature, null, 'Должна создаться сигнатура');
     console.log('signatureErr: ', signature);
     return;
   }
@@ -31,7 +29,7 @@ Function.apply.apply(async () => {
     signature: signature,
   });
 
-  assert.deepStrictEqual(isValidOk, true, 'Подпись должна пройти');
+  expect(isValidOk).toBe(true);
 
   
   const isValidErr = await verify_sign_ed25519({
@@ -40,5 +38,5 @@ Function.apply.apply(async () => {
     signature: signature,
   });
 
-  assert.deepStrictEqual(isValidErr, false, 'Подпись должна ругаться на несоответстиве ключа');
-})
+  expect(isValidErr).toBe(false);
+});

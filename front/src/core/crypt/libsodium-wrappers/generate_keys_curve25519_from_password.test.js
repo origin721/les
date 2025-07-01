@@ -1,14 +1,12 @@
 // @ts-check
-import assert from 'assert'; // Встроенный модуль для проверок
+import { test, expect } from 'vitest';
 
 import { decrypt_curve25519 } from "./decrypt_curve25519.js";
 import { encrypt_curve25519 } from "./encrypt_curve25519.js";
 import { generate_keys_curve25519 } from "./generate_keys_curve25519.js";
 import { generate_keys_curve25519_from_password } from './generate_keys_curve25519_from_password.js';
 
-
-
-Function.apply.apply(async () => {
+test('generate keys curve25519 from password', async () => {
   const PASS = 'PASS';
   const receiverKeyPair = await generate_keys_curve25519_from_password(PASS);
 
@@ -19,8 +17,8 @@ Function.apply.apply(async () => {
     message,
   })
 
+  expect(cipherText).not.toBeNull();
   if(!cipherText) {
-    assert.notStrictEqual(cipherText, null, 'Зашифрованный текст должен быть');
     console.log('cipherTextErr: ', cipherText);
     return;
   }
@@ -33,7 +31,7 @@ Function.apply.apply(async () => {
     receiverPublicKey: receiverKeyPair2.publicKey,
   });
 
-  assert.deepStrictEqual(decryptedMessage, message, 'Сообщение должно расшифроваться и быть идентичным');
+  expect(decryptedMessage).toBe(message);
 
   const keyPairNew = await generate_keys_curve25519();
 
@@ -43,5 +41,5 @@ Function.apply.apply(async () => {
     receiverPublicKey: keyPairNew.publicKey,
   });
 
-  assert.deepStrictEqual(decryptedMessageErr, null, 'Сообщение не должно расшифроваться');
-})
+  expect(decryptedMessageErr).toBeNull();
+});
