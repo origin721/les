@@ -41,30 +41,36 @@ export function indexdb_wrapper(
 
       resultPromise.finally(onFinishOrder);
 
-      let openRequest = indexedDB.open("store", 2);
+      let openRequest = indexedDB.open("store_v3", 1);
 
       openRequest.onupgradeneeded = function (event) {
-        // версия существующей базы данных меньше 2 (или база данных не существует)
+        // версия существующей базы данных меньше 3 (или база данных не существует)
         let db = openRequest.result;
+        console.log('🔄 IndexDB onupgradeneeded:', {
+          oldVersion: event.oldVersion,
+          newVersion: event.newVersion,
+          existingStores: Array.from(db.objectStoreNames)
+        });
+        
         switch (event.oldVersion) { // существующая (старая) версия базы данных
           case 0:
+            console.log('📦 Создаем новую базу данных с обоими хранилищами');
             // версия 0 означает, что на клиенте нет базы данных
-            // выполнить инициализацию
+            // создаем оба хранилища сразу
+            
             if (!db.objectStoreNames.contains('accounts')) { // если хранилище "accounts" не существует
-              const objectStore = db.createObjectStore('accounts', { keyPath: 'id' }); // создаём хранилище
-              // Добавляем индекс для поля data
-              //objectStore.createIndex("dataIndex", "data", { unique: false });
+              const accountsStore = db.createObjectStore('accounts', { keyPath: 'id' }); // создаём хранилище
+              console.log('✅ Хранилище accounts создано');
             }
-            // fallthrough to case 1
-          case 1:
-            // на клиенте версия базы данных 1 или это новая установка
-            // обновить до версии 2 - добавляем хранилище friends
+            
             if (!db.objectStoreNames.contains('friends')) { // если хранилище "friends" не существует
               const friendsStore = db.createObjectStore('friends', { keyPath: 'id' }); // создаём хранилище
+              console.log('✅ Хранилище friends создано');
             }
             break;
         }
-
+        
+        console.log('🏁 IndexDB миграция завершена. Финальные хранилища:', Array.from(db.objectStoreNames));
       };
 
       openRequest.onerror = function () {
