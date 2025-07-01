@@ -41,7 +41,7 @@ export function indexdb_wrapper(
 
       resultPromise.finally(onFinishOrder);
 
-      let openRequest = indexedDB.open("store", 1);
+      let openRequest = indexedDB.open("store", 2);
 
       openRequest.onupgradeneeded = function (event) {
         // версия существующей базы данных меньше 2 (или база данных не существует)
@@ -55,10 +55,13 @@ export function indexdb_wrapper(
               // Добавляем индекс для поля data
               //objectStore.createIndex("dataIndex", "data", { unique: false });
             }
-            break;
+            // fallthrough to case 1
           case 1:
-            // на клиенте версия базы данных 1
-            // обновить
+            // на клиенте версия базы данных 1 или это новая установка
+            // обновить до версии 2 - добавляем хранилище friends
+            if (!db.objectStoreNames.contains('friends')) { // если хранилище "friends" не существует
+              const friendsStore = db.createObjectStore('friends', { keyPath: 'id' }); // создаём хранилище
+            }
             break;
         }
 
@@ -75,7 +78,7 @@ export function indexdb_wrapper(
         onChange(db)
           .then(() => {
             db.close();
-            res();
+            res(undefined);
           })
           .catch(rej);
 
@@ -95,7 +98,7 @@ export function indexdb_wrapper(
         // это означает, что есть ещё одно открытое соединение с той же базой данных
         // и он не был закрыт после того, как для него сработал db.onversionchange
         console.log('Событие не должно было сработать');
-        rej();
+        rej(new Error('Database connection blocked'));
       };
 
     });

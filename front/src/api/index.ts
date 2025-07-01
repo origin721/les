@@ -2,6 +2,7 @@ import { PATHS } from "../local_back/constant/PATHS";
 import { shared_worker_store } from "../processes/shared_worker/shared_worker_store";
 import type { FriendEntity } from "../indexdb/friends/add_friend";
 import type { FriendEntityFull } from "../indexdb/friends/add_friend";
+import type { FriendEntityPut } from "../indexdb/friends/put_friends";
 import type { Account } from "../indexdb/accounts/get_accounts";
 
 /**
@@ -58,6 +59,16 @@ export const api = {
       await shared_worker_store.fetch({
         path: PATHS.DELETE_FRIENDS,
         body: { ids }
+      });
+    },
+
+    /**
+     * Обновить друзей
+     */
+    async put(list: FriendEntityPut[]): Promise<void> {
+      await shared_worker_store.fetch({
+        path: PATHS.PUT_FRIENDS,
+        body: { list }
       });
     }
   },

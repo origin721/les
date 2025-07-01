@@ -5,6 +5,7 @@ import { add_friend, type FriendEntity, type FriendEntityFull } from "../../inde
 import { delete_friend } from "../../indexdb/friends/delete_friend";
 import { get_friends } from "../../indexdb/friends/get_friends";
 import { get_friend_by_id } from "../../indexdb/friends/get_friend_by_id";
+import { put_friends, type FriendEntityPut } from "../../indexdb/friends/put_friends";
 import { back_store } from "../back_store";
 
 const channel = new BroadcastChannel(CHANNEL_NAMES.FRONT_MIDDLEWARE);
@@ -84,6 +85,32 @@ export const friends_service = {
     catch(err) {
       console.error('Error getting friend by id:', err);
       return null;
+    }
+  },
+
+  async put(list: FriendEntityPut[]) {
+    try {
+      await put_friends(list);
+      
+      // Обновляем локальный кэш
+      for (const friend of list) {
+        if (!back_store.friends_by_account[friend.myAccId]) {
+          back_store.friends_by_account[friend.myAccId] = {};
+        }
+        // Обновляем существующую запись в кэше
+        if (back_store.friends_by_account[friend.myAccId][friend.id]) {
+          back_store.friends_by_account[friend.myAccId][friend.id] = {
+            ...back_store.friends_by_account[friend.myAccId][friend.id],
+            ...friend
+          };
+        }
+      }
+
+      // Перезагружаем весь список для синхронизации
+      await friends_service.getList();
+    }
+    catch(err) {
+      console.error('Error updating friends:', err);
     }
   }
 }

@@ -11,6 +11,7 @@ import { EVENT_TYPES, PATHS } from "./constant";
 import { accounts_service } from "./modules/accounts_service";
 import { friends_service } from "./modules/friends_service";
 import type { FriendEntity } from "../indexdb/friends/add_friend";
+import type { FriendEntityPut } from "../indexdb/friends/put_friends";
 
 type IdRequest = string | number;
 export type BackMiddlewareProps = {
@@ -48,7 +49,7 @@ export type PutAccountsPayload = {
 export type PutFriendsPayload = {
   path: typeof PATHS['PUT_FRIENDS'];
   body: {
-    list: AccountEntityPut[];
+    list: FriendEntityPut[];
   };
 }
 
@@ -107,6 +108,7 @@ export type ResultByPath = {
   [PATHS.ADD_ACCOUNTS]: void;
   [PATHS.DELETE_ACCOUNTS]: void;
   [PATHS.PUT_ACCOUNTS]: void;
+  [PATHS.PUT_FRIENDS]: void;
   [PATHS.LOGIN]: void;
   [PATHS.GET_PEER_ID_BY_ACC_ID_FOR_LIBP2P]: string;
   [PATHS.GET_FRIENDS]: ReturnType<typeof friends_service.getList>;
@@ -120,6 +122,7 @@ export type BackMiddlewarePayload = Extract<
   GetAccountsPayload
   |DeleteAccountsPayload
   |PutAccountsPayload
+  |PutFriendsPayload
   |AddAccountsPayload
   |GetPeerIdByAccIdForLibp2pPayload
   |LoginPayload
@@ -183,6 +186,9 @@ export async function backMiddleware(
     }
     if (props.payload.path === PATHS.GET_FRIEND_BY_ID) {
       return await friends_service.getFriendById(props.payload.body.friendId);
+    }
+    if (props.payload.path === PATHS.PUT_FRIENDS) {
+      return await friends_service.put(props.payload.body.list);
     }
   }
   catch (err) {
