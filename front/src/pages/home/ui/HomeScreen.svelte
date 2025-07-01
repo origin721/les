@@ -21,6 +21,9 @@
             <Link href={ROUTES.ADD_FRIEND}>Добавить друга</Link>
         </li>
         <li>
+            <Link href={ROUTES.ADD_PEER}>Добавить пира</Link>
+        </li>
+        <li>
             <Link href={ROUTES.CHAT_ROOMS}>Чаты</Link>
         </li>
         <li>

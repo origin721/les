@@ -114,6 +114,10 @@
             componentPromise = import(
                 `../../pages/add_friend_page/ui/AddFriendPage.svelte`
             );
+        } else if (p.rState.pathname === ROUTES.ADD_PEER) {
+            componentPromise = import(
+                `../../pages/add_peer_page/ui/AddPeerPage.svelte`
+            );
         } else if (p.rState.pathname === ROUTES.RANDOM) {
             componentPromise = import(
                 `../../pages/random/ui/RandomPage.svelte`

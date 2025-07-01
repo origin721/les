@@ -15,6 +15,7 @@ export const ROUTES = {
     CHAT_ROOMS: BASE_URL + '/chat-rooms',
     CHAT_ROOMS_ADD: BASE_URL + '/chat-rooms/add',
     ADD_FRIEND: BASE_URL + '/add-friend',
+    ADD_PEER: BASE_URL + '/add-peer',
 } as const;
 
 export const QUERY_PARAMS = {
