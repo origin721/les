@@ -1,225 +1,102 @@
-# Тестирование - Официальная документация Svelte 5
+# Svelte 5 - Ключевые концепции тестирования
 
-> Оригинальная документация от Svelte для полного справочника
+> Справочник по тестированию Svelte 5 - сокращенная версия
 
-## Тестирование
+## Тестирование рун ($state, $effect, $derived)
 
-Тестирование помогает писать и поддерживать код, а также защищаться от регрессий. Фреймворки тестирования помогают вам в этом, позволяя описывать утверждения или ожидания о том, как должен вести себя ваш код. Svelte не навязывает какой-либо фреймворк тестирования — вы можете писать юнит-тесты, интеграционные тесты и end-to-end тесты, используя решения вроде Vitest, Jasmine, Cypress и Playwright.
-
-## Юнит и интеграционное тестирование с Vitest
-
-Юнит-тесты позволяют тестировать небольшие изолированные части вашего кода. Интеграционные тесты позволяют тестировать части приложения, чтобы увидеть, работают ли они вместе. Если вы используете Vite (включая SvelteKit), мы рекомендуем использовать Vitest. Вы можете использовать Svelte CLI для настройки Vitest либо во время создания проекта, либо позже.
-
-Чтобы настроить Vitest вручную, сначала установите его:
-
-```bash
-npm install -D vitest
-```
-
-Затем настройте ваш vite.config.js:
-
-```js
-import { defineConfig } from 'vitest/config';
-
-export default defineConfig({
-	// ...
-	// Tell Vitest to use the `browser` entry points in `package.json` files, even though it's running in Node
-	resolve: process.env.VITEST
-		? {
-				conditions: ['browser']
-			}
-		: undefined
-});
-```
-
-Если загрузка браузерной версии всех ваших пакетов нежелательна, потому что (например) вы также тестируете бэкенд-библиотеки, вам может потребоваться прибегнуть к конфигурации псевдонимов.
-
-Теперь вы можете писать юнит-тесты для кода внутри ваших .js/.ts файлов:
-
-**multiplier.svelte.test**
+### Базовое использование рун в тестах
 
 ```js
 import { flushSync } from 'svelte';
 import { expect, test } from 'vitest';
-import { multiplier } from './multiplier.svelte.js';
 
-test('Multiplier', () => {
-	let double = multiplier(0, 2);
+// Тест с $state
+test('тестирование $state', () => {
+  let count = $state(0);
+  expect(count).toBe(0);
+  
+  count = 5;
+  expect(count).toBe(5);
+});
 
-	expect(double.value).toEqual(0);
+// Тест с $effect - нужен $effect.root
+test('тестирование $effect', () => {
+  const cleanup = $effect.root(() => {
+    let count = $state(0);
+    let log = [];
 
-	double.set(5);
+    $effect(() => {
+      log.push(count);
+    });
 
-	expect(double.value).toEqual(10);
+    flushSync(); // Синхронно выполнить эффекты
+    expect(log).toEqual([0]);
+
+    count = 1;
+    flushSync();
+    expect(log).toEqual([0, 1]);
+  });
+
+  cleanup(); // Важно очистить эффекты
 });
 ```
 
-**multiplier.svelte**
+### Тестирование функций с рунами
 
 ```js
-export function multiplier(initial: number, k: number) {
-	let count = $state(initial);
-
-	return {
-		get value() {
-			return count * k;
-		},
-
-		set: (c: number) => {
-			count = c;
-		}
-	};
+// функция с рунами
+export function reactiveCounter(initial) {
+  let count = $state(initial);
+  
+  return {
+    get value() { return count; },
+    increment: () => count++,
+    set: (val) => count = val
+  };
 }
-```
 
-## Использование рун внутри тестовых файлов
-
-Поскольку Vitest обрабатывает ваши тестовые файлы так же, как и исходные файлы, вы можете использовать руны внутри тестов, если имя файла включает .svelte:
-
-**multiplier.svelte.test**
-
-```js
-import { flushSync } from 'svelte';
-import { expect, test } from 'vitest';
-import { multiplier } from './multiplier.svelte.js';
-
-test('Multiplier', () => {
-	let count = $state(0);
-	let double = multiplier(() => count, 2);
-
-	expect(double.value).toEqual(0);
-
-	count = 5;
-
-	expect(double.value).toEqual(10);
+// тест
+test('реактивный счетчик', () => {
+  const counter = reactiveCounter(0);
+  
+  expect(counter.value).toBe(0);
+  
+  counter.increment();
+  expect(counter.value).toBe(1);
+  
+  counter.set(10);
+  expect(counter.value).toBe(10);
 });
-```
-
-**multiplier.svelte**
-
-```js
-export function multiplier(getCount: () => number, k: number) {
-	return {
-		get value() {
-			return getCount() * k;
-		}
-	};
-}
-```
-
-Если тестируемый код использует эффекты, вам нужно обернуть тест внутри $effect.root:
-
-**logger.svelte.test**
-
-```js
-import { flushSync } from 'svelte';
-import { expect, test } from 'vitest';
-import { logger } from './logger.svelte.js';
-
-test('Effect', () => {
-	const cleanup = $effect.root(() => {
-		let count = $state(0);
-
-		// logger uses an $effect to log updates of its input
-		let log = logger(() => count);
-
-		// effects normally run after a microtask,
-		// use flushSync to execute all pending effects synchronously
-		flushSync();
-		expect(log).toEqual([0]);
-
-		count = 1;
-		flushSync();
-
-		expect(log).toEqual([0, 1]);
-	});
-
-	cleanup();
-});
-```
-
-**logger.svelte**
-
-```js
-export function logger(getValue: () => any) {
-	let log: any[] = [];
-
-	$effect(() => {
-		log.push(getValue());
-	});
-
-	return log;
-}
 ```
 
 ## Тестирование компонентов
 
-Можно тестировать ваши компоненты в изоляции, используя Vitest.
-
-> Перед написанием тестов компонентов подумайте, действительно ли вам нужно тестировать компонент, или это больше касается логики внутри компонента. Если так, рассмотрите возможность извлечения этой логики для тестирования в изоляции, без накладных расходов компонента
-
-Для начала установите jsdom (библиотека, которая имитирует DOM API):
-
-```bash
-npm install -D jsdom
-```
-
-Затем настройте ваш vite.config.js:
-
-```js
-import { defineConfig } from 'vitest/config';
-
-export default defineConfig({
-	plugins: [
-		/* ... */
-	],
-	test: {
-		// If you are testing components client-side, you need to setup a DOM environment.
-		// If not all your files should have this environment, you can use a
-		// `// @vitest-environment jsdom` comment at the top of the test files instead.
-		environment: 'jsdom'
-	},
-	// Tell Vitest to use the `browser` entry points in `package.json` files, even though it's running in Node
-	resolve: process.env.VITEST
-		? {
-				conditions: ['browser']
-			}
-		: undefined
-});
-```
-
-После этого вы можете создать тестовый файл, в котором импортируете компонент для тестирования, взаимодействуете с ним программно и записываете ожидания о результатах:
-
-**component.test**
+### Использование mount/unmount API
 
 ```js
 import { flushSync, mount, unmount } from 'svelte';
 import { expect, test } from 'vitest';
 import Component from './Component.svelte';
 
-test('Component', () => {
-	// Instantiate the component using Svelte's `mount` API
-	const component = mount(Component, {
-		target: document.body, // `document` exists because of jsdom
-		props: { initial: 0 }
-	});
+test('тест компонента', () => {
+  const component = mount(Component, {
+    target: document.body,
+    props: { title: 'Тест' }
+  });
 
-	expect(document.body.innerHTML).toBe('<button>0</button>');
+  expect(document.body.innerHTML).toContain('Тест');
 
-	// Click the button, then flush the changes so you can synchronously write expectations
-	document.body.querySelector('button').click();
-	flushSync();
+  // Взаимодействие и проверка
+  const button = document.body.querySelector('button');
+  button.click();
+  flushSync();
 
-	expect(document.body.innerHTML).toBe('<button>1</button>');
-
-	// Remove the component from the DOM
-	unmount(component);
+  // Очистка
+  unmount(component);
 });
 ```
 
-Хотя процесс очень простой, он также низкоуровневый и несколько хрупкий, поскольку точная структура вашего компонента может часто изменяться. Инструменты вроде @testing-library/svelte могут помочь упростить ваши тесты. Приведенный выше тест можно переписать так:
-
-**component.test**
+### Использование @testing-library/svelte (рекомендуется)
 
 ```js
 import { render, screen } from '@testing-library/svelte';
@@ -227,106 +104,101 @@ import userEvent from '@testing-library/user-event';
 import { expect, test } from 'vitest';
 import Component from './Component.svelte';
 
-test('Component', async () => {
-	const user = userEvent.setup();
-	render(Component);
+test('тест с testing library', async () => {
+  const user = userEvent.setup();
+  render(Component, { props: { title: 'Тест' } });
 
-	const button = screen.getByRole('button');
-	expect(button).toHaveTextContent(0);
+  const button = screen.getByRole('button');
+  expect(button).toHaveTextContent('Кнопка');
 
-	await user.click(button);
-	expect(button).toHaveTextContent(1);
+  await user.click(button);
+  expect(screen.getByText('Нажато')).toBeInTheDocument();
 });
 ```
 
-При написании тестов компонентов, которые включают двусторонние привязки, контекст или snippet props, лучше всего создать обертку-компонент для вашего конкретного теста и взаимодействовать с ней. @testing-library/svelte содержит несколько примеров.
-
-## E2E тесты с использованием Playwright
-
-E2E (сокращение от 'end to end') тесты позволяют тестировать ваше полное приложение глазами пользователя. В этом разделе используется Playwright в качестве примера, но вы также можете использовать другие решения, такие как Cypress или NightwatchJS.
-
-Вы можете использовать Svelte CLI для настройки Playwright либо во время создания проекта, либо позже. Вы также можете настроить его с помощью npm init playwright. Дополнительно вы можете установить плагин для IDE, такой как расширение VS Code, чтобы иметь возможность выполнять тесты изнутри вашей IDE.
-
-Если вы запустили npm init playwright или не используете Vite, вам может потребоваться настроить конфигурацию Playwright, чтобы сказать Playwright, что делать перед запуском тестов - в основном запустить ваше приложение на определенном порту. Например:
-
-**playwright.config**
-
-```js
-const config = {
-	webServer: {
-		command: 'npm run build && npm run preview',
-		port: 4173
-	},
-	testDir: 'tests',
-	testMatch: /(.+\.)?(test|spec)\.[jt]s/
-};
-
-export default config;
-```
-
-Теперь вы можете начать писать тесты. Они совершенно не знают о Svelte как о фреймворке, поэтому вы в основном взаимодействуете с DOM и пишете утверждения.
-
-**tests/hello-world.spec**
-
-```js
-import { expect, test } from '@playwright/test';
-
-test('home page has expected h1', async ({ page }) => {
-	await page.goto('/');
-	await expect(page.locator('h1')).toBeVisible();
-});
-```
-
-## Дополнительные ресурсы для тестирования
-
-### Testing Library Svelte
-
-@testing-library/svelte - это простые и полные утилиты тестирования, которые поощряют хорошие практики тестирования. Они предоставляют утилиты для:
-
-- Рендеринга компонентов
-- Запросов к DOM ориентированным на пользователя способом
-- Запуска событий для имитации пользовательских взаимодействий
-
-### Mock Service Worker (MSW)
-
-Для тестирования компонентов, которые делают API-вызовы, MSW может перехватывать сетевые запросы и возвращать mock-ответы.
-
-### Тестирование Store
-
-Svelte store можно тестировать независимо:
+## Тестирование stores
 
 ```js
 import { get } from 'svelte/store';
-import { writable } from 'svelte/store';
+import { writable, derived } from 'svelte/store';
 
 test('writable store', () => {
-	const store = writable(0);
-	
-	expect(get(store)).toBe(0);
-	
-	store.set(1);
-	expect(get(store)).toBe(1);
-	
-	store.update(n => n + 1);
-	expect(get(store)).toBe(2);
+  const store = writable(0);
+  
+  expect(get(store)).toBe(0);
+  
+  store.set(5);
+  expect(get(store)).toBe(5);
+  
+  store.update(n => n * 2);
+  expect(get(store)).toBe(10);
+});
+
+test('derived store', () => {
+  const count = writable(5);
+  const doubled = derived(count, $count => $count * 2);
+  
+  expect(get(doubled)).toBe(10);
+  
+  count.set(3);
+  expect(get(doubled)).toBe(6);
 });
 ```
 
-### Тестирование Actions
+## Важные концепции
 
-Svelte actions можно тестировать, создавая mock DOM элементы:
+### flushSync для синхронных тестов
+```js
+import { flushSync } from 'svelte';
 
+// Используй flushSync после изменений состояния
+count = newValue;
+flushSync(); // Выполнить все pending обновления
+// Теперь можно проверять результат
+```
+
+### $effect.root для эффектов в тестах
+```js
+test('тест с эффектом', () => {
+  const cleanup = $effect.root(() => {
+    // Код с $effect
+  });
+  
+  // После теста обязательно
+  cleanup();
+});
+```
+
+### Конфигурация для jsdom
+```js
+// vite.config.js
+export default defineConfig({
+  test: {
+    environment: 'jsdom', // Для тестирования компонентов
+    globals: true
+  }
+});
+```
+
+## Полезные паттерны
+
+### Мокирование модулей
+```js
+import { vi } from 'vitest';
+
+vi.mock('./api', () => ({
+  fetchData: vi.fn().mockResolvedValue({ data: 'mock' })
+}));
+```
+
+### Тестирование actions
 ```js
 test('action', () => {
-	const node = document.createElement('div');
-	const destroy = myAction(node, 'parameter');
-	
-	// Test action behavior
-	
-	destroy?.();
+  const node = document.createElement('div');
+  const destroy = myAction(node, 'parameter');
+  
+  // Проверка поведения action
+  
+  destroy?.(); // Очистка
 });
 ```
-
-### Тестирование Snippets
-
-Snippets в Svelte 5 можно тестировать, рендеря их внутри тестового компонента, который принимает и рендерит snippet.
