@@ -1,1 +1,0 @@
-import{f as l,a as o,x as m,b as d,ao as c,y as f,c as i}from"./index-B1MJr76t.js";var n=l('<header data-widget-name="AppHeader" class="pl-3 text-center m-3"> </header> <span class="ml-auto mr-auto mb-3 w-[90%] h-1 bg-slate-700 block"></span>',1);function x(e,t){let r=c(t,"titleText",3,"");var a=n(),s=o(a),p=i(s);m(()=>f(p,r())),d(e,a)}export{x as A};
