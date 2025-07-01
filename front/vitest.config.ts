@@ -13,10 +13,9 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./src/tests/setup.ts'],
-    // Настройка coverage
     coverage: {
       provider: 'v8',
-      reporter: ['text', 'json', 'html'],
+      reporter: ['text', 'html'],
       exclude: [
         'node_modules/',
         'src/tests/',
@@ -25,12 +24,7 @@ export default defineConfig({
         'dist/',
         'build/'
       ]
-    },
-    // Настройка разных окружений для разных типов тестов
-    environmentMatchGlobs: [
-      // Криптографические тесты запускаются в Node.js окружении
-      ['src/core/crypt/**/*.test.js', 'node']
-    ]
+    }
   },
   define: {
     global: 'globalThis'
