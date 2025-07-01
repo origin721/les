@@ -126,6 +126,10 @@
             componentPromise = import(
                 `../../pages/add_friend_page/ui/AddFriendSSE.svelte`
             );
+        } else if (p.rState.pathname === ROUTES.ADD_FRIEND_BY_NAME) {
+            componentPromise = import(
+                `../../pages/add_friend_page/ui/AddFriendByName.svelte`
+            );
         } else if (p.rState.pathname === ROUTES.ADD_PEER) {
             componentPromise = import(
                 `../../pages/add_peer_page/ui/AddPeerPage.svelte`

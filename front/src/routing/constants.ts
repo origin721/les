@@ -1,4 +1,3 @@
-// TODO: не читать файл пока для истории существует
 const BASE_URL = '/les';
 
 export const ROUTES = {
@@ -19,6 +18,7 @@ export const ROUTES = {
     ADD_FRIEND_ENCRYPTION: BASE_URL + '/add-friend/encryption',
     ADD_FRIEND_PEER_TO_PEER: BASE_URL + '/add-friend/peer-to-peer', 
     ADD_FRIEND_SSE: BASE_URL + '/add-friend/sse',
+    ADD_FRIEND_BY_NAME: BASE_URL + '/add-friend/by-name',
     ADD_PEER: BASE_URL + '/add-peer',
 } as const;
 

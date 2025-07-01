@@ -10,6 +10,14 @@
 
     const methods = [
         {
+            href: ROUTES.ADD_FRIEND_BY_NAME,
+            icon: "👤",
+            title: "ДОБАВИТЬ_ПО_ИМЕНИ",
+            subtitle: "SIMPLE_ADD",
+            description: "Простое добавление контакта по имени с последующей настройкой безопасности",
+            features: ["SIMPLE", "QUICK", "NAME-BASED"]
+        },
+        {
             href: ROUTES.ADD_FRIEND_ENCRYPTION,
             icon: "🔒",
             title: "ШИФРОВАНИЕ_РУКАМИ",
