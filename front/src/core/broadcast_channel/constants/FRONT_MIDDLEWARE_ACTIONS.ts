@@ -8,5 +8,7 @@ function getChannelNames() {
   return Object.freeze({
     ADD_ACCOUNTS: 'ADD_ACCOUNTS',
     DELETE_ACCOUNTS: 'DELETE_ACCOUNTS',
+    ADD_FRIENDS: 'ADD_FRIENDS',
+    DELETE_FRIENDS: 'DELETE_FRIENDS',
   })
 }

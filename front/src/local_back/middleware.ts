@@ -9,6 +9,8 @@ import { put_accounts, type AccountEntityPut } from "../indexdb/accounts/put_acc
 import { back_store } from "./back_store";
 import { EVENT_TYPES, PATHS } from "./constant";
 import { accounts_service } from "./modules/accounts_service";
+import { friends_service } from "./modules/friends_service";
+import type { FriendEntity } from "../indexdb/friends/add_friend";
 
 type IdRequest = string | number;
 export type BackMiddlewareProps = {
@@ -68,8 +70,50 @@ export type GetPeerIdByAccIdForLibp2pPayload = {
   }
 }
 
+export type AddFriendsPayload = {
+  path: typeof PATHS['ADD_FRIENDS'];
+  body: {
+    list: FriendEntity[];
+  };
+}
+
+export type DeleteFriendsPayload = {
+  path: typeof PATHS['DELETE_FRIENDS'];
+  body: {
+    ids: string[];
+  };
+}
+
+export type GetFriendsPayload = {
+  path: typeof PATHS['GET_FRIENDS'];
+}
+
+export type GetFriendsByAccountIdPayload = {
+  path: typeof PATHS['GET_FRIENDS_BY_ACCOUNT_ID'];
+  body: {
+    myAccId: string;
+  };
+}
+
+export type GetFriendByIdPayload = {
+  path: typeof PATHS['GET_FRIEND_BY_ID'];
+  body: {
+    friendId: string;
+  };
+}
+
 export type ResultByPath = {
-  [key in typeof PATHS['GET_ACCOUNTS']]: ReturnType<typeof get_accounts>;
+  [PATHS.GET_ACCOUNTS]: ReturnType<typeof get_accounts>;
+  [PATHS.ADD_ACCOUNTS]: void;
+  [PATHS.DELETE_ACCOUNTS]: void;
+  [PATHS.PUT_ACCOUNTS]: void;
+  [PATHS.LOGIN]: void;
+  [PATHS.GET_PEER_ID_BY_ACC_ID_FOR_LIBP2P]: string;
+  [PATHS.GET_FRIENDS]: ReturnType<typeof friends_service.getList>;
+  [PATHS.ADD_FRIENDS]: void;
+  [PATHS.DELETE_FRIENDS]: void;
+  [PATHS.GET_FRIENDS_BY_ACCOUNT_ID]: ReturnType<typeof friends_service.getFriendsByAccountId>;
+  [PATHS.GET_FRIEND_BY_ID]: ReturnType<typeof friends_service.getFriendById>;
 };
 
 export type BackMiddlewarePayload = Extract<
@@ -79,6 +123,11 @@ export type BackMiddlewarePayload = Extract<
   |AddAccountsPayload
   |GetPeerIdByAccIdForLibp2pPayload
   |LoginPayload
+  |AddFriendsPayload
+  |DeleteFriendsPayload
+  |GetFriendsPayload
+  |GetFriendsByAccountIdPayload
+  |GetFriendByIdPayload
 ,{
   path: keyof typeof PATHS;
   body?: any;
@@ -94,10 +143,11 @@ export type BackMiddlewareEvent = {
 
 export async function backMiddleware(
   props: BackMiddlewareProps
- ): ResultByPath[typeof props['payload']['path']] {
+ ): Promise<any> {
   //console.log('worker-shared',{props});
 
   try {
+    // Account handlers
     if (props.payload.path === PATHS.LOGIN) {
       return await accounts_service.onLogin(props.payload);
     }
@@ -116,6 +166,23 @@ export async function backMiddleware(
     }
     if (props.payload.path === PATHS.PUT_ACCOUNTS) {
       return await accounts_service.put(props.payload.body.list);
+    }
+
+    // Friends handlers
+    if (props.payload.path === PATHS.GET_FRIENDS) {
+      return await friends_service.getList();
+    }
+    if (props.payload.path === PATHS.ADD_FRIENDS) {
+      return await friends_service.add(props.payload.body.list);
+    }
+    if (props.payload.path === PATHS.DELETE_FRIENDS) {
+      return await friends_service.delete(props.payload.body.ids);
+    }
+    if (props.payload.path === PATHS.GET_FRIENDS_BY_ACCOUNT_ID) {
+      return await friends_service.getFriendsByAccountId(props.payload.body.myAccId);
+    }
+    if (props.payload.path === PATHS.GET_FRIEND_BY_ID) {
+      return await friends_service.getFriendById(props.payload.body.friendId);
     }
   }
   catch (err) {

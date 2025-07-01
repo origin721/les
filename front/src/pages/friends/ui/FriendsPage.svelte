@@ -1,7 +1,6 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import { get_friends } from "../../../indexdb/friends/get_friends";
-    import { delete_friend } from "../../../indexdb/friends/delete_friend";
+    import { api } from "../../../api";
     import type { FriendEntityFull } from "../../../indexdb/friends/add_friend";
     import { Link, ROUTES } from "../../../routing";
     import { theme } from "../../../stores/theme";
@@ -19,7 +18,7 @@
 
     onMount(async () => {
         try {
-            friends = await get_friends();
+            friends = await api.friends.getList();
             loading = false;
         } catch (err) {
             error = "Ошибка загрузки списка друзей";
@@ -30,7 +29,7 @@
     async function handleDeleteFriend(friendId: string) {
         if (confirm("Вы уверены, что хотите удалить этого друга?")) {
             try {
-                await delete_friend(friendId);
+                await api.friends.delete([friendId]);
                 friends = friends.filter(friend => friend.id !== friendId);
             } catch (err) {
                 error = "Ошибка при удалении друга";
