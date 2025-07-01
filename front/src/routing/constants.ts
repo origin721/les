@@ -21,6 +21,7 @@ export const ROUTES = {
     ADD_FRIEND_BY_NAME: BASE_URL + '/add-friend/by-name',
     ADD_PEER: BASE_URL + '/add-peer',
     FRIENDS: BASE_URL + '/friends',
+    NOT_FOUND: BASE_URL + '/404',
 } as const;
 
 export const QUERY_PARAMS = {
