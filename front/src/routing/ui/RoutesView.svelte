@@ -156,6 +156,8 @@
             componentPromise = import(
                 `../../pages/friends/ui/FriendsPage.svelte`
             );
+        } else if (p.rState.pathname === ROUTES.NOT_FOUND) {
+            componentPromise = import(`../../pages/404/ui/Page404.svelte`);
         } else {
             componentPromise = import(`../../pages/404/ui/Page404.svelte`);
         }

@@ -60,10 +60,10 @@
       </div>
       
       <div class="action-buttons">
-        <a href={ROUTES.HOME} class="btn-primary">
+        <Link href={ROUTES.HOME} className="btn-primary">
           <span class="btn-text">ВЕРНУТЬСЯ ДОМОЙ</span>
           <span class="btn-glow"></span>
-        </a>
+        </Link>
         
         <button class="btn-secondary" on:click={() => history.back()}>
           <span class="btn-text">НАЗАД</span>
@@ -288,6 +288,46 @@
     cursor: pointer;
     font-family: inherit;
     font-size: 0.9rem;
+    display: inline-block;
+  }
+  
+  /* Сброс стилей для Link компонента */
+  :global(.btn-primary) {
+    position: relative;
+    padding: 1rem 2rem;
+    border: 2px solid #00ffff;
+    background: transparent;
+    color: #00ffff !important;
+    text-decoration: none !important;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    cursor: pointer;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    display: inline-block;
+  }
+  
+  :global(.btn-primary:hover) {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 10px 30px rgba(0, 255, 255, 0.3) !important;
+    color: #00ffff !important;
+  }
+  
+  :global(.btn-primary .btn-glow) {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+  }
+  
+  :global(.btn-primary:hover .btn-glow) {
+    left: 100% !important;
   }
   
   .btn-secondary {
