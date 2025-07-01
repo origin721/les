@@ -14,6 +14,8 @@
 
     const pass = writable(null);
     let showClearOptions = false;
+    let keyboardLayout = "UNKNOWN";
+    let passwordInput: HTMLInputElement;
 
     function submit(e: Event) {
         if (!pass) return;
@@ -49,6 +51,105 @@
         }
     }
     // TODO: Доработать при добавление акаунта инфу что добавлен или ошибка
+
+    // Функция для определения раскладки клавиатуры
+    function detectKeyboardLayout(event: KeyboardEvent) {
+        const key = event.key;
+        const code = event.code;
+        
+        // Определяем раскладку по характерным символам
+        if (key.match(/[а-яё]/i)) {
+            keyboardLayout = "RU";
+        } else if (key.match(/[a-z]/i)) {
+            keyboardLayout = "EN";
+        } else if (key.match(/[ążśćęłńóź]/i)) {
+            keyboardLayout = "PL";
+        } else if (key.match(/[äöüß]/i)) {
+            keyboardLayout = "DE";
+        } else if (key.match(/[àáâäèéêëîïôûüÿç]/i)) {
+            keyboardLayout = "FR";
+        } else if (key.match(/[àáèéìíîïòóùú]/i)) {
+            keyboardLayout = "IT";
+        } else if (key.match(/[ñáéíóúü]/i)) {
+            keyboardLayout = "ES";
+        } else if (key === "Backspace" || key === "Delete" || key === "Tab" || key === "Enter") {
+            // Не изменяем раскладку для служебных клавиш
+            return;
+        }
+        
+        // Дополнительное определение по позиции клавиш
+        if (keyboardLayout === "UNKNOWN" && key.length === 1) {
+            // Анализируем по коду клавиши и символу
+            switch (code) {
+                case "KeyQ":
+                    if (key === "й") keyboardLayout = "RU";
+                    else if (key === "q") keyboardLayout = "EN";
+                    break;
+                case "KeyW":
+                    if (key === "ц") keyboardLayout = "RU";
+                    else if (key === "w") keyboardLayout = "EN";
+                    break;
+                case "KeyE":
+                    if (key === "у") keyboardLayout = "RU";
+                    else if (key === "e") keyboardLayout = "EN";
+                    break;
+                case "KeyR":
+                    if (key === "к") keyboardLayout = "RU";
+                    else if (key === "r") keyboardLayout = "EN";
+                    break;
+                case "KeyT":
+                    if (key === "е") keyboardLayout = "RU";
+                    else if (key === "t") keyboardLayout = "EN";
+                    break;
+            }
+        }
+    }
+
+    // Обработчик события ввода в поле пароля
+    function handlePasswordKeydown(event: KeyboardEvent) {
+        detectKeyboardLayout(event);
+    }
+
+    // Получаем цвет индикатора в зависимости от раскладки
+    function getLayoutIndicatorClass(layout: string) {
+        switch (layout) {
+            case "RU": return "layout-ru";
+            case "EN": return "layout-en";
+            case "PL": return "layout-pl";
+            case "DE": return "layout-de";
+            case "FR": return "layout-fr";
+            case "IT": return "layout-it";
+            case "ES": return "layout-es";
+            default: return "layout-unknown";
+        }
+    }
+
+    // Инициализация определения раскладки при монтировании компонента
+    function initKeyboardDetection() {
+        if (typeof navigator !== 'undefined' && 'keyboard' in navigator) {
+            // Современный API для определения раскладки (если доступен)
+            const keyboard = (navigator as any).keyboard;
+            if (keyboard && 'getLayoutMap' in keyboard) {
+                keyboard.getLayoutMap().then((layoutMap: any) => {
+                    const qKey = layoutMap.get('KeyQ');
+                    if (qKey === 'й') {
+                        keyboardLayout = "RU";
+                    } else if (qKey === 'q') {
+                        keyboardLayout = "EN";
+                    }
+                }).catch(() => {
+                    // Если API недоступен, используем обработчик событий
+                    keyboardLayout = "UNKNOWN";
+                });
+            }
+        }
+    }
+
+    // Вызываем инициализацию при монтировании
+    import { onMount } from 'svelte';
+    onMount(() => {
+        initKeyboardDetection();
+    });
 </script>
 
 <div class="theme-{$theme}">
@@ -128,13 +229,20 @@
                     <label for="password-input">
                         <span class="label-text">[PASSWORD_REQUIRED]</span>
                     </label>
-                    <input
-                        id="password-input"
-                        bind:value={$pass}
-                        class="password-input"
-                        type="password"
-                        placeholder="> ACCESS_KEY"
-                    />
+                    <div class="password-input-container">
+                        <input
+                            id="password-input"
+                            bind:this={passwordInput}
+                            bind:value={$pass}
+                            class="password-input"
+                            type="password"
+                            placeholder="> ACCESS_KEY"
+                            onkeydown={handlePasswordKeydown}
+                        />
+                        <div class="keyboard-layout-indicator {getLayoutIndicatorClass(keyboardLayout)}">
+                            <span class="layout-text">[{keyboardLayout}]</span>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="actions">
@@ -377,18 +485,113 @@
         letter-spacing: 0.1em;
     }
 
+    .password-input-container {
+        position: relative;
+        width: 100%;
+    }
+
     .password-input {
         width: 100%;
         background-color: var(--input-background);
         color: var(--input-text);
         border: 1px solid var(--border-color);
         padding: 0.75rem;
+        padding-right: 4rem; /* Место для индикатора */
         font-family: inherit;
         box-sizing: border-box;
     }
     .password-input:focus {
         outline: 2px solid var(--primary-color);
         box-shadow: 0 0 10px var(--primary-color);
+    }
+
+    .keyboard-layout-indicator {
+        position: absolute;
+        right: 0.5rem;
+        top: 50%;
+        transform: translateY(-50%);
+        padding: 0.25rem 0.5rem;
+        border: 1px solid var(--border-color);
+        background-color: var(--input-background);
+        border-radius: 3px;
+        font-size: 0.7rem;
+        font-weight: bold;
+        letter-spacing: 0.05em;
+        min-width: 2rem;
+        text-align: center;
+        transition: all 0.2s ease;
+        pointer-events: none;
+    }
+
+    .layout-text {
+        display: block;
+        white-space: nowrap;
+    }
+
+    /* Цвета для разных раскладок */
+    .layout-ru {
+        color: #ff6b6b;
+        border-color: #ff6b6b;
+        text-shadow: 0 0 3px #ff6b6b;
+    }
+
+    .layout-en {
+        color: #51cf66;
+        border-color: #51cf66;
+        text-shadow: 0 0 3px #51cf66;
+    }
+
+    .layout-pl {
+        color: #ff8cc8;
+        border-color: #ff8cc8;
+        text-shadow: 0 0 3px #ff8cc8;
+    }
+
+    .layout-de {
+        color: #ffd43b;
+        border-color: #ffd43b;
+        text-shadow: 0 0 3px #ffd43b;
+    }
+
+    .layout-fr {
+        color: #74c0fc;
+        border-color: #74c0fc;
+        text-shadow: 0 0 3px #74c0fc;
+    }
+
+    .layout-it {
+        color: #69db7c;
+        border-color: #69db7c;
+        text-shadow: 0 0 3px #69db7c;
+    }
+
+    .layout-es {
+        color: #ffa8a8;
+        border-color: #ffa8a8;
+        text-shadow: 0 0 3px #ffa8a8;
+    }
+
+    .layout-unknown {
+        color: var(--text-color);
+        border-color: var(--border-color);
+        opacity: 0.6;
+    }
+
+    /* Анимация при изменении раскладки */
+    .keyboard-layout-indicator {
+        animation: layoutChange 0.3s ease;
+    }
+
+    @keyframes layoutChange {
+        0% {
+            transform: translateY(-50%) scale(1);
+        }
+        50% {
+            transform: translateY(-50%) scale(1.1);
+        }
+        100% {
+            transform: translateY(-50%) scale(1);
+        }
     }
 
     .actions {
