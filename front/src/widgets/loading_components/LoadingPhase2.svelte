@@ -25,7 +25,7 @@
             x="50%"
             y="50%"
             dominant-baseline="middle"
-            text-anchor="middle">AUTHENTICATING</text
+            text-anchor="middle">AUTSECURCATING</text
         >
     </svg>
     <div class="progress-bar-container">
