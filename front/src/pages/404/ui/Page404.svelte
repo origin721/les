@@ -3,5 +3,5 @@
   import Screen404 from "./Screen404.svelte";
 </script>
 
-<AppHeader titleText="Not found" />
+<AppHeader titleText="404 - ДОСТУП ЗАПРЕЩЕН" />
 <Screen404 />
