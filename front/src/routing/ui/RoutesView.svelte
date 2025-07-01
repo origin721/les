@@ -152,6 +152,10 @@
             componentPromise = import(
                 `../../pages/account_settings/ui/AccountSettingsPage.svelte`
             );
+        } else if (p.rState.pathname === ROUTES.FRIENDS) {
+            componentPromise = import(
+                `../../pages/friends/ui/FriendsPage.svelte`
+            );
         } else {
             componentPromise = import(`../../pages/404/ui/Page404.svelte`);
         }
