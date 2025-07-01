@@ -10,11 +10,18 @@ export default defineConfig({
     }
   })],
   test: {
-    environment: 'happy-dom',
+    environment: 'jsdom',
     globals: true,
-    setupFiles: ['./src/tests/setup.ts']
+    setupFiles: ['./src/tests/setup.ts'],
+    environmentMatchGlobs: [
+      // Криптографические тесты запускаются в Node.js окружении
+      ['src/core/crypt/**/*.test.js', 'node']
+    ]
   },
   define: {
     global: 'globalThis'
+  },
+  resolve: {
+    conditions: ['browser']
   }
 })
