@@ -1,4 +1,82 @@
 /**
+ * Clear all IndexedDB databases using the modern databases() API when available,
+ * fallback to clearing known database names for older browsers
+ */
+async function clearAllIndexedDBDatabases(): Promise<void> {
+  try {
+    // Try modern databases() API first (supported in newer browsers)
+    if ('databases' in indexedDB) {
+      const databases = await (indexedDB as any).databases();
+      console.log(`Found ${databases.length} IndexedDB database(s) to delete`);
+      
+      for (const db of databases) {
+        if (db.name) {
+          try {
+            // Close any open connections to the database
+            const deleteRequest = (indexedDB as any).deleteDatabase(db.name);
+            await new Promise<void>((resolve, reject) => {
+              deleteRequest.onsuccess = () => {
+                console.log(`✓ IndexedDB database deleted: ${db.name}`);
+                resolve();
+              };
+              deleteRequest.onerror = (event: any) => {
+                console.error(`Error deleting IndexedDB database: ${db.name}`, event);
+                reject(new Error(`Failed to delete database: ${db.name}`));
+              };
+              deleteRequest.onblocked = () => {
+                console.warn(`IndexedDB database deletion blocked: ${db.name}`);
+                // Still resolve as the deletion will happen when connections close
+                resolve();
+              };
+            });
+          } catch (error) {
+            console.error(`Error deleting IndexedDB database: ${db.name}`, error);
+          }
+        }
+      }
+    } else {
+      // Fallback for older browsers - delete known database names
+      console.log('Modern databases() API not available, using fallback method');
+      const knownDatabaseNames = [
+        'store_v3', // From indexdb_wrapper.ts
+        'store_v2',
+        'store_v1',
+        'store',
+        // Add any other known database names from your app
+      ];
+      
+      for (const dbName of knownDatabaseNames) {
+        try {
+          const deleteRequest = (indexedDB as any).deleteDatabase(dbName);
+          await new Promise<void>((resolve, reject) => {
+            deleteRequest.onsuccess = () => {
+              console.log(`✓ IndexedDB database deleted: ${dbName}`);
+              resolve();
+            };
+            deleteRequest.onerror = () => {
+              // Don't reject for databases that don't exist
+              console.log(`IndexedDB database not found or already deleted: ${dbName}`);
+              resolve();
+            };
+            deleteRequest.onblocked = () => {
+              console.warn(`IndexedDB database deletion blocked: ${dbName}`);
+              resolve();
+            };
+          });
+        } catch (error) {
+          console.error(`Error deleting IndexedDB database: ${dbName}`, error);
+        }
+      }
+    }
+    
+    console.log('✓ IndexedDB databases cleared');
+  } catch (error) {
+    console.error('Error clearing IndexedDB databases:', error);
+    throw error;
+  }
+}
+
+/**
  * Utility function to clear all app data including Service Workers and localStorage
  * Based on patterns from https://s.scripton.app
  */
@@ -35,12 +113,10 @@ export async function clearAllAppData(): Promise<void> {
       console.log('Service Workers not supported in this browser');
     }
 
-    // Clear IndexedDB (optional - you may want to keep some data)
+    // Clear all IndexedDB databases
     if ('indexedDB' in window) {
       try {
-        // Get all databases (this might not work in all browsers)
-        // For now, we'll just log that we could clear IndexedDB
-        console.log('IndexedDB clearing would require specific database names');
+        await clearAllIndexedDBDatabases();
       } catch (error) {
         console.error('Error clearing IndexedDB:', error);
       }
@@ -125,5 +201,22 @@ export function clearStorageOnly(): void {
   } catch (error) {
     console.error('Error clearing storage:', error);
     alert('Ошибка при очистке хранилища: ' + (error instanceof Error ? error.message : String(error)));
+  }
+}
+
+/**
+ * Clear only IndexedDB databases without affecting other data
+ */
+export async function clearIndexedDBOnly(): Promise<void> {
+  try {
+    if ('indexedDB' in window) {
+      await clearAllIndexedDBDatabases();
+      alert('IndexedDB базы данных очищены!');
+    } else {
+      alert('IndexedDB не поддерживается в этом браузере');
+    }
+  } catch (error) {
+    console.error('Error clearing IndexedDB:', error);
+    alert('Ошибка при очистке IndexedDB: ' + (error instanceof Error ? error.message : String(error)));
   }
 }

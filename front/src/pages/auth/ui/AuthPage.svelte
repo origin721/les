@@ -4,7 +4,7 @@
     import { Link, ROUTES } from "../../../routing";
     import ThemeSwitcher from "../../../components/ThemeSwitcher.svelte";
     import { theme } from "../../../stores/theme";
-    import { clearAllAppData, clearServiceWorkersOnly, clearStorageOnly } from "../../../core/clear_app_data";
+    import { clearAllAppData, clearServiceWorkersOnly, clearStorageOnly, clearIndexedDBOnly } from "../../../core/clear_app_data";
 
     // Import theme styles. The `theme` store will toggle a class on the wrapper
     // to apply the correct styles.
@@ -40,6 +40,12 @@
     function handleClearStorage() {
         if (confirm('Очистить только локальное хранилище?')) {
             clearStorageOnly();
+        }
+    }
+
+    async function handleClearIndexedDB() {
+        if (confirm('Очистить только IndexedDB базы данных?')) {
+            await clearIndexedDBOnly();
         }
     }
     // TODO: Доработать при добавление акаунта инфу что добавлен или ошибка
@@ -174,6 +180,13 @@
                                     onclick={handleClearStorage}
                                 >
                                     [CLEAR_STORAGE]
+                                </button>
+                                <button 
+                                    type="button" 
+                                    class="clear-btn clear-indexeddb" 
+                                    onclick={handleClearIndexedDB}
+                                >
+                                    [CLEAR_INDEXEDDB]
                                 </button>
                             </div>
                         {/if}
@@ -521,6 +534,17 @@
         background-color: #44ff44;
         color: #000000;
         box-shadow: 0 0 10px #44ff44;
+    }
+
+    .clear-indexeddb {
+        border-color: #8844ff;
+        color: #8844ff;
+    }
+
+    .clear-indexeddb:hover {
+        background-color: #8844ff;
+        color: #000000;
+        box-shadow: 0 0 10px #8844ff;
     }
 
     .auth-footer {
