@@ -2,6 +2,7 @@
   import { ROUTES } from "../../../routing";
   import { Link } from "../../../routing";
   import { onMount } from "svelte";
+    import { routingStore } from "../../../routing/stores";
   
   let mounted = false;
   let glitchText = "404";
@@ -65,7 +66,7 @@
           <span class="btn-glow"></span>
         </Link>
         
-        <button class="btn-secondary" on:click={() => history.back()}>
+        <button class="btn-secondary" on:click={() => routingStore.setPath(ROUTES.HOME)}>
           <span class="btn-text">НАЗАД</span>
           <span class="btn-glow"></span>
         </button>
