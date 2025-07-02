@@ -60,13 +60,15 @@
     }
 </script>
 
-<div><Link href={ROUTES.ACCOUNTS}>Назад</Link></div>
-
-<form
-    onsubmit={submit}
-    class="flex justify-center h-[100%] flex-col items-center"
-    data-widget-name="AuthPage"
->
+<div class="account-new-container">
+    <div class="back-link-container">
+        <Link href={ROUTES.ACCOUNTS}>Назад</Link>
+    </div>
+    <form
+        onsubmit={submit}
+        class="account-new-form"
+        data-widget-name="AuthPage"
+    >
     <label class={labelClass}>
         <span class="block">login</span>
         <input bind:value={$fieldLogin} class={inputClass} type="text" />
@@ -89,3 +91,35 @@
         >submit</button
     >
 </form>
+</div>
+
+<style>
+    .account-new-container {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        width: 100vw;
+        background-color: var(--les-bg-primary);
+        color: var(--les-text-primary);
+        padding: 0;
+        margin: 0;
+        overflow: hidden;
+        box-sizing: border-box;
+    }
+
+    .back-link-container {
+        padding: 1rem;
+        align-self: flex-start;
+    }
+
+    .account-new-form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        flex-grow: 1;
+        width: 100%;
+        padding: 2rem;
+        box-sizing: border-box;
+    }
+</style>

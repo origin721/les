@@ -367,10 +367,9 @@
         background-color: var(--background-color);
         color: var(--text-color);
         font-family: "Courier New", Courier, monospace;
-        padding: 1rem;
+        padding: 0;
+        margin: 0;
         overflow: hidden;
-        border: 2px solid var(--border-color);
-        box-shadow: 0 0 25px var(--primary-color) inset;
         box-sizing: border-box;
     }
 
@@ -379,6 +378,7 @@
         justify-content: space-between;
         align-items: center;
         width: 100%;
+        padding: 1rem;
         padding-bottom: 1rem;
         border-bottom: 1px solid var(--border-color);
         min-height: 60px;
@@ -467,7 +467,7 @@
         flex-direction: column;
         align-items: center;
         width: 100%;
-        max-width: 600px;
+        max-width: 90vw;
         padding: 2rem;
         border: 1px solid var(--border-color);
         background: #00000033;
@@ -753,7 +753,7 @@
 
     .auth-footer {
         width: 100%;
-        padding-top: 1rem;
+        padding: 1rem;
         border-top: 1px solid var(--border-color);
         text-align: center;
         font-size: 0.8rem;

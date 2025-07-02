@@ -31,6 +31,13 @@
   @apply w-full px-[1rem];
 }
 
+.container-fullscreen {
+  @apply w-full h-full;
+  padding: 0;
+  margin: 0;
+  max-width: none;
+}
+
 /* Flex layouts */
 .flex {
   @apply flex;
