@@ -11,6 +11,7 @@ export type AccountEntityPut = {
   namePub: string;
   pass: string;
   httpServers: HttpServerParam[];
+  friendsByIds?: string[];
   date_updated?: Date;
 }
 
@@ -19,17 +20,29 @@ export function put_accounts(new_list: AccountEntityPut[]) {
     return new Promise(async (res, rej) => {
       const transaction = db.transaction(["accounts"], "readwrite");
       const store = transaction.objectStore("accounts");
-      // Добавляем запись
+      // Обновляем записи
       for (let item of new_list) {
-        // TODO: нужно шифровать
+        const existingAccount = back_store.accounts_by_id[item.id];
+        if (!existingAccount) {
+          throw new Error(`Account ${item.id} not found in back_store`);
+        }
+
+        // Объединяем существующие данные с новыми
+        const updatedAccount = {
+          ...existingAccount,
+          ...item,
+          date_updated: new Date(),
+          // Сохраняем важные поля из оригинального аккаунта
+          _pass: existingAccount._pass,
+          _libp2p_keyPair: existingAccount._libp2p_keyPair,
+          date_created: existingAccount.date_created,
+        };
+
         const newData = await encrypt_curve25519_from_pass({
-          pass: back_store.accounts_by_id[item.id].pass,
-          message: JSON.stringify({
-            ...item,
-            date_updated: new Date(),
-            pass: back_store.accounts_by_id[item.id].pass,
-          }),
+          pass: existingAccount.pass,
+          message: JSON.stringify(updatedAccount),
         });
+        
         store.put({ id: item.id, data: newData });
       }
 

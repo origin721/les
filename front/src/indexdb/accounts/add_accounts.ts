@@ -15,6 +15,7 @@ export type AccountEntity = {
   namePub: string;
   pass: string;
   httpServers: HttpServerParam[];
+  friendsByIds?: string[];  // Опциональное для обратной совместимости
 }
 
 export function add_accounts(new_list: AccountEntity[]) {
@@ -35,6 +36,7 @@ export function add_accounts(new_list: AccountEntity[]) {
             _pass: gen_pass(),
             _libp2p_keyPair: privateKeyToString(libp2p_keyPair),
             date_created: new Date(),
+            friendsByIds: item.friendsByIds || [],  // Инициализируем пустым массивом
           }),
         });
         store.add({ id: newId, data: newData });
@@ -46,8 +48,8 @@ export function add_accounts(new_list: AccountEntity[]) {
       };
 
       transaction.onerror = function (event) {
-        console.error("Ошибка при добавлении данных:", event.target.errorCode);
-        rej();
+        console.error("Ошибка при добавлении данных:", event);
+        rej(new Error("Ошибка при добавлении данных в IndexedDB"));
       };
     });
   })

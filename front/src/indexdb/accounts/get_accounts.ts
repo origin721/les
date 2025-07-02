@@ -13,6 +13,7 @@ export type Account = {
   date_updated?: Date;
   _pass: string;
   _libp2p_keyPair: string;
+  friendsByIds?: string[];  // Опциональное для обратной совместимости
 };
 
 export function get_accounts(
@@ -29,7 +30,7 @@ export function get_accounts(
         const request = store.openCursor();
         const result: Account[] = []
         request.onsuccess = async function (event) {
-          const cursor = event.target.result;
+          const cursor = (event.target as IDBRequest).result;
           if (cursor) {
            //if (!found && cursor.value.id === targetId) {
            //  found = true; // Нашли нужный id
