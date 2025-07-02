@@ -4,6 +4,9 @@
     import { api } from "../../../api";
     import { appAuthStore } from "../../../stores/app_auth_store/app_auth_store";
     import { writableToState } from "../../../core/svelte_default/runs/writableToState.svelte";
+    import { Button, Input } from "../../../components/ui";
+    import formStyles from "../../../styles/modules/forms.module.css";
+    import cardStyles from "../../../styles/modules/cards.module.css";
 
     let friendName = $state('');
     let friendNickname = $state('');
@@ -95,14 +98,14 @@
 
 <BasePage 
     title="ADD_FRIEND_BY_NAME"
-    subtitle="ДОБАВЛЕНИЕ_КОНТАКТА_ПО_ИМЕНИ"
+    subtitle="ДОБАВИТЬ_ДРУГА"
     pageName="AddFriendByNamePage"
     footerVersion="// ADD_FRIEND_BY_NAME_v0.1.0 //"
     footerStatus="MODE: SIMPLE"
 >
     {#snippet children()}
         <ContentSection 
-            title="// ДОБАВИТЬ ДРУГА ПО ИМЕНИ //"
+            title="// ДОБАВИТЬ ДРУГА //"
             description="Простое добавление контакта с возможностью последующей настройки безопасного соединения"
         >
             {#snippet children()}
@@ -114,10 +117,10 @@
                         </div>
 
                         <div class="form-content">
-                            <div class="input-group">
-                                <label for="account-select" class="input-label">
+                            <div class={formStyles.group}>
+                                <label for="account-select" class={`${formStyles.label} ${formStyles.labelRequired}`}>
                                     <span class="label-icon">👤</span>
-                                    <span class="label-text">ВЫБЕРИТЕ АККАУНТ *</span>
+                                    <span class="label-text">ВЫБЕРИТЕ АККАУНТ</span>
                                 </label>
                                 {#if accounts.length === 0}
                                     <div class="no-accounts">
@@ -131,7 +134,7 @@
                                     <select
                                         id="account-select"
                                         bind:value={selectedAccountId}
-                                        class="form-select"
+                                        class="{formStyles.form} {formStyles.select} {formStyles.md} form-select-styled"
                                         disabled={loading}
                                     >
                                         {#each accounts as account}
@@ -143,37 +146,33 @@
                                 {/if}
                             </div>
 
-                            <div class="input-group">
-                                <label for="friend-name" class="input-label">
+                            <div class={formStyles.group}>
+                                <label for="friend-name" class={`${formStyles.label} ${formStyles.labelRequired}`}>
                                     <span class="label-icon">📝</span>
-                                    <span class="label-text">ИМЯ ДРУГА *</span>
+                                    <span class="label-text">ИМЯ ДРУГА</span>
                                 </label>
-                                <input
+                                <Input
                                     id="friend-name"
-                                    type="text"
                                     bind:value={friendName}
                                     onkeydown={handleKeydown}
                                     placeholder="Введите имя..."
-                                    class="form-input"
                                     disabled={loading}
-                                    autocomplete="off"
+                                    className="form-input-styled"
                                 />
                             </div>
 
-                            <div class="input-group">
-                                <label for="friend-nickname" class="input-label">
+                            <div class={formStyles.group}>
+                                <label for="friend-nickname" class={formStyles.label}>
                                     <span class="label-icon">🏷️</span>
                                     <span class="label-text">НИКНЕЙМ (ОПЦИОНАЛЬНО)</span>
                                 </label>
-                                <input
+                                <Input
                                     id="friend-nickname"
-                                    type="text"
                                     bind:value={friendNickname}
                                     onkeydown={handleKeydown}
                                     placeholder="Отображаемое имя..."
-                                    class="form-input"
                                     disabled={loading}
-                                    autocomplete="off"
+                                    className="form-input-styled"
                                 />
                             </div>
 
@@ -187,19 +186,22 @@
                             {/if}
 
                             <div class="form-actions">
-                                <button
-                                    class="action-button primary"
+                                <Button
+                                    variant="primary"
+                                    size="lg"
                                     onclick={handleAddFriend}
                                     disabled={loading || !friendName.trim()}
+                                    loading={loading}
                                 >
-                                    {#if loading}
-                                        <span class="button-spinner">⟳</span>
-                                        <span>ДОБАВЛЕНИЕ...</span>
-                                    {:else}
-                                        <span class="button-icon">➕</span>
-                                        <span>ДОБАВИТЬ ДРУГА</span>
-                                    {/if}
-                                </button>
+                                    {#snippet children()}
+                                        {#if loading}
+                                            <span>ДОБАВЛЕНИЕ...</span>
+                                        {:else}
+                                            <span class="button-icon">➕</span>
+                                            <span>ДОБАВИТЬ ДРУГА</span>
+                                        {/if}
+                                    {/snippet}
+                                </Button>
 
                                 <Link href={ROUTES.ADD_FRIEND} className="action-button secondary">
                                     <span class="button-icon">⬅️</span>
@@ -270,21 +272,6 @@
         gap: 1.5rem;
     }
 
-    .input-group {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-
-    .input-label {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        color: var(--text-color);
-        font-weight: 500;
-        font-size: 0.9rem;
-    }
-
     .label-icon {
         font-size: 1.1rem;
     }
@@ -293,58 +280,67 @@
         font-family: 'Courier New', monospace;
     }
 
-    .form-input {
-        background: rgba(0, 0, 0, 0.4);
-        border: 1px solid var(--border-color);
-        border-radius: 6px;
-        color: var(--text-color);
-        font-size: 1rem;
-        padding: 0.75rem 1rem;
-        transition: all 0.3s ease;
-        outline: none;
+    /* Стили для полей формы */
+    :global(.form-input-styled) {
+        background: rgba(0, 0, 0, 0.4) !important;
+        border: 1px solid var(--border-color) !important;
+        border-radius: 6px !important;
+        color: var(--text-color) !important;
+        font-size: 1rem !important;
+        padding: 0.75rem 1rem !important;
+        transition: all 0.3s ease !important;
+        outline: none !important;
+        width: 100% !important;
     }
 
-    .form-input:focus {
-        border-color: var(--primary-color);
-        box-shadow: 0 0 15px rgba(var(--primary-color-rgb), 0.3);
+    :global(.form-input-styled:focus) {
+        border-color: var(--primary-color) !important;
+        box-shadow: 0 0 15px rgba(0, 255, 255, 0.3) !important;
     }
 
-    .form-input:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
+    :global(.form-input-styled:disabled) {
+        opacity: 0.6 !important;
+        cursor: not-allowed !important;
     }
 
-    .form-input::placeholder {
-        color: var(--secondary-color);
-        opacity: 0.7;
+    :global(.form-input-styled::placeholder) {
+        color: var(--secondary-color) !important;
+        opacity: 0.7 !important;
     }
 
-    .form-select {
-        background: rgba(0, 0, 0, 0.4);
-        border: 1px solid var(--border-color);
-        border-radius: 6px;
-        color: var(--text-color);
-        font-size: 1rem;
-        padding: 0.75rem 1rem;
-        transition: all 0.3s ease;
-        outline: none;
-        cursor: pointer;
+    :global(.form-select-styled) {
+        background: rgba(0, 0, 0, 0.4) !important;
+        border: 1px solid var(--border-color) !important;
+        border-radius: 6px !important;
+        color: var(--text-color) !important;
+        font-size: 1rem !important;
+        padding: 0.75rem 1rem !important;
+        transition: all 0.3s ease !important;
+        outline: none !important;
+        cursor: pointer !important;
+        width: 100% !important;
+        appearance: none !important;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e") !important;
+        background-position: right 0.5rem center !important;
+        background-repeat: no-repeat !important;
+        background-size: 1rem !important;
+        padding-right: 2.5rem !important;
     }
 
-    .form-select:focus {
-        border-color: var(--primary-color);
-        box-shadow: 0 0 15px rgba(var(--primary-color-rgb), 0.3);
+    :global(.form-select-styled:focus) {
+        border-color: var(--primary-color) !important;
+        box-shadow: 0 0 15px rgba(0, 255, 255, 0.3) !important;
     }
 
-    .form-select:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
+    :global(.form-select-styled:disabled) {
+        opacity: 0.6 !important;
+        cursor: not-allowed !important;
     }
 
-    .form-select option {
-        background: rgba(0, 0, 0, 0.9);
-        color: var(--text-color);
-        padding: 0.5rem;
+    :global(.form-select-styled option) {
+        background: rgba(0, 0, 0, 0.9) !important;
+        color: var(--text-color) !important;
+        padding: 0.5rem !important;
     }
 
     .no-accounts {
@@ -413,7 +409,10 @@
         margin-top: 1rem;
     }
 
-    .action-button {
+    :global(.action-button.secondary) {
+        background: transparent;
+        color: var(--secondary-color);
+        border: 1px solid var(--border-color);
         display: flex;
         align-items: center;
         gap: 0.5rem;
@@ -424,33 +423,9 @@
         text-transform: uppercase;
         transition: all 0.3s ease;
         cursor: pointer;
-        border: none;
         text-decoration: none;
         flex: 1;
         justify-content: center;
-    }
-
-    .action-button.primary {
-        background: var(--primary-color);
-        color: #000;
-        border: 1px solid var(--primary-color);
-    }
-
-    .action-button.primary:hover:not(:disabled) {
-        background: transparent;
-        color: var(--primary-color);
-        box-shadow: 0 0 20px var(--primary-color);
-    }
-
-    .action-button.primary:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-    }
-
-    :global(.action-button.secondary) {
-        background: transparent;
-        color: var(--secondary-color);
-        border: 1px solid var(--border-color);
     }
 
     :global(.action-button.secondary:hover) {
@@ -460,16 +435,6 @@
 
     .button-icon {
         font-size: 1.1rem;
-    }
-
-    .button-spinner {
-        animation: spin 1s linear infinite;
-        font-size: 1.1rem;
-    }
-
-    @keyframes spin {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(360deg); }
     }
 
     .form-info {

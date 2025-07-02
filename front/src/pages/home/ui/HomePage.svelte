@@ -14,7 +14,6 @@
         { href: ROUTES.CRYPTO, title: "ШИФРОВАНИЕ", icon: "🔐", description: "Криптографические операции" },
         { href: ROUTES.API_KEYS, title: "API КЛЮЧИ", icon: "🔑", description: "Управление ключами доступа" },
         { href: ROUTES.CHAT_ROOMS, title: "ЧАТЫ", icon: "💬", description: "Безопасные сообщения" },
-        { href: ROUTES.ADD_FRIEND, title: "ДОБАВИТЬ ДРУГА", icon: "👫", description: "Расширить сеть контактов" },
         { href: ROUTES.ADD_PEER, title: "ДОБАВИТЬ ПИРА", icon: "🤝", description: "Подключение к P2P сети" },
         { href: ROUTES.RANDOM, title: "РАНДОМ", icon: "🎲", description: "Генерация случайных данных" },
         { href: ROUTES.SETTINGS, title: "НАСТРОЙКИ", icon: "⚙️", description: "Конфигурация системы" },

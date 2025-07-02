@@ -11,7 +11,9 @@
     value?: string;
     oninput?: (event: Event) => void;
     onchange?: (event: Event) => void;
+    onkeydown?: (event: KeyboardEvent) => void;
     id?: string;
+    className?: string;
   }
   
   let {
@@ -24,7 +26,9 @@
     value = $bindable(''),
     oninput,
     onchange,
+    onkeydown,
     id,
+    className = '',
     ...restProps
   }: Props = $props();
   
@@ -35,6 +39,7 @@
     if (state === 'success') classes.push(formStyles.success);
     if (disabled) classes.push(formStyles.disabled);
     if (readonly) classes.push(formStyles.readonly);
+    if (className) classes.push(className);
     
     return classes.join(' ');
   };
@@ -50,5 +55,6 @@
   bind:value
   {oninput}
   {onchange}
+  {onkeydown}
   {...restProps}
 />

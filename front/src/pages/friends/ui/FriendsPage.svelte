@@ -144,7 +144,7 @@
 
                         <!-- Action Buttons -->
                         <div class="action-buttons">
-                            <Link href={ROUTES.ADD_FRIEND} className="action-button primary">
+                            <Link href={ROUTES.ADD_FRIEND_BY_NAME} className="action-button primary">
                                 <span class="button-icon">👥</span>
                                 <span class="button-text">ДОБАВИТЬ ДРУГА</span>
                             </Link>
@@ -178,7 +178,7 @@
                                         <div class="empty-icon">👥</div>
                                         <h3>Список друзей пуст</h3>
                                         <p>Добавьте первого друга, чтобы начать общение</p>
-                                        <Link href={ROUTES.ADD_FRIEND} className="empty-action-button">
+                                        <Link href={ROUTES.ADD_FRIEND_BY_NAME} className="empty-action-button">
                                             Добавить друга
                                         </Link>
                                     </div>
