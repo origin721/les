@@ -1,1 +1,1 @@
-export {default as AddFriendPage} from './AddFriendPage.svelte';
+export {default as AddFriendPage} from './AddFriendByName.svelte';
