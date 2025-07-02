@@ -26,7 +26,7 @@ export function delete_accounts(ids: string[]) {
         }));
       });
 
-      Promise.allSettled(listPromise).then(res);
+      Promise.allSettled(listPromise).then(() => res());
 
       transaction.oncomplete = function() {
         forceLog("Все выбранные записи успешно удалены.");

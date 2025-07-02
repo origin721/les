@@ -1,6 +1,7 @@
 import { encrypt_curve25519_from_pass } from "../../core/crypt";
 import { back_store } from "../../local_back/back_store";
 import { indexdb_wrapper } from "../indexdb_wrapper";
+import { forceLog } from "../../core/debug/logger";
 
 export type UpdateAccountFriendsOperation = {
   add?: string[];
@@ -67,7 +68,7 @@ export function updateAccountFriendsList(
         back_store.accounts_by_id[accountId] = updatedAccount;
 
         transaction.oncomplete = function () {
-          console.log(`✅ Account ${accountId} friends list updated successfully`);
+          forceLog(`✅ Account ${accountId} friends list updated successfully`);
           res();
         };
 

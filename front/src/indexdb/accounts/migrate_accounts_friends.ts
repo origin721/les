@@ -2,6 +2,7 @@ import { encrypt_curve25519_from_pass, decrypt_curve25519_from_pass } from "../.
 import { back_store } from "../../local_back/back_store";
 import { indexdb_wrapper } from "../indexdb_wrapper";
 import { get_accounts } from "./get_accounts";
+import { forceLog } from "../../core/debug/logger";
 
 /**
  * Миграция существующих аккаунтов для добавления поля friendsByIds
@@ -11,14 +12,14 @@ export function migrateAccountsFriends(): Promise<void> {
   return indexdb_wrapper((db) => {
     return new Promise<void>(async (res, rej) => {
       try {
-        console.log('🔄 Начинаем миграцию аккаунтов для добавления поля friendsByIds');
+        forceLog('🔄 Начинаем миграцию аккаунтов для добавления поля friendsByIds');
         
         // Получаем все аккаунты
         const accounts = await get_accounts();
         let migratedCount = 0;
         
         if (accounts.length === 0) {
-          console.log('✅ Нет аккаунтов для миграции');
+          forceLog('✅ Нет аккаунтов для миграции');
           res();
           return;
         }
@@ -29,11 +30,11 @@ export function migrateAccountsFriends(): Promise<void> {
         for (const account of accounts) {
           // Проверяем, есть ли уже поле friendsByIds
           if (account.friendsByIds !== undefined) {
-            console.log(`⏭️ Аккаунт ${account.id} уже содержит поле friendsByIds, пропускаем`);
+            forceLog(`⏭️ Аккаунт ${account.id} уже содержит поле friendsByIds, пропускаем`);
             continue;
           }
 
-          console.log(`🔄 Мигрируем аккаунт ${account.id} (${account.namePub})`);
+          forceLog(`🔄 Мигрируем аккаунт ${account.id} (${account.namePub})`);
           
           // Добавляем поле friendsByIds
           const updatedAccount = {
@@ -58,7 +59,7 @@ export function migrateAccountsFriends(): Promise<void> {
         }
 
         transaction.oncomplete = function () {
-          console.log(`✅ Миграция завершена. Обновлено аккаунтов: ${migratedCount}`);
+          forceLog(`✅ Миграция завершена. Обновлено аккаунтов: ${migratedCount}`);
           res();
         };
 
@@ -87,9 +88,9 @@ export async function checkAccountsMigrationNeeded(): Promise<boolean> {
     const needMigration = accounts.some(account => account.friendsByIds === undefined);
     
     if (needMigration) {
-      console.log('🔍 Обнаружены аккаунты без поля friendsByIds, требуется миграция');
+      forceLog('🔍 Обнаружены аккаунты без поля friendsByIds, требуется миграция');
     } else {
-      console.log('✅ Все аккаунты уже содержат поле friendsByIds');
+      forceLog('✅ Все аккаунты уже содержат поле friendsByIds');
     }
     
     return needMigration;
@@ -107,9 +108,9 @@ export async function autoMigrateAccounts(): Promise<void> {
     const needMigration = await checkAccountsMigrationNeeded();
     
     if (needMigration) {
-      console.log('🚀 Автоматически запускаем миграцию аккаунтов');
+      forceLog('🚀 Автоматически запускаем миграцию аккаунтов');
       await migrateAccountsFriends();
-      console.log('✅ Автоматическая миграция завершена');
+      forceLog('✅ Автоматическая миграция завершена');
     }
   } catch (error) {
     console.error('❌ Ошибка автоматической миграции:', error);
