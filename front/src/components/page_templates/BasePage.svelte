@@ -7,6 +7,7 @@
   import "../../styles/cyberpunk.css";
   import "../../styles/watchdogs.css";
   import "../../styles/pixel.css";
+  import "../../styles/terminal.css";
 
   interface Props {
     title: string;
@@ -142,6 +143,17 @@
     --card-background: #222222;
     --nav-active: #ff00ff;
     --accent-color: #00ff00;
+  }
+
+  .theme-terminal {
+    --background-color: #001040;
+    --text-color: #FFFFFF;
+    --primary-color: #FFFF60;
+    --secondary-color: #4080FF;
+    --border-color: #4080FF;
+    --card-background: #002060;
+    --nav-active: #FFFF60;
+    --accent-color: #FFDD40;
   }
 
   .base-container {

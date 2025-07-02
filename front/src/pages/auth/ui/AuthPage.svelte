@@ -11,6 +11,7 @@
     import "../../../styles/cyberpunk.css";
     import "../../../styles/watchdogs.css";
     import "../../../styles/pixel.css";
+    import "../../../styles/terminal.css";
 
     const pass = writable(null);
     let showClearOptions = false;
@@ -355,21 +356,6 @@
         --button-hover-text: #000000;
         --link-color: #00ff00;
         --link-hover-color: #ff00ff;
-    }
-    .theme-terminal {
-        --background-color: #001040;
-        --text-color: #FFFFFF;
-        --primary-color: #FFFF60;
-        --secondary-color: #FFDD40;
-        --border-color: #4080FF;
-        --input-background: #002060;
-        --input-text: #FFFFFF;
-        --button-background: #FFFF60;
-        --button-text: #001040;
-        --button-hover-background: #4080FF;
-        --button-hover-text: #FFFFFF;
-        --link-color: #FFFF60;
-        --link-hover-color: #4080FF;
     }
 
     .auth-page-container {
