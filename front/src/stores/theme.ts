@@ -1,6 +1,6 @@
 import { writable } from "svelte/store";
 
-export const themes = ["cyberpunk", "watchdogs", "pixel"];
+export const themes = ["cyberpunk", "watchdogs", "pixel", "terminal"];
 
 export const theme = writable(themes[0]);
 

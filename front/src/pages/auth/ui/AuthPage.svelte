@@ -356,6 +356,21 @@
         --link-color: #00ff00;
         --link-hover-color: #ff00ff;
     }
+    .theme-terminal {
+        --background-color: #001040;
+        --text-color: #FFFFFF;
+        --primary-color: #FFFF60;
+        --secondary-color: #FFDD40;
+        --border-color: #4080FF;
+        --input-background: #002060;
+        --input-text: #FFFFFF;
+        --button-background: #FFFF60;
+        --button-text: #001040;
+        --button-hover-background: #4080FF;
+        --button-hover-text: #FFFFFF;
+        --link-color: #FFFF60;
+        --link-hover-color: #4080FF;
+    }
 
     .auth-page-container {
         display: flex;

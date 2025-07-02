@@ -112,3 +112,25 @@
   --secondary-color: #00A8A9;
   --border-color: #00D2D3;
 }
+
+/* 6. Terminal Theme */
+/* Vim darkblue inspired theme with deep blue background */
+[data-theme="terminal"] {
+  --les-bg-primary: #001040;
+  --les-bg-secondary: #002060;
+  --les-text-primary: #FFFFFF;
+  --les-text-secondary: #D0D0D0;
+  --les-accent-primary: #FFFF60;
+  --les-accent-secondary: #FFDD40;
+  --les-border-primary: #4080FF;
+  --les-success: #60FF60;
+  --les-warning: #FFCC40;
+  --les-error: #FF6060;
+  
+  /* Legacy variables for loading components */
+  --background-color: #001040;
+  --text-color: #FFFFFF;
+  --primary-color: #FFFF60;
+  --secondary-color: #FFDD40;
+  --border-color: #4080FF;
+}
