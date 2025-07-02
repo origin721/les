@@ -15,7 +15,7 @@
 </script>
 
 <div class="theme-{$theme} loading-phase">
-    <svg class="glitch-svg" viewBox="0 0 200 60">
+    <svg class="glitch-svg" viewBox="0 0 300 60">
         <text class="glitch-text" x="50%" y="50%">CONNECTING</text>
         <text class="glitch-layer" x="50%" y="50%">CONNECTING</text>
     </svg>
