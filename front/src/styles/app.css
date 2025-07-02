@@ -1,4 +1,8 @@
 @import "./variables.css";
+@import "./modules/buttons.module.css";
+@import "./modules/cards.module.css";
+@import "./modules/forms.module.css";
+@import "./modules/layout.module.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -12,27 +16,27 @@
     color: rgba(255, 255, 255, 0.87);
     background-color: #242424;
 
-    font-size: 36px; /* Увеличенный базовый размер для десктопа */
+    font-size: 2.25rem; /* Увеличенный базовый размер для десктопа в rem */
 }
 
 /* Адаптивность для планшетов */
 @media (max-width: 48rem) {
     :root {
-        font-size: 24px;
+        font-size: 1.5rem;
     }
 }
 
 /* Адаптивность для телефонов - уменьшение базового размера шрифта */
 @media (max-width: 36rem) {
     :root {
-        font-size: 20px;
+        font-size: 1.25rem;
     }
 }
 
 /* Дополнительная адаптивность для очень маленьких экранов */
 @media (max-width: 28rem) {
     :root {
-        font-size: 16px;
+        font-size: 1rem;
     }
 }
 

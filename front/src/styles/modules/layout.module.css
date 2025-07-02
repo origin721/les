@@ -1,0 +1,374 @@
+/* Layout components - CSS модули с Tailwind для макетов */
+
+/* Контейнеры */
+.container {
+  @apply w-full mx-auto px-[1rem];
+  max-width: 1200px;
+}
+
+.container-sm {
+  @apply w-full mx-auto px-[1rem];
+  max-width: 640px;
+}
+
+.container-md {
+  @apply w-full mx-auto px-[1rem];
+  max-width: 768px;
+}
+
+.container-lg {
+  @apply w-full mx-auto px-[1rem];
+  max-width: 1024px;
+}
+
+.container-xl {
+  @apply w-full mx-auto px-[1rem];
+  max-width: 1280px;
+}
+
+.container-fluid {
+  @apply w-full px-[1rem];
+}
+
+/* Flex layouts */
+.flex {
+  @apply flex;
+}
+
+.flexCol {
+  @apply flex flex-col;
+}
+
+.flexRow {
+  @apply flex flex-row;
+}
+
+.flexWrap {
+  @apply flex-wrap;
+}
+
+.flexCenter {
+  @apply flex items-center justify-center;
+}
+
+.flexBetween {
+  @apply flex items-center justify-between;
+}
+
+.flexAround {
+  @apply flex items-center justify-around;
+}
+
+.flexStart {
+  @apply flex items-center justify-start;
+}
+
+.flexEnd {
+  @apply flex items-center justify-end;
+}
+
+.itemsStart {
+  @apply items-start;
+}
+
+.itemsCenter {
+  @apply items-center;
+}
+
+.itemsEnd {
+  @apply items-end;
+}
+
+.itemsStretch {
+  @apply items-stretch;
+}
+
+.justifyStart {
+  @apply justify-start;
+}
+
+.justifyCenter {
+  @apply justify-center;
+}
+
+.justifyEnd {
+  @apply justify-end;
+}
+
+.justifyBetween {
+  @apply justify-between;
+}
+
+.justifyAround {
+  @apply justify-around;
+}
+
+/* Grid layouts */
+.grid {
+  @apply grid;
+}
+
+.grid1 {
+  @apply grid-cols-1;
+}
+
+.grid2 {
+  @apply grid-cols-2;
+}
+
+.grid3 {
+  @apply grid-cols-3;
+}
+
+.grid4 {
+  @apply grid-cols-4;
+}
+
+.grid5 {
+  @apply grid-cols-5;
+}
+
+.grid6 {
+  @apply grid-cols-6;
+}
+
+.gridAuto {
+  @apply grid-cols-auto;
+}
+
+.gridAutoFit {
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+}
+
+.gridAutoFill {
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+}
+
+.gap0 {
+  @apply gap-0;
+}
+
+.gap1 {
+  @apply gap-[0.25rem];
+}
+
+.gap2 {
+  @apply gap-[0.5rem];
+}
+
+.gap3 {
+  @apply gap-[0.75rem];
+}
+
+.gap4 {
+  @apply gap-[1rem];
+}
+
+.gap5 {
+  @apply gap-[1.25rem];
+}
+
+.gap6 {
+  @apply gap-[1.5rem];
+}
+
+.gap8 {
+  @apply gap-[2rem];
+}
+
+.gap10 {
+  @apply gap-[2.5rem];
+}
+
+/* Position */
+.relative {
+  @apply relative;
+}
+
+.absolute {
+  @apply absolute;
+}
+
+.fixed {
+  @apply fixed;
+}
+
+.sticky {
+  @apply sticky;
+}
+
+.topFull {
+  @apply top-full;
+}
+
+.bottomFull {
+  @apply bottom-full;
+}
+
+.leftFull {
+  @apply left-full;
+}
+
+.rightFull {
+  @apply right-full;
+}
+
+/* Размеры */
+.w25 {
+  @apply w-1/4;
+}
+
+.w50 {
+  @apply w-1/2;
+}
+
+.w75 {
+  @apply w-3/4;
+}
+
+.wFull {
+  @apply w-full;
+}
+
+.wScreen {
+  @apply w-screen;
+}
+
+.wAuto {
+  @apply w-auto;
+}
+
+.h25 {
+  @apply h-1/4;
+}
+
+.h50 {
+  @apply h-1/2;
+}
+
+.h75 {
+  @apply h-3/4;
+}
+
+.hFull {
+  @apply h-full;
+}
+
+.hScreen {
+  @apply h-screen;
+}
+
+.hAuto {
+  @apply h-auto;
+}
+
+.minH0 {
+  @apply min-h-0;
+}
+
+.minHFull {
+  @apply min-h-full;
+}
+
+.minHScreen {
+  @apply min-h-screen;
+}
+
+.maxWFull {
+  @apply max-w-full;
+}
+
+.maxWScreen {
+  @apply max-w-screen-2xl;
+}
+
+.maxHFull {
+  @apply max-h-full;
+}
+
+.maxHScreen {
+  @apply max-h-screen;
+}
+
+/* Overflow */
+.overflowHidden {
+  @apply overflow-hidden;
+}
+
+.overflowAuto {
+  @apply overflow-auto;
+}
+
+.overflowScroll {
+  @apply overflow-scroll;
+}
+
+.overflowXHidden {
+  @apply overflow-x-hidden;
+}
+
+.overflowYHidden {
+  @apply overflow-y-hidden;
+}
+
+.overflowXAuto {
+  @apply overflow-x-auto;
+}
+
+.overflowYAuto {
+  @apply overflow-y-auto;
+}
+
+/* Visibility */
+.hidden {
+  @apply hidden;
+}
+
+.visible {
+  @apply visible;
+}
+
+.invisible {
+  @apply invisible;
+}
+
+.block {
+  @apply block;
+}
+
+.inlineBlock {
+  @apply inline-block;
+}
+
+.inline {
+  @apply inline;
+}
+
+/* Z-index */
+.z0 {
+  @apply z-0;
+}
+
+.z10 {
+  @apply z-10;
+}
+
+.z20 {
+  @apply z-20;
+}
+
+.z30 {
+  @apply z-30;
+}
+
+.z40 {
+  @apply z-40;
+}
+
+.z50 {
+  @apply z-50;
+}
+
+.zAuto {
+  @apply z-auto;
+}

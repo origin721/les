@@ -1,0 +1,157 @@
+/* Card components - CSS модули с Tailwind */
+
+.card {
+  background: var(--card-background);
+  border: 0.0625rem solid var(--border-color);
+  @apply rounded-[0.5rem] transition-all duration-300 overflow-hidden relative;
+}
+
+/* Размеры карточек */
+.sm {
+  @apply p-[1rem] rounded-[0.25rem];
+}
+
+.md {
+  @apply p-[1.5rem] rounded-[0.5rem];
+}
+
+.lg {
+  @apply p-[2rem] rounded-[0.75rem];
+}
+
+.xl {
+  @apply p-[2.5rem] rounded-[1rem];
+}
+
+/* Варианты карточек */
+.default {
+  box-shadow: 0 0 1.25rem rgba(0, 0, 0, 0.1);
+}
+
+.default:hover {
+  transform: translateY(-0.125rem);
+  box-shadow: 0 0 1.5rem rgba(0, 0, 0, 0.15);
+}
+
+.elevated {
+  box-shadow: 
+    0 0 1.25rem rgba(0, 0, 0, 0.2),
+    inset 0 0 1.25rem rgba(255, 255, 255, 0.02);
+}
+
+.elevated:hover {
+  transform: translateY(-0.25rem);
+  box-shadow: 
+    0 0 2rem rgba(0, 0, 0, 0.25),
+    inset 0 0 1.25rem rgba(255, 255, 255, 0.05);
+}
+
+.interactive {
+  @apply cursor-pointer;
+  box-shadow: 0 0 1.25rem rgba(0, 0, 0, 0.1);
+}
+
+.interactive:hover {
+  border-color: var(--primary-color);
+  transform: translateY(-0.25rem);
+  box-shadow: 
+    0 0 1.5rem var(--primary-color),
+    inset 0 0 1.25rem rgba(255, 255, 255, 0.05);
+}
+
+.interactive:active {
+  transform: translateY(-0.125rem);
+  box-shadow: 0 0 1rem var(--primary-color);
+}
+
+.glowing {
+  box-shadow: 
+    0 0 1.25rem var(--primary-color),
+    inset 0 0 1.25rem rgba(255, 255, 255, 0.05);
+  border-color: var(--primary-color);
+}
+
+.glowing:hover {
+  transform: translateY(-0.25rem);
+  box-shadow: 
+    0 0 2rem var(--primary-color),
+    inset 0 0 1.5rem rgba(255, 255, 255, 0.08);
+}
+
+.flat {
+  @apply shadow-none border border-solid;
+  border-color: var(--border-color);
+}
+
+.flat:hover {
+  border-color: var(--primary-color);
+  @apply bg-white/5;
+}
+
+/* Эффекты */
+.shimmer::before {
+  content: '';
+  @apply absolute top-0 -left-full w-full h-full transition-all duration-500;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+}
+
+.shimmer:hover::before {
+  @apply left-full;
+}
+
+.pulse {
+  animation: card-pulse 3s ease-in-out infinite;
+}
+
+@keyframes card-pulse {
+  0%, 100% { 
+    box-shadow: 0 0 1.25rem rgba(0, 0, 0, 0.1);
+  }
+  50% { 
+    box-shadow: 0 0 1.5rem var(--primary-color);
+  }
+}
+
+.float {
+  animation: card-float 6s ease-in-out infinite;
+}
+
+@keyframes card-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-0.25rem); }
+}
+
+/* Компоненты карточек */
+.header {
+  @apply p-[1rem_1.5rem] border-b border-solid bg-black/5;
+  border-bottom-color: var(--border-color);
+}
+
+.body {
+  @apply p-[1.5rem];
+}
+
+.footer {
+  @apply p-[1rem_1.5rem] border-t border-solid bg-black/5 flex justify-between items-center;
+  border-top-color: var(--border-color);
+}
+
+.image {
+  @apply w-full h-auto object-cover rounded-t-[0.5rem];
+}
+
+.title {
+  @apply text-[1.25rem] font-semibold m-0 mb-[0.5rem];
+  color: var(--primary-color);
+  text-shadow: 0 0 0.3125rem var(--primary-color);
+}
+
+.subtitle {
+  @apply text-[0.875rem] m-0 mb-[1rem];
+  color: var(--secondary-color);
+}
+
+.content {
+  @apply leading-[1.6] m-0;
+  color: var(--text-color);
+}

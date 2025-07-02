@@ -1,0 +1,190 @@
+/* Form components - CSS модули с Tailwind */
+
+.form {
+  @apply font-inherit text-[1rem] w-full outline-none transition-all duration-300;
+  color: var(--text-color);
+  background: rgba(0, 0, 0, 0.4);
+  border: 0.0625rem solid var(--border-color);
+  border-radius: 0.375rem;
+}
+
+/* Размеры полей ввода */
+.xs {
+  @apply px-[0.5rem] py-[0.25rem] text-[0.75rem] min-h-[1.5rem] rounded-[0.25rem];
+}
+
+.sm {
+  @apply px-[0.75rem] py-[0.375rem] text-[0.875rem] min-h-[2rem] rounded-[0.25rem];
+}
+
+.md {
+  @apply px-[0.75rem] py-[0.5rem] text-[1rem] min-h-[2.5rem] rounded-[0.375rem];
+}
+
+.lg {
+  @apply px-[1rem] py-[0.75rem] text-[1.125rem] min-h-[3rem] rounded-[0.5rem];
+}
+
+.xl {
+  @apply px-[1.25rem] py-[1rem] text-[1.25rem] min-h-[3.5rem] rounded-[0.5rem];
+}
+
+/* Типы полей */
+.input {
+  @apply block;
+}
+
+.textarea {
+  @apply block resize-y min-h-[4rem] leading-[1.5];
+}
+
+.select {
+  @apply block appearance-none pr-[2.5rem];
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.5rem center;
+  background-repeat: no-repeat;
+  background-size: 1rem;
+}
+
+.checkbox {
+  @apply w-[1rem] h-[1rem] appearance-none relative cursor-pointer rounded-[0.125rem];
+  background: rgba(0, 0, 0, 0.4);
+  border: 0.0625rem solid var(--border-color);
+}
+
+.checkbox:checked {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.checkbox:checked::after {
+  content: '✓';
+  @apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[0.75rem] font-bold;
+  color: var(--background-color);
+}
+
+.radio {
+  @apply w-[1rem] h-[1rem] appearance-none relative cursor-pointer rounded-full;
+  background: rgba(0, 0, 0, 0.4);
+  border: 0.0625rem solid var(--border-color);
+}
+
+.radio:checked {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.radio:checked::after {
+  content: '';
+  @apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[0.375rem] h-[0.375rem] rounded-full;
+  background: var(--background-color);
+}
+
+/* Состояния полей */
+.form:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 0.1875rem rgba(0, 255, 255, 0.3);
+}
+
+.error {
+  border-color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.error:focus {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 0.1875rem rgba(239, 68, 68, 0.3);
+}
+
+.success {
+  border-color: #22c55e;
+  background: rgba(34, 197, 94, 0.1);
+}
+
+.success:focus {
+  border-color: #22c55e;
+  box-shadow: 0 0 0 0.1875rem rgba(34, 197, 94, 0.3);
+}
+
+.disabled {
+  @apply opacity-50 cursor-not-allowed;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.readonly {
+  background: rgba(0, 0, 0, 0.2);
+  @apply cursor-default;
+}
+
+/* Компоненты форм */
+.group {
+  @apply mb-[1rem];
+}
+
+.label {
+  @apply block text-[0.875rem] font-medium mb-[0.5rem];
+  color: var(--text-color);
+}
+
+.labelRequired::after {
+  content: ' *';
+  @apply text-red-500;
+}
+
+.hint {
+  @apply text-[0.75rem] mt-[0.25rem] leading-[1.4];
+  color: var(--secondary-color);
+}
+
+.errorText {
+  @apply text-[0.75rem] mt-[0.25rem] leading-[1.4] text-red-500;
+}
+
+.successText {
+  @apply text-[0.75rem] mt-[0.25rem] leading-[1.4] text-green-500;
+}
+
+.fieldset {
+  @apply rounded-[0.5rem] p-[1rem] mb-[1rem];
+  border: 0.0625rem solid var(--border-color);
+}
+
+.legend {
+  @apply font-semibold px-[0.5rem];
+  color: var(--primary-color);
+}
+
+.inputGroup {
+  @apply flex items-stretch;
+}
+
+.inputGroup .form {
+  @apply rounded-none;
+}
+
+.inputGroup .form:first-child {
+  @apply rounded-l-[0.375rem];
+}
+
+.inputGroup .form:last-child {
+  @apply rounded-r-[0.375rem];
+}
+
+.inputGroup .form:not(:last-child) {
+  @apply border-r-0;
+}
+
+.addon {
+  @apply flex items-center px-[0.75rem] py-[0.5rem] text-[0.875rem] whitespace-nowrap;
+  background: rgba(0, 0, 0, 0.2);
+  border: 0.0625rem solid var(--border-color);
+  color: var(--secondary-color);
+}
+
+.addonLeft {
+  @apply border-r-0 rounded-l-[0.375rem];
+}
+
+.addonRight {
+  @apply border-l-0 rounded-r-[0.375rem];
+}

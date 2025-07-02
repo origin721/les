@@ -129,8 +129,8 @@
         color: var(--text-color);
         font-family: "Courier New", Courier, monospace;
         overflow-x: hidden;
-        border: 2px solid var(--border-color);
-        box-shadow: 0 0 25px var(--primary-color) inset;
+        border: 0.125rem solid var(--border-color);
+        box-shadow: 0 0 1.5625rem var(--primary-color) inset;
     }
 
     /* Header */
@@ -139,8 +139,8 @@
         justify-content: space-between;
         align-items: center;
         padding: 2rem;
-        border-bottom: 1px solid var(--border-color);
-        min-height: 200px;
+        border-bottom: 0.0625rem solid var(--border-color);
+        min-height: 12.5rem;
         position: relative;
         overflow: hidden;
     }
@@ -157,10 +157,10 @@
 
     .matrix-rain {
         position: absolute;
-        top: -50px;
-        left: -150px;
-        right: -150px;
-        bottom: -50px;
+        top: -3.125rem;
+        left: -9.375rem;
+        right: -9.375rem;
+        bottom: -3.125rem;
         overflow: hidden;
         opacity: 0.1;
         z-index: 1;
@@ -169,7 +169,7 @@
     .matrix-column {
         position: absolute;
         top: 0;
-        width: 20px;
+        width: 1.25rem;
         height: 100%;
         animation: matrix-fall 4s linear infinite;
     }
@@ -185,7 +185,7 @@
     .matrix-char {
         display: block;
         color: var(--primary-color);
-        font-size: 14px;
+        font-size: 0.875rem;
         line-height: 1.4;
         animation: matrix-glow 3s ease-in-out infinite alternate;
     }
@@ -233,19 +233,19 @@
             filter: hue-rotate(0deg);
         }
         3% { 
-            transform: translate(-2px, 2px);
+            transform: translate(-0.125rem, 0.125rem);
             filter: hue-rotate(90deg);
         }
         6% { 
-            transform: translate(2px, -2px);
+            transform: translate(0.125rem, -0.125rem);
             filter: hue-rotate(180deg);
         }
         9% { 
-            transform: translate(-2px, -2px);
+            transform: translate(-0.125rem, -0.125rem);
             filter: hue-rotate(270deg);
         }
         12% { 
-            transform: translate(2px, 2px);
+            transform: translate(0.125rem, 0.125rem);
             filter: hue-rotate(360deg);
         }
         15% { 
