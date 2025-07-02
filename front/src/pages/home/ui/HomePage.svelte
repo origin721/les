@@ -120,17 +120,27 @@
         --accent-color: #00ff00;
     }
 
+    /* Сброс отступов для всей страницы */
+    :global(body) {
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+    }
+
     .home-container {
         display: flex;
         flex-direction: column;
         min-height: 100vh;
-        width: 100vw;
+        width: 100%;
         background-color: var(--background-color);
         color: var(--text-color);
         font-family: "Courier New", Courier, monospace;
         overflow-x: hidden;
         border: 0.125rem solid var(--border-color);
         box-shadow: 0 0 1.5625rem var(--primary-color) inset;
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
     }
 
     /* Header */
