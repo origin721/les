@@ -7,11 +7,6 @@
   import CryptoPageKeys from "./CryptoPageKeys.svelte";
   import CryptoPageSign from "./CryptoPageSign.svelte";
 
-  // Import theme styles
-  import "../../../styles/cyberpunk.css";
-  import "../../../styles/watchdogs.css";
-  import "../../../styles/pixel.css";
-
   const PAGE_TABS = {
     KEYS: "KEYS",
     ENCRYPT: "ENCRYPT",
@@ -33,8 +28,7 @@
   }
 </script>
 
-<div class="theme-{$theme}">
-  <div class="crypto-container" data-widget-name="CryptoPage">
+<div class="crypto-container" data-widget-name="CryptoPage" data-theme="{$theme}">
     <header class="crypto-header">
       <div class="back-link-container">
         <Link href={ROUTES.HOME} className="back-link">
@@ -146,54 +140,19 @@
       </div>
     </footer>
   </div>
-</div>
 
 <style>
-  /* Theme Variables */
-  .theme-cyberpunk {
-    --background-color: #0a0a0a;
-    --text-color: #00ff00;
-    --primary-color: #ff00ff;
-    --secondary-color: #00ffff;
-    --border-color: #00ff00;
-    --card-background: #1a1a1a;
-    --nav-active: #ff00ff;
-    --accent-color: #ffff00;
-  }
-  
-  .theme-watchdogs {
-    --background-color: #1a1a1a;
-    --text-color: #cccccc;
-    --primary-color: #ffc400;
-    --secondary-color: #00aaff;
-    --border-color: #444444;
-    --card-background: #222222;
-    --nav-active: #ffc400;
-    --accent-color: #00aaff;
-  }
-  
-  .theme-pixel {
-    --background-color: #000000;
-    --text-color: #00ff00;
-    --primary-color: #00ff00;
-    --secondary-color: #ff00ff;
-    --border-color: #00ff00;
-    --card-background: #222222;
-    --nav-active: #ff00ff;
-    --accent-color: #00ff00;
-  }
-
   .crypto-container {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
     width: 100vw;
-    background-color: var(--background-color);
-    color: var(--text-color);
+    background-color: var(--les-bg-primary);
+    color: var(--les-text-primary);
     font-family: "Courier New", Courier, monospace;
     overflow-x: hidden;
-    border: 2px solid var(--border-color);
-    box-shadow: 0 0 25px var(--primary-color) inset;
+    border: 2px solid var(--les-border-primary);
+    box-shadow: 0 0 25px var(--les-accent-primary) inset;
   }
 
   /* Header */
@@ -202,7 +161,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 1.5rem;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--les-border-primary);
     min-height: 160px;
     position: relative;
     overflow: hidden;
@@ -216,19 +175,19 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    color: var(--secondary-color);
+    color: var(--les-text-secondary);
     text-decoration: none;
     transition: all 0.2s;
     padding: 0.5rem 1rem;
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--les-border-primary);
     border-radius: 4px;
   }
   
   :global(.back-link:hover) {
-    color: var(--primary-color);
-    text-shadow: 0 0 5px var(--primary-color);
-    border-color: var(--primary-color);
-    box-shadow: 0 0 10px var(--primary-color);
+    color: var(--les-accent-primary);
+    text-shadow: 0 0 5px var(--les-accent-primary);
+    border-color: var(--les-accent-primary);
+    box-shadow: 0 0 10px var(--les-accent-primary);
   }
 
   /* Animated Title */
@@ -270,7 +229,7 @@
 
   .matrix-char {
     display: block;
-    color: var(--primary-color);
+    color: var(--les-accent-primary);
     font-size: 12px;
     line-height: 1.3;
     animation: matrix-glow 2.5s ease-in-out infinite alternate;
@@ -296,11 +255,11 @@
 
   .title-word {
     display: inline-block;
-    color: var(--primary-color);
+    color: var(--les-accent-primary);
     text-shadow: 
-      0 0 5px var(--primary-color),
-      0 0 10px var(--primary-color),
-      0 0 15px var(--primary-color);
+      0 0 5px var(--les-accent-primary),
+      0 0 10px var(--les-accent-primary),
+      0 0 15px var(--les-accent-primary);
   }
 
   .glitch-word {
@@ -309,7 +268,7 @@
   }
 
   .title-separator {
-    color: var(--secondary-color);
+    color: var(--les-accent-secondary);
     animation: separator-pulse 1.8s ease-in-out infinite;
   }
 
@@ -348,17 +307,17 @@
   .subtitle {
     margin-top: 1rem;
     font-size: 1rem;
-    color: var(--secondary-color);
+    color: var(--les-text-secondary);
   }
 
   .typing-text {
     animation: typing 4.5s steps(45) infinite;
-    border-right: 2px solid var(--accent-color);
+    border-right: 2px solid var(--les-accent-secondary);
   }
 
   .cursor {
     animation: cursor-blink 1s infinite;
-    color: var(--accent-color);
+    color: var(--les-accent-secondary);
   }
 
   @keyframes typing {
@@ -384,7 +343,7 @@
     gap: 0.3rem;
     padding: 0.3rem 0.8rem;
     background: rgba(0, 0, 0, 0.5);
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--les-border-primary);
     border-radius: 2px;
     font-size: 0.8rem;
     animation: badge-glow 3s ease-in-out infinite alternate;
@@ -395,13 +354,13 @@
   }
 
   .badge-text {
-    color: var(--accent-color);
+    color: var(--les-accent-secondary);
     font-weight: bold;
   }
 
   @keyframes badge-glow {
     0% { box-shadow: 0 0 5px transparent; }
-    100% { box-shadow: 0 0 10px var(--accent-color); }
+    100% { box-shadow: 0 0 10px var(--les-accent-secondary); }
   }
 
   .theme-switcher-container {
@@ -412,7 +371,7 @@
   .crypto-nav {
     display: flex;
     padding: 0.5rem 1rem;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--les-border-primary);
     background: rgba(0, 0, 0, 0.3);
     gap: 0.5rem;
     overflow-x: auto;
@@ -424,8 +383,8 @@
     gap: 0.5rem;
     padding: 1rem 1.5rem;
     background: transparent;
-    border: 1px solid var(--border-color);
-    color: var(--text-color);
+    border: 1px solid var(--les-border-primary);
+    color: var(--les-text-primary);
     cursor: pointer;
     transition: all 0.3s ease;
     white-space: nowrap;
@@ -451,19 +410,19 @@
 
   .nav-tab:hover {
     background: rgba(255, 255, 255, 0.05);
-    box-shadow: 0 0 15px var(--primary-color);
+    box-shadow: 0 0 15px var(--les-accent-primary);
     transform: translateY(-2px);
   }
 
   .nav-tab.active {
-    background: var(--nav-active);
-    color: var(--background-color);
-    box-shadow: 0 0 20px var(--nav-active);
-    border-color: var(--nav-active);
+    background: var(--les-accent-primary);
+    color: var(--les-bg-primary);
+    box-shadow: 0 0 20px var(--les-accent-primary);
+    border-color: var(--les-accent-primary);
   }
 
   .nav-tab.active .nav-indicator {
-    background: var(--background-color);
+    background: var(--les-bg-primary);
   }
 
   .nav-icon {
@@ -480,7 +439,7 @@
     left: 0;
     right: 0;
     height: 2px;
-    background: var(--primary-color);
+    background: var(--les-accent-primary);
     transform: scaleX(0);
     transition: transform 0.3s ease;
   }
@@ -509,20 +468,20 @@
 
   .section-title {
     font-size: 2rem;
-    color: var(--primary-color);
+    color: var(--les-accent-primary);
     margin-bottom: 1rem;
-    text-shadow: 0 0 10px var(--primary-color);
+    text-shadow: 0 0 10px var(--les-accent-primary);
   }
 
   .section-description {
-    color: var(--secondary-color);
+    color: var(--les-text-secondary);
     font-size: 1rem;
     margin-bottom: 0;
   }
 
   .content-body {
-    background: var(--card-background);
-    border: 1px solid var(--border-color);
+    background: var(--les-bg-secondary);
+    border: 1px solid var(--les-border-primary);
     border-radius: 4px;
     padding: 2rem;
     box-shadow: 
@@ -533,7 +492,7 @@
   /* Footer */
   .crypto-footer {
     padding: 1rem 2rem;
-    border-top: 1px solid var(--border-color);
+    border-top: 1px solid var(--les-border-primary);
     background: rgba(0, 0, 0, 0.3);
   }
 
@@ -547,11 +506,11 @@
   }
 
   .footer-version {
-    color: var(--secondary-color);
+    color: var(--les-text-secondary);
   }
 
   .footer-security {
-    color: var(--accent-color);
+    color: var(--les-accent-secondary);
     animation: security-pulse 2.5s ease-in-out infinite;
   }
 
