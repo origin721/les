@@ -12,7 +12,6 @@
 
     // Import theme styles
     import "../../../styles/cyberpunk.css";
-    import "../../../styles/watchdogs.css";
     import "../../../styles/pixel.css";
 
     let friends = $state<FriendEntityFull[]>([]);

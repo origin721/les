@@ -5,7 +5,6 @@
   
   // Import theme styles
   import "../../styles/cyberpunk.css";
-  import "../../styles/watchdogs.css";
   import "../../styles/pixel.css";
   import "../../styles/terminal.css";
 

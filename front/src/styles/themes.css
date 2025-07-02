@@ -52,16 +52,16 @@
 /* 3. Cyberpunk Theme */
 /* Inspired by Watch Dogs and general cyberpunk aesthetics. */
 [data-theme="cyberpunk"] {
-  --les-bg-primary: #0A0A1A;
-  --les-bg-secondary: #14142E;
-  --les-text-primary: #00FFC6;
-  --les-text-secondary: #99FFDD;
-  --les-accent-primary: #F9E400;
-  --les-accent-secondary: #D7C300;
-  --les-border-primary: #00FFC6;
-  --les-success: #00FF00;
-  --les-warning: #FFA500;
-  --les-error: #FF003C;
+  --les-bg-primary: #0c0c0c;
+  --les-bg-secondary: #1a1a1a;
+  --les-text-primary: #00ff00;
+  --les-text-secondary: #00ff00;
+  --les-accent-primary: #ff00ff;
+  --les-accent-secondary: #00ffff;
+  --les-border-primary: #00ff00;
+  --les-success: #00ff00;
+  --les-warning: #ffff00;
+  --les-error: #ff0000;
   
   /* Legacy variables for loading components */
   --background-color: #0c0c0c;
@@ -73,23 +73,23 @@
 
 /* 4. Watch Dogs Theme */
 [data-theme="watchdogs"] {
-  --les-bg-primary: #1A1A1A;
-  --les-bg-secondary: #2E2E2E;
-  --les-text-primary: #E0E0E0;
-  --les-text-secondary: #B0B0B0;
-  --les-accent-primary: #FF6B35;
-  --les-accent-secondary: #CC5429;
-  --les-border-primary: #FF6B35;
-  --les-success: #4CAF50;
-  --les-warning: #FFA726;
-  --les-error: #F44336;
+  --les-bg-primary: #1a1a1a;
+  --les-bg-secondary: #2a2a2a;
+  --les-text-primary: #ffffff;
+  --les-text-secondary: #ffffff;
+  --les-accent-primary: #ffaa00;
+  --les-accent-secondary: #00aaff;
+  --les-border-primary: #ffaa00;
+  --les-success: #00ff00;
+  --les-warning: #ffaa00;
+  --les-error: #ff0000;
   
   /* Legacy variables for loading components */
-  --background-color: #1A1A1A;
-  --text-color: #E0E0E0;
-  --primary-color: #FF6B35;
-  --secondary-color: #CC5429;
-  --border-color: #FF6B35;
+  --background-color: #1a1a1a;
+  --text-color: #ffffff;
+  --primary-color: #ffaa00;
+  --secondary-color: #00aaff;
+  --border-color: #ffaa00;
 }
 
 /* 5. Pixel Theme */
@@ -103,7 +103,7 @@
   --les-border-primary: #00ff00;
   --les-success: #00ff00;
   --les-warning: #ff00ff;
-  --les-error: #ff00ff;
+  --les-error: #ff0000;
   
   /* Legacy variables for loading components */
   --background-color: #000000;

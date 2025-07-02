@@ -69,7 +69,6 @@ export const themes = ["cyberpunk", "watchdogs", "pixel", "terminal", "your_new_
 ```javascript
 // Import theme styles
 import "../../../styles/cyberpunk.css";
-import "../../../styles/watchdogs.css";
 import "../../../styles/pixel.css";
 import "../../../styles/terminal.css";
 import "../../../styles/your_new_theme.css"; // Добавить эту строку
@@ -80,7 +79,6 @@ import "../../../styles/your_new_theme.css"; // Добавить эту стро
 ```javascript
 // Import theme styles
 import "../../styles/cyberpunk.css";
-import "../../styles/watchdogs.css";
 import "../../styles/pixel.css";
 import "../../styles/terminal.css";
 import "../../styles/your_new_theme.css"; // Добавить эту строку

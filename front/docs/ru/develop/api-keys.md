@@ -196,7 +196,6 @@ import ThemeSwitcher from "../../../widgets/ThemeSwitcher.svelte";
 
 // CSS файлы тем
 import "../../../styles/cyberpunk.css";
-import "../../../styles/watchdogs.css";
 import "../../../styles/pixel.css";
 ```
 

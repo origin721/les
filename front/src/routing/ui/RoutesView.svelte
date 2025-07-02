@@ -23,7 +23,6 @@
     import LoadingSequence from "../../components/widgets/LoadingSequence.svelte";
 
     import "../../styles/cyberpunk.css";
-    import "../../styles/watchdogs.css";
     import "../../styles/pixel.css";
 
     //import HomePage from "../../pages/home/ui/HomePage.svelte";

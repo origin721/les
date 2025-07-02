@@ -9,7 +9,6 @@
     // Import theme styles. The `theme` store will toggle a class on the wrapper
     // to apply the correct styles.
     import "../../../styles/cyberpunk.css";
-    import "../../../styles/watchdogs.css";
     import "../../../styles/pixel.css";
     import "../../../styles/terminal.css";
 
