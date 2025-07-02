@@ -1,11 +1,9 @@
+@import "tailwindcss";
 @import "./variables.css";
 @import "./modules/buttons.module.css";
 @import "./modules/cards.module.css";
 @import "./modules/forms.module.css";
 @import "./modules/layout.module.css";
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 
 :root {
     font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;

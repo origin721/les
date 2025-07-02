@@ -466,7 +466,7 @@
         flex-direction: column;
         align-items: center;
         width: 100%;
-        max-width: 400px;
+        max-width: 600px;
         padding: 2rem;
         border: 1px solid var(--border-color);
         background: #00000033;
@@ -775,6 +775,25 @@
         }
         .back-link-container {
             justify-content: flex-start;
+        }
+        .auth-form {
+            max-width: 90%;
+            padding: 1.5rem;
+        }
+    }
+
+    @media (min-width: 64rem) {
+        /* --desktop */
+        .auth-form {
+            max-width: 700px;
+            padding: 3rem;
+        }
+    }
+
+    @media (min-width: 80rem) {
+        /* --large desktop */
+        .auth-form {
+            max-width: 800px;
         }
     }
 </style>

@@ -31,7 +31,7 @@
   class={getCardClasses()}
   onclick={onclick}
   role={onclick ? 'button' : undefined}
-  tabindex={onclick ? 0 : undefined}
+  {...(onclick ? { tabindex: 0 } : {})}
   {...restProps}
 >
   {@render children?.()}

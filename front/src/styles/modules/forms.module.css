@@ -1,7 +1,8 @@
 /* Form components - CSS модули с Tailwind */
 
 .form {
-  @apply font-inherit text-[1rem] w-full outline-none transition-all duration-300;
+  @apply text-[1rem] w-full outline-none transition-all duration-300;
+  font-family: inherit;
   color: var(--text-color);
   background: rgba(0, 0, 0, 0.4);
   border: 0.0625rem solid var(--border-color);
@@ -74,7 +75,8 @@
 
 .checkbox:checked::after {
   content: '✓';
-  @apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[0.75rem] font-bold;
+  @apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[0.75rem];
+  font-weight: bold;
   color: var(--background-color);
 }
 
@@ -137,13 +139,15 @@
 }
 
 .label {
-  @apply block text-[0.875rem] font-medium mb-[0.5rem];
+  @apply block text-[0.875rem] mb-[0.5rem];
+  font-weight: 500;
   color: var(--text-color);
 }
 
 .labelRequired::after {
   content: ' *';
-  @apply text-red-500;
+  @apply text-[0.875rem] mt-[0.25rem] leading-[1.4];
+  color: #ef4444;
 }
 
 .hint {
@@ -152,11 +156,13 @@
 }
 
 .errorText {
-  @apply text-[0.75rem] mt-[0.25rem] leading-[1.4] text-red-500;
+  @apply text-[0.75rem] mt-[0.25rem] leading-[1.4];
+  color: #ef4444;
 }
 
 .successText {
-  @apply text-[0.75rem] mt-[0.25rem] leading-[1.4] text-green-500;
+  @apply text-[0.75rem] mt-[0.25rem] leading-[1.4];
+  color: #22c55e;
 }
 
 .fieldset {
@@ -165,7 +171,8 @@
 }
 
 .legend {
-  @apply font-semibold px-[0.5rem];
+  @apply px-[0.5rem];
+  font-weight: 600;
   color: var(--primary-color);
 }
 

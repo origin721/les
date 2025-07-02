@@ -133,7 +133,7 @@
 }
 
 .gridAuto {
-  @apply grid-cols-auto;
+  grid-template-columns: auto;
 }
 
 .gridAutoFit {
