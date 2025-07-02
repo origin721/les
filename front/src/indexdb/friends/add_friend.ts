@@ -5,6 +5,7 @@ import { uuidv4 } from "../../core/uuid";
 import { indexdb_wrapper } from "../indexdb_wrapper";
 import { privateKeyToString, recommendedGenerateKeyPair } from "../../libs/libp2p";
 import { back_store } from "../../local_back/back_store";
+import { updateAccountFriendsList } from "../accounts/update_account_friends";
 
 export type FriendEntityFull = {
   id: string;
@@ -70,8 +71,25 @@ export function add_friend(
           store.add({ id: newId, data: newData });
         }
 
-        transaction.oncomplete = function () {
+        transaction.oncomplete = async function () {
           console.log("✅ Данные добавлены успешно в IndexDB");
+          
+          // Синхронизируем с аккаунтами - добавляем ID друзей в friendsByIds
+          try {
+            for (let item of new_list) {
+              const newId = uuidv4(); // Генерируем тот же ID что и выше
+              console.log('🔄 Синхронизация аккаунта:', item.myAccId, 'с другом:', newId);
+              
+              await updateAccountFriendsList(item.myAccId, {
+                add: [newId]
+              });
+            }
+            console.log('✅ Синхронизация с аккаунтами завершена');
+          } catch (error) {
+            console.error('❌ Ошибка синхронизации с аккаунтами:', error);
+            // Не прерываем выполнение, так как друзья уже добавлены
+          }
+          
           res();
         };
 
