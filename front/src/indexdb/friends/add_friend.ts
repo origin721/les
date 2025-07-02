@@ -31,11 +31,17 @@ export function add_friend(
         const transaction = db.transaction(["friends"], "readwrite");
         const store = transaction.objectStore("friends");
         
+        // Сохраняем сгенерированные ID для синхронизации
+        const friendsWithIds: Array<{ item: FriendEntity; id: string }> = [];
+        
         // Добавляем запись
         for (let item of new_list) {
           console.log('🔄 Обрабатываем друга:', item);
           const newId = uuidv4();
           console.log('🆔 Сгенерирован ID:', newId);
+          
+          // Сохраняем ID для дальнейшей синхронизации
+          friendsWithIds.push({ item, id: newId });
           
           const acc = back_store.accounts_by_id[item.myAccId];
           console.log('👤 Найденный аккаунт:', acc);
@@ -76,14 +82,25 @@ export function add_friend(
           
           // Синхронизируем с аккаунтами - добавляем ID друзей в friendsByIds
           try {
-            for (let item of new_list) {
-              const newId = uuidv4(); // Генерируем тот же ID что и выше
-              console.log('🔄 Синхронизация аккаунта:', item.myAccId, 'с другом:', newId);
+            // Группируем друзей по аккаунтам для более эффективной синхронизации
+            const friendsByAccount: Record<string, string[]> = {};
+            
+            for (const { item, id } of friendsWithIds) {
+              if (!friendsByAccount[item.myAccId]) {
+                friendsByAccount[item.myAccId] = [];
+              }
+              friendsByAccount[item.myAccId].push(id);
+            }
+            
+            // Обновляем каждый аккаунт
+            for (const [accountId, friendIds] of Object.entries(friendsByAccount)) {
+              console.log('🔄 Синхронизация аккаунта:', accountId, 'с друзьями:', friendIds);
               
-              await updateAccountFriendsList(item.myAccId, {
-                add: [newId]
+              await updateAccountFriendsList(accountId, {
+                add: friendIds
               });
             }
+            
             console.log('✅ Синхронизация с аккаунтами завершена');
           } catch (error) {
             console.error('❌ Ошибка синхронизации с аккаунтами:', error);

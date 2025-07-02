@@ -15,6 +15,7 @@ import {
   generate_keys_ed25519,
 } from "../core/crypt";
 import { connectionLibp2p } from "../api/libp2p/createLibp2pNode";
+import { autoMigrateAccounts } from "../indexdb/accounts/migrate_accounts_friends";
 //import { createLibp2pNode } from "../api/libp2p/createLibp2pNode";
 //import { tmpTest } from "../api/libp2p/tmp";
 //import { createLibp2pNode } from "../api/libp2p/createLibp2pNode";
@@ -27,22 +28,25 @@ import { connectionLibp2p } from "../api/libp2p/createLibp2pNode";
 // });
 
 // Функция генерации текста
-async function generateText(prompt) {
-  const response = await model.generate(prompt, {
-    maxTokens: 50, // Количество токенов для генерации
-    temperature: 0.7, // "Творчество" модели
-  });
-  console.log("Сгенерированный текст:", response);
-}
+// async function generateText(prompt: string) {
+//   const response = await model.generate(prompt, {
+//     maxTokens: 50, // Количество токенов для генерации
+//     temperature: 0.7, // "Творчество" модели
+//   });
+//   console.log("Сгенерированный текст:", response);
+// }
 
 // Пример вызова
 //generateText('Привет, как дела?');
 
 export const appProcessesMount = () => {
-  onMount(() => {
+  onMount(async () => {
     //console.log(uuidv4());
     createAppSharedWorker();
     broadcast_middleware();
+    
+    // Автоматическая миграция аккаунтов для добавления поля friendsByIds
+    await autoMigrateAccounts();
 
 
    //Promise.all([generate_keys_curve25519(), generate_keys_ed25519()]).then(
