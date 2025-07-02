@@ -1,6 +1,7 @@
 import { indexdb_wrapper } from "../indexdb_wrapper";
 import { updateAccountFriendsList } from "../accounts/update_account_friends";
 import { back_store } from "../../local_back/back_store";
+import { forceLog } from "../../core/debug/logger";
 
 export function delete_friend(friendIds: string[]): Promise<void> {
   return indexdb_wrapper((db) => {
@@ -47,7 +48,7 @@ export function delete_friend(friendIds: string[]): Promise<void> {
 
         async function syncAccountsAfterDelete() {
           try {
-            console.log("✅ Друзья удалены из IndexedDB, начинаем синхронизацию аккаунтов");
+            forceLog("✅ Друзья удалены из IndexedDB, начинаем синхронизацию аккаунтов");
             
             // Группируем друзей по аккаунтам для эффективной синхронизации
             const friendsByAccount: Record<string, string[]> = {};
@@ -61,14 +62,14 @@ export function delete_friend(friendIds: string[]): Promise<void> {
             
             // Обновляем каждый аккаунт
             for (const [accountId, friendIdsToRemove] of Object.entries(friendsByAccount)) {
-              console.log('🔄 Синхронизация аккаунта:', accountId, 'удаление друзей:', friendIdsToRemove);
+              forceLog('🔄 Синхронизация аккаунта:', accountId, 'удаление друзей:', friendIdsToRemove);
               
               await updateAccountFriendsList(accountId, {
                 remove: friendIdsToRemove
               });
             }
             
-            console.log('✅ Синхронизация аккаунтов завершена');
+            forceLog('✅ Синхронизация аккаунтов завершена');
             res();
           } catch (error) {
             console.error('❌ Ошибка синхронизации аккаунтов при удалении:', error);

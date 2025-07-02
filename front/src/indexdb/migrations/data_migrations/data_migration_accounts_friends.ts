@@ -7,12 +7,13 @@ import { encrypt_curve25519_from_pass } from "../../../core/crypt";
 import { back_store } from "../../../local_back/back_store";
 import { indexdb_wrapper } from "../../indexdb_wrapper";
 import { get_accounts } from "../../accounts/get_accounts";
+import { forceLog } from "../../../core/debug/logger";
 
 /**
  * Асинхронная миграция для добавления поля friendsByIds к аккаунтам
  */
 export default async function dataMigrationAccountsFriends(): Promise<void> {
-  console.log('🔄 Начинаем миграцию данных аккаунтов для добавления поля friendsByIds');
+  forceLog('🔄 Начинаем миграцию данных аккаунтов для добавления поля friendsByIds');
   
   return indexdb_wrapper(async (db) => {
     try {
@@ -21,7 +22,7 @@ export default async function dataMigrationAccountsFriends(): Promise<void> {
       let migratedCount = 0;
       
       if (accounts.length === 0) {
-        console.log('✅ Нет аккаунтов для миграции');
+        forceLog('✅ Нет аккаунтов для миграции');
         return;
       }
 
@@ -31,11 +32,11 @@ export default async function dataMigrationAccountsFriends(): Promise<void> {
       for (const account of accounts) {
         // Проверяем, есть ли уже поле friendsByIds
         if (account.friendsByIds !== undefined) {
-          console.log(`⏭️ Аккаунт ${account.id} уже содержит поле friendsByIds, пропускаем`);
+          forceLog(`⏭️ Аккаунт ${account.id} уже содержит поле friendsByIds, пропускаем`);
           continue;
         }
 
-        console.log(`🔄 Мигрируем аккаунт ${account.id} (${account.namePub})`);
+        forceLog(`🔄 Мигрируем аккаунт ${account.id} (${account.namePub})`);
         
         // Добавляем поле friendsByIds
         const updatedAccount = {
@@ -61,7 +62,7 @@ export default async function dataMigrationAccountsFriends(): Promise<void> {
 
       return new Promise<void>((resolve, reject) => {
         transaction.oncomplete = function () {
-          console.log(`✅ Миграция данных аккаунтов завершена. Обновлено аккаунтов: ${migratedCount}`);
+          forceLog(`✅ Миграция данных аккаунтов завершена. Обновлено аккаунтов: ${migratedCount}`);
           resolve();
         };
 

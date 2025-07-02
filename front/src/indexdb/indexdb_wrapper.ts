@@ -1,4 +1,5 @@
 import { indexdb_order } from "./indexdb_order";
+import { debugLog, forceLog } from '../core/debug/logger';
 
 const counterInfo = {
   open: 0,
@@ -14,7 +15,7 @@ export function indexdb_wrapper(
 ) {
   if(isDebugMode) {
     ++counterInfo.open;
-    console.log({counterInfo});
+    debugLog({counterInfo});
   }
 
   const resultPromise = new Promise((_res, _rej) => {
@@ -26,7 +27,7 @@ export function indexdb_wrapper(
 
       ++counterInfo.close;
       ++counterInfo.success;
-      console.log({counterInfo});
+      debugLog({counterInfo});
     }
     const rej = (_err: any) => {
       _rej(_err);
@@ -35,7 +36,7 @@ export function indexdb_wrapper(
 
       ++counterInfo.close;
       ++counterInfo.error;
-      console.log({counterInfo});
+      debugLog({counterInfo});
     }
     indexdb_order(onFinishOrder => {
 
@@ -48,7 +49,7 @@ export function indexdb_wrapper(
         const oldVersion = event.oldVersion ?? 0;
         const newVersion = event.newVersion ?? 1;
         
-        console.log('🔄 IndexDB onupgradeneeded:', {
+        forceLog('🔄 IndexDB onupgradeneeded:', {
           oldVersion,
           newVersion,
           existingStores: Array.from(db.objectStoreNames)
@@ -58,23 +59,23 @@ export function indexdb_wrapper(
         // Пока используем старый подход, но с возможностью расширения
         try {
           if (oldVersion === 0 && newVersion >= 1) {
-            console.log('📦 Создаем новую базу данных с базовыми хранилищами');
+            forceLog('📦 Создаем новую базу данных с базовыми хранилищами');
             
             if (!db.objectStoreNames.contains('accounts')) {
               db.createObjectStore('accounts', { keyPath: 'id' });
-              console.log('✅ Хранилище accounts создано');
+              forceLog('✅ Хранилище accounts создано');
             }
             
             if (!db.objectStoreNames.contains('friends')) {
               db.createObjectStore('friends', { keyPath: 'id' });
-              console.log('✅ Хранилище friends создано');
+              forceLog('✅ Хранилище friends создано');
             }
           }
           
           // Здесь можно добавить дополнительные миграции
           // if (oldVersion === 1 && newVersion >= 2) { ... }
           
-          console.log('🏁 IndexDB миграция завершена. Финальные хранилища:', Array.from(db.objectStoreNames));
+          forceLog('🏁 IndexDB миграция завершена. Финальные хранилища:', Array.from(db.objectStoreNames));
         } catch (error) {
           console.error('❌ Критическая ошибка во время миграции IndexedDB:', error);
           throw error;
@@ -111,7 +112,7 @@ export function indexdb_wrapper(
 
         // это означает, что есть ещё одно открытое соединение с той же базой данных
         // и он не был закрыт после того, как для него сработал db.onversionchange
-        console.log('Событие не должно было сработать');
+        debugLog('Событие не должно было сработать');
         rej(new Error('Database connection blocked'));
       };
 

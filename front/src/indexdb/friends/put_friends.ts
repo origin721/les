@@ -2,6 +2,7 @@ import { encrypt_curve25519_from_pass } from "../../core/crypt";
 import { back_store } from "../../local_back/back_store";
 import { indexdb_wrapper } from "../indexdb_wrapper";
 import type { FriendEntity } from "./add_friend";
+import { forceLog } from "../../core/debug/logger";
 
 export type FriendEntityPut = {
   id: string;
@@ -12,22 +13,22 @@ export type FriendEntityPut = {
 }
 
 export function put_friends(new_list: FriendEntityPut[]) {
-  console.log('🔄 put_friends начинает работу с данными:', new_list);
-  console.log('🔍 back_store.accounts_by_id:', back_store.accounts_by_id);
+  forceLog('🔄 put_friends начинает работу с данными:', new_list);
+  forceLog('🔍 back_store.accounts_by_id:', back_store.accounts_by_id);
   
   return indexdb_wrapper((db) => {
     return new Promise(async (res, rej) => {
       try {
-        console.log('📦 IndexDB transaction создана для PUT');
+        forceLog('📦 IndexDB transaction создана для PUT');
         const transaction = db.transaction(["friends"], "readwrite");
         const store = transaction.objectStore("friends");
         
         // Обновляем записи
         for (let item of new_list) {
-          console.log('🔄 Обрабатываем обновление друга:', item);
+          forceLog('🔄 Обрабатываем обновление друга:', item);
           
           const acc = back_store.accounts_by_id[item.myAccId];
-          console.log('👤 Найденный аккаунт для шифрования:', acc);
+          forceLog('👤 Найденный аккаунт для шифрования:', acc);
           
           if (!acc) {
             console.error('❌ Аккаунт не найден в back_store для ID:', item.myAccId);
@@ -42,25 +43,25 @@ export function put_friends(new_list: FriendEntityPut[]) {
             return;
           }
           
-          console.log('🔐 Начинаем шифрование для обновления...');
+          forceLog('🔐 Начинаем шифрование для обновления...');
           const dataToEncrypt = {
             ...item,
             date_updated: new Date(),
           };
-          console.log('📝 Данные для шифрования:', dataToEncrypt);
+          forceLog('📝 Данные для шифрования:', dataToEncrypt);
           
           const newData = await encrypt_curve25519_from_pass({
             pass: acc.pass,
             message: JSON.stringify(dataToEncrypt),
           });
-          console.log('✅ Шифрование завершено');
+          forceLog('✅ Шифрование завершено');
           
-          console.log('💾 Обновляем в IndexDB...');
+          forceLog('💾 Обновляем в IndexDB...');
           store.put({ id: item.id, data: newData });
         }
 
         transaction.oncomplete = function () {
-          console.log("✅ Данные обновлены успешно в IndexDB");
+          forceLog("✅ Данные обновлены успешно в IndexDB");
           res();
         };
 

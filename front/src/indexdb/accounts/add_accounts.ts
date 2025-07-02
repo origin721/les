@@ -4,6 +4,7 @@ import { gen_pass } from "../../core/random/gen_pass";
 import { uuidv4 } from "../../core/uuid";
 import { indexdb_wrapper } from "../indexdb_wrapper";
 import { privateKeyToString, recommendedGenerateKeyPair } from "../../libs/libp2p";
+import { forceLog } from "../../core/debug/logger";
 
 export type HttpServerParam = {
   url: string;
@@ -43,7 +44,7 @@ export function add_accounts(new_list: AccountEntity[]) {
       }
 
       transaction.oncomplete = function () {
-        console.log("Данные добавлены успешно");
+        forceLog("Данные добавлены успешно");
         res();
       };
 

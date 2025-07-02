@@ -6,6 +6,7 @@ import { indexdb_wrapper } from "../indexdb_wrapper";
 import { privateKeyToString, recommendedGenerateKeyPair } from "../../libs/libp2p";
 import { back_store } from "../../local_back/back_store";
 import { updateAccountFriendsList } from "../accounts/update_account_friends";
+import { forceLog } from "../../core/debug/logger";
 
 export type FriendEntityFull = {
   id: string;
@@ -21,13 +22,13 @@ export type FriendEntity = {
 export function add_friend(
   new_list: FriendEntity[],
 ) {
-  console.log('🔥 add_friend начинает работу с данными:', new_list);
-  console.log('🔍 back_store.accounts_by_id:', back_store.accounts_by_id);
+  forceLog('🔥 add_friend начинает работу с данными:', new_list);
+  forceLog('🔍 back_store.accounts_by_id:', back_store.accounts_by_id);
   
   return indexdb_wrapper((db) => {
     return new Promise(async (res, rej) => {
       try {
-        console.log('📦 IndexDB transaction создана');
+        forceLog('📦 IndexDB transaction создана');
         const transaction = db.transaction(["friends"], "readwrite");
         const store = transaction.objectStore("friends");
         
@@ -36,15 +37,15 @@ export function add_friend(
         
         // Добавляем запись
         for (let item of new_list) {
-          console.log('🔄 Обрабатываем друга:', item);
+          forceLog('🔄 Обрабатываем друга:', item);
           const newId = uuidv4();
-          console.log('🆔 Сгенерирован ID:', newId);
+          forceLog('🆔 Сгенерирован ID:', newId);
           
           // Сохраняем ID для дальнейшей синхронизации
           friendsWithIds.push({ item, id: newId });
           
           const acc = back_store.accounts_by_id[item.myAccId];
-          console.log('👤 Найденный аккаунт:', acc);
+          forceLog('👤 Найденный аккаунт:', acc);
           
           if (!acc) {
             console.error('❌ Аккаунт не найден в back_store для ID:', item.myAccId);
@@ -59,26 +60,26 @@ export function add_friend(
             return;
           }
           
-          console.log('🔐 Начинаем шифрование...');
+          forceLog('🔐 Начинаем шифрование...');
           const dataToEncrypt = {
             ...item,
             id: newId,
             date_created: new Date(),
           };
-          console.log('📝 Данные для шифрования:', dataToEncrypt);
+          forceLog('📝 Данные для шифрования:', dataToEncrypt);
           
           const newData = await encrypt_curve25519_from_pass({
             pass: acc.pass,
             message: JSON.stringify(dataToEncrypt),
           });
-          console.log('✅ Шифрование завершено');
+          forceLog('✅ Шифрование завершено');
           
-          console.log('💾 Добавляем в IndexDB...');
+          forceLog('💾 Добавляем в IndexDB...');
           store.add({ id: newId, data: newData });
         }
 
         transaction.oncomplete = async function () {
-          console.log("✅ Данные добавлены успешно в IndexDB");
+          forceLog("✅ Данные добавлены успешно в IndexDB");
           
           // Синхронизируем с аккаунтами - добавляем ID друзей в friendsByIds
           try {
@@ -94,14 +95,14 @@ export function add_friend(
             
             // Обновляем каждый аккаунт
             for (const [accountId, friendIds] of Object.entries(friendsByAccount)) {
-              console.log('🔄 Синхронизация аккаунта:', accountId, 'с друзьями:', friendIds);
+              forceLog('🔄 Синхронизация аккаунта:', accountId, 'с друзьями:', friendIds);
               
               await updateAccountFriendsList(accountId, {
                 add: friendIds
               });
             }
             
-            console.log('✅ Синхронизация с аккаунтами завершена');
+            forceLog('✅ Синхронизация с аккаунтами завершена');
           } catch (error) {
             console.error('❌ Ошибка синхронизации с аккаунтами:', error);
             // Не прерываем выполнение, так как друзья уже добавлены

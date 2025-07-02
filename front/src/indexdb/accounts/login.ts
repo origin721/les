@@ -40,12 +40,10 @@ export function login(
                   result.push(decrData);
               }
               catch(err) {}
-              //console.log("Обработка записи:", cursor.value);
             }
             cursor.continue(); // Продолжаем обход
           } else {
             mRes(result);
-            //console.log("Обработка завершена.");
             res();
           }
         };

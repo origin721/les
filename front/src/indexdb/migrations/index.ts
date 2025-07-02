@@ -1,4 +1,5 @@
 import type { MigrationInfo, MigrationResult, AsyncMigrationFunction } from './types';
+import { forceLog } from '../../core/debug/logger';
 
 /**
  * Реестр всех доступных миграций
@@ -59,7 +60,7 @@ export async function executeMigration(
   const startTime = performance.now();
   
   try {
-    console.log(
+    forceLog(
       `🔄 Загружаем миграцию ${migration.fileName} (v${migration.fromVersion} -> v${migration.toVersion})`
     );
     
@@ -73,7 +74,7 @@ export async function executeMigration(
     const endTime = performance.now();
     const executionTime = endTime - startTime;
     
-    console.log(
+    forceLog(
       `✅ Миграция ${migration.fileName} выполнена за ${executionTime.toFixed(2)}ms`
     );
     
@@ -115,7 +116,7 @@ export async function runMigrations(
   toVersion: number,
   db: IDBDatabase
 ): Promise<MigrationResult[]> {
-  console.log(
+  forceLog(
     `🚀 Начинаем процесс миграций с версии ${fromVersion} до ${toVersion}`
   );
   
@@ -135,7 +136,7 @@ export async function runMigrations(
   }
   
   const totalTime = results.reduce((sum, result) => sum + result.executionTime, 0);
-  console.log(
+  forceLog(
     `✅ Все миграции выполнены успешно. Общее время: ${totalTime.toFixed(2)}ms`
   );
   
