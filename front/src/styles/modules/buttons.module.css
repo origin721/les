@@ -1,3 +1,4 @@
+@import "tailwindcss/theme" reference;
 /* Button components - используем CSS модули с Tailwind */
 
 .button {
