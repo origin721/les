@@ -10,7 +10,7 @@ front/lerna-debug.log*
 front/node_modules
 front/dist
 front/dist-ssr
-front/*.local
+#front/*.local
 
 # Editor directories and files
 front/.vscode/*
