@@ -11,7 +11,7 @@
     import { FieldHttpServers } from "../../../widgets";
 
     const labelClass = "mt-3 mb-3";
-    const inputClass = "text-slate-800 bg-slate-400";
+    const inputClass = "px-3 py-2 border rounded-md transition-colors duration-200";
 
     const fieldLogin = writable("");
     const fieldPass = writable("");
@@ -80,7 +80,12 @@
 
     <button
         type="submit"
-        class="pactive:bg-slate-800 border-[0.125rem] border-solid border-white bg-slate-400 p-2 min-w-[6rem] m-7"
+        class="border-2 border-solid p-2 min-w-[6rem] m-7 rounded-md transition-colors duration-200"
+        style="
+            background-color: var(--les-bg-secondary);
+            border-color: var(--les-border-primary);
+            color: var(--les-text-primary);
+        "
         >submit</button
     >
 </form>

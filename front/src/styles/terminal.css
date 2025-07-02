@@ -1,16 +1,16 @@
-/* Terminal Theme - Vim DarkBlue inspired */
-.theme-terminal {
-    --background-color: #001040;
-    --text-color: #FFFFFF;
-    --primary-color: #E6F3FF;
-    --secondary-color: #CCE7FF;
-    --border-color: #4080FF;
-    --input-background: #002060;
-    --input-text: #FFFFFF;
-    --button-background: #E6F3FF;
-    --button-text: #001040;
-    --button-hover-background: #4080FF;
+/* Terminal Theme - Dark Blue Terminal inspired */
+:root {
+    --background-color: #000820;
+    --text-color: #E0E8FF;
+    --primary-color: #4080FF;
+    --secondary-color: #2060E0;
+    --border-color: #1040A0;
+    --input-background: #001040;
+    --input-text: #E0E8FF;
+    --button-background: #4080FF;
+    --button-text: #000820;
+    --button-hover-background: #2060E0;
     --button-hover-text: #FFFFFF;
-    --link-color: #E6F3FF;
-    --link-hover-color: #FFFFFF;
+    --link-color: #4080FF;
+    --link-hover-color: #6090FF;
 }

@@ -16,27 +16,27 @@
     color: rgba(255, 255, 255, 0.87);
     background-color: #242424;
 
-    font-size: 16px; /* Стандартный базовый размер для десктопа */
+    font-size: 22px; /* Стандартный базовый размер для десктопа */
 }
 
 /* Адаптивность для планшетов */
 @media (max-width: 800px) {
     :root {
-        font-size: 15px;
+        font-size: 18px;
     }
 }
 
 /* Адаптивность для телефонов - уменьшение базового размера шрифта */
 @media (max-width: 400px) {
     :root {
-        font-size: 14px;
+        font-size: 16px;
     }
 }
 
 /* Дополнительная адаптивность для очень маленьких экранов */
-@media (max-width: 28rem) {
+@media (max-width: 200px) {
     :root {
-        font-size: 1rem;
+        font-size: 12px;
     }
 }
 
@@ -49,7 +49,98 @@ textarea {
 
 textarea,
 input {
-    color: black;
+    color: var(--les-text-primary);
+    background-color: var(--les-bg-secondary);
+    border-color: var(--les-border-primary);
+}
+
+/* Стили для инпутов с использованием CSS переменных тем */
+input.px-3 {
+    color: var(--les-text-primary) !important;
+    background-color: var(--les-bg-secondary) !important;
+    border-color: var(--les-border-primary) !important;
+}
+
+input.px-3:focus {
+    border-color: var(--les-accent-primary) !important;
+    box-shadow: 0 0 0 2px rgba(var(--les-accent-primary), 0.2) !important;
+}
+
+/* Универсальные классы для замены хардкодных цветов */
+.border-themed {
+    border-color: var(--les-border-primary) !important;
+}
+
+.bg-themed-primary {
+    background-color: var(--les-bg-primary) !important;
+}
+
+.bg-themed-secondary {
+    background-color: var(--les-bg-secondary) !important;
+}
+
+.text-themed-primary {
+    color: var(--les-text-primary) !important;
+}
+
+.text-themed-secondary {
+    color: var(--les-text-secondary) !important;
+}
+
+/* Переопределение для всех элементов с хардкодными серыми цветами */
+.border-gray-300,
+.border-gray-200 {
+    border-color: var(--les-border-primary) !important;
+}
+
+.bg-gray-50,
+.bg-gray-100 {
+    background-color: var(--les-bg-secondary) !important;
+}
+
+.bg-white {
+    background-color: var(--les-bg-primary) !important;
+}
+
+.text-gray-500,
+.text-gray-600,
+.text-gray-700 {
+    color: var(--les-text-secondary) !important;
+}
+
+.bg-slate-100,
+.bg-slate-800 {
+    background-color: var(--les-bg-secondary) !important;
+}
+
+.text-slate-800 {
+    color: var(--les-text-primary) !important;
+}
+
+.bg-slate-400 {
+    background-color: var(--les-bg-secondary) !important;
+}
+
+.bg-slate-700 {
+    background-color: var(--les-border-primary) !important;
+}
+
+/* Исправление для всех инпутов, селектов и текстареа */
+input, select, textarea {
+    color: var(--les-text-primary) !important;
+    background-color: var(--les-bg-secondary) !important;
+    border-color: var(--les-border-primary) !important;
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: var(--les-accent-primary) !important;
+    box-shadow: 0 0 0 2px rgba(0, 255, 198, 0.2) !important;
+}
+
+/* Исправление для readonly полей */
+input[readonly], textarea[readonly] {
+    background-color: var(--les-bg-primary) !important;
+    opacity: 0.8;
 }
 
 a {

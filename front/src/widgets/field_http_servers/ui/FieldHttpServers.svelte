@@ -32,6 +32,7 @@
     <hr class="m-4"/>
     <label class="flex-col flex">
       <input
+        class="px-3 py-2 border rounded-md transition-colors duration-200"
         value={httpParam.url}
         oninput={(e) => {
           fieldHttpServers.update((prev) => {
