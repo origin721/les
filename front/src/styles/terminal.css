@@ -2,15 +2,15 @@
 .theme-terminal {
     --background-color: #001040;
     --text-color: #FFFFFF;
-    --primary-color: #FFFF60;
-    --secondary-color: #FFDD40;
+    --primary-color: #87CEEB;
+    --secondary-color: #6495ED;
     --border-color: #4080FF;
     --input-background: #002060;
     --input-text: #FFFFFF;
-    --button-background: #FFFF60;
-    --button-text: #001040;
-    --button-hover-background: #4080FF;
-    --button-hover-text: #FFFFFF;
-    --link-color: #FFFF60;
-    --link-hover-color: #4080FF;
+    --button-background: #4080FF;
+    --button-text: #FFFFFF;
+    --button-hover-background: #87CEEB;
+    --button-hover-text: #001040;
+    --link-color: #87CEEB;
+    --link-hover-color: #FFFFFF;
 }
