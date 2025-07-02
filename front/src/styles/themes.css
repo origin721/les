@@ -94,6 +94,28 @@
 
 /* 5. Pixel Theme */
 [data-theme="pixel"] {
+  --les-bg-primary: #000000;
+  --les-bg-secondary: #222222;
+  --les-text-primary: #00ff00;
+  --les-text-secondary: #00ff00;
+  --les-accent-primary: #00ff00;
+  --les-accent-secondary: #ff00ff;
+  --les-border-primary: #00ff00;
+  --les-success: #00ff00;
+  --les-warning: #ff00ff;
+  --les-error: #ff00ff;
+  
+  /* Legacy variables for loading components */
+  --background-color: #000000;
+  --text-color: #00ff00;
+  --primary-color: #00ff00;
+  --secondary-color: #ff00ff;
+  --border-color: #00ff00;
+}
+
+/* 6. Terminal Theme */
+/* Vim darkblue inspired theme with deep blue background */
+[data-theme="terminal"] {
   --les-bg-primary: #2C2C54;
   --les-bg-secondary: #40407A;
   --les-text-primary: #F8F8F8;
@@ -104,35 +126,36 @@
   --les-success: #5CB85C;
   --les-warning: #F0AD4E;
   --les-error: #D9534F;
-  
+
   /* Legacy variables for loading components */
   --background-color: #2C2C54;
   --text-color: #F8F8F8;
   --primary-color: #00D2D3;
   --secondary-color: #00A8A9;
   --border-color: #00D2D3;
-}
 
-/* 6. Terminal Theme */
-/* Vim darkblue inspired theme with deep blue background */
-[data-theme="terminal"] {
-  --les-bg-primary: #001040;
-  --les-bg-secondary: #002060;
-  --les-text-primary: #FFFFFF;
-  --les-text-secondary: #D0D0D0;
-  --les-accent-primary: #E6F3FF;
-  --les-accent-secondary: #CCE7FF;
-  --les-border-primary: #4080FF;
+
+  /*
+  --les-bg-primary: #000820;
+  --les-bg-secondary: #001040;
+  --les-text-primary: #E0E8FF;
+  --les-text-secondary: #E0E8FF;
+  --les-accent-primary: #4080FF;
+  --les-accent-secondary: #2060E0;
+  --les-border-primary: #1040A0;
   --les-success: #60FF60;
-  --les-warning: #E6F3FF;
+  --les-warning: #4080FF;
   --les-error: #FF6060;
+  */
   
   /* Legacy variables for loading components */
-  --background-color: #001040;
-  --text-color: #FFFFFF;
-  --primary-color: #E6F3FF;
-  --secondary-color: #CCE7FF;
-  --border-color: #4080FF;
+  /*
+  --background-color: #000820;
+  --text-color: #E0E8FF;
+  --primary-color: #4080FF;
+  --secondary-color: #2060E0;
+  --border-color: #1040A0;
+  */
 }
 
 /* 7. Arabic Theme */
