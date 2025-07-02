@@ -1,4 +1,5 @@
 import * as openpgpLib from "openpgp/lightweight";
+import { debugLog, forceLog } from "../../debug/logger";
 
 export const openpgp = {
   encrypt: encryptAndSign,
@@ -16,7 +17,7 @@ async function main() {
 
   const encMessage = await encryptAndSign('messssage', secrets); 
   const decr = await decryptAndVerify(encMessage.toString(), secrets);
-  console.log({decr});
+  debugLog('OpenPGP тест расшифровки:', decr);
 }
 
 type ParamGenerateKeys = {
@@ -26,6 +27,8 @@ type ParamGenerateKeys = {
 }
 
 async function generateKeys(param: ParamGenerateKeys) {
+  forceLog('OpenPGP: Генерация ключей для пользователя:', param.name);
+  
   const { privateKey, publicKey } = await openpgpLib.generateKey({
     type: "ecc", // Тип ключа (используем ECC для примера)
     curve: "curve25519", // Кривая для ECC
@@ -33,6 +36,8 @@ async function generateKeys(param: ParamGenerateKeys) {
     passphrase: param.pass, // Пароль для шифрования приватного ключа
   });
 
+  forceLog('OpenPGP: Ключи успешно сгенерированы для:', param.name);
+  
   return {
     keyPriv: privateKey,
     keyPub: publicKey,
@@ -44,6 +49,8 @@ async function encryptAndSign(
   message: string, 
   secrets: Secret,
 ) {
+  forceLog('OpenPGP: Начало шифрования и подписания сообщения');
+  
   // Загрузка ключей
   const pubKey = await openpgpLib.readKey({ armoredKey: secrets.keyPub });
   const privKey = await openpgpLib.decryptKey({
@@ -59,7 +66,7 @@ async function encryptAndSign(
     format: "armored",
   });
 
-  // console.log("Зашифрованное сообщение:", encrypted);
+  forceLog('OpenPGP: Сообщение успешно зашифровано и подписано');
   return encrypted;
 }
 
@@ -67,6 +74,8 @@ async function decryptAndVerify(
   encryptedMessage: string,
   secrets: Secret,
 ) {
+  forceLog('OpenPGP: Начало расшифрования и проверки подписи');
+  
   // Загрузка ключей
   const pubKey = await openpgpLib.readKey({ armoredKey: secrets.keyPub });
   const privKey = await openpgpLib.decryptKey({
@@ -81,38 +90,22 @@ async function decryptAndVerify(
     verificationKeys: pubKey,
   });
 
-  // console.log("Расшифрованное сообщение:", decrypted);
+  const isValid = Boolean(await signatures[0].verified);
+  
+  if (isValid) {
+    forceLog("OpenPGP: Подпись проверена и валидна");
+  } else {
+    forceLog("OpenPGP: КРИТИЧЕСКАЯ ОШИБКА - Подпись невалидна!");
+  }
+
+  forceLog('OpenPGP: Расшифрование завершено, подпись валидна:', isValid);
 
   return {
     message: decrypted,
-    isValid: Boolean(await signatures[0].verified),
-  }
-
-  const valid = await signatures[0].verified;
-  if (valid) {
-    console.log("Подпись проверена и валидна.");
-  } else {
-    console.log("Подпись невалидна.");
+    isValid,
   }
 }
 
-// /**
-//  * encrypt (зашифровать)
-//  */
-// function encrypt(message: string, secretKey: string) {}
-
-// function decrypt(encrypted: string, secretKey: string) {}
-
-// /**
-//  * GenKey
-//  */
-// async function generateKey() {
-//     await sleep(3000);
-//     console.log('startGenerate')
-//     const val = await generateKey({ curve: 'brainpoolP512r1',  userIDs: [{ name: 'Test', email: 'test@test.com' }] });
-//     console.log({ val });
-//     return 'sdfsdf'
-// }
 
 
 export type Secret = {

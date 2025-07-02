@@ -3,6 +3,7 @@
 import { uuidv4 } from "../../core/uuid";
 import { encrypt_curve25519, encrypt_curve25519_verify } from "../../core/crypt";
 import { PATHS_POST } from "./constants";
+import { forceLog } from "../../core/debug/logger";
 
 
 export type EventServerSendByPubKey = {
@@ -101,7 +102,7 @@ export async function event_post<T>(
     })
   }
   else {
-     console.error('не существует метода');
+     forceLog('КРИТИЧЕСКАЯ ОШИБКА API: не существует метода для запроса', params);
    }
 
   return fetch("/events", {
@@ -110,7 +111,7 @@ export async function event_post<T>(
       "Content-Type": "application/json", // Указываем, что отправляем JSON
     },
     body: _body,
-  })
+  }) as Promise<T>
 //   .then((response) => response.json()) // Обрабатываем ответ как JSON
 //   .then((result) => {
 //     console.log("Success:", result);

@@ -3,6 +3,7 @@ import { create_safe_result } from "../../core/validation/create_safe_result";
 import { generate_keys_curve25519, generate_keys_ed25519 } from "../../core/crypt";
 import { PATHS_POST } from "../http/constants";
 import { event_post, type EventServerSendByPubKey, type SecureParam } from "../http/event_post";
+import { debugLog, forceLog } from "../../core/debug/logger";
 
 type CreateMyEventsProps = {
   url: string;
@@ -63,10 +64,11 @@ export const create_sse = (
   }
 
   result.connect = async() => {
-    //console.log('DebugConnected sse');
+    debugLog('SSE: Попытка подключения к серверу');
     if([CONNECTED_STATUSES.AWAITING].includes(_connectedStatus)) throw new Error('Статус: ' + _connectedStatus + '. Подключаться можно только при статусе: ' + CONNECTED_STATUSES.DISCONNECTED);
 
     _connectedStatus = CONNECTED_STATUSES.AWAITING;
+    forceLog('SSE: Начинаем подключение, статус:', _connectedStatus);
 
     // Создаем новый объект EventSource и указываем URL для подключения
     const eventSource = new EventSource(p.url);
@@ -76,16 +78,19 @@ export const create_sse = (
     // Обрабатываем события, когда сервер отправляет данные
     eventSource.onmessage = function (event) {
       const eventData = event.data;
-      // console.log('sse: ', { eventData });
-      // main_middleware(eventData);
-      // console.log({list_connected});
+      debugLog('SSE: Получены данные от сервера:', eventData);
       const responseData = jsonParse(eventData);
 
-      //console.log({sseMess: responseData});
+      debugLog('SSE: Обработанные данные:', responseData);
 
       (async () => {
 
-        if (!responseData?.connection_id) return;
+        if (!responseData?.connection_id) {
+          debugLog('SSE: Нет connection_id в ответе сервера');
+          return;
+        }
+
+        forceLog('SSE: Регистрация соединения с connection_id:', responseData.connection_id);
 
         try {
           await event_post(
@@ -97,13 +102,13 @@ export const create_sse = (
             },
             secureParam,
           );
+          forceLog('SSE: Регистрация успешно завершена');
         }
         catch (err) {
           _connectedStatus = CONNECTED_STATUSES.DISCONNECTED
-          // TODO: написать ошибку с url
+          forceLog('SSE: КРИТИЧЕСКАЯ ОШИБКА регистрации:', err);
           deferred.reject(err);
           return;
-          //throw err;
         }
 
         result.sendByPubKey = (p) => {
@@ -117,44 +122,19 @@ export const create_sse = (
         }
 
         _connectedStatus = CONNECTED_STATUSES.CONNECTED;
+        forceLog('SSE: Соединение установлено, статус:', _connectedStatus);
 
         deferred.resolve(null);
-
-       //await event_post(
-       //  {
-       //    path: PATHS_POST.send_by_pub_key,
-       //    body: {
-       //      pub_key_client: c25519.publicKey,
-       //      message: 'hi))'
-       //    }
-       //  },
-       //  {
-       //    pub_key_curve25519_client: c25519.publicKey,
-       //    priv_key_curve25519_client: c25519.privateKey,
-       //    pub_key_ed25519_client: e25519.publicKey,
-       //    pub_key_curve25519_server: 'fcd046db8e4dd8248259c12db085dee9e5b8854c9e49894e3d4f48cf1853c16a',
-       //  }
-       //)
       })();
     };
 
     // Обрабатываем ошибки
     eventSource.onerror = function (event) {
-      console.clear();
+      forceLog('SSE: КРИТИЧЕСКАЯ ОШИБКА соединения. Возможно сервер недоступен:', event);
+      _connectedStatus = CONNECTED_STATUSES.DISCONNECTED;
+      
       // TODO: доработать в интерфейс
-      // console.error("EventSource failed:", event, get(events_store));
-      // events_store.delete_registration_by_id()
-      console.log({ event }, 'Возможно сервер недоступен');
-
-      // TODO: в случае если сервер недоступен нужно брать обрабатывать
-
-      // if (list_connected.length === 1) {
-      //   const _p = list_connected.pop();
-      //   if (_p) {
-      //     events_store.delete_registration_by_id(_p);
-      //     console.log('deleted: ', _p);
-      //   }
-      // }
+      // TODO: в случае если сервер недоступен нужно обрабатывать
     };
 
     return deferred.promise;

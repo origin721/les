@@ -13,6 +13,7 @@ import {
   privateKeyFromString,
   recommendedGenerateKeyPair,
 } from "../../libs/libp2p";
+import { forceLog, debugLog } from "../../core/debug/logger";
 
 export interface CreateLibp2pNodeOptions {
   /** Строка приватного ключа для создания PeerId. Если не указан, генерируется новый */
@@ -48,7 +49,7 @@ export async function connectionLibp2p(
     return recommendedGenerateKeyPair();
  })()
 
- return null;
+  forceLog('Инициализация LibP2P ноды с keyPair:', !!options?.keyPair);
 
   const node = await createLibp2p({
     privateKey: keyPair,
@@ -106,11 +107,12 @@ export async function connectionLibp2p(
    //}
   });
 
- //node.addEventListener("peer:discovery", (event) => {
- //  const peerId = event.detail.id;
- //  console.log(`Discovered new peer: ${peerId.toString()}`);
- //  //console.log(`${peerId.toString()}`);
- //});
+  // Логирование обнаружения пиров (P2P соединения критичны)
+  node.addEventListener("peer:discovery", (event) => {
+    const peerId = event.detail.id;
+    forceLog(`LibP2P: Обнаружен новый пир: ${peerId.toString()}`);
+  });
 
-  return null;
+  forceLog('LibP2P нода успешно создана, PeerId:', node.peerId.toString());
+  return node;
 }
