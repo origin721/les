@@ -40,12 +40,14 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        height: 100%;
-        width: 100%;
+        height: 100vh;
+        width: 100vw;
         background-color: var(--background-color);
         color: var(--text-color);
         font-family: "Courier New", Courier, monospace;
         overflow: hidden;
+        margin: 0;
+        padding: 0;
     }
 
     .glitch-svg {

@@ -2,6 +2,7 @@
     import { randomByRange } from "../../core";
     import { generateRandomString } from "../../core/random/generateRandomString";
     import { getRandomInRange } from "../../core/random/getRandomInRange";
+    import { theme } from "../../stores/theme";
     import LoadingPhase1 from "./LoadingPhase1.svelte";
     import LoadingPhase2 from "./LoadingPhase2.svelte";
     import LoadingPhase3 from "./LoadingPhase3.svelte";
@@ -25,7 +26,7 @@
     //});
 </script>
 
-<div class="loading-sequence-container">
+<div class="loading-sequence-container" data-theme={$theme}>
     {#if phase === 1}
         <LoadingPhase1 />
     {:else if phase === 2}

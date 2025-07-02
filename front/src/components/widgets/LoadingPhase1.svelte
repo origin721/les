@@ -35,6 +35,9 @@
         background-color: var(--background-color);
         color: var(--text-color);
         font-family: "Courier New", Courier, monospace;
+        overflow: hidden;
+        margin: 0;
+        padding: 0;
     }
     .glitch-svg {
         width: 100%;

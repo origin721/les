@@ -19,6 +19,13 @@
   --les-success: #28a745;
   --les-warning: #ffc107;
   --les-error: #dc3545;
+  
+  /* Legacy variables for loading components */
+  --background-color: #FFFFFF;
+  --text-color: #111111;
+  --primary-color: #007BFF;
+  --secondary-color: #0056b3;
+  --border-color: #DDDDDD;
 }
 
 /* 2. Dark Theme */
@@ -33,6 +40,13 @@
   --les-success: #4CAF50;
   --les-warning: #FFEB3B;
   --les-error: #F44336;
+  
+  /* Legacy variables for loading components */
+  --background-color: #121212;
+  --text-color: #E0E0E0;
+  --primary-color: #BB86FC;
+  --secondary-color: #3700B3;
+  --border-color: #272727;
 }
 
 /* 3. Cyberpunk Theme */
@@ -48,4 +62,53 @@
   --les-success: #00FF00;
   --les-warning: #FFA500;
   --les-error: #FF003C;
+  
+  /* Legacy variables for loading components */
+  --background-color: #0c0c0c;
+  --text-color: #00ff00;
+  --primary-color: #ff00ff;
+  --secondary-color: #00ffff;
+  --border-color: #00ff00;
+}
+
+/* 4. Watch Dogs Theme */
+[data-theme="watchdogs"] {
+  --les-bg-primary: #1A1A1A;
+  --les-bg-secondary: #2E2E2E;
+  --les-text-primary: #E0E0E0;
+  --les-text-secondary: #B0B0B0;
+  --les-accent-primary: #FF6B35;
+  --les-accent-secondary: #CC5429;
+  --les-border-primary: #FF6B35;
+  --les-success: #4CAF50;
+  --les-warning: #FFA726;
+  --les-error: #F44336;
+  
+  /* Legacy variables for loading components */
+  --background-color: #1A1A1A;
+  --text-color: #E0E0E0;
+  --primary-color: #FF6B35;
+  --secondary-color: #CC5429;
+  --border-color: #FF6B35;
+}
+
+/* 5. Pixel Theme */
+[data-theme="pixel"] {
+  --les-bg-primary: #2C2C54;
+  --les-bg-secondary: #40407A;
+  --les-text-primary: #F8F8F8;
+  --les-text-secondary: #D1D8E0;
+  --les-accent-primary: #00D2D3;
+  --les-accent-secondary: #00A8A9;
+  --les-border-primary: #00D2D3;
+  --les-success: #5CB85C;
+  --les-warning: #F0AD4E;
+  --les-error: #D9534F;
+  
+  /* Legacy variables for loading components */
+  --background-color: #2C2C54;
+  --text-color: #F8F8F8;
+  --primary-color: #00D2D3;
+  --secondary-color: #00A8A9;
+  --border-color: #00D2D3;
 }
