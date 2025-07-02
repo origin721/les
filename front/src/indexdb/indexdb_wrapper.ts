@@ -44,33 +44,41 @@ export function indexdb_wrapper(
       let openRequest = indexedDB.open("store_v3", 1);
 
       openRequest.onupgradeneeded = function (event) {
-        // версия существующей базы данных меньше 3 (или база данных не существует)
-        let db = openRequest.result;
+        const db = openRequest.result;
+        const oldVersion = event.oldVersion ?? 0;
+        const newVersion = event.newVersion ?? 1;
+        
         console.log('🔄 IndexDB onupgradeneeded:', {
-          oldVersion: event.oldVersion,
-          newVersion: event.newVersion,
+          oldVersion,
+          newVersion,
           existingStores: Array.from(db.objectStoreNames)
         });
         
-        switch (event.oldVersion) { // существующая (старая) версия базы данных
-          case 0:
-            console.log('📦 Создаем новую базу данных с обоими хранилищами');
-            // версия 0 означает, что на клиенте нет базы данных
-            // создаем оба хранилища сразу
+        // IndexedDB миграции должны выполняться синхронно
+        // Пока используем старый подход, но с возможностью расширения
+        try {
+          if (oldVersion === 0 && newVersion >= 1) {
+            console.log('📦 Создаем новую базу данных с базовыми хранилищами');
             
-            if (!db.objectStoreNames.contains('accounts')) { // если хранилище "accounts" не существует
-              const accountsStore = db.createObjectStore('accounts', { keyPath: 'id' }); // создаём хранилище
+            if (!db.objectStoreNames.contains('accounts')) {
+              db.createObjectStore('accounts', { keyPath: 'id' });
               console.log('✅ Хранилище accounts создано');
             }
             
-            if (!db.objectStoreNames.contains('friends')) { // если хранилище "friends" не существует
-              const friendsStore = db.createObjectStore('friends', { keyPath: 'id' }); // создаём хранилище
+            if (!db.objectStoreNames.contains('friends')) {
+              db.createObjectStore('friends', { keyPath: 'id' });
               console.log('✅ Хранилище friends создано');
             }
-            break;
+          }
+          
+          // Здесь можно добавить дополнительные миграции
+          // if (oldVersion === 1 && newVersion >= 2) { ... }
+          
+          console.log('🏁 IndexDB миграция завершена. Финальные хранилища:', Array.from(db.objectStoreNames));
+        } catch (error) {
+          console.error('❌ Критическая ошибка во время миграции IndexedDB:', error);
+          throw error;
         }
-        
-        console.log('🏁 IndexDB миграция завершена. Финальные хранилища:', Array.from(db.objectStoreNames));
       };
 
       openRequest.onerror = function () {

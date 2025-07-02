@@ -15,7 +15,7 @@ import {
   generate_keys_ed25519,
 } from "../core/crypt";
 import { connectionLibp2p } from "../api/libp2p/createLibp2pNode";
-import { autoMigrateAccounts } from "../indexdb/accounts/migrate_accounts_friends";
+import { autoRunDataMigrations } from "../indexdb/migrations/data_migrations";
 //import { createLibp2pNode } from "../api/libp2p/createLibp2pNode";
 //import { tmpTest } from "../api/libp2p/tmp";
 //import { createLibp2pNode } from "../api/libp2p/createLibp2pNode";
@@ -45,8 +45,8 @@ export const appProcessesMount = () => {
     createAppSharedWorker();
     broadcast_middleware();
     
-    // Автоматическая миграция аккаунтов для добавления поля friendsByIds
-    await autoMigrateAccounts();
+    // Автоматическая миграция данных (асинхронная загрузка миграций)
+    await autoRunDataMigrations();
 
 
    //Promise.all([generate_keys_curve25519(), generate_keys_ed25519()]).then(
