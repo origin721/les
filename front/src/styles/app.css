@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "./variables.css";
 @import "./themes.css";
+@import "./arabic.css";
 @import "./modules/buttons.module.css";
 @import "./modules/cards.module.css";
 @import "./modules/forms.module.css";

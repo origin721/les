@@ -1,0 +1,16 @@
+/* Arabic Theme - Traditional green manuscript inspired */
+.theme-arabic {
+    --background-color: #0F4C3A;
+    --text-color: #FFFFFF;
+    --primary-color: #FFFFFF;
+    --secondary-color: #E8F5E8;
+    --border-color: #2E8B57;
+    --input-background: #1A6B4E;
+    --input-text: #FFFFFF;
+    --button-background: #FFFFFF;
+    --button-text: #0F4C3A;
+    --button-hover-background: #2E8B57;
+    --button-hover-text: #FFFFFF;
+    --link-color: #FFFFFF;
+    --link-hover-color: #E8F5E8;
+}

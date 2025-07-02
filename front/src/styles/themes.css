@@ -120,17 +120,39 @@
   --les-bg-secondary: #002060;
   --les-text-primary: #FFFFFF;
   --les-text-secondary: #D0D0D0;
-  --les-accent-primary: #FFFF60;
-  --les-accent-secondary: #FFDD40;
+  --les-accent-primary: #E6F3FF;
+  --les-accent-secondary: #CCE7FF;
   --les-border-primary: #4080FF;
   --les-success: #60FF60;
-  --les-warning: #FFCC40;
+  --les-warning: #E6F3FF;
   --les-error: #FF6060;
   
   /* Legacy variables for loading components */
   --background-color: #001040;
   --text-color: #FFFFFF;
-  --primary-color: #FFFF60;
-  --secondary-color: #FFDD40;
+  --primary-color: #E6F3FF;
+  --secondary-color: #CCE7FF;
   --border-color: #4080FF;
+}
+
+/* 7. Arabic Theme */
+/* Green background with white text inspired by traditional Arabic manuscripts */
+[data-theme="arabic"] {
+  --les-bg-primary: #0F4C3A;
+  --les-bg-secondary: #1A6B4E;
+  --les-text-primary: #FFFFFF;
+  --les-text-secondary: #E8F5E8;
+  --les-accent-primary: #FFFFFF;
+  --les-accent-secondary: #E8F5E8;
+  --les-border-primary: #2E8B57;
+  --les-success: #90EE90;
+  --les-warning: #FFFFFF;
+  --les-error: #FF6B6B;
+  
+  /* Legacy variables for loading components */
+  --background-color: #0F4C3A;
+  --text-color: #FFFFFF;
+  --primary-color: #FFFFFF;
+  --secondary-color: #E8F5E8;
+  --border-color: #2E8B57;
 }
