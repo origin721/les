@@ -6,7 +6,6 @@ import { indexdb_wrapper } from "../indexdb_wrapper";
 import { privateKeyToString, recommendedGenerateKeyPair } from "../../libs/libp2p";
 import { back_store } from "../../local_back/back_store";
 import { prodError, prodInfo, devDB, devCrypto, devAuth } from "../../core/debug/logger";
-import { get_account_password_by_id } from "../accounts/get_account_password_by_id";
 import { get_accounts } from "../accounts/get_accounts";
 
 export type FriendEntityFull = {
@@ -66,12 +65,10 @@ export function add_friend(
           const cachedAccount = back_store.accounts_by_id[accountId];
           if (cachedAccount && cachedAccount.pass) {
             accountPassword = cachedAccount.pass;
-            devAuth('🚀 Пароль получен из back_store кеша для аккаунта:', accountId);
+            devAuth('🚀 Пароль получен из back_store для аккаунта:', accountId);
           } else {
-            // Fallback на медленный способ через IndexDB
-            devAuth('⚠️ Аккаунт не найден в кеше, используем get_account_password_by_id для:', accountId);
-            accountPassword = await get_account_password_by_id(accountId);
-            devAuth('🔐 Получен пароль через IndexDB для аккаунта:', accountId, accountPassword ? 'найден' : 'не найден');
+            devAuth('❌ Аккаунт не найден в back_store:', accountId);
+            accountPassword = null;
           }
           
           if (!accountPassword) {
