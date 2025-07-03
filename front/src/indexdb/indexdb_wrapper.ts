@@ -70,6 +70,11 @@ export function indexdb_wrapper(
               db.createObjectStore('friends', { keyPath: 'id' });
               devDB('✅ Хранилище friends создано');
             }
+            
+            if (!db.objectStoreNames.contains('rooms')) {
+              db.createObjectStore('rooms', { keyPath: 'id' });
+              devDB('✅ Хранилище rooms создано');
+            }
           }
           
           // Здесь можно добавить дополнительные миграции

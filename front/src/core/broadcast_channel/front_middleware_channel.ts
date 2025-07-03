@@ -7,6 +7,13 @@ export type FriendDto = {
   myAccId: string;
 }
 
+export type RoomDto = {
+  id: string;
+  sourceName: string;
+  viewName: string;
+  myAccId: string;
+}
+
 export type PostMessageParamDeleteAccounts = {
   action: typeof FrontMiddlewareActions['DELETE_ACCOUNTS'],
   data: {
@@ -35,11 +42,27 @@ export type PostMessageParamDeleteFriends = {
   },
 }
 
+export type PostMessageParamAddRooms = {
+  action: typeof FrontMiddlewareActions['ADD_ROOMS'],
+  data: {
+    list: RoomDto[];
+  },
+}
+
+export type PostMessageParamDeleteRooms = {
+  action: typeof FrontMiddlewareActions['DELETE_ROOMS'],
+  data: {
+    ids: string[];
+  },
+}
+
 export type PostMessageParam = Extract<
   PostMessageParamAddAccounts
   | PostMessageParamDeleteAccounts
   | PostMessageParamAddFriends
   | PostMessageParamDeleteFriends
+  | PostMessageParamAddRooms
+  | PostMessageParamDeleteRooms
   ,
   {
     action: string;
