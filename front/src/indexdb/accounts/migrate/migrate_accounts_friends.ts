@@ -1,3 +1,16 @@
+// TODO: создать переменную с константой версии базы например
+// LES_DB_VERSION = 1
+// миграция каждых версий должна находится в папке migrate
+// в папке migrate есть папки например 1 2 3 4 где миграция версии
+// версия увеличивается на единицу если ниже версии нет папки меграция не нужна
+// импортировать файлы из папки migration нужно
+//             componentPromise = import(
+//               `../../pages/accounts_new/ui/AccountNewPage.svelte`
+//           );
+// таким синтаксисом что бы в оперативку приложение не лезло!!!!
+
+
+
 import { encrypt_curve25519_from_pass, decrypt_curve25519_from_pass } from "../../../core/crypt";
 import { back_store } from "../../../local_back/back_store";
 import { indexdb_wrapper } from "../../indexdb_wrapper";
