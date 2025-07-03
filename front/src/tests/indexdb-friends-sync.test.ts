@@ -1,8 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { add_friend, type FriendEntity } from '../indexdb/friends/add_friend';
 import { delete_friend } from '../indexdb/friends/delete_friend';
-import { updateAccountFriendsList, getAccountFriendsList } from '../indexdb/accounts/update_account_friends';
-import { migrateAccountsFriends, checkAccountsMigrationNeeded } from '../indexdb/accounts/migrate_accounts_friends';
+import { migrateAccountsFriends, checkAccountsMigrationNeeded } from '../indexdb/accounts/migrate/migrate_accounts_friends';
 import { back_store } from '../local_back/back_store';
 
 // Mock IndexedDB и зависимости
@@ -35,7 +34,7 @@ describe('IndexedDB Friends Synchronization', () => {
   beforeEach(() => {
     // Сброс back_store перед каждым тестом
     back_store.accounts_by_id = {};
-    back_store.friends_by_account = {};
+    back_store.friends_by_id = {};
     
     // Мокаем базовый аккаунт
     back_store.accounts_by_id['account-1'] = {
@@ -97,46 +96,37 @@ describe('IndexedDB Friends Synchronization', () => {
     });
   });
 
-  describe('updateAccountFriendsList function', () => {
-    it('должен добавлять друзей в список аккаунта', async () => {
-      const friendIds = ['friend-1', 'friend-2'];
-      
-      // Проверяем начальное состояние
-      expect(getAccountFriendsList('account-1')).toEqual([]);
-      
-      // Добавляем друзей (мокаем успешное выполнение)
-      expect(() => updateAccountFriendsList('account-1', { add: friendIds })).not.toThrow();
+  describe('simplified friends management', () => {
+    it('должен работать с упрощенной архитектурой друзей', () => {
+      // Проверяем доступ к друзьям через back_store.friends_by_id
+      expect(back_store.friends_by_id).toBeDefined();
+      expect(typeof back_store.friends_by_id).toBe('object');
     });
 
-    it('должен удалять друзей из списка аккаунта', async () => {
-      // Предварительно добавляем друзей
-      back_store.accounts_by_id['account-1'].friendsByIds = ['friend-1', 'friend-2', 'friend-3'];
-      
-      expect(() => updateAccountFriendsList('account-1', { remove: ['friend-2'] })).not.toThrow();
-    });
+    it('должен получать друзей аккаунта из back_store.friends_by_id', () => {
+      // Добавляем тестового друга в back_store
+      back_store.friends_by_id['friend-1'] = {
+        id: 'friend-1',
+        namePub: 'Test Friend',
+        myAccId: 'account-1',
+        friendPubKeyLibp2p: 'test-key',
+      };
 
-    it('должен избегать дублирования при добавлении существующих друзей', () => {
-      // Предустанавливаем друзей
-      back_store.accounts_by_id['account-1'].friendsByIds = ['friend-1'];
-      
-      const initialList = getAccountFriendsList('account-1');
-      expect(initialList).toContain('friend-1');
-      
-      // Попытка добавить того же друга не должна создать дубликат
-      expect(() => updateAccountFriendsList('account-1', { add: ['friend-1'] })).not.toThrow();
+      // Получаем всех друзей
+      const allFriends = Object.values(back_store.friends_by_id);
+      expect(allFriends).toHaveLength(1);
+      expect(allFriends[0].namePub).toBe('Test Friend');
     });
   });
 
   describe('delete_friend function', () => {
-    it('должен корректно определять аккаунты для синхронизации при удалении', () => {
+    it('должен корректно удалять друзей из back_store.friends_by_id', () => {
       // Настраиваем mock данные
-      back_store.friends_by_account['account-1'] = {
-        'friend-1': {
-          id: 'friend-1',
-          namePub: 'Test Friend',
-          myAccId: 'account-1',
-          friendPubKeyLibp2p: 'test-key',
-        },
+      back_store.friends_by_id['friend-1'] = {
+        id: 'friend-1',
+        namePub: 'Test Friend',
+        myAccId: 'account-1',
+        friendPubKeyLibp2p: 'test-key',
       };
 
       expect(() => delete_friend(['friend-1'])).not.toThrow();
@@ -175,7 +165,7 @@ describe('IndexedDB Friends Synchronization', () => {
       expect(() => add_friend([mockFriend])).not.toThrow();
     });
 
-    it('должен поддерживать обратную совместимость', () => {
+    it('должен поддерживать простую архитектуру друзей', () => {
       // Аккаунт без friendsByIds должен работать
       const oldAccount = {
         id: 'old-account',
@@ -187,8 +177,9 @@ describe('IndexedDB Friends Synchronization', () => {
 
       back_store.accounts_by_id['old-account'] = oldAccount as any;
       
-      // Получение списка друзей должно возвращать пустой массив
-      expect(getAccountFriendsList('old-account')).toEqual([]);
+      // Получение списка друзей через back_store.friends_by_id
+      const friends = Object.values(back_store.friends_by_id);
+      expect(Array.isArray(friends)).toBe(true);
     });
   });
 });

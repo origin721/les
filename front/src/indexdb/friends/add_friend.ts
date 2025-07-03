@@ -5,7 +5,6 @@ import { uuidv4 } from "../../core/uuid";
 import { indexdb_wrapper } from "../indexdb_wrapper";
 import { privateKeyToString, recommendedGenerateKeyPair } from "../../libs/libp2p";
 import { back_store } from "../../local_back/back_store";
-import { updateAccountFriendsList } from "../accounts/update_account_friends";
 import { prodError, prodInfo, devDB, devCrypto, devAuth } from "../../core/debug/logger";
 import { get_account_password_by_id } from "../accounts/get_account_password_by_id";
 import { get_accounts } from "../accounts/get_accounts";
@@ -124,57 +123,20 @@ export function add_friend(
           }
         }
 
-        transaction.oncomplete = async function () {
+        transaction.oncomplete = function () {
           devDB("🎉 Transaction oncomplete triggered!");
           devDB("✅ Данные добавлены успешно в IndexDB");
           
-          // Синхронизируем с аккаунтами - добавляем ID друзей в friendsByIds
-          try {
-            // Группируем друзей по аккаунтам для более эффективной синхронизации
-            const friendsByAccount: Record<string, string[]> = {};
-            
-            for (const { item, id } of friendsWithIds) {
-              if (!friendsByAccount[item.myAccId]) {
-                friendsByAccount[item.myAccId] = [];
-              }
-              friendsByAccount[item.myAccId].push(id);
-            }
-            
-            // Обновляем каждый аккаунт с тайм-аутом
-            for (const [accountId, friendIds] of Object.entries(friendsByAccount)) {
-              devDB('🔄 Синхронизация аккаунта:', accountId, 'с друзьями:', friendIds);
-              
-              try {
-                // Создаем промис с тайм-аутом для updateAccountFriendsList
-                const updatePromise = updateAccountFriendsList(accountId, {
-                  add: friendIds
-                });
-                
-                const timeoutPromise = new Promise<never>((_, reject) => 
-                  setTimeout(() => {
-                    devDB(`⏰ TIMEOUT: updateAccountFriendsList для аккаунта ${accountId} превысил 8 секунд`);
-                    reject(new Error(`updateAccountFriendsList timeout for account ${accountId}`));
-                  }, 8000)
-                );
-                
-                // Ждем либо завершения обновления, либо тайм-аута
-                await Promise.race([updatePromise, timeoutPromise]);
-                devDB(`✅ Синхронизация аккаунта ${accountId} завершена успешно`);
-                
-              } catch (syncError) {
-                devDB(`❌ Ошибка синхронизации аккаунта ${accountId}:`, syncError);
-                prodError(`❌ Sync error for account ${accountId}:`, syncError);
-                // Не прерываем выполнение, продолжаем с другими аккаунтами
-              }
-            }
-            
-            devDB('✅ Синхронизация с аккаунтами завершена (включая возможные ошибки)');
-          } catch (error) {
-            devDB('❌ Критическая ошибка синхронизации с аккаунтами:', error);
-            prodError('❌ Ошибка синхронизации с аккаунтами:', error);
-            // Не прерываем выполнение, так как друзья уже добавлены
+          // Добавляем друзей в back_store
+          for (const { item, id } of friendsWithIds) {
+            const friendData: FriendEntityFull = {
+              ...item,
+              id: id,
+            };
+            back_store.friends_by_id[id] = friendData;
           }
           
+          devDB('✅ Друзья добавлены в back_store.friends_by_id');
           devDB('🎯 Вызываем res() для завершения add_friend');
           prodInfo('✅ Друзья добавлены успешно');
           res();

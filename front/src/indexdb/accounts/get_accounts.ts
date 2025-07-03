@@ -13,7 +13,7 @@ export type Account = {
   date_updated?: Date;
   _pass: string;
   _libp2p_keyPair: string;
-  friendsByIds?: string[];  // Опциональное для обратной совместимости
+  friendsByIds?: string[];  // Массив ID друзей для данного аккаунта
 };
 
 export function get_accounts(

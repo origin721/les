@@ -10,6 +10,5 @@ export interface Libp2pNodeInstance {
 
 export const back_store = {
   accounts_by_id: {} as Record<string, Account>,
-  friendsLibp2p: {} as Record<string, Libp2pNodeInstance>,
-  friends_by_account: {} as Record<string, Record<string, FriendEntityFull>>,
+  friends_by_id: {} as Record<string, FriendEntityFull>,
 }

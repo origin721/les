@@ -1,8 +1,8 @@
-import { encrypt_curve25519_from_pass, decrypt_curve25519_from_pass } from "../../core/crypt";
-import { back_store } from "../../local_back/back_store";
-import { indexdb_wrapper } from "../indexdb_wrapper";
-import { get_accounts } from "./get_accounts";
-import { prodError, prodInfo, devMigration } from "../../core/debug/logger";
+import { encrypt_curve25519_from_pass, decrypt_curve25519_from_pass } from "../../../core/crypt";
+import { back_store } from "../../../local_back/back_store";
+import { indexdb_wrapper } from "../../indexdb_wrapper";
+import { get_accounts } from "../get_accounts";
+import { prodError, prodInfo, devMigration } from "../../../core/debug/logger";
 
 /**
  * Миграция существующих аккаунтов для добавления поля friendsByIds

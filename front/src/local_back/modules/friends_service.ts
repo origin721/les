@@ -73,10 +73,8 @@ export const friends_service = {
       await delete_friend(ids);
       
       // Удаляем из локального кэша
-      for (const accId in back_store.friends_by_account) {
-        for (const friendId of ids) {
-          delete back_store.friends_by_account[accId][friendId];
-        }
+      for (const friendId of ids) {
+        delete back_store.friends_by_id[friendId];
       }
 
       // Отправляем broadcast о удалении
@@ -97,12 +95,9 @@ export const friends_service = {
     try {
       const friends = await get_friends();
       
-      // Обновляем локальный кэш по аккаунтам
+      // Обновляем локальный кэш
       for (const friend of friends) {
-        if (!back_store.friends_by_account[friend.myAccId]) {
-          back_store.friends_by_account[friend.myAccId] = {};
-        }
-        back_store.friends_by_account[friend.myAccId][friend.id] = friend;
+        back_store.friends_by_id[friend.id] = friend;
       }
 
       // Отправляем broadcast с данными
@@ -150,13 +145,10 @@ export const friends_service = {
       
       // Обновляем локальный кэш
       for (const friend of list) {
-        if (!back_store.friends_by_account[friend.myAccId]) {
-          back_store.friends_by_account[friend.myAccId] = {};
-        }
         // Обновляем существующую запись в кэше
-        if (back_store.friends_by_account[friend.myAccId][friend.id]) {
-          back_store.friends_by_account[friend.myAccId][friend.id] = {
-            ...back_store.friends_by_account[friend.myAccId][friend.id],
+        if (back_store.friends_by_id[friend.id]) {
+          back_store.friends_by_id[friend.id] = {
+            ...back_store.friends_by_id[friend.id],
             ...friend
           };
         }
