@@ -1,0 +1,1 @@
+import{f as o,u as s,aa as n,d as f,a as i}from"./index-clrAq5st.js";import{A as c}from"./AppHeader-CbHraoxN.js";var d=o("<!> <!>",1);function l(t){var a=d(),r=s(a);c(r,{titleText:"Аккаунты"});var e=f(r,2);n(e,{}),i(t,a)}export{l as default};
