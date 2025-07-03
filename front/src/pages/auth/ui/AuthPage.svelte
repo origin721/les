@@ -5,6 +5,8 @@
     import ThemeSwitcher from "../../../components/ThemeSwitcher.svelte";
     import { theme } from "../../../stores/theme";
     import { clearAllAppData, clearServiceWorkersOnly, clearStorageOnly, clearIndexedDBOnly } from "../../../core/clear_app_data";
+    import AuthPageLoading from "./AuthPageLoading.svelte";
+    import { devLog, prodError } from "../../../core/debug/logger";
 
     // Import theme styles. The `theme` store will toggle a class on the wrapper
     // to apply the correct styles.
@@ -16,11 +18,74 @@
     let showClearOptions = false;
     let keyboardLayout = "UNKNOWN";
     let passwordInput: HTMLInputElement;
+    let isLoading = $state(false);
+    let loginError = $state<string | null>(null);
+    let loginSuccess = $state(false);
 
-    function submit(e: Event) {
-        if (!pass) return;
+    async function submit(e: Event) {
+        if (!$pass || isLoading) return;
         e.preventDefault();
-        appAuthStore.onLogin($pass!);
+        
+        // Сброс предыдущих состояний
+        loginError = null;
+        loginSuccess = false;
+        isLoading = true;
+        
+        devLog('AuthPage: начинается процесс аутентификации с паролем');
+        
+        try {
+            await appAuthStore.onLogin($pass!);
+            devLog('AuthPage: процесс аутентификации завершен');
+            
+            // Проверяем, были ли загружены аккаунты после логина
+            // Добавляем небольшую задержку для обновления store
+            setTimeout(() => {
+                const currentAccounts = Object.keys($appAuthStore.byId);
+                devLog('AuthPage: найдено аккаунтов после логина:', currentAccounts.length);
+                
+                if (currentAccounts.length > 0) {
+                    loginSuccess = true;
+                    devLog('AuthPage: аутентификация успешна, найдены аккаунты:', currentAccounts);
+                    
+                    // Добавляем задержку для показа успешного состояния
+                    setTimeout(() => {
+                        isLoading = false;
+                    }, 800);
+                    
+                    // Автоочистка сообщения об успехе через 3 секунды
+                    setTimeout(() => {
+                        loginSuccess = false;
+                    }, 3000);
+                } else {
+                    loginError = "Неверный пароль или аккаунт не найден";
+                    devLog('AuthPage: аутентификация неудачна - аккаунты не найдены');
+                    isLoading = false;
+                    
+                    // Автоочистка ошибки через 5 секунд
+                    setTimeout(() => {
+                        loginError = null;
+                    }, 5000);
+                }
+            }, 300);
+        } catch (error) {
+            prodError('AuthPage: ошибка при аутентификации:', error);
+            loginError = error instanceof Error ? error.message : "Произошла ошибка при входе";
+            isLoading = false;
+            
+            // Автоочистка ошибки через 5 секунд
+            setTimeout(() => {
+                loginError = null;
+            }, 5000);
+        }
+    }
+
+    // Функция для очистки поля пароля при нажатии Escape
+    function handleKeyDown(event: KeyboardEvent) {
+        if (event.key === 'Escape') {
+            pass.set(null);
+            loginError = null;
+            loginSuccess = false;
+        }
     }
 
     function toggleClearOptions() {
@@ -152,6 +217,11 @@
     });
 </script>
 
+<!-- Loading Overlay -->
+{#if isLoading}
+    <AuthPageLoading />
+{/if}
+
 <div class="theme-{$theme}">
     <div class="auth-page-container" data-widget-name="AuthPage">
         <header class="auth-header">
@@ -245,9 +315,24 @@
                     </div>
                 </div>
 
+                <!-- Error/Success Messages -->
+                {#if loginError}
+                    <div class="message-container error-message">
+                        <div class="message-icon">⚠</div>
+                        <div class="message-text">[ERROR] {loginError}</div>
+                    </div>
+                {/if}
+
+                {#if loginSuccess}
+                    <div class="message-container success-message">
+                        <div class="message-icon">✓</div>
+                        <div class="message-text">[ACCESS_GRANTED] Аутентификация успешна</div>
+                    </div>
+                {/if}
+
                 <div class="actions">
-                    <button type="submit" class="submit-btn">
-                        <span>[INITIATE_CONNECTION]</span>
+                    <button type="submit" class="submit-btn" disabled={isLoading}>
+                        <span>{isLoading ? '[CONNECTING...]' : '[INITIATE_CONNECTION]'}</span>
                     </button>
                     <Link className="create-link" href={ROUTES.ACCOUNTS_NEW}
                         >[CREATE_NEW_ID]</Link
@@ -594,6 +679,67 @@
         }
     }
 
+    /* Message styles */
+    .message-container {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        width: 100%;
+        padding: 0.75rem;
+        margin-bottom: 1rem;
+        border: 1px solid;
+        font-family: inherit;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        animation: messageSlideIn 0.3s ease-out;
+        box-sizing: border-box;
+    }
+
+    .message-icon {
+        font-size: 1.2rem;
+        font-weight: bold;
+        flex-shrink: 0;
+    }
+
+    .message-text {
+        flex: 1;
+        word-break: break-word;
+    }
+
+    .error-message {
+        border-color: #ff4444;
+        background-color: rgba(255, 68, 68, 0.1);
+        color: #ff4444;
+    }
+
+    .error-message .message-icon {
+        color: #ff4444;
+        text-shadow: 0 0 3px #ff4444;
+    }
+
+    .success-message {
+        border-color: #00ff00;
+        background-color: rgba(0, 255, 0, 0.1);
+        color: #00ff00;
+    }
+
+    .success-message .message-icon {
+        color: #00ff00;
+        text-shadow: 0 0 3px #00ff00;
+    }
+
+    @keyframes messageSlideIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
     .actions {
         display: flex;
         flex-direction: column;
@@ -624,6 +770,20 @@
         background-color: var(--button-hover-background);
         color: var(--button-hover-text);
         box-shadow: 0 0 10px var(--button-hover-background);
+    }
+
+    .submit-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        background-color: var(--button-background);
+        color: var(--button-text);
+        box-shadow: none;
+    }
+
+    .submit-btn:disabled:hover {
+        background-color: var(--button-background);
+        color: var(--button-text);
+        box-shadow: none;
     }
 
     .docs-link {
