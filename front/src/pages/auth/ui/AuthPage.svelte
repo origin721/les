@@ -16,7 +16,7 @@
 
     const pass = writable(null);
     let showClearOptions = false;
-    let keyboardLayout = "UNKNOWN";
+    let keyboardLayout = $state("UNKNOWN");
     let passwordInput: HTMLInputElement;
     let isLoading = $state(false);
     let loginError = $state<string | null>(null);
@@ -79,14 +79,6 @@
         }
     }
 
-    // Функция для очистки поля пароля при нажатии Escape
-    function handleKeyDown(event: KeyboardEvent) {
-        if (event.key === 'Escape') {
-            pass.set(null);
-            loginError = null;
-            loginSuccess = false;
-        }
-    }
 
     function toggleClearOptions() {
         showClearOptions = !showClearOptions;
@@ -172,6 +164,15 @@
 
     // Обработчик события ввода в поле пароля
     function handlePasswordKeydown(event: KeyboardEvent) {
+        // Обработка Escape для очистки поля
+        if (event.key === 'Escape') {
+            pass.set(null);
+            loginError = null;
+            loginSuccess = false;
+            return;
+        }
+        
+        // Определение раскладки клавиатуры
         detectKeyboardLayout(event);
     }
 
