@@ -1,5 +1,5 @@
-import type { Account } from "../indexdb/accounts/get_accounts";
-import type { FriendEntityFull } from "../indexdb/friends/add_friend";
+import type { Account } from "../../indexdb/accounts/get_accounts";
+import type { FriendEntityFull } from "../../indexdb/friends/add_friend";
 
 export interface Libp2pNodeInstance {
   peerId: string;

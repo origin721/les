@@ -1,10 +1,10 @@
-import { PATHS } from "../local_back/constant/PATHS";
-import { shared_worker_store } from "../processes/shared_worker/shared_worker_store";
-import type { FriendEntity } from "../indexdb/friends/add_friend";
-import type { FriendEntityFull } from "../indexdb/friends/add_friend";
-import type { FriendEntityPut } from "../indexdb/friends/put_friends";
-import type { Account } from "../indexdb/accounts/get_accounts";
-import { devAPI, prodError } from "../core/debug/logger";
+import { PATHS } from "../../local_back/constant/PATHS";
+import { shared_worker_store } from "../../processes/shared_worker/shared_worker_store";
+import type { FriendEntity } from "../../indexdb/friends/add_friend";
+import type { FriendEntityFull } from "../../indexdb/friends/add_friend";
+import type { FriendEntityPut } from "../../indexdb/friends/put_friends";
+import type { Account } from "../../indexdb/accounts/get_accounts";
+import { devAPI, prodError } from "../../core/debug/logger";
 
 /**
  * Параметры для добавления друзей с явным указанием аккаунта
@@ -14,11 +14,7 @@ export type AddFriendsParams = {
   myAccId: string;
 };
 
-/**
- * Основной API для работы с backend через shared worker
- */
-export const api = {
-  friends: {
+export const friends = {
     /**
      * Получить всех друзей
      */
@@ -116,29 +112,4 @@ export const api = {
         body: { list }
       });
     }
-  },
-
-  accounts: {
-    /**
-     * Войти в аккаунт
-     */
-    async login(pass: string): Promise<void> {
-      await shared_worker_store.fetch({
-        path: PATHS.LOGIN,
-        body: { pass }
-      });
-    },
-
-    /**
-     * Получить список аккаунтов
-     */
-    async getList(): Promise<Account[]> {
-      const result = await shared_worker_store.fetch({
-        path: PATHS.GET_ACCOUNTS
-      });
-      return result as Account[];
-    }
   }
-};
-
-export default api;

@@ -4,7 +4,7 @@ import { gen_pass } from "../../core/random/gen_pass";
 import { uuidv4 } from "../../core/uuid";
 import { indexdb_wrapper } from "../indexdb_wrapper";
 import { privateKeyToString, recommendedGenerateKeyPair } from "../../libs/libp2p";
-import { back_store } from "../../local_back/back_store";
+import { back_store } from "../../local_back/back_store/back_store";
 import { prodError, prodInfo, devDB, devCrypto, devAuth } from "../../core/debug/logger";
 import { get_accounts } from "../accounts/get_accounts";
 

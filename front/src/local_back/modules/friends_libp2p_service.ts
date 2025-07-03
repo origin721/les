@@ -8,7 +8,7 @@ import { get_friends } from "../../indexdb/friends/get_friends";
 import { get_friend_by_id } from "../../indexdb/friends/get_friend_by_id";
 import { delete_friend } from "../../indexdb/friends/delete_friend";
 import { privateKeyStringToPeerId } from "../../libs/libp2p";
-import { back_store, type Libp2pNodeInstance } from "../back_store";
+import { back_store, type Libp2pNodeInstance } from "../back_store/back_store";
 
 const channel = new BroadcastChannel(CHANNEL_NAMES.FRONT_MIDDLEWARE);
 

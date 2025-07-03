@@ -8,7 +8,7 @@ import { get_accounts, type Account } from "../../indexdb/accounts/get_accounts"
 import { login } from "../../indexdb/accounts/login";
 import { put_accounts, type AccountEntityPut } from "../../indexdb/accounts/put_accounts";
 import { privateKeyStringToPeerId } from "../../libs/libp2p";
-import { back_store } from "../back_store";
+import { back_store } from "../back_store/back_store";
 import type { LoginPayload } from "../middleware";
 
 const channel = new BroadcastChannel(CHANNEL_NAMES.FRONT_MIDDLEWARE);

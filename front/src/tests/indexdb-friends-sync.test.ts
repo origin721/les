@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { add_friend, type FriendEntity } from '../indexdb/friends/add_friend';
 import { delete_friend } from '../indexdb/friends/delete_friend';
 import { migrateAccountsFriends, checkAccountsMigrationNeeded } from '../indexdb/accounts/migrate/migrate_accounts_friends';
-import { back_store } from '../local_back/back_store';
+import { back_store } from '../local_back/back_store/back_store';
 
 // Mock IndexedDB и зависимости
 vi.mock('../indexdb/indexdb_wrapper', () => ({

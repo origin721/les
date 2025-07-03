@@ -1,6 +1,5 @@
 <script lang="ts">
-    import { api } from "../../../api";
-    import type { FriendEntityFull } from "../../../indexdb/friends/add_friend";
+import type { FriendEntityFull } from "../../../indexdb/friends/add_friend";
     import { Link, ROUTES } from "../../../routing";
     import { theme } from "../../../stores/theme";
     import BasePage from "../../../components/page_templates/BasePage.svelte";
@@ -14,6 +13,7 @@
     // Import theme styles
     import "../../../styles/cyberpunk.css";
     import "../../../styles/pixel.css";
+    import sharedWorkerApi from "../../../api/shared_worker";
 
     let friends = $state<FriendEntityFull[]>([]);
     let loading = $state(true);
@@ -75,7 +75,7 @@
         
         try {
             devAPI('📞 FriendsPage: Вызываем api.friends.getList()...');
-            const friendsList = await api.friends.getList();
+            const friendsList = await sharedWorkerApi.friends.getList();
             devAPI('✅ FriendsPage: Получен список друзей:', friendsList);
             
             friends = friendsList || [];
@@ -87,7 +87,7 @@
                 devUI('👥 FriendsPage: Имена друзей:', friends.map(f => f.namePub));
             }
         } catch (err) {
-            prodError('❌ FriendsPage: Ошибка загрузки друзей:', err);
+            prodError('❌ FriendsPagesharedWorkerApiшибка загрузки друзей:', err);
             error = `Ошибка загрузки списка друзей: ${(err as any)?.message || String(err)}`;
             // При ошибке оставляем старые данные, не обнуляем friends
         }
@@ -106,7 +106,7 @@
         if (confirm("Вы уверены, что хотите удалить этого друга?")) {
             try {
                 devUI('🗑️ FriendsPage: Удаляем друга с ID:', friendId);
-                await api.friends.delete([friendId]);
+                await sharedWorkerApi.friends.delete([friendId]);
                 friends = friends.filter(friend => friend.id !== friendId);
                 prodLog('✅ FriendsPage: Друг удален успешно');
             } catch (err) {
@@ -119,7 +119,7 @@
     function handleRefresh() {
         devUI('🔄 FriendsPage: Принудительное обновление списка');
         loadFriends();
-    }
+    }sharedWorkerApi
 </script>
 
 <div class="theme-{$theme}">

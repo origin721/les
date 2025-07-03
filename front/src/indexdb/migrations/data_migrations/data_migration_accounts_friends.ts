@@ -4,7 +4,7 @@
  */
 
 import { encrypt_curve25519_from_pass } from "../../../core/crypt";
-import { back_store } from "../../../local_back/back_store";
+import { back_store } from "../../../local_back/back_store/back_store";
 import { indexdb_wrapper } from "../../indexdb_wrapper";
 import { get_accounts } from "../../accounts/get_accounts";
 import { prodError, prodInfo, devMigration } from "../../../core/debug/logger";

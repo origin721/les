@@ -1,6 +1,6 @@
 //import { AES } from "../../../core/crypt";
 import { encrypt_curve25519_from_pass } from "../../core/crypt";
-import { back_store } from "../../local_back/back_store";
+import { back_store } from "../../local_back/back_store/back_store";
 import { uuidv4 } from "../../core/uuid";
 import { indexdb_wrapper } from "../indexdb_wrapper";
 import type { HttpServerParam } from "./add_accounts";

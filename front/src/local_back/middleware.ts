@@ -6,7 +6,7 @@ import { delete_accounts } from "../indexdb/accounts/delete_accounts";
 import { get_accounts, type Account } from "../indexdb/accounts/get_accounts";
 import { login } from "../indexdb/accounts/login";
 import { put_accounts, type AccountEntityPut } from "../indexdb/accounts/put_accounts";
-import { back_store } from "./back_store";
+import { back_store } from "./back_store/back_store";
 import { EVENT_TYPES, PATHS } from "./constant";
 import { accounts_service } from "./modules/accounts_service";
 import { friends_service } from "./modules/friends_service";

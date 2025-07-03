@@ -7,7 +7,7 @@ import { get_friends } from "../../indexdb/friends/get_friends";
 import { get_friend_by_id } from "../../indexdb/friends/get_friend_by_id";
 import { put_friends, type FriendEntityPut } from "../../indexdb/friends/put_friends";
 import { get_accounts } from "../../indexdb/accounts/get_accounts";
-import { back_store } from "../back_store";
+import { back_store } from "../back_store/back_store";
 import { devLog, prodError, prodInfo } from "../../core/debug/logger";
 
 const channel = new BroadcastChannel(CHANNEL_NAMES.FRONT_MIDDLEWARE);

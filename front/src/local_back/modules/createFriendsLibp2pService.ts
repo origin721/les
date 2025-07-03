@@ -1,5 +1,5 @@
 import { connectionLibp2p } from "../../api/libp2p/createLibp2pNode";
-import { back_store } from "../back_store";
+import { back_store } from "../back_store/back_store";
 
 export interface CreateFriendsLibp2pServiceOptions {
   accId: string;
