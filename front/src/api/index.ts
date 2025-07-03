@@ -4,6 +4,7 @@ import type { FriendEntity } from "../indexdb/friends/add_friend";
 import type { FriendEntityFull } from "../indexdb/friends/add_friend";
 import type { FriendEntityPut } from "../indexdb/friends/put_friends";
 import type { Account } from "../indexdb/accounts/get_accounts";
+import { devAPI, prodError } from "../core/debug/logger";
 
 /**
  * Параметры для добавления друзей с явным указанием аккаунта
@@ -57,7 +58,7 @@ export const api = {
      * 2. Новый: add(params: AddFriendsParams)
      */
     async add(listOrParams: FriendEntity[] | AddFriendsParams): Promise<void> {
-      console.log('🌐 API friends.add СТАРТ:', listOrParams);
+      devAPI('🌐 API friends.add СТАРТ:', listOrParams);
       const startTime = Date.now();
       
       try {
@@ -70,7 +71,7 @@ export const api = {
             path: PATHS.ADD_FRIENDS,
             body: { list: listOrParams }
           };
-          console.log('🌐 API friends.add: используем старый формат (массив)');
+          devAPI('🌐 API friends.add: используем старый формат (массив)');
         } else {
           // Новый формат - объект с друзьями и myAccId
           fetchParams = {
@@ -80,18 +81,18 @@ export const api = {
               myAccId: listOrParams.myAccId 
             }
           };
-          console.log('🌐 API friends.add: используем новый формат с myAccId:', listOrParams.myAccId);
+          devAPI('🌐 API friends.add: используем новый формат с myAccId:', listOrParams.myAccId);
         }
         
-        console.log('🌐 API friends.add: вызываем shared_worker_store.fetch с параметрами:', fetchParams);
+        devAPI('🌐 API friends.add: вызываем shared_worker_store.fetch с параметрами:', fetchParams);
         
         const result = await shared_worker_store.fetch(fetchParams);
         
-        console.log('✅ API friends.add УСПЕХ за', Date.now() - startTime, 'мс, результат:', result);
+        devAPI('✅ API friends.add УСПЕХ за', Date.now() - startTime, 'мс, результат:', result);
         return result;
       } catch (error) {
-        console.log('❌ API friends.add ОШИБКА за', Date.now() - startTime, 'мс:', error);
-        console.log('❌ API friends.add полная ошибка:', error.stack);
+        prodError('❌ API friends.add ОШИБКА за', Date.now() - startTime, 'мс:', error);
+        devAPI('❌ API friends.add полная ошибка:', (error as any)?.stack);
         throw error;
       }
     },

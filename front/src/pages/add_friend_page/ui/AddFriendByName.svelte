@@ -7,6 +7,7 @@
     import { Button, Input } from "../../../components/ui";
     import formStyles from "../../../styles/modules/forms.module.css";
     import cardStyles from "../../../styles/modules/cards.module.css";
+    import { devUI, devAPI, prodError, prodLog } from "../../../core/debug/logger";
 
     let friendName = $state('');
     let friendNickname = $state('');
@@ -51,23 +52,23 @@
         });
 
         try {
-            console.log('🔄 Начинаем добавление друга...');
+            devUI('🔄 Начинаем добавление друга...');
             
             // Сначала попытаемся войти в аккаунт, чтобы загрузить пароли в SharedWorker
             const selectedAccount = accounts.find(acc => acc.id === selectedAccountId);
-            console.log('👤 Выбранный аккаунт:', $state.snapshot(selectedAccount));
+            devUI('👤 Выбранный аккаунт:', $state.snapshot(selectedAccount));
             
             if (selectedAccount) {
-                console.log('🔄 Пропускаем аутентификацию...');
+                devUI('🔄 Пропускаем аутентификацию...');
             }
 
-            console.log('🔄 Добавляем друга через API...');
+            devAPI('🔄 Добавляем друга через API...');
             const friendData = {
                 namePub: friendName.trim(),
                 myAccId: selectedAccountId,
                 friendPubKeyLibp2p: '' // Будет заполнен позже
             };
-            console.log('📝 Данные друга:', friendData);
+            devAPI('📝 Данные друга:', friendData);
 
             // Используем новый API с явным указанием myAccId
             await Promise.race([
@@ -78,7 +79,7 @@
                 timeout
             ]);
             
-            console.log('✅ Друг добавлен успешно');
+            prodLog('✅ Друг добавлен успешно');
 
             message = `Друг "${friendName}" добавлен в список контактов`;
             messageType = 'success';
@@ -87,8 +88,8 @@
             friendName = '';
             friendNickname = '';
         } catch (error) {
-            console.error('❌ Ошибка добавления друга:', error);
-            console.error('❌ Полная ошибка:', {
+            prodError('❌ Ошибка добавления друга:', error);
+            devUI('❌ Полная ошибка:', {
                 message: (error as any)?.message,
                 stack: (error as any)?.stack,
                 name: (error as any)?.name,
@@ -97,11 +98,11 @@
             message = `Ошибка при добавлении друга: ${(error as any)?.message || String(error)}`;
             messageType = 'error';
         } finally {
-            console.log('🏁 Завершение процесса добавления друга, сброс loading');
+            devUI('🏁 Завершение процесса добавления друга, сброс loading');
             // Принудительно сбрасываем loading с небольшой задержкой
             setTimeout(() => {
                 loading = false;
-                console.log('🔄 Loading установлен в false');
+                devUI('🔄 Loading установлен в false');
             }, 100);
         }
     }

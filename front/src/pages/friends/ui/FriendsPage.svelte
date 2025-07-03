@@ -9,6 +9,7 @@
     import { FrontMiddlewareActions } from "../../../core/broadcast_channel/constants/FRONT_MIDDLEWARE_ACTIONS";
     import type { PostMessageParam } from "../../../core/broadcast_channel/front_middleware_channel";
     import { fade } from "svelte/transition";
+    import { devUI, devAPI, prodError, prodLog } from "../../../core/debug/logger";
 
     // Import theme styles
     import "../../../styles/cyberpunk.css";
@@ -37,35 +38,35 @@
         try {
             broadcastChannel = new BroadcastChannel(CHANNEL_NAMES.FRONT_MIDDLEWARE);
             broadcastChannel.addEventListener('message', handleBroadcastMessage);
-            console.log('📡 FriendsPage: Broadcast канал настроен');
+            devUI('📡 FriendsPage: Broadcast канал настроен');
         } catch (err) {
-            console.error('❌ FriendsPage: Ошибка настройки broadcast канала:', err);
+            prodError('❌ FriendsPage: Ошибка настройки broadcast канала:', err);
         }
     }
 
     function handleBroadcastMessage(event: MessageEvent<PostMessageParam>) {
         const { action, data } = event.data;
-        console.log('📢 FriendsPage: Получено broadcast сообщение:', action, data);
+        devUI('📢 FriendsPage: Получено broadcast сообщение:', action, data);
 
         if (action === FrontMiddlewareActions.ADD_FRIENDS) {
-            console.log('➕ FriendsPage: Обновляем список друзей через broadcast напрямую');
+            devUI('➕ FriendsPage: Обновляем список друзей через broadcast напрямую');
             // Используем данные из broadcast события напрямую, не вызываем loadFriends()
             if (data.list && Array.isArray(data.list)) {
                 friends = data.list as FriendEntityFull[];
-                console.log(`📊 FriendsPage: Обновлено через broadcast: ${friends.length} друзей`);
+                devUI(`📊 FriendsPage: Обновлено через broadcast: ${friends.length} друзей`);
             } else {
-                console.log('⚠️ FriendsPage: Некорректные данные в broadcast, перезагружаем через API');
+                devUI('⚠️ FriendsPage: Некорректные данные в broadcast, перезагружаем через API');
                 loadFriends();
             }
         } else if (action === FrontMiddlewareActions.DELETE_FRIENDS) {
-            console.log('➖ FriendsPage: Удаляем друзей через broadcast:', data.ids);
+            devUI('➖ FriendsPage: Удаляем друзей через broadcast:', data.ids);
             // Удаляем друзей из текущего списка
             friends = friends.filter(friend => !data.ids.includes(friend.id));
         }
     }
 
     async function loadFriends() {
-        console.log('🔄 FriendsPage: Начинаем загрузку друзей...');
+        devUI('🔄 FriendsPage: Начинаем загрузку друзей...');
         loading = true;
         error = null;
 
@@ -73,20 +74,20 @@
         const startTime = Date.now();
         
         try {
-            console.log('📞 FriendsPage: Вызываем api.friends.getList()...');
+            devAPI('📞 FriendsPage: Вызываем api.friends.getList()...');
             const friendsList = await api.friends.getList();
-            console.log('✅ FriendsPage: Получен список друзей:', friendsList);
+            devAPI('✅ FriendsPage: Получен список друзей:', friendsList);
             
             friends = friendsList || [];
-            console.log(`📊 FriendsPage: Количество друзей: ${friends.length}`);
+            devUI(`📊 FriendsPage: Количество друзей: ${friends.length}`);
             
             if (friends.length === 0) {
-                console.log('📭 FriendsPage: Список друзей пуст');
+                devUI('📭 FriendsPage: Список друзей пуст');
             } else {
-                console.log('👥 FriendsPage: Имена друзей:', friends.map(f => f.namePub));
+                devUI('👥 FriendsPage: Имена друзей:', friends.map(f => f.namePub));
             }
         } catch (err) {
-            console.error('❌ FriendsPage: Ошибка загрузки друзей:', err);
+            prodError('❌ FriendsPage: Ошибка загрузки друзей:', err);
             error = `Ошибка загрузки списка друзей: ${(err as any)?.message || String(err)}`;
             // При ошибке оставляем старые данные, не обнуляем friends
         }
@@ -97,26 +98,26 @@
         
         setTimeout(() => {
             loading = false;
-            console.log('🏁 FriendsPage: Загрузка завершена через', elapsed + remainingTime, 'ms');
+            devUI('🏁 FriendsPage: Загрузка завершена через', elapsed + remainingTime, 'ms');
         }, remainingTime);
     }
 
     async function handleDeleteFriend(friendId: string) {
         if (confirm("Вы уверены, что хотите удалить этого друга?")) {
             try {
-                console.log('🗑️ FriendsPage: Удаляем друга с ID:', friendId);
+                devUI('🗑️ FriendsPage: Удаляем друга с ID:', friendId);
                 await api.friends.delete([friendId]);
                 friends = friends.filter(friend => friend.id !== friendId);
-                console.log('✅ FriendsPage: Друг удален успешно');
+                prodLog('✅ FriendsPage: Друг удален успешно');
             } catch (err) {
-                console.error('❌ FriendsPage: Ошибка при удалении друга:', err);
+                prodError('❌ FriendsPage: Ошибка при удалении друга:', err);
                 error = "Ошибка при удалении друга";
             }
         }
     }
 
     function handleRefresh() {
-        console.log('🔄 FriendsPage: Принудительное обновление списка');
+        devUI('🔄 FriendsPage: Принудительное обновление списка');
         loadFriends();
     }
 </script>
