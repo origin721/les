@@ -75,6 +75,7 @@ export type AddFriendsPayload = {
   path: typeof PATHS['ADD_FRIENDS'];
   body: {
     list: FriendEntity[];
+    myAccId?: string; // Опциональный параметр для нового API
   };
 }
 
@@ -147,7 +148,7 @@ export type BackMiddlewareEvent = {
 export async function backMiddleware(
   props: BackMiddlewareProps
  ): Promise<any> {
-  //console.log('worker-shared',{props});
+  console.log('🔄 backMiddleware starting with props:', props);
 
   try {
     // Account handlers
@@ -176,7 +177,7 @@ export async function backMiddleware(
       return await friends_service.getList();
     }
     if (props.payload.path === PATHS.ADD_FRIENDS) {
-      return await friends_service.add(props.payload.body.list);
+      return await friends_service.add(props.payload.body.list, props.payload.body.myAccId);
     }
     if (props.payload.path === PATHS.DELETE_FRIENDS) {
       return await friends_service.delete(props.payload.body.ids);

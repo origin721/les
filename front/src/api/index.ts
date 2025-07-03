@@ -6,6 +6,14 @@ import type { FriendEntityPut } from "../indexdb/friends/put_friends";
 import type { Account } from "../indexdb/accounts/get_accounts";
 
 /**
+ * Параметры для добавления друзей с явным указанием аккаунта
+ */
+export type AddFriendsParams = {
+  friends: FriendEntity[];
+  myAccId: string;
+};
+
+/**
  * Основной API для работы с backend через shared worker
  */
 export const api = {
@@ -44,12 +52,48 @@ export const api = {
 
     /**
      * Добавить друзей
+     * Поддерживает два формата для обратной совместимости:
+     * 1. Старый: add(list: FriendEntity[])
+     * 2. Новый: add(params: AddFriendsParams)
      */
-    async add(list: FriendEntity[]): Promise<void> {
-      await shared_worker_store.fetch({
-        path: PATHS.ADD_FRIENDS,
-        body: { list }
-      });
+    async add(listOrParams: FriendEntity[] | AddFriendsParams): Promise<void> {
+      console.log('🌐 API friends.add СТАРТ:', listOrParams);
+      const startTime = Date.now();
+      
+      try {
+        let fetchParams;
+        
+        // Определяем формат входных данных
+        if (Array.isArray(listOrParams)) {
+          // Старый формат - массив друзей
+          fetchParams = {
+            path: PATHS.ADD_FRIENDS,
+            body: { list: listOrParams }
+          };
+          console.log('🌐 API friends.add: используем старый формат (массив)');
+        } else {
+          // Новый формат - объект с друзьями и myAccId
+          fetchParams = {
+            path: PATHS.ADD_FRIENDS,
+            body: { 
+              list: listOrParams.friends,
+              myAccId: listOrParams.myAccId 
+            }
+          };
+          console.log('🌐 API friends.add: используем новый формат с myAccId:', listOrParams.myAccId);
+        }
+        
+        console.log('🌐 API friends.add: вызываем shared_worker_store.fetch с параметрами:', fetchParams);
+        
+        const result = await shared_worker_store.fetch(fetchParams);
+        
+        console.log('✅ API friends.add УСПЕХ за', Date.now() - startTime, 'мс, результат:', result);
+        return result;
+      } catch (error) {
+        console.log('❌ API friends.add ОШИБКА за', Date.now() - startTime, 'мс:', error);
+        console.log('❌ API friends.add полная ошибка:', error.stack);
+        throw error;
+      }
     },
 
     /**

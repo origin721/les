@@ -41,12 +41,21 @@ import { autoRunDataMigrations } from "../indexdb/migrations/data_migrations";
 
 export const appProcessesMount = () => {
   onMount(async () => {
+    console.log('🔄 appProcessesMount starting...');
     //console.log(uuidv4());
-    createAppSharedWorker();
+    
+    console.log('🔄 Starting createAppSharedWorker...');
+    await createAppSharedWorker();
+    console.log('✅ createAppSharedWorker completed');
+    
+    console.log('🔄 Starting broadcast_middleware...');
     broadcast_middleware();
+    console.log('✅ broadcast_middleware completed');
     
     // Автоматическая миграция данных (асинхронная загрузка миграций)
+    console.log('🔄 Starting autoRunDataMigrations...');
     await autoRunDataMigrations();
+    console.log('✅ autoRunDataMigrations completed');
 
 
    //Promise.all([generate_keys_curve25519(), generate_keys_ed25519()]).then(

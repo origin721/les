@@ -45,12 +45,17 @@
         message = '';
         messageType = '';
 
+        // Timeout для операции (10 секунд)
+        const timeout = new Promise((_, reject) => {
+            setTimeout(() => reject(new Error('Timeout: операция превысила 10 секунд')), 10000);
+        });
+
         try {
             console.log('🔄 Начинаем добавление друга...');
             
             // Сначала попытаемся войти в аккаунт, чтобы загрузить пароли в SharedWorker
             const selectedAccount = accounts.find(acc => acc.id === selectedAccountId);
-            console.log('👤 Выбранный аккаунт:', selectedAccount);
+            console.log('👤 Выбранный аккаунт:', $state.snapshot(selectedAccount));
             
             if (selectedAccount) {
                 console.log('🔄 Пропускаем аутентификацию...');
@@ -64,7 +69,15 @@
             };
             console.log('📝 Данные друга:', friendData);
 
-            await api.friends.add([friendData]);
+            // Используем новый API с явным указанием myAccId
+            await Promise.race([
+                api.friends.add({
+                    friends: [friendData],
+                    myAccId: selectedAccountId
+                }),
+                timeout
+            ]);
+            
             console.log('✅ Друг добавлен успешно');
 
             message = `Друг "${friendName}" добавлен в список контактов`;
@@ -84,8 +97,12 @@
             message = `Ошибка при добавлении друга: ${(error as any)?.message || String(error)}`;
             messageType = 'error';
         } finally {
-            console.log('🏁 Завершение процесса добавления друга');
-            loading = false;
+            console.log('🏁 Завершение процесса добавления друга, сброс loading');
+            // Принудительно сбрасываем loading с небольшой задержкой
+            setTimeout(() => {
+                loading = false;
+                console.log('🔄 Loading установлен в false');
+            }, 100);
         }
     }
 

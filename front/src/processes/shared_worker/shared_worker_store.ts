@@ -16,18 +16,35 @@ function create_shared_worker_store() {
     set: store.set,
     fetch: (
       params: FetchParams
-    ): ResultByPath[typeof params['path']] => {
+    ): any => {
+      console.log('🔄 shared_worker_store.fetch ВЫЗОВ с параметрами:', params);
+      console.log('🔄 shared_worker_store.fetch состояние store инициализирован:', !!store);
+      console.log('🔄 shared_worker_store.fetch requestBefore.length:', requestBefore.length);
+      
       return new Promise((res, rej) => {
+        // Добавляем timeout для защиты от зависания
+        const timeout = setTimeout(() => {
+          console.log('⏰ shared_worker_store.fetch TIMEOUT для запроса:', params);
+          rej(new Error('SharedWorker timeout: операция превысила 15 секунд'));
+        }, 15000);
 
         const idRequest = workerGeneratorIds();
+        console.log('🔄 shared_worker_store.fetch сгенерирован idRequest:', idRequest);
+        
         requestBefore.push({
+          // @ts-ignore
           data: {
             ...params,
             idRequest,
             type: EVENT_TYPES.FETCH,
           },
-          res,
+          res: (result: any) => {
+            console.log('✅ shared_worker_store.fetch получен ответ для idRequest:', idRequest, 'результат:', result);
+            clearTimeout(timeout);
+            res(result);
+          },
         });
+        console.log('🔄 shared_worker_store.fetch добавлен в requestBefore, общая длина:', requestBefore.length);
       });
     }
   }
@@ -49,8 +66,9 @@ function create_shared_worker_store() {
       _item = requestBefore.pop()
     ) {
       const item = _item;
+      // @ts-ignore
       result.fetch(item.data)
-        .then((param) => {
+        .then((param: any) => {
           item.res(param as SendProps)
           //requestBefore[item.idRequest]
         });
@@ -67,5 +85,5 @@ type _SendProps = {
 }
 type SendProps = BackMiddlewareEvent;
 type Store = {
-  sendMessage: (p: SendProps) => Promise<ResultByPath[typeof p['payload']['path']]>;
+  sendMessage: (p: SendProps) => Promise<any>;
 }
