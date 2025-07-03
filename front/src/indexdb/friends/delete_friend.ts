@@ -60,13 +60,32 @@ export function delete_friend(friendIds: string[]): Promise<void> {
               friendsByAccount[myAccId].push(friendId);
             }
             
-            // Обновляем каждый аккаунт
+            // Обновляем каждый аккаунт с тайм-аутом
             for (const [accountId, friendIdsToRemove] of Object.entries(friendsByAccount)) {
               forceLog('🔄 Синхронизация аккаунта:', accountId, 'удаление друзей:', friendIdsToRemove);
               
-              await updateAccountFriendsList(accountId, {
-                remove: friendIdsToRemove
-              });
+              try {
+                // Создаем промис с тайм-аутом для updateAccountFriendsList
+                const updatePromise = updateAccountFriendsList(accountId, {
+                  remove: friendIdsToRemove
+                });
+                
+                const timeoutPromise = new Promise<never>((_, reject) => 
+                  setTimeout(() => {
+                    forceLog(`⏰ TIMEOUT: updateAccountFriendsList для аккаунта ${accountId} превысил 8 секунд при удалении`);
+                    reject(new Error(`updateAccountFriendsList timeout for account ${accountId} during delete`));
+                  }, 8000)
+                );
+                
+                // Ждем либо завершения обновления, либо тайм-аута
+                await Promise.race([updatePromise, timeoutPromise]);
+                forceLog(`✅ Синхронизация удаления для аккаунта ${accountId} завершена успешно`);
+                
+              } catch (syncError) {
+                forceLog(`❌ Ошибка синхронизации удаления для аккаунта ${accountId}:`, syncError);
+                console.error(`❌ Sync error for account ${accountId} during delete:`, syncError);
+                // Не прерываем выполнение, продолжаем с другими аккаунтами
+              }
             }
             
             forceLog('✅ Синхронизация аккаунтов завершена');

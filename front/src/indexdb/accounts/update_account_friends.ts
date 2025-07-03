@@ -91,6 +91,8 @@ export function updateAccountFriendsList(
 
         putRequest.onerror = function(event) {
           forceLog(`❌ store.put ошибка для аккаунта: ${accountId}`, event);
+          console.error("❌ Error in store.put:", event);
+          rej(new Error(`IndexDB put error: ${JSON.stringify(event)}`));
         };
 
         // Обновляем back_store
