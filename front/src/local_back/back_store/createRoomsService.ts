@@ -5,7 +5,7 @@ export const create_rooms_service = () => ({
   
   async add(rooms: RoomEntity[], accountId?: string): Promise<void> {
     for(let room of rooms) {
-      this.byId[room.id];
+      this.byId[room.id] = room as RoomEntityFull;
     }
   },
 
@@ -16,12 +16,12 @@ export const create_rooms_service = () => ({
   },
 
   async getById(roomId: string): Promise<RoomEntityFull | null> {
-    return this.byId[roomId];
+    return this.byId[roomId] || null;
   },
 
   async put(rooms: RoomEntityFull[]) {
     for(let room of rooms) {
-      this.byId[room.id];
+      this.byId[room.id] = room;
     }
   }
 });

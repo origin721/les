@@ -122,16 +122,17 @@ export function add_room(
           devDB("🎉 Transaction oncomplete triggered!");
           devDB("✅ Данные добавлены успешно в IndexDB");
           
-          // Добавляем комнаты в back_store
+          // Добавляем комнаты в back_store через сервис
+          const roomsToAdd: RoomEntity[] = [];
           for (const { item, id } of roomsWithIds) {
-            const roomData: RoomEntityFull = {
+            roomsToAdd.push({
               ...item,
               id: id,
-            };
-            back_store.rooms.byId[id] = roomData;
+            });
           }
+          back_store.rooms.add(roomsToAdd);
           
-          devDB('✅ Комнаты добавлены в back_store.rooms.byId');
+          devDB('✅ Комнаты добавлены в back_store через сервис');
           devDB('🎯 Вызываем res() для завершения add_room');
           prodInfo('✅ Комнаты добавлены успешно');
           res();

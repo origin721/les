@@ -26,10 +26,10 @@ export function delete_room(roomId: string): Promise<void> {
           devDB("🎉 Transaction oncomplete triggered!");
           devDB("✅ Комната удалена успешно из IndexDB");
           
-          // Удаляем из back_store
-          delete back_store.rooms.byId[roomId];
+          // Удаляем из back_store через сервис
+          back_store.rooms.delete([roomId]);
           
-          devDB('✅ Комната удалена из back_store.rooms.byId');
+          devDB('✅ Комната удалена из back_store через сервис');
           devDB('🎯 Вызываем res() для завершения delete_room');
           prodInfo('✅ Комната удалена успешно');
           mRes();

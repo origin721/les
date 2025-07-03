@@ -104,12 +104,10 @@ export function put_rooms(
             devDB("🎉 Transaction oncomplete triggered!");
             devDB("✅ Данные обновлены успешно в IndexDB");
             
-            // Обновляем комнаты в back_store
-            for (const item of update_list) {
-              back_store.rooms.byId[item.id] = item;
-            }
+            // Обновляем комнаты в back_store через сервис
+            back_store.rooms.put(update_list);
             
-            devDB('✅ Комнаты обновлены в back_store.rooms.byId');
+            devDB('✅ Комнаты обновлены в back_store через сервис');
             devDB('🎯 Вызываем res() для завершения put_rooms');
             prodInfo('✅ Комнаты обновлены успешно');
             mRes();
