@@ -10,6 +10,7 @@ export type RoomEntityFull = {
 } & RoomEntity;
 
 export type RoomEntity = {
+  id: string;
   sourceName: string;
   viewName: string;
   myAccId: string;
