@@ -3,14 +3,14 @@
 ## Переменные окружения
 
 ### Файл `.env.local`
-- `is_debug_enable` - включает/выключает дебаг логи (true/false)
+- `VITE_DEBUG` - включает/выключает дебаг логи (true/false)
 - Этот файл должен быть в `.gitignore` для локальной разработки
 
 ### Поведение логирования
 
 #### Обычные логи (скрываются в проде)
 - Используйте `debugLog()` вместо `console.log()` 
-- Эти логи отображаются только когда `is_debug_enable = true`
+- Эти логи отображаются только когда `VITE_DEBUG = true`
 - В продакшене (npm run build:prod) эти логи не видны
 
 #### Критические логи (всегда видны)
@@ -77,10 +77,10 @@ if (import.meta.env.VITE_DEBUG) {
 
 ### Разработка (.env.local)
 ```
-is_debug_enable=true
+VITE_DEBUG=true
 ```
 
 ### Продакшен (переменные среды)
 ```
-is_debug_enable=false
+VITE_DEBUG=false
 VITE_PRODUCTION=true

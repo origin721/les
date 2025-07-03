@@ -1,5 +1,5 @@
 import { indexdb_order } from "./indexdb_order";
-import { debugLog, forceLog } from '../core/debug/logger';
+import { debugLog, prodError, prodInfo, devDB } from '../core/debug/logger';
 
 const counterInfo = {
   open: 0,
@@ -49,7 +49,7 @@ export function indexdb_wrapper(
         const oldVersion = event.oldVersion ?? 0;
         const newVersion = event.newVersion ?? 1;
         
-        forceLog('🔄 IndexDB onupgradeneeded:', {
+        prodInfo('🔄 IndexDB onupgradeneeded:', {
           oldVersion,
           newVersion,
           existingStores: Array.from(db.objectStoreNames)
@@ -59,31 +59,31 @@ export function indexdb_wrapper(
         // Пока используем старый подход, но с возможностью расширения
         try {
           if (oldVersion === 0 && newVersion >= 1) {
-            forceLog('📦 Создаем новую базу данных с базовыми хранилищами');
+            prodInfo('📦 Создаем новую базу данных с базовыми хранилищами');
             
             if (!db.objectStoreNames.contains('accounts')) {
               db.createObjectStore('accounts', { keyPath: 'id' });
-              forceLog('✅ Хранилище accounts создано');
+              devDB('✅ Хранилище accounts создано');
             }
             
             if (!db.objectStoreNames.contains('friends')) {
               db.createObjectStore('friends', { keyPath: 'id' });
-              forceLog('✅ Хранилище friends создано');
+              devDB('✅ Хранилище friends создано');
             }
           }
           
           // Здесь можно добавить дополнительные миграции
           // if (oldVersion === 1 && newVersion >= 2) { ... }
           
-          forceLog('🏁 IndexDB миграция завершена. Финальные хранилища:', Array.from(db.objectStoreNames));
+          prodInfo('🏁 IndexDB миграция завершена. Финальные хранилища:', Array.from(db.objectStoreNames));
         } catch (error) {
-          console.error('❌ Критическая ошибка во время миграции IndexedDB:', error);
+          prodError('Критическая ошибка во время миграции IndexedDB:', error);
           throw error;
         }
       };
 
       openRequest.onerror = function () {
-        console.error("Error", openRequest.error);
+        prodError("IndexDB openRequest error:", openRequest.error);
         rej(openRequest.error);
       };
 

@@ -1,7 +1,7 @@
 import { indexdb_wrapper } from "../indexdb_wrapper";
 import { updateAccountFriendsList } from "../accounts/update_account_friends";
 import { back_store } from "../../local_back/back_store";
-import { forceLog } from "../../core/debug/logger";
+import { prodError, prodInfo, devDB } from "../../core/debug/logger";
 
 export function delete_friend(friendIds: string[]): Promise<void> {
   return indexdb_wrapper((db) => {
@@ -48,7 +48,7 @@ export function delete_friend(friendIds: string[]): Promise<void> {
 
         async function syncAccountsAfterDelete() {
           try {
-            forceLog("✅ Друзья удалены из IndexedDB, начинаем синхронизацию аккаунтов");
+            devDB("✅ Друзья удалены из IndexedDB, начинаем синхронизацию аккаунтов");
             
             // Группируем друзей по аккаунтам для эффективной синхронизации
             const friendsByAccount: Record<string, string[]> = {};
@@ -62,7 +62,7 @@ export function delete_friend(friendIds: string[]): Promise<void> {
             
             // Обновляем каждый аккаунт с тайм-аутом
             for (const [accountId, friendIdsToRemove] of Object.entries(friendsByAccount)) {
-              forceLog('🔄 Синхронизация аккаунта:', accountId, 'удаление друзей:', friendIdsToRemove);
+              devDB('🔄 Синхронизация аккаунта:', accountId, 'удаление друзей:', friendIdsToRemove);
               
               try {
                 // Создаем промис с тайм-аутом для updateAccountFriendsList
@@ -72,32 +72,33 @@ export function delete_friend(friendIds: string[]): Promise<void> {
                 
                 const timeoutPromise = new Promise<never>((_, reject) => 
                   setTimeout(() => {
-                    forceLog(`⏰ TIMEOUT: updateAccountFriendsList для аккаунта ${accountId} превысил 8 секунд при удалении`);
+                    devDB(`⏰ TIMEOUT: updateAccountFriendsList для аккаунта ${accountId} превысил 8 секунд при удалении`);
                     reject(new Error(`updateAccountFriendsList timeout for account ${accountId} during delete`));
                   }, 8000)
                 );
                 
                 // Ждем либо завершения обновления, либо тайм-аута
                 await Promise.race([updatePromise, timeoutPromise]);
-                forceLog(`✅ Синхронизация удаления для аккаунта ${accountId} завершена успешно`);
+                devDB(`✅ Синхронизация удаления для аккаунта ${accountId} завершена успешно`);
                 
               } catch (syncError) {
-                forceLog(`❌ Ошибка синхронизации удаления для аккаунта ${accountId}:`, syncError);
-                console.error(`❌ Sync error for account ${accountId} during delete:`, syncError);
+                devDB(`❌ Ошибка синхронизации удаления для аккаунта ${accountId}:`, syncError);
+                prodError(`❌ Sync error for account ${accountId} during delete:`, syncError);
                 // Не прерываем выполнение, продолжаем с другими аккаунтами
               }
             }
             
-            forceLog('✅ Синхронизация аккаунтов завершена');
+            devDB('✅ Синхронизация аккаунтов завершена');
+            prodInfo('✅ Друзья удалены успешно');
             res();
           } catch (error) {
-            console.error('❌ Ошибка синхронизации аккаунтов при удалении:', error);
+            prodError('❌ Ошибка синхронизации аккаунтов при удалении:', error);
             // Не прерываем выполнение, так как друзья уже удалены
             res();
           }
         }
       } catch (error) {
-        console.error('❌ Критическая ошибка в delete_friend:', error);
+        prodError('❌ Критическая ошибка в delete_friend:', error);
         rej(error);
       }
     });

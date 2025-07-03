@@ -2,7 +2,7 @@
 
 ## Что уже реализовано
 
-✅ **Создан файл окружения** `.env.local` с настройкой `is_debug_enable=true`
+✅ **Создан файл окружения** `.env.local` с настройкой `VITE_DEBUG=true`
 ✅ **Добавлена команда продакшен сборки** в `package.json`: `npm run build:prod` 
 ✅ **Создана система логирования** `src/core/debug/logger.ts`
 ✅ **Написаны правила проекта** в `docs/debug-system-rules.md`

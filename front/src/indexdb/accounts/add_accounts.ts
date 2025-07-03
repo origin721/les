@@ -4,7 +4,7 @@ import { gen_pass } from "../../core/random/gen_pass";
 import { uuidv4 } from "../../core/uuid";
 import { indexdb_wrapper } from "../indexdb_wrapper";
 import { privateKeyToString, recommendedGenerateKeyPair } from "../../libs/libp2p";
-import { forceLog } from "../../core/debug/logger";
+import { prodError, prodInfo } from "../../core/debug/logger";
 
 export type HttpServerParam = {
   url: string;
@@ -44,12 +44,12 @@ export function add_accounts(new_list: AccountEntity[]) {
       }
 
       transaction.oncomplete = function () {
-        forceLog("Данные добавлены успешно");
+        prodInfo("Данные добавлены успешно");
         res();
       };
 
       transaction.onerror = function (event) {
-        console.error("Ошибка при добавлении данных:", event);
+        prodError("Ошибка при добавлении данных:", event);
         rej(new Error("Ошибка при добавлении данных в IndexedDB"));
       };
     });

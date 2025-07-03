@@ -3,7 +3,7 @@
  * Используется для миграции существующих данных после создания/обновления схемы
  */
 
-import { debugLog, forceLog } from '../../core/debug/logger';
+import { prodError, prodInfo, devMigration } from '../../core/debug/logger';
 import type { MigrationInfo } from './types';
 
 /**
@@ -36,12 +36,12 @@ export async function runDataMigrations(
   currentDataVersion: number,
   targetDataVersion: number
 ): Promise<void> {
-  forceLog(
+  prodInfo(
     `🔄 Проверяем необходимость миграции данных: ${currentDataVersion} -> ${targetDataVersion}`
   );
 
   if (currentDataVersion >= targetDataVersion) {
-    forceLog('✅ Миграции данных не требуются');
+    prodInfo('✅ Миграции данных не требуются');
     return;
   }
 
@@ -50,15 +50,15 @@ export async function runDataMigrations(
   );
 
   if (migrationsToRun.length === 0) {
-    forceLog('✅ Подходящих миграций данных не найдено');
+    prodInfo('✅ Подходящих миграций данных не найдено');
     return;
   }
 
-  forceLog(`🚀 Найдено ${migrationsToRun.length} миграций данных для выполнения`);
+  prodInfo(`🚀 Найдено ${migrationsToRun.length} миграций данных для выполнения`);
 
   for (const migration of migrationsToRun) {
     try {
-      forceLog(`🔄 Загружаем миграцию данных: ${migration.fileName}`);
+      devMigration(`🔄 Загружаем миграцию данных: ${migration.fileName}`);
       
       // Используем Vite Glob Imports для загрузки миграции
       const migrationPath = `./data_migrations/${migration.fileName}.ts`;
@@ -74,20 +74,20 @@ export async function runDataMigrations(
         throw new Error(`Миграция ${migration.fileName} не экспортирует функцию по умолчанию`);
       }
       
-      forceLog(`⚡ Выполняем миграцию данных: ${migration.description}`);
+      prodInfo(`⚡ Выполняем миграцию данных: ${migration.description}`);
       await migrationFunction();
       
-      forceLog(`✅ Миграция данных ${migration.fileName} выполнена успешно`);
+      prodInfo(`✅ Миграция данных ${migration.fileName} выполнена успешно`);
       
     } catch (error) {
-      console.error(`❌ Ошибка выполнения миграции данных ${migration.fileName}:`, error);
+      prodError(`❌ Ошибка выполнения миграции данных ${migration.fileName}:`, error);
       throw error;
     }
   }
 
   // Обновляем версию данных в localStorage
   localStorage.setItem('data_migration_version', targetDataVersion.toString());
-  forceLog(`✅ Все миграции данных выполнены. Версия данных обновлена до ${targetDataVersion}`);
+  prodInfo(`✅ Все миграции данных выполнены. Версия данных обновлена до ${targetDataVersion}`);
 }
 
 /**

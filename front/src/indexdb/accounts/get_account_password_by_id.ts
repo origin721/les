@@ -1,6 +1,7 @@
 import { decrypt_curve25519_from_pass } from "../../core/crypt";
 import { indexdb_wrapper } from "../indexdb_wrapper";
 import { get_accounts } from "./get_accounts";
+import { devAuth, devDB, prodError, prodWarn } from "../../core/debug/logger";
 
 /**
  * Получает пароль аккаунта по его ID, работает независимо от back_store
@@ -9,14 +10,14 @@ import { get_accounts } from "./get_accounts";
 export function get_account_password_by_id(accountId: string): Promise<string | null> {
   return new Promise(async (resolve, reject) => {
     try {
-      console.log('🔍 get_account_password_by_id: ищем пароль для аккаунта', accountId);
+      devAuth('Ищем пароль для аккаунта:', accountId);
       
       // Получаем все аккаунты для получения всех возможных паролей
       const accounts = await get_accounts();
-      console.log('📋 get_account_password_by_id: получено аккаунтов:', accounts.length);
+      devDB('Получено аккаунтов:', accounts.length);
       
       if (accounts.length === 0) {
-        console.log('❌ get_account_password_by_id: аккаунты не найдены');
+        prodWarn('Аккаунты не найдены для поиска пароля');
         resolve(null);
         return;
       }
@@ -30,12 +31,12 @@ export function get_account_password_by_id(accountId: string): Promise<string | 
       }
       
       if (passwords.size === 0) {
-        console.log('❌ get_account_password_by_id: пароли не найдены');
+        prodWarn('Пароли не найдены в аккаунтах');
         resolve(null);
         return;
       }
       
-      console.log('🔐 get_account_password_by_id: найдено уникальных паролей:', passwords.size);
+      devAuth('Найдено уникальных паролей для перебора:', passwords.size);
       
       // Теперь ищем конкретный аккаунт в IndexDB
       indexdb_wrapper((db) => {
@@ -46,7 +47,7 @@ export function get_account_password_by_id(accountId: string): Promise<string | 
           const getRequest = store.get(accountId);
           
           getRequest.onerror = function(event) {
-            console.error('❌ get_account_password_by_id: ошибка IndexDB:', event);
+            prodError('IndexDB ошибка при получении аккаунта:', event);
             dbReject(event);
           };
           
@@ -54,18 +55,18 @@ export function get_account_password_by_id(accountId: string): Promise<string | 
             try {
               const entity = (event.target as IDBRequest).result;
               if (!entity) {
-                console.log('❌ get_account_password_by_id: аккаунт не найден в IndexDB:', accountId);
+                prodWarn('Аккаунт не найден в IndexDB:', accountId);
                 resolve(null);
                 dbResolve();
                 return;
               }
               
-              console.log('✅ get_account_password_by_id: аккаунт найден в IndexDB, пробуем расшифровать');
+              devAuth('Аккаунт найден в IndexDB, пробуем расшифровать');
               
               // Пробуем расшифровать каждым паролем
               for (const password of passwords) {
                 try {
-                  console.log('🔐 get_account_password_by_id: пробуем пароль длиной:', password.length);
+                  devAuth('Пробуем пароль длиной:', password.length);
                   
                   const decryptedData = await decrypt_curve25519_from_pass({
                     pass: password,
@@ -75,7 +76,7 @@ export function get_account_password_by_id(accountId: string): Promise<string | 
                   if (decryptedData) {
                     const account = JSON.parse(decryptedData);
                     if (account.id === accountId) {
-                      console.log('✅ get_account_password_by_id: найден правильный пароль для аккаунта:', accountId);
+                      devAuth('Найден правильный пароль для аккаунта:', accountId);
                       resolve(password);
                       dbResolve();
                       return;
@@ -83,16 +84,16 @@ export function get_account_password_by_id(accountId: string): Promise<string | 
                   }
                 } catch (err) {
                   // Игнорируем ошибки расшифровки, пробуем следующий пароль
-                  console.log('🔄 get_account_password_by_id: пароль не подошел, пробуем следующий');
+                  devAuth('Пароль не подошел, пробуем следующий');
                 }
               }
               
-              console.log('❌ get_account_password_by_id: ни один пароль не подошел для аккаунта:', accountId);
+              prodWarn('Ни один пароль не подошел для аккаунта:', accountId);
               resolve(null);
               dbResolve();
               
             } catch (err) {
-              console.error('❌ get_account_password_by_id: критическая ошибка:', err);
+              prodError('Критическая ошибка при расшифровке аккаунта:', err);
               dbReject(err);
             }
           };

@@ -1,5 +1,5 @@
 import { indexdb_wrapper } from "../indexdb_wrapper";
-import { forceLog } from "../../core/debug/logger";
+import { prodInfo, devDB } from "../../core/debug/logger";
 
 
 export function delete_accounts(ids: string[]) {
@@ -29,7 +29,8 @@ export function delete_accounts(ids: string[]) {
       Promise.allSettled(listPromise).then(() => res());
 
       transaction.oncomplete = function() {
-        forceLog("Все выбранные записи успешно удалены.");
+        devDB("✅ Все выбранные аккаунты удалены из IndexDB");
+        prodInfo("✅ Аккаунты удалены успешно");
       };
 
      //transaction.oncomplete = function () {
