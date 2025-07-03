@@ -12,6 +12,7 @@ import { accounts_service } from "./modules/accounts_service";
 import { friends_service } from "./modules/friends_service";
 import type { FriendEntity } from "../indexdb/friends/add_friend";
 import type { FriendEntityPut } from "../indexdb/friends/put_friends";
+import { devLog, prodError } from "../core/debug/logger";
 
 type IdRequest = string | number;
 export type BackMiddlewareProps = {
@@ -148,7 +149,7 @@ export type BackMiddlewareEvent = {
 export async function backMiddleware(
   props: BackMiddlewareProps
  ): Promise<any> {
-  console.log('🔄 backMiddleware starting with props:', props);
+  devLog('backMiddleware starting with props:', props);
 
   try {
     // Account handlers
@@ -193,7 +194,7 @@ export async function backMiddleware(
     }
   }
   catch (err) {
-    console.error(err);
+    prodError(err);
   }
 
   return null;

@@ -8,60 +8,61 @@ import { get_friend_by_id } from "../../indexdb/friends/get_friend_by_id";
 import { put_friends, type FriendEntityPut } from "../../indexdb/friends/put_friends";
 import { get_accounts } from "../../indexdb/accounts/get_accounts";
 import { back_store } from "../back_store";
+import { devLog, prodError, prodInfo } from "../../core/debug/logger";
 
 const channel = new BroadcastChannel(CHANNEL_NAMES.FRONT_MIDDLEWARE);
 
 export const friends_service = {
   async add(list: FriendEntity[], myAccId?: string): Promise<FriendEntityFull[]> {
-    console.log('🔄 friends_service.add starting with list:', list, 'myAccId:', myAccId);
+    devLog('🔄 friends_service.add starting with list:', list, 'myAccId:', myAccId);
     
     try {
       // Убеждаемся, что аккаунты загружены в back_store
       if (Object.keys(back_store.accounts_by_id).length === 0) {
-        console.log('🔄 back_store.accounts_by_id пустой, загружаем аккаунты...');
+        devLog('🔄 back_store.accounts_by_id пустой, загружаем аккаунты...');
         const accounts = await get_accounts();
         for (let ac of accounts) {
           back_store.accounts_by_id[ac.id] = ac;
         }
-        console.log('✅ Аккаунты загружены в back_store:', Object.keys(back_store.accounts_by_id));
+        devLog('✅ Аккаунты загружены в back_store:', Object.keys(back_store.accounts_by_id));
       }
       
       // Если передан myAccId, убеждаемся что для этого аккаунта есть пароль
       if (myAccId) {
-        console.log('🔍 Проверяем аккаунт для myAccId:', myAccId);
+        devLog('🔍 Проверяем аккаунт для myAccId:', myAccId);
         const account = back_store.accounts_by_id[myAccId];
         if (!account) {
-          console.error('❌ Аккаунт не найден для myAccId:', myAccId);
-          console.error('❌ Доступные аккаунты:', Object.keys(back_store.accounts_by_id));
+          prodError('❌ Аккаунт не найден для myAccId:', myAccId);
+          prodError('❌ Доступные аккаунты:', Object.keys(back_store.accounts_by_id));
           throw new Error(`Аккаунт ${myAccId} не найден в back_store`);
         }
         if (!account.pass) {
-          console.error('❌ У аккаунта нет пароля:', account);
+          prodError('❌ У аккаунта нет пароля:', account);
           throw new Error(`У аккаунта ${myAccId} нет пароля`);
         }
-        console.log('✅ Аккаунт найден с паролем:', account.id);
+        devLog('✅ Аккаунт найден с паролем:', account.id);
       }
       
-      console.log('🔄 friends_service.add вызывает add_friend...');
+      devLog('🔄 friends_service.add вызывает add_friend...');
       const addFriendStartTime = Date.now();
       
       await add_friend(list, myAccId);
       
       const addFriendDuration = Date.now() - addFriendStartTime;
-      console.log(`✅ friends_service.add add_friend завершен за ${addFriendDuration} мс, получаем список...`);
+      prodInfo(`✅ friends_service.add add_friend завершен за ${addFriendDuration} мс, получаем список...`);
       
       const getListStartTime = Date.now();
       const result = await friends_service.getList();
       const getListDuration = Date.now() - getListStartTime;
       
-      console.log(`✅ friends_service.add getList завершен за ${getListDuration} мс`);
-      console.log('✅ friends_service.add завершен, результат:', result);
+      prodInfo(`✅ friends_service.add getList завершен за ${getListDuration} мс`);
+      prodInfo('✅ friends_service.add завершен, результат:', result);
       return result;
       
     } catch (error) {
-      console.error('❌ Ошибка в friends_service.add:', error);
+      prodError('❌ Ошибка в friends_service.add:', error);
       if (error instanceof Error) {
-        console.error('❌ Полная ошибка friends_service.add:', error.stack);
+        prodError('❌ Полная ошибка friends_service.add:', error.stack);
       }
       throw error;
     }
@@ -88,7 +89,7 @@ export const friends_service = {
       channel.postMessage(broadcast_event);
     }
     catch(err) {
-      console.error('Error deleting friends:', err);
+      prodError('Error deleting friends:', err);
     }
   },
 
@@ -117,7 +118,7 @@ export const friends_service = {
       return friends;
     }
     catch(err) {
-      console.error('Error getting friends list:', err);
+      prodError('Error getting friends list:', err);
       return [];
     }
   },
@@ -128,7 +129,7 @@ export const friends_service = {
       return friends.filter(friend => friend.myAccId === myAccId);
     }
     catch(err) {
-      console.error('Error getting friends by account id:', err);
+      prodError('Error getting friends by account id:', err);
       return [];
     }
   },
@@ -138,7 +139,7 @@ export const friends_service = {
       return await get_friend_by_id(friendId);
     }
     catch(err) {
-      console.error('Error getting friend by id:', err);
+      prodError('Error getting friend by id:', err);
       return null;
     }
   },
@@ -165,7 +166,7 @@ export const friends_service = {
       await friends_service.getList();
     }
     catch(err) {
-      console.error('Error updating friends:', err);
+      prodError('Error updating friends:', err);
     }
   }
 }

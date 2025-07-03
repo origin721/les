@@ -2,6 +2,7 @@ import { writable } from "svelte/store";
 import type { BackMiddlewareEvent, BackMiddlewarePayload, BackMiddlewareProps, ResultByPath } from "../../local_back/middleware";
 import { create_counter_generator } from "../../core/create_counter_generator";
 import { EVENT_TYPES } from "../../local_back/constant";
+import { devLog, prodError } from "../../core/debug/logger";
 
 const workerGeneratorIds = create_counter_generator();
 
@@ -17,19 +18,19 @@ function create_shared_worker_store() {
     fetch: (
       params: FetchParams
     ): any => {
-      console.log('🔄 shared_worker_store.fetch ВЫЗОВ с параметрами:', params);
-      console.log('🔄 shared_worker_store.fetch состояние store инициализирован:', !!store);
-      console.log('🔄 shared_worker_store.fetch requestBefore.length:', requestBefore.length);
+      devLog('shared_worker_store.fetch ВЫЗОВ с параметрами:', params);
+      devLog('shared_worker_store.fetch состояние store инициализирован:', !!store);
+      devLog('shared_worker_store.fetch requestBefore.length:', requestBefore.length);
       
       return new Promise((res, rej) => {
         // Добавляем timeout для защиты от зависания
         const timeout = setTimeout(() => {
-          console.log('⏰ shared_worker_store.fetch TIMEOUT для запроса:', params);
+          prodError('shared_worker_store.fetch TIMEOUT для запроса:', params);
           rej(new Error('SharedWorker timeout: операция превысила 15 секунд'));
         }, 15000);
 
         const idRequest = workerGeneratorIds();
-        console.log('🔄 shared_worker_store.fetch сгенерирован idRequest:', idRequest);
+        devLog('shared_worker_store.fetch сгенерирован idRequest:', idRequest);
         
         requestBefore.push({
           // @ts-ignore
@@ -39,12 +40,12 @@ function create_shared_worker_store() {
             type: EVENT_TYPES.FETCH,
           },
           res: (result: any) => {
-            console.log('✅ shared_worker_store.fetch получен ответ для idRequest:', idRequest, 'результат:', result);
+            devLog('shared_worker_store.fetch получен ответ для idRequest:', idRequest, 'результат:', result);
             clearTimeout(timeout);
             res(result);
           },
         });
-        console.log('🔄 shared_worker_store.fetch добавлен в requestBefore, общая длина:', requestBefore.length);
+        devLog('shared_worker_store.fetch добавлен в requestBefore, общая длина:', requestBefore.length);
       });
     }
   }

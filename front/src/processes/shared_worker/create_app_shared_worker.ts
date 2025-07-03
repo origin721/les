@@ -5,9 +5,10 @@ import {
 } from "../../local_back/middleware";
 import { shared_worker_store } from "./shared_worker_store";
 import SharedWorkerConstructor from './process/sharedWorker.js?sharedworker';
+import { devLog, prodError, prodWarn } from "../../core/debug/logger";
 
 export async function createAppSharedWorker() {
-  console.log('🔄 createAppSharedWorker инициализация SharedWorker...');
+  devLog('createAppSharedWorker инициализация SharedWorker...');
   
   try {
     const sharedWorker = new SharedWorkerConstructor();
@@ -16,16 +17,16 @@ export async function createAppSharedWorker() {
     
     shared_worker_store.set({
       sendMessage: (event: BackMiddlewareEvent) => {
-        console.log('📤 Отправка в SharedWorker:', event.type, 'idRequest:', event.idRequest);
+        devLog('Отправка в SharedWorker:', event.type, 'idRequest:', event.idRequest);
         
         const result = new Promise<any>(async(res, rej) => {
           const timeout = setTimeout(() => {
-            console.log('⏰ SharedWorker TIMEOUT idRequest:', event.idRequest);
+            prodError('SharedWorker TIMEOUT idRequest:', event.idRequest);
             rej(new Error('SharedWorker sendMessage timeout'));
           }, 12000);
           
           promiseResolves[event.idRequest] = (value) => {
-            console.log('✅ SharedWorker ответ idRequest:', event.idRequest);
+            devLog('SharedWorker ответ idRequest:', event.idRequest);
             clearTimeout(timeout);
             res(value);
           };
@@ -37,23 +38,23 @@ export async function createAppSharedWorker() {
     });
 
     sharedWorker.port.onmessage = function (event) {
-      console.log('📥 SharedWorker получен ответ');
+      devLog('SharedWorker получен ответ');
       try {
         listener(event.data, promiseResolves);
       } catch (error) {
-        console.error('❌ Ошибка обработки ответа SharedWorker:', error);
+        prodError('Ошибка обработки ответа SharedWorker:', error);
       }
     };
 
     sharedWorker.onerror = function(error) {
-      console.error('❌ SharedWorker error:', error);
+      prodError('SharedWorker error:', error);
     };
 
     sharedWorker.port.start();
-    console.log('✅ SharedWorker запущен');
+    devLog('SharedWorker запущен');
     
   } catch (error) {
-    console.error('❌ Ошибка создания SharedWorker:', error);
+    prodError('Ошибка создания SharedWorker:', error);
     throw error;
   }
 }
@@ -68,14 +69,14 @@ async function listener(
   promiseResolves: PromiseResolves,
 ) {
   try {
-    console.log('📥 Обработка ответа от SharedWorker, raw param:', param);
+    devLog('Обработка ответа от SharedWorker, raw param:', param);
     
     const props = toJson(param) as BackMiddlewareProps & { error?: string; stack?: string };
-    console.log('📥 Распарсенный ответ от SharedWorker:', props);
+    devLog('Распарсенный ответ от SharedWorker:', props);
 
     if (props.error) {
-      console.error('❌ SharedWorker вернул ошибку:', props.error);
-      console.error('❌ Stack trace:', props.stack);
+      prodError('SharedWorker вернул ошибку:', props.error);
+      prodError('Stack trace:', props.stack);
       
       if (promiseResolves[props.idRequest]) {
         // Отклоняем Promise с ошибкой
@@ -90,14 +91,14 @@ async function listener(
     }
 
     if (promiseResolves[props.idRequest]) {
-      console.log('✅ Найден resolver для idRequest:', props.idRequest);
+      devLog('Найден resolver для idRequest:', props.idRequest);
       promiseResolves[props.idRequest](props);
       delete promiseResolves[props.idRequest];
     } else {
-      console.log('⚠️ Не найден resolver для idRequest:', props.idRequest);
+      prodWarn('Не найден resolver для idRequest:', props.idRequest);
     }
   } catch (err) {
-    console.error('❌ Ошибка обработки ответа от SharedWorker:', err);
+    prodError('Ошибка обработки ответа от SharedWorker:', err);
     return null;
   }
 }

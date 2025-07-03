@@ -16,6 +16,7 @@ import {
 } from "../core/crypt";
 import { connectionLibp2p } from "../api/libp2p/createLibp2pNode";
 import { autoRunDataMigrations } from "../indexdb/migrations/data_migrations";
+import { devLog, prodInfo } from "../core/debug/logger";
 //import { createLibp2pNode } from "../api/libp2p/createLibp2pNode";
 //import { tmpTest } from "../api/libp2p/tmp";
 //import { createLibp2pNode } from "../api/libp2p/createLibp2pNode";
@@ -41,21 +42,21 @@ import { autoRunDataMigrations } from "../indexdb/migrations/data_migrations";
 
 export const appProcessesMount = () => {
   onMount(async () => {
-    console.log('🔄 appProcessesMount starting...');
+    devLog('appProcessesMount starting...');
     //console.log(uuidv4());
     
-    console.log('🔄 Starting createAppSharedWorker...');
+    devLog('Starting createAppSharedWorker...');
     await createAppSharedWorker();
-    console.log('✅ createAppSharedWorker completed');
+    prodInfo('createAppSharedWorker completed');
     
-    console.log('🔄 Starting broadcast_middleware...');
+    devLog('Starting broadcast_middleware...');
     broadcast_middleware();
-    console.log('✅ broadcast_middleware completed');
+    prodInfo('broadcast_middleware completed');
     
     // Автоматическая миграция данных (асинхронная загрузка миграций)
-    console.log('🔄 Starting autoRunDataMigrations...');
+    devLog('Starting autoRunDataMigrations...');
     await autoRunDataMigrations();
-    console.log('✅ autoRunDataMigrations completed');
+    prodInfo('autoRunDataMigrations completed');
 
 
    //Promise.all([generate_keys_curve25519(), generate_keys_ed25519()]).then(

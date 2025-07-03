@@ -1,6 +1,7 @@
 // @ts-check
 import sodium from 'libsodium-wrappers';
 import { uint8ArrayToString } from '../../uint8ArrayToString.js';
+import { devCrypto } from "../../debug/logger";
 
 /**
  * Расшифровать
@@ -53,7 +54,7 @@ export async function decrypt_curve25519_verify({
     return uint8ArrayToString(decryptedMessage);
   }
   catch (err) {
-    if(!isDisableDebugger) console.error(err);
+    if(!isDisableDebugger) devCrypto('❌ Ошибка декриптирования:', err);
     return null;
   }
 }
