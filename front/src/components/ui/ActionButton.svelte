@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { routingStore } from "../../routing/stores";
+
     interface Props {
         variant?: 'primary' | 'secondary' | 'danger';
         size?: 'sm' | 'md' | 'lg';
@@ -35,7 +37,13 @@
 </script>
 
 {#if href}
-    <a {href} class={getClasses()}>
+    <a {href} class={getClasses()} 
+        onclick={(event) => {
+            event.preventDefault();
+            if(!href) return;
+            routingStore.setPath(href);
+        }}
+    >
         {#if icon}
             <span class="button-icon" class:spinning={loading}>{icon}</span>
         {/if}
