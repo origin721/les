@@ -1,10 +1,8 @@
 <script lang="ts">
-  import { writable } from "svelte/store";
   import { events_store } from "../../../processes/create_my_events/events_store";
   import { Link, ROUTES } from "../../../routing";
   import { search_params_to_string } from "../../../core";
   import { QUERY_PARAMS } from "../../../routing/constants";
-  import { CYAN300 } from "../../../styles/colors";
 
 //   const activeRoom = events_store.add_room({name: 'no name'});
 //   function handleMessage() {

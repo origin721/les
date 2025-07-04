@@ -86,9 +86,9 @@
                     `../../pages/chat_room/ui/ChatRoomPage.svelte`
                 );
             } else {
-                // src/pages/chat_room/ui/ChatRoomsListPage.svelte
+                // Use the original ChatRoomsPage instead of ChatRoomsListPage
                 componentPromise = import(
-                    `../../pages/chat_room/ui/ChatRoomsListPage.svelte`
+                    `../../pages/chat_rooms/ui/ChatRoomsPage.svelte`
                 );
             }
         } else if (p.rState.pathname === ROUTES.CHAT_ROOMS_ADD) {
