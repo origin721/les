@@ -95,8 +95,10 @@
   .chat-area {
     flex: 1;
     height: 100%;
+    min-width: 0;
     display: flex;
     flex-direction: column;
+    background: var(--les-bg-primary);
   }
 
   .chat-area-header {
@@ -304,6 +306,14 @@
   .messages-area::-webkit-scrollbar-thumb:hover {
     background: var(--les-accent-secondary);
     box-shadow: 0 0 5px var(--les-accent-secondary);
+  }
+
+  /* Desktop - ensure proper flex behavior */
+  @media (min-width: 769px) {
+    .chat-area {
+      flex: 1;
+      min-width: 0; /* Allows flex item to shrink below content size */
+    }
   }
 
   /* Mobile Responsive */

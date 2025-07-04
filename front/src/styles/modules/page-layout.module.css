@@ -29,6 +29,13 @@
   min-height: calc(100vh - 200px); /* Учитываем header и footer */
 }
 
+/* Обеспечиваем горизонтальный layout на десктопе */
+@media (min-width: 769px) {
+  .pageContent.chat-content {
+    flex-direction: row !important;
+  }
+}
+
 .pageFooter {
   padding: 1.5rem 2rem;
   border-top: 1px solid var(--les-border-primary);

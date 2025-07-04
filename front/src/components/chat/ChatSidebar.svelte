@@ -54,6 +54,8 @@
 <style>
   .rooms-sidebar {
     width: 350px;
+    min-width: 350px;
+    max-width: 350px;
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -62,6 +64,7 @@
     box-shadow: 
       0 0 20px rgba(0, 0, 0, 0.5),
       inset 0 0 20px rgba(255, 255, 255, 0.02);
+    flex-shrink: 0;
   }
 
   .sidebar-header {
@@ -229,6 +232,14 @@
 
     .room-item {
       padding: 0.8rem;
+    }
+  }
+
+  /* Desktop - ensure proper positioning */
+  @media (min-width: 769px) {
+    .rooms-sidebar {
+      position: relative;
+      flex-shrink: 0;
     }
   }
 </style>

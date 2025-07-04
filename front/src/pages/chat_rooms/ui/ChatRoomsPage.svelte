@@ -73,10 +73,5 @@
 </PageLayout>
 
 <style>
-  /* Минимальные стили для мобильной адаптивности */
-  @media (max-width: 768px) {
-    :global(.pageContent.chat-content) {
-      flex-direction: column !important;
-    }
-  }
+  /* Мобильная адаптивность будет обрабатываться в компонентах */
 </style>
