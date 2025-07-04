@@ -1,18 +1,14 @@
 <script lang="ts">
-import type { FriendEntityFull } from "../../../indexdb/friends/add_friend";
+    import type { FriendEntityFull } from "../../../indexdb/friends/add_friend";
     import { Link, ROUTES } from "../../../routing";
     import { theme } from "../../../stores/theme";
     import BasePage from "../../../components/page_templates/BasePage.svelte";
     import ContentSection from "../../../components/page_templates/ContentSection.svelte";
+    import { StatusIndicator, FriendCard, StateDisplay } from "../../../components/ui";
     import { CHANNEL_NAMES } from "../../../core/broadcast_channel/constants/CHANNEL_NAMES";
     import { FrontMiddlewareActions } from "../../../core/broadcast_channel/constants/FRONT_MIDDLEWARE_ACTIONS";
     import type { PostMessageParam } from "../../../core/broadcast_channel/front_middleware_channel";
-    import { fade } from "svelte/transition";
     import { devUI, devAPI, prodError, prodLog } from "../../../core/debug/logger";
-
-    // Import theme styles
-    import "../../../styles/cyberpunk.css";
-    import "../../../styles/pixel.css";
     import sharedWorkerApi from "../../../api/shared_worker";
 
     let friends = $state<FriendEntityFull[]>([]);
@@ -87,7 +83,7 @@ import type { FriendEntityFull } from "../../../indexdb/friends/add_friend";
                 devUI('👥 FriendsPage: Имена друзей:', friends.map(f => f.namePub));
             }
         } catch (err) {
-            prodError('❌ FriendsPagesharedWorkerApiшибка загрузки друзей:', err);
+            prodError('❌ FriendsPage: Ошибка загрузки друзей:', err);
             error = `Ошибка загрузки списка друзей: ${(err as any)?.message || String(err)}`;
             // При ошибке оставляем старые данные, не обнуляем friends
         }
@@ -119,7 +115,7 @@ import type { FriendEntityFull } from "../../../indexdb/friends/add_friend";
     function handleRefresh() {
         devUI('🔄 FriendsPage: Принудительное обновление списка');
         loadFriends();
-    }sharedWorkerApi
+    }
 </script>
 
 <div class="theme-{$theme}">
@@ -136,10 +132,11 @@ import type { FriendEntityFull } from "../../../indexdb/friends/add_friend";
                     <div class="friends-container" data-widget-name="FriendsPage">
                         <!-- Status Message -->
                         <div class="status-message">
-                            <div class="status-indicator">
-                                <span class="status-dot active"></span>
-                                <span class="status-text">OK - СИСТЕМА ДРУЗЕЙ АКТИВНА</span>
-                            </div>
+                            <StatusIndicator 
+                                status="active" 
+                                text="OK - СИСТЕМА ДРУЗЕЙ АКТИВНА" 
+                                size="lg"
+                            />
                         </div>
 
                         <!-- Action Buttons -->
@@ -166,72 +163,37 @@ import type { FriendEntityFull } from "../../../indexdb/friends/add_friend";
                             <div class="content-container">
                                 <!-- Main Content -->
                                 {#if error}
-                                    <div class="error-state">
-                                        <div class="error-icon">⚠</div>
-                                        <span>{error}</span>
-                                        <button class="retry-button" onclick={handleRefresh}>
-                                            Повторить попытку
-                                        </button>
-                                    </div>
+                                    <StateDisplay 
+                                        type="error" 
+                                        message={error}
+                                        actionText="Повторить попытку"
+                                        onAction={handleRefresh}
+                                    />
                                 {:else if friends.length === 0}
-                                    <div class="empty-state">
-                                        <div class="empty-icon">👥</div>
-                                        <h3>Список друзей пуст</h3>
-                                        <p>Добавьте первого друга, чтобы начать общение</p>
-                                        <Link href={ROUTES.ADD_FRIEND} className="empty-action-button">
-                                            Добавить друга
-                                        </Link>
-                                    </div>
+                                    <StateDisplay 
+                                        type="empty" 
+                                        title="Список друзей пуст"
+                                        message="Добавьте первого друга, чтобы начать общение"
+                                    />
                                 {:else}
                                     <div class="friends-grid">
                                         {#each friends as friend (friend.id)}
-                                            <div class="friend-card">
-                                                <div class="friend-header">
-                                                    <div class="friend-avatar">
-                                                        <span class="avatar-text">{friend.namePub.charAt(0).toUpperCase()}</span>
-                                                    </div>
-                                                    <div class="friend-info">
-                                                        <h3 class="friend-name">{friend.namePub}</h3>
-                                                        <span class="friend-id">ID: {friend.id.slice(0, 8)}...</span>
-                                                    </div>
-                                                </div>
-                                                
-                                                <div class="friend-details">
-                                                    <div class="detail-row">
-                                                        <span class="detail-label">Аккаунт:</span>
-                                                        <span class="detail-value">{friend.myAccId.slice(0, 8)}...</span>
-                                                    </div>
-                                                    <div class="detail-row">
-                                                        <span class="detail-label">P2P Ключ:</span>
-                                                        <span class="detail-value">
-                                                            {friend.friendPubKeyLibp2p ? friend.friendPubKeyLibp2p.slice(0, 16) + '...' : 'Не настроен'}
-                                                        </span>
-                                                    </div>
-                                                </div>
-
-                                                <div class="friend-actions">
-                                                    <button class="action-btn chat" onclick={() => {}}>
-                                                        <span class="btn-icon">💬</span>
-                                                        <span class="btn-text">Чат</span>
-                                                    </button>
-                                                    <button class="action-btn delete" onclick={() => handleDeleteFriend(friend.id)}>
-                                                        <span class="btn-icon">🗑</span>
-                                                        <span class="btn-text">Удалить</span>
-                                                    </button>
-                                                </div>
-                                            </div>
+                                            <FriendCard 
+                                                {friend} 
+                                                onDelete={handleDeleteFriend}
+                                                onChat={() => {}}
+                                            />
                                         {/each}
                                     </div>
                                 {/if}
 
                                 <!-- Loading Overlay -->
                                 {#if loading}
-                                    <div class="loading-overlay" transition:fade={{duration: 300}}>
-                                        <div class="loading-content">
-                                            <div class="loading-animation">⧗</div>
-                                            <span>Загрузка списка друзей...</span>
-                                        </div>
-                                    </div>
+                                    <StateDisplay 
+                                        type="loading" 
+                                        message="Загрузка списка друзей..."
+                                        overlay={true}
+                                    />
                                 {/if}
                             </div>
                         </div>
@@ -250,46 +212,6 @@ import type { FriendEntityFull } from "../../../indexdb/friends/add_friend";
 </div>
 
 <style>
-    /* Theme Variables */
-    .theme-cyberpunk {
-        --background-color: #0a0a0a;
-        --text-color: #00ff00;
-        --primary-color: #ff00ff;
-        --secondary-color: #00ffff;
-        --border-color: #00ff00;
-        --card-background: #1a1a1a;
-        --nav-active: #ff00ff;
-        --accent-color: #ffff00;
-        --success-color: #00ff00;
-        --error-color: #ff0040;
-    }
-    
-    .theme-watchdogs {
-        --background-color: #1a1a1a;
-        --text-color: #cccccc;
-        --primary-color: #ffc400;
-        --secondary-color: #00aaff;
-        --border-color: #444444;
-        --card-background: #222222;
-        --nav-active: #ffc400;
-        --accent-color: #00aaff;
-        --success-color: #00ff88;
-        --error-color: #ff4444;
-    }
-    
-    .theme-pixel {
-        --background-color: #000000;
-        --text-color: #00ff00;
-        --primary-color: #00ff00;
-        --secondary-color: #ff00ff;
-        --border-color: #00ff00;
-        --card-background: #222222;
-        --nav-active: #ff00ff;
-        --accent-color: #00ff00;
-        --success-color: #00ff00;
-        --error-color: #ff0000;
-    }
-
     .friends-container {
         width: 100%;
         font-family: "Courier New", Courier, monospace;
@@ -303,40 +225,8 @@ import type { FriendEntityFull } from "../../../indexdb/friends/add_friend";
         margin-bottom: 2rem;
         padding: 1rem;
         background: rgba(0, 255, 0, 0.1);
-        border: 1px solid var(--success-color);
+        border: 1px solid var(--primary-color);
         border-radius: 4px;
-    }
-
-    .status-indicator {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-    }
-
-    .status-dot {
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-        background: var(--success-color);
-        animation: status-pulse 2s ease-in-out infinite;
-    }
-
-    .status-text {
-        color: var(--success-color);
-        font-weight: bold;
-        font-size: 1.1rem;
-        text-shadow: 0 0 5px var(--success-color);
-    }
-
-    @keyframes status-pulse {
-        0%, 100% { 
-            opacity: 1;
-            box-shadow: 0 0 0 0 var(--success-color);
-        }
-        50% { 
-            opacity: 0.7;
-            box-shadow: 0 0 0 8px transparent;
-        }
     }
 
     /* Action Buttons */
@@ -425,287 +315,11 @@ import type { FriendEntityFull } from "../../../indexdb/friends/add_friend";
         min-height: 200px;
     }
 
-    /* Loading Background Overlay */
-    .loading-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: rgba(0, 0, 0, 0.5);
-        backdrop-filter: blur(2px);
-        z-index: 1;
-        pointer-events: none;
-    }
-
-    .loading-content {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 2rem;
-        background: rgba(26, 26, 26, 0.9);
-        border: 2px solid var(--accent-color);
-        border-radius: 8px;
-        box-shadow: 0 0 40px var(--accent-color);
-        opacity: 0.95;
-        backdrop-filter: blur(5px);
-        pointer-events: auto;
-    }
-
-    .loading-content span {
-        color: var(--accent-color);
-        font-weight: bold;
-        margin-top: 1rem;
-        text-shadow: 0 0 10px var(--accent-color);
-        font-size: 1rem;
-        animation: text-glow 2s ease-in-out infinite alternate;
-    }
-
-    @keyframes text-glow {
-        from {
-            text-shadow: 0 0 5px var(--accent-color);
-        }
-        to {
-            text-shadow: 0 0 15px var(--accent-color), 0 0 25px var(--accent-color);
-        }
-    }
-
-    /* Loading, Error, Empty States */
-    .error-state,
-    .empty-state {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 3rem;
-        text-align: center;
-        border: 1px solid var(--border-color);
-        border-radius: 4px;
-        background: var(--card-background);
-    }
-
-    .loading-animation {
-        font-size: 3rem;
-        animation: spin 1s linear infinite;
-        margin-bottom: 1rem;
-        color: var(--accent-color);
-    }
-
-    .error-icon,
-    .empty-icon {
-        font-size: 3rem;
-        margin-bottom: 1rem;
-    }
-
-    .error-icon {
-        color: var(--error-color);
-    }
-
-    .empty-icon {
-        color: var(--secondary-color);
-    }
-
-    .error-state span {
-        margin-bottom: 1rem;
-        color: var(--error-color);
-    }
-
-    .retry-button {
-        padding: 0.8rem 1.5rem;
-        background: var(--error-color);
-        color: var(--background-color);
-        border: none;
-        border-radius: 4px;
-        font-weight: bold;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-
-    .retry-button:hover {
-        box-shadow: 0 0 15px var(--error-color);
-        transform: translateY(-2px);
-    }
-
-    .empty-state h3 {
-        color: var(--primary-color);
-        margin-bottom: 0.5rem;
-    }
-
-    .empty-state p {
-        color: var(--secondary-color);
-        margin-bottom: 1.5rem;
-    }
-
-    :global(.empty-action-button) {
-        padding: 0.8rem 1.5rem;
-        background: var(--primary-color);
-        color: var(--background-color);
-        text-decoration: none;
-        border-radius: 4px;
-        font-weight: bold;
-        transition: all 0.3s ease;
-    }
-
-    :global(.empty-action-button:hover) {
-        box-shadow: 0 0 15px var(--primary-color);
-        transform: translateY(-2px);
-    }
-
     /* Friends Grid */
     .friends-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
         gap: 1.5rem;
-    }
-
-    .friend-card {
-        background: var(--card-background);
-        border: 1px solid var(--border-color);
-        border-radius: 4px;
-        padding: 1.5rem;
-        transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .friend-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-        transition: left 0.5s;
-    }
-
-    .friend-card:hover::before {
-        left: 100%;
-    }
-
-    .friend-card:hover {
-        border-color: var(--primary-color);
-        box-shadow: 0 0 15px var(--primary-color);
-        transform: translateY(-3px);
-    }
-
-    /* Friend Header */
-    .friend-header {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        margin-bottom: 1rem;
-    }
-
-    .friend-avatar {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        background: var(--primary-color);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 2px solid var(--primary-color);
-    }
-
-    .avatar-text {
-        color: var(--background-color);
-        font-weight: bold;
-        font-size: 1.2rem;
-    }
-
-    .friend-info {
-        flex: 1;
-    }
-
-    .friend-name {
-        color: var(--primary-color);
-        font-size: 1.2rem;
-        font-weight: bold;
-        margin-bottom: 0.3rem;
-        text-shadow: 0 0 3px var(--primary-color);
-    }
-
-    .friend-id {
-        color: var(--secondary-color);
-        font-size: 0.8rem;
-    }
-
-    /* Friend Details */
-    .friend-details {
-        margin-bottom: 1.5rem;
-    }
-
-    .detail-row {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 0.5rem;
-        font-size: 0.9rem;
-    }
-
-    .detail-label {
-        color: var(--secondary-color);
-    }
-
-    .detail-value {
-        color: var(--text-color);
-        font-family: "Courier New", monospace;
-    }
-
-    /* Friend Actions */
-    .friend-actions {
-        display: flex;
-        gap: 0.8rem;
-        justify-content: center;
-    }
-
-    .action-btn {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.6rem 1rem;
-        border: 1px solid;
-        background: transparent;
-        color: inherit;
-        font-family: inherit;
-        border-radius: 4px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        font-size: 0.9rem;
-    }
-
-    .action-btn.chat {
-        border-color: var(--accent-color);
-        color: var(--accent-color);
-    }
-
-    .action-btn.chat:hover {
-        background: var(--accent-color);
-        color: var(--background-color);
-        box-shadow: 0 0 10px var(--accent-color);
-    }
-
-    .action-btn.delete {
-        border-color: var(--error-color);
-        color: var(--error-color);
-    }
-
-    .action-btn.delete:hover {
-        background: var(--error-color);
-        color: var(--background-color);
-        box-shadow: 0 0 10px var(--error-color);
-    }
-
-    .btn-icon {
-        font-size: 1rem;
-    }
-
-    .btn-text {
-        font-weight: bold;
     }
 
     /* Footer Status */
