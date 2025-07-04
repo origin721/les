@@ -20,6 +20,11 @@
   --les-warning: #ffc107;
   --les-error: #dc3545;
   
+  /* Message colors - muted versions */
+  --les-message-own-bg: #E3F2FD;
+  --les-message-own-text: #1565C0;
+  --les-message-own-border: #BBDEFB;
+  
   /* Legacy variables for loading components */
   --background-color: #FFFFFF;
   --text-color: #111111;
@@ -40,6 +45,11 @@
   --les-success: #4CAF50;
   --les-warning: #FFEB3B;
   --les-error: #F44336;
+  
+  /* Message colors - muted versions */
+  --les-message-own-bg: #2A1B3D;
+  --les-message-own-text: #D1C4E9;
+  --les-message-own-border: #4A148C;
   
   /* Legacy variables for loading components */
   --background-color: #121212;
@@ -63,6 +73,11 @@
   --les-warning: #ffff00;
   --les-error: #ff0000;
   
+  /* Message colors - muted versions */
+  --les-message-own-bg: #1a0a1a;
+  --les-message-own-text: #cc66cc;
+  --les-message-own-border: #4d1a4d;
+  
   /* Legacy variables for loading components */
   --background-color: #0c0c0c;
   --text-color: #00ff00;
@@ -83,6 +98,11 @@
   --les-success: #00ff00;
   --les-warning: #ffaa00;
   --les-error: #ff0000;
+  
+  /* Message colors - muted versions */
+  --les-message-own-bg: #2d1f0a;
+  --les-message-own-text: #e6994d;
+  --les-message-own-border: #b8860b;
   
   /* Legacy variables for loading components */
   --background-color: #1a1a1a;
@@ -105,6 +125,11 @@
   --les-warning: #ff00ff;
   --les-error: #ff0000;
   
+  /* Message colors - muted versions */
+  --les-message-own-bg: #0a2a0a;
+  --les-message-own-text: #66cc66;
+  --les-message-own-border: #1a5a1a;
+  
   /* Legacy variables for loading components */
   --background-color: #000000;
   --text-color: #00ff00;
@@ -126,6 +151,11 @@
   --les-success: #5CB85C;
   --les-warning: #F0AD4E;
   --les-error: #D9534F;
+
+  /* Message colors - muted versions */
+  --les-message-own-bg: #1a3a3a;
+  --les-message-own-text: #80d0d0;
+  --les-message-own-border: #2a6a6a;
 
   /* Legacy variables for loading components */
   --background-color: #2C2C54;
@@ -171,6 +201,11 @@
   --les-success: #90EE90;
   --les-warning: #FFFFFF;
   --les-error: #FF6B6B;
+  
+  /* Message colors - muted versions */
+  --les-message-own-bg: #2E8B57;
+  --les-message-own-text: #E8F5E8;
+  --les-message-own-border: #4F9A70;
   
   /* Legacy variables for loading components */
   --background-color: #0F4C3A;

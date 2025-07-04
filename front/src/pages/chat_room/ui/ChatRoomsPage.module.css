@@ -270,10 +270,10 @@
 }
 
 .messageOwn .messageContent {
-  background: var(--les-accent-primary);
-  color: var(--les-bg-primary);
-  border-color: var(--les-accent-secondary);
-  box-shadow: 0 0 8px var(--les-accent-primary);
+  background: var(--les-message-own-bg, var(--les-accent-primary));
+  color: var(--les-message-own-text, var(--les-bg-primary));
+  border-color: var(--les-message-own-border, var(--les-accent-secondary));
+  box-shadow: 0 0 8px var(--les-message-own-border, var(--les-accent-primary));
 }
 
 .messageOther .messageContent {
@@ -293,7 +293,7 @@
 
 .messageOwn .messageContent::before {
   right: 1rem;
-  border-top-color: var(--les-accent-primary);
+  border-top-color: var(--les-message-own-bg, var(--les-accent-primary));
 }
 
 .messageOther .messageContent::before {
