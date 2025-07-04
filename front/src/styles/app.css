@@ -6,6 +6,7 @@
 @import "./modules/cards.module.css";
 @import "./modules/forms.module.css";
 @import "./modules/layout.module.css";
+@import "./modules/section-titles.module.css";
 
 :root {
     font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;

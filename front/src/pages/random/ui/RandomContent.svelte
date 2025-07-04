@@ -4,10 +4,11 @@
   import { Link, ROUTES } from "../../../routing";
   import { gen_pass } from "../../../core/random/gen_pass";
   import { theme } from "../../../stores/theme";
-
-  // Import theme styles
-  import "../../../styles/cyberpunk.css";
-  import "../../../styles/pixel.css";
+  import { ActionButton } from "../../../components/ui";
+  
+  // Import CSS modules
+  import styles from "./RandomContent.module.css";
+  import sectionStyles from "../../../styles/modules/section-titles.module.css";
 
   const randomString = writable(getNewRandomString());
   let isGenerating = false;
@@ -80,555 +81,120 @@
   }
 </script>
 
-<div class="theme-{$theme}">
-  <div class="random-content-container" data-widget-name="RandomContent">
-    
-    <!-- Generator Type Selection -->
-    <div class="generator-types">
-      <h3 class="types-title">ТИП ГЕНЕРАТОРА</h3>
-      <div class="types-grid">
-        {#each generatorTypes as type}
-          <button 
-            class="type-button {currentType === type.id ? 'active' : ''}"
-            onclick={() => handleTypeChange(type.id)}
-            title={type.description}
-          >
-            <span class="type-icon">{type.icon}</span>
-            <span class="type-name">{type.name}</span>
-          </button>
-        {/each}
-      </div>
-    </div>
-
-    <!-- Generated Output -->
-    <div class="output-section">
-      <h3 class="output-title">СГЕНЕРИРОВАННЫЕ ДАННЫЕ</h3>
-      <div class="output-container">
-        <div class="output-display {isGenerating ? 'generating' : ''}">
-          {#if isGenerating}
-            <div class="generating-animation">
-              <span class="generating-text">ГЕНЕРАЦИЯ</span>
-              <span class="dots">
-                <span class="dot">.</span>
-                <span class="dot">.</span>
-                <span class="dot">.</span>
-              </span>
-            </div>
-          {:else}
-            <code class="output-text">{$randomString}</code>
-          {/if}
-        </div>
-        
-        <div class="output-info">
-          <span class="output-length">ДЛИНА: {$randomString.length}</span>
-          <span class="output-type">ТИП: {generatorTypes.find(t => t.id === currentType)?.name}</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Control Buttons -->
-    <div class="controls-section">
-      <div class="controls-grid">
+<div class={styles.container} data-widget-name="RandomContent">
+  
+  <!-- Generator Type Selection -->
+  <div class={styles.generatorTypes}>
+    <h3 class={sectionStyles.sectionTitle}>ТИП ГЕНЕРАТОРА</h3>
+    <div class={styles.typesGrid}>
+      {#each generatorTypes as type}
         <button 
-          class="control-button regenerate-btn"
-          onclick={handleRegenerate}
-          disabled={isGenerating}
+          class="{styles.typeButton} {currentType === type.id ? styles.typeButtonActive : ''}"
+          onclick={() => handleTypeChange(type.id)}
+          title={type.description}
         >
-          <svg class="button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
-            <path d="M21 3v5h-5"/>
-            <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
-            <path d="M3 21v-5h5"/>
-          </svg>
-          <span>ПЕРЕГЕНЕРИРОВАТЬ</span>
+          <span class={styles.typeIcon}>{type.icon}</span>
+          <span class={styles.typeName}>{type.name}</span>
         </button>
-
-        <button 
-          class="control-button copy-btn {copyStatus ? 'status-active' : ''}"
-          onclick={handleClip}
-          disabled={isGenerating}
-        >
-          <svg class="button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
-            <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
-          </svg>
-          <span>{copyStatus || 'КОПИРОВАТЬ'}</span>
-        </button>
-      </div>
+      {/each}
     </div>
-
-    <!-- Security Info -->
-    <div class="security-info">
-      <div class="security-card">
-        <div class="security-header">
-          <span class="security-icon">🛡️</span>
-          <h4 class="security-title">ИНФОРМАЦИЯ О БЕЗОПАСНОСТИ</h4>
-        </div>
-        <div class="security-details">
-          <div class="security-item">
-            <span class="security-label">ЭНТРОПИЯ:</span>
-            <span class="security-value">МАКСИМАЛЬНАЯ</span>
-          </div>
-          <div class="security-item">
-            <span class="security-label">ИСТОЧНИК:</span>
-            <span class="security-value">CRYPTO.GETRANDOMVALUES()</span>
-          </div>
-          <div class="security-item">
-            <span class="security-label">СТАНДАРТ:</span>
-            <span class="security-value">CRYPTOGRAPHICALLY SECURE</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Navigation -->
-    <div class="navigation-section">
-      <Link href={ROUTES.HOME} className="nav-link">
-        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-          <polyline points="9,22 9,12 15,12 15,22"/>
-        </svg>
-        <span>ВЕРНУТЬСЯ В ГЛАВНОЕ МЕНЮ</span>
-      </Link>
-    </div>
-
   </div>
+
+  <!-- Generated Output -->
+  <div class={styles.outputSection}>
+    <h3 class="{sectionStyles.sectionTitle} {sectionStyles.sectionTitleSecondary}">СГЕНЕРИРОВАННЫЕ ДАННЫЕ</h3>
+    <div class={styles.outputCard}>
+      <div class="{styles.outputDisplay} {isGenerating ? styles.outputDisplayGenerating : ''}">
+        {#if isGenerating}
+          <div class={styles.generatingAnimation}>
+            <span class={styles.generatingText}>ГЕНЕРАЦИЯ</span>
+            <span class={styles.dots}>
+              <span class={styles.dot}>.</span>
+              <span class={styles.dot}>.</span>
+              <span class={styles.dot}>.</span>
+            </span>
+          </div>
+        {:else}
+          <code class={styles.outputText}>{$randomString}</code>
+        {/if}
+      </div>
+      
+      <div class={styles.outputInfo}>
+        <span class={styles.infoItem}>ДЛИНА: {$randomString.length}</span>
+        <span class={styles.infoItem}>ТИП: {generatorTypes.find(t => t.id === currentType)?.name}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Control Buttons -->
+  <div class={styles.controlsSection}>
+    <div class={styles.controlsGrid}>
+      <ActionButton
+        variant="primary"
+        size="md"
+        disabled={isGenerating}
+        onclick={handleRegenerate}
+        icon="🔄"
+      >
+        ПЕРЕГЕНЕРИРОВАТЬ
+      </ActionButton>
+
+      <ActionButton
+        variant="secondary"
+        size="md"
+        disabled={isGenerating}
+        onclick={handleClip}
+        icon="📋"
+        className={copyStatus ? 'status-active' : ''}
+      >
+        {copyStatus || 'КОПИРОВАТЬ'}
+      </ActionButton>
+    </div>
+  </div>
+
+  <!-- Security Info -->
+  <div class={styles.securitySection}>
+    <div class={styles.securityCard}>
+      <div class={styles.securityHeader}>
+        <span class={styles.securityIcon}>🛡️</span>
+        <h4 class={styles.securityTitle}>ИНФОРМАЦИЯ О БЕЗОПАСНОСТИ</h4>
+      </div>
+      <div class={styles.securityDetails}>
+        <div class={styles.securityItem}>
+          <span class={styles.securityLabel}>ЭНТРОПИЯ:</span>
+          <span class={styles.securityValue}>МАКСИМАЛЬНАЯ</span>
+        </div>
+        <div class={styles.securityItem}>
+          <span class={styles.securityLabel}>ИСТОЧНИК:</span>
+          <span class={styles.securityValue}>CRYPTO.GETRANDOMVALUES()</span>
+        </div>
+        <div class={styles.securityItem}>
+          <span class={styles.securityLabel}>СТАНДАРТ:</span>
+          <span class={styles.securityValue}>CRYPTOGRAPHICALLY SECURE</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <div class={styles.navigationSection}>
+    <ActionButton
+      href={ROUTES.HOME}
+      variant="primary"
+      size="lg"
+      icon="🏠"
+    >
+      ВЕРНУТЬСЯ В ГЛАВНОЕ МЕНЮ
+    </ActionButton>
+  </div>
+
 </div>
 
 <style>
-  /* Theme Variables */
-  .theme-cyberpunk {
-    --background-color: #0a0a0a;
-    --text-color: #00ff00;
-    --primary-color: #ff00ff;
-    --secondary-color: #00ffff;
-    --border-color: #00ff00;
-    --card-background: #1a1a1a;
-    --nav-active: #ff00ff;
-    --accent-color: #ffff00;
-    --success-color: #00ff00;
-    --warning-color: #ff6600;
-  }
-  
-  .theme-watchdogs {
-    --background-color: #1a1a1a;
-    --text-color: #cccccc;
-    --primary-color: #ffc400;
-    --secondary-color: #00aaff;
-    --border-color: #444444;
-    --card-background: #222222;
-    --nav-active: #ffc400;
-    --accent-color: #00aaff;
-    --success-color: #00ff88;
-    --warning-color: #ff6600;
-  }
-  
-  .theme-pixel {
-    --background-color: #000000;
-    --text-color: #00ff00;
-    --primary-color: #00ff00;
-    --secondary-color: #ff00ff;
-    --border-color: #00ff00;
-    --card-background: #222222;
-    --nav-active: #ff00ff;
-    --accent-color: #00ff00;
-    --success-color: #00ff00;
-    --warning-color: #ff6600;
-  }
-
-  .random-content-container {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-    color: var(--text-color);
-    font-family: "Courier New", Courier, monospace;
-  }
-
-  /* Generator Types */
-  .generator-types {
-    margin-bottom: 1rem;
-  }
-
-  .types-title {
-    color: var(--primary-color);
-    font-size: 1.2rem;
-    margin-bottom: 1rem;
-    text-shadow: 0 0 5px var(--primary-color);
-    text-align: center;
-  }
-
-  .types-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-  }
-
-  .type-button {
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-    padding: 1rem;
-    background: var(--card-background);
-    border: 1px solid var(--border-color);
-    color: var(--text-color);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-family: inherit;
-    border-radius: 4px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .type-button::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-    transition: left 0.5s;
-  }
-
-  .type-button:hover::before {
-    left: 100%;
-  }
-
-  .type-button:hover {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 15px var(--primary-color);
-    transform: translateY(-2px);
-  }
-
-  .type-button.active {
-    background: var(--primary-color);
-    color: var(--background-color);
-    box-shadow: 0 0 20px var(--primary-color);
-    border-color: var(--primary-color);
-  }
-
-  .type-icon {
-    font-size: 1.5rem;
-  }
-
-  .type-name {
-    font-weight: bold;
-    font-size: 0.9rem;
-  }
-
-  /* Output Section */
-  .output-section {
-    margin-bottom: 1rem;
-  }
-
-  .output-title {
-    color: var(--secondary-color);
-    font-size: 1.2rem;
-    margin-bottom: 1rem;
-    text-shadow: 0 0 5px var(--secondary-color);
-    text-align: center;
-  }
-
-  .output-container {
-    background: var(--card-background);
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    padding: 1.5rem;
-    box-shadow: 
-      0 0 15px rgba(0, 0, 0, 0.5),
-      inset 0 0 15px rgba(255, 255, 255, 0.02);
-  }
-
-  .output-display {
-    min-height: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 1rem;
-    padding: 1rem;
-    background: rgba(0, 0, 0, 0.3);
-    border: 1px solid var(--border-color);
-    border-radius: 2px;
-    transition: all 0.3s ease;
-  }
-
-  .output-display.generating {
-    border-color: var(--accent-color);
-    box-shadow: 0 0 10px var(--accent-color);
-  }
-
-  .output-text {
-    color: var(--accent-color);
-    font-size: 1.1rem;
-    word-break: break-all;
-    text-align: center;
-    text-shadow: 0 0 5px var(--accent-color);
-    line-height: 1.4;
-  }
-
-  .generating-animation {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: var(--accent-color);
-  }
-
-  .generating-text {
-    font-weight: bold;
-  }
-
-  .dots {
-    display: flex;
-    gap: 0.2rem;
-  }
-
-  .dot {
-    animation: dot-pulse 1.5s ease-in-out infinite;
-  }
-
-  .dot:nth-child(1) { animation-delay: 0s; }
-  .dot:nth-child(2) { animation-delay: 0.3s; }
-  .dot:nth-child(3) { animation-delay: 0.6s; }
-
-  @keyframes dot-pulse {
-    0%, 60%, 100% { opacity: 0.3; }
-    30% { opacity: 1; }
-  }
-
-  .output-info {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.8rem;
-    color: var(--secondary-color);
-  }
-
-  .output-length, .output-type {
-    padding: 0.3rem 0.6rem;
-    background: rgba(0, 0, 0, 0.5);
-    border: 1px solid var(--border-color);
-    border-radius: 2px;
-  }
-
-  /* Controls */
-  .controls-section {
-    margin-bottom: 1rem;
-  }
-
-  .controls-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-  }
-
-  .control-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.8rem;
-    padding: 1.2rem;
-    background: var(--card-background);
-    border: 1px solid var(--border-color);
-    color: var(--text-color);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-family: inherit;
-    font-weight: bold;
-    border-radius: 4px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .control-button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  .control-button::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-    transition: left 0.5s;
-  }
-
-  .control-button:hover:not(:disabled)::before {
-    left: 100%;
-  }
-
-  .regenerate-btn:hover:not(:disabled) {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 15px var(--primary-color);
-    color: var(--primary-color);
-  }
-
-  .copy-btn:hover:not(:disabled) {
-    border-color: var(--secondary-color);
-    box-shadow: 0 0 15px var(--secondary-color);
-    color: var(--secondary-color);
-  }
-
-  .copy-btn.status-active {
-    border-color: var(--success-color);
-    color: var(--success-color);
-    box-shadow: 0 0 15px var(--success-color);
-  }
-
-  .button-icon {
-    width: 20px;
-    height: 20px;
-  }
-
-  /* Security Info */
-  .security-info {
-    margin-bottom: 1rem;
-  }
-
-  .security-card {
-    background: var(--card-background);
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    padding: 1.5rem;
-    box-shadow: 
-      0 0 15px rgba(0, 0, 0, 0.5),
-      inset 0 0 15px rgba(255, 255, 255, 0.02);
-  }
-
-  .security-header {
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-    margin-bottom: 1rem;
-  }
-
-  .security-icon {
-    font-size: 1.5rem;
-  }
-
-  .security-title {
-    color: var(--accent-color);
-    font-size: 1rem;
-    margin: 0;
-    text-shadow: 0 0 5px var(--accent-color);
-  }
-
-  .security-details {
-    display: flex;
-    flex-direction: column;
-    gap: 0.8rem;
-  }
-
-  .security-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.5rem;
-    background: rgba(0, 0, 0, 0.3);
-    border: 1px solid var(--border-color);
-    border-radius: 2px;
-  }
-
-  .security-label {
-    color: var(--secondary-color);
-    font-size: 0.8rem;
-    font-weight: bold;
-  }
-
-  .security-value {
-    color: var(--success-color);
-    font-size: 0.8rem;
-    font-weight: bold;
-    text-shadow: 0 0 3px var(--success-color);
-  }
-
-  /* Navigation */
-  .navigation-section {
-    text-align: center;
-  }
-
-  :global(.nav-link) {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.8rem;
-    padding: 1rem 2rem;
-    background: var(--card-background);
-    border: 1px solid var(--border-color);
-    color: var(--text-color);
-    text-decoration: none;
-    transition: all 0.3s ease;
-    border-radius: 4px;
-    font-weight: bold;
-    position: relative;
-    overflow: hidden;
-  }
-
-  :global(.nav-link::before) {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-    transition: left 0.5s;
-  }
-
-  :global(.nav-link:hover::before) {
-    left: 100%;
-  }
-
-  :global(.nav-link:hover) {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 15px var(--primary-color);
-    color: var(--primary-color);
-    transform: translateY(-2px);
-  }
-
-  .nav-icon {
-    width: 20px;
-    height: 20px;
-  }
-
-  /* Responsive */
-  @media (max-width: 768px) {
-    .types-grid {
-      grid-template-columns: 1fr;
-    }
-    
-    .controls-grid {
-      grid-template-columns: 1fr;
-    }
-    
-    .output-info {
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-    
-    .security-item {
-      flex-direction: column;
-      gap: 0.3rem;
-      text-align: center;
-    }
-  }
-
-  @media (max-width: 480px) {
-    .random-content-container {
-      gap: 1.5rem;
-    }
-    
-    .output-container, .security-card {
-      padding: 1rem;
-    }
-    
-    .control-button {
-      padding: 1rem;
-      font-size: 0.9rem;
-    }
-    
-    .output-text {
-      font-size: 1rem;
-    }
+  /* Global styles for ActionButton status */
+  :global(.status-active) {
+    border-color: var(--les-success) !important;
+    color: var(--les-success) !important;
+    box-shadow: 0 0 15px var(--les-success) !important;
   }
 </style>
