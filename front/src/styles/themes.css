@@ -159,9 +159,9 @@
   --les-error: #D9534F;
 
   /* Message colors - muted versions */
-  --les-message-own-bg: #1a3a3a;
-  --les-message-own-text: #80d0d0;
-  --les-message-own-border: #2a6a6a;
+  --les-message-own-bg: #1a2a4a;
+  --les-message-own-text: #80b0ff;
+  --les-message-own-border: #2a4a8a;
 
   /* Legacy variables for loading components */
   --background-color: #2C2C54;
