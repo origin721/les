@@ -5,6 +5,7 @@
     statusText?: string;
     showMatrixRain?: boolean;
     className?: string;
+    opacity?: number;
   }
 
   let {
@@ -12,14 +13,15 @@
     subtitle = "",
     statusText = "СИСТЕМА АКТИВНА",
     showMatrixRain = true,
-    className = ""
+    className = "",
+    opacity = 1
   }: Props = $props();
 
   // Разбиваем заголовок на слова для анимации
   const titleWords = title.split('_');
 </script>
 
-<div class="animated-title-container {className}">
+<div class="animated-title-container {className}" style="opacity: {opacity};">
   {#if showMatrixRain}
     <div class="matrix-rain">
       {#each Array(15) as _, i}

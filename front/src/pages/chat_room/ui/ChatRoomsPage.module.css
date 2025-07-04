@@ -210,6 +210,7 @@
 }
 
 .chatMessages {
+  z-index: 10;
   flex: 1;
   padding: 1rem;
   overflow-y: auto;

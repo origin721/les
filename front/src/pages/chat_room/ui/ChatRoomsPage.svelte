@@ -132,6 +132,7 @@
 <div class="chat-container" data-widget-name="ChatRoomsPage" data-theme="{$theme}">
   <header class="chat-header">
     <AnimatedTitle 
+      opacity={0.5}
       title="SECURE_CHAT_SYSTEM"
       subtitle="СИСТЕМА_БЕЗОПАСНЫХ_СООБЩЕНИЙ"
       statusText="СИСТЕМА АКТИВНА"
