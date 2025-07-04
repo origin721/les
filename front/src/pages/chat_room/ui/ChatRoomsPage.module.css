@@ -411,3 +411,85 @@
 :global(.dialog) {
   font-family: "Courier New", Courier, monospace !important;
 }
+
+/* Connecting state styles */
+.chatConnecting {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.connectingContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+  color: var(--les-text-primary);
+  font-family: "Courier New", Courier, monospace;
+}
+
+.connectingSpinner {
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 3px solid var(--les-border-primary);
+  border-top: 3px solid var(--les-accent-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  box-shadow: 0 0 10px var(--les-accent-primary);
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.connectingTitle {
+  margin: 0 0 1rem 0;
+  color: var(--les-accent-primary);
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-shadow: 0 0 5px var(--les-accent-primary);
+}
+
+.connectingText {
+  margin: 0 0 0.5rem 0;
+  color: var(--les-text-primary);
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.connectingSubtext {
+  margin: 0;
+  color: var(--les-text-secondary);
+  font-size: 0.9rem;
+  opacity: 0.8;
+  font-style: italic;
+}
+
+/* Mobile adjustments for connecting state */
+@media (max-width: 768px) {
+  .connectingContent {
+    padding: 1.5rem;
+  }
+  
+  .connectingTitle {
+    font-size: 1.2rem;
+  }
+  
+  .spinner {
+    width: 40px;
+    height: 40px;
+  }
+}

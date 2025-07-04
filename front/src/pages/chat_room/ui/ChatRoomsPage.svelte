@@ -132,7 +132,7 @@
 <div class="chat-container" data-widget-name="ChatRoomsPage" data-theme="{$theme}">
   <header class="chat-header">
     <AnimatedTitle 
-      opacity={0.5}
+      opacity={0.1}
       title="SECURE_CHAT_SYSTEM"
       subtitle="СИСТЕМА_БЕЗОПАСНЫХ_СООБЩЕНИЙ"
       statusText="СИСТЕМА АКТИВНА"
@@ -193,42 +193,62 @@
 
   <!-- Chat Area -->
   <div class={`${styles.chatArea} ${isMobile && showSidebar ? styles.chatAreaHidden : ''}`}>
-    {#if selectedChat}
-      <div class={styles.chatHeader}>
-        {#if isMobile}
-          <Button onclick={goBack} variant="ghost" size="sm">← Назад</Button>
-        {/if}
-        <h3 class={styles.chatHeaderTitle}>{selectedChat.name}</h3>
-        <Button variant="ghost" size="sm">⚙️</Button>
-      </div>
-      
-      <div class={styles.chatMessages}>
-        {#if currentMessages.length > 0}
-          <div class={styles.messagesContainer}>
-            {#each currentMessages as message (message.id)}
-              <div class={`${styles.messageItem} ${message.isOwn ? styles.messageOwn : styles.messageOther}`}>
-                <div class={styles.messageHeader}>
-                  <span class={styles.messageAuthor}>{message.author}</span>
-                  <span class={styles.messageTime}>{message.time}</span>
+    {#if selectedChatId}
+      {#if selectedChat}
+        <div class={styles.chatHeader}>
+          {#if isMobile}
+            <Button onclick={goBack} variant="ghost" size="sm">← Назад</Button>
+          {/if}
+          <h3 class={styles.chatHeaderTitle}>{selectedChat.name}</h3>
+          <Button variant="ghost" size="sm">⚙️</Button>
+        </div>
+        
+        <div class={styles.chatMessages}>
+          {#if currentMessages.length > 0}
+            <div class={styles.messagesContainer}>
+              {#each currentMessages as message (message.id)}
+                <div class={`${styles.messageItem} ${message.isOwn ? styles.messageOwn : styles.messageOther}`}>
+                  <div class={styles.messageHeader}>
+                    <span class={styles.messageAuthor}>{message.author}</span>
+                    <span class={styles.messageTime}>{message.time}</span>
+                  </div>
+                  <div class={styles.messageContent}>
+                    {message.content}
+                  </div>
                 </div>
-                <div class={styles.messageContent}>
-                  {message.content}
-                </div>
-              </div>
-            {/each}
+              {/each}
+            </div>
+          {:else}
+            <div class={styles.messagePlaceholder}>
+              <p>Чат "{selectedChat.name}"</p>
+              <p>Здесь будут отображаться сообщения...</p>
+            </div>
+          {/if}
+        </div>
+        
+        <div class={styles.chatInput}>
+          <Input placeholder="Введите сообщение..." />
+          <Button>Отправить</Button>
+        </div>
+      {:else}
+        <!-- Chat not found in list - connecting -->
+        <div class={styles.chatConnecting}>
+          {#if isMobile}
+            <div class={styles.chatHeader}>
+              <Button onclick={goBack} variant="ghost" size="sm">← Назад</Button>
+              <h3 class={styles.chatHeaderTitle}>Подключение...</h3>
+            </div>
+          {/if}
+          <div class={styles.connectingContent}>
+            <div class={styles.connectingSpinner}>
+              <div class={styles.spinner}></div>
+            </div>
+            <h3 class={styles.connectingTitle}>Устанавливаем соединение</h3>
+            <p class={styles.connectingText}>Подключаемся к комнате {selectedChatId}...</p>
+            <p class={styles.connectingSubtext}>Это может занять несколько секунд</p>
           </div>
-        {:else}
-          <div class={styles.messagePlaceholder}>
-            <p>Чат "{selectedChat.name}"</p>
-            <p>Здесь будут отображаться сообщения...</p>
-          </div>
-        {/if}
-      </div>
-      
-      <div class={styles.chatInput}>
-        <Input placeholder="Введите сообщение..." />
-        <Button>Отправить</Button>
-      </div>
+        </div>
+      {/if}
     {:else}
       <div class={styles.noChatSelected}>
         <h3 class={styles.noChatSelectedTitle}>Выберите чат</h3>
