@@ -4,6 +4,7 @@
   import { search_params_to_string } from "../../../core";
   import { QUERY_PARAMS } from "../../../routing/constants";
   import { theme } from "../../../stores/theme";
+  import ThemeSwitcher from "../../../components/ThemeSwitcher.svelte";
 
   // Состояние для мобильного вида
   let showRoomsList = $state(true);
@@ -89,6 +90,9 @@
       <Link href={ROUTES.HOME} className="back-button">
         ← ГЛАВНАЯ
       </Link>
+      <div class="theme-switcher-container">
+        <ThemeSwitcher />
+      </div>
     </div>
   </header>
 
