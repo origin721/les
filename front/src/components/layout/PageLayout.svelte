@@ -1,7 +1,7 @@
 <script lang="ts">
   import { theme } from "../../stores/theme";
   import PageHeader from "./PageHeader.svelte";
-  import PageFooter from "./PageFooter.svelte";
+  import { PageFooter } from "../ui";
   import layoutStyles from "../../styles/modules/page-layout.module.css";
   import { VIEW_VERSION_APP, DEFAULT_STATUS } from "../../constants/VIEW_VERSION_APP";
 
