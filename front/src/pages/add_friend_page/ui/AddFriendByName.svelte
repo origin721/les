@@ -47,6 +47,8 @@
 
     // Handlers
     async function handleAddFriend() {
+        if (loading) return; // Prevent double clicks
+        
         loading = true;
         message = '';
         messageType = '';
@@ -68,16 +70,19 @@
                 friendName = '';
                 friendNickname = '';
             }
+        } catch (error) {
+            console.error('Error in handleAddFriend:', error);
+            message = 'Произошла ошибка при добавлении друга';
+            messageType = 'error';
         } finally {
-            // Reset loading with small delay to prevent UI flicker
-            setTimeout(() => {
-                loading = false;
-            }, 100);
+            // Reset loading immediately
+            loading = false;
         }
     }
 
     function handleKeydown(event: KeyboardEvent) {
-        if (event.key === 'Enter' && !loading) {
+        if (event.key === 'Enter' && !loading && friendName.trim()) {
+            event.preventDefault();
             handleAddFriend();
         }
     }
@@ -149,7 +154,7 @@
                                 primaryIcon="➕"
                                 secondaryText="НАЗАД"
                                 secondaryIcon="⬅️"
-                                secondaryHref={ROUTES.ADD_FRIEND}
+                                secondaryHref={ROUTES.FRIENDS}
                                 {loading}
                                 disabled={loading || !friendName.trim()}
                                 onPrimaryClick={handleAddFriend}
