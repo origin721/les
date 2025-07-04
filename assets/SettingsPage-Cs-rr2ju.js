@@ -1,0 +1,1 @@
+import{f as i,i as o,a8 as s,m as n,a as f}from"./index-BhJA-7qX.js";import{A as m}from"./AppHeader-nJKeTO09.js";var p=i("<!> <!>",1);function l(e){var a=p(),t=o(a);m(t,{titleText:"Настройки"});var r=n(t,2);s(r,{}),f(e,a)}export{l as default};
