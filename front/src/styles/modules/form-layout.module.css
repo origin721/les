@@ -1,0 +1,14 @@
+/* Form layout styles */
+
+.formContainer {
+  display: flex;
+  justify-content: center;
+  padding: 2rem 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .formContainer {
+    padding: 1rem;
+  }
+}
