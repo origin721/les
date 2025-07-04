@@ -1,20 +1,15 @@
 <script lang="ts">
     import { writable } from "svelte/store";
-    import { Link, ROUTES } from "../../../routing";
+    import { ROUTES } from "../../../routing";
     import { appAuthStore } from "../../../stores";
-    //import { openpgp } from "../../../crypt";
-    import { onMount } from "svelte";
     import { routingStore } from "../../../routing/stores";
-    import { submit_stop } from "../../../core/svelte_default";
     import { uuidv4 } from "../../../core/uuid";
     import type { HttpServerParam } from "../../../indexdb/accounts/add_accounts";
     import { FieldHttpServers } from "../../../widgets";
+    import { PageLayout, FormContainer, FormField, BackLink } from "../../../components/ui";
 
-    const labelClass = "mt-3 mb-3";
-    const inputClass = "px-3 py-2 border rounded-md transition-colors duration-200";
-
-    const fieldLogin = writable("");
-    const fieldPass = writable("");
+    let fieldLogin = $state("");
+    let fieldPass = $state("");
     const defaultHttpParam: HttpServerParam = {
         url: location.protocol + "//" + location.host,
         isActive: true,
@@ -22,104 +17,57 @@
     };
     const fieldHttpServers = writable([defaultHttpParam]);
 
-    function submit(e) {
+    function submit(e: Event) {
         e.preventDefault();
-        // console.log($fieldPass, $fieldLogin);
-        // const authSecret = {
-        //   name: $fieldLogin,
-        //   pass: $fieldPass,
-        // };
-        //console.log("subbb", $fieldHttpServers);
         appAuthStore.add({
-            namePub: $fieldLogin,
-            pass: $fieldPass,
+            namePub: fieldLogin,
+            pass: fieldPass,
             httpServers: $fieldHttpServers,
         });
 
         routingStore.setPath(ROUTES.ACCOUNTS);
-        return;
-
-        // TODO: Добавить loading
-        //openpgp
-        //  .generateKey(authSecret)
-        //  .then((secrets) => {
-        //    console.log({ secrets });
-        //    if (!secrets) return;
-
-        //    // appPassStore.add(secrets);
-        //  })
-        //  .catch((err) => alert("Err 14211233"));
-
-        // const un = appPassStore.subscribe((val) => {
-        //   console.log({ val });
-        // });
-
-        // onMount(() => {
-        //   return () => un()
-        // });
     }
 </script>
 
-<div class="account-new-container">
-    <div class="back-link-container">
-        <Link href={ROUTES.ACCOUNTS}>Назад</Link>
-    </div>
-    <form
-        onsubmit={submit}
-        class="account-new-form"
-        data-widget-name="AuthPage"
-    >
-    <label class={labelClass}>
-        <span class="block">login</span>
-        <input bind:value={$fieldLogin} class={inputClass} type="text" />
-    </label>
-    <label class={[labelClass, "mb-[1rem]"]}>
-        <span class="block">pass</span>
-        <input bind:value={$fieldPass} class={inputClass} type="password" />
-    </label>
+<PageLayout
+    title="СОЗДАНИЕ_АККАУНТА"
+    subtitle="РЕГИСТРАЦИЯ_НОВОГО_ПОЛЬЗОВАТЕЛЯ"
+    statusText="СИСТЕМА ГОТОВА"
+    backButtonHref={ROUTES.ACCOUNTS}
+    backButtonText="← АККАУНТЫ"
+    version="0.0.1"
+    versionPrefix="ACCOUNT_SYSTEM_v"
+>
+    {#snippet children()}
+        <FormContainer onsubmit={submit}>
+            <FormField 
+                label="login" 
+                bind:value={fieldLogin} 
+                type="text" 
+                required 
+            />
+            
+            <FormField 
+                label="pass" 
+                bind:value={fieldPass} 
+                type="password" 
+                required 
+                className="mb-[1rem]"
+            />
 
-    <FieldHttpServers {fieldHttpServers} />
+            <FieldHttpServers {fieldHttpServers} />
 
-    <button
-        type="submit"
-        class="border-2 border-solid p-2 min-w-[6rem] m-7 rounded-md transition-colors duration-200"
-        style="
-            background-color: var(--les-bg-secondary);
-            border-color: var(--les-border-primary);
-            color: var(--les-text-primary);
-        "
-        >submit</button
-    >
-</form>
-</div>
-
-<style>
-    .account-new-container {
-        display: flex;
-        flex-direction: column;
-        height: 100vh;
-        width: 100vw;
-        background-color: var(--les-bg-primary);
-        color: var(--les-text-primary);
-        padding: 0;
-        margin: 0;
-        overflow: hidden;
-        box-sizing: border-box;
-    }
-
-    .back-link-container {
-        padding: 1rem;
-        align-self: flex-start;
-    }
-
-    .account-new-form {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        flex-grow: 1;
-        width: 100%;
-        padding: 2rem;
-        box-sizing: border-box;
-    }
-</style>
+            <button
+                type="submit"
+                class="border-2 border-solid p-2 min-w-[6rem] m-7 rounded-md transition-colors duration-200"
+                style="
+                    background-color: var(--les-bg-secondary);
+                    border-color: var(--les-border-primary);
+                    color: var(--les-text-primary);
+                "
+            >
+                submit
+            </button>
+        </FormContainer>
+    {/snippet}
+</PageLayout>

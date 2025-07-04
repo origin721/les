@@ -1,0 +1,87 @@
+/* Page Layout Styles */
+.pageContainer {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100vw;
+  background-color: var(--les-bg-primary);
+  color: var(--les-text-primary);
+  font-family: "Courier New", Courier, monospace;
+  overflow-x: hidden;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  border: 2px solid var(--les-border-primary);
+  box-shadow: 0 0 25px var(--les-accent-primary) inset;
+}
+
+.pageContent {
+  flex: 1;
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+.pageContent.chat-content {
+  padding: 0;
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  min-height: calc(100vh - 200px); /* Учитываем header и footer */
+}
+
+.pageFooter {
+  padding: 1.5rem 2rem;
+  border-top: 1px solid var(--les-border-primary);
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.footerInfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1400px;
+  margin: 0 auto;
+  font-size: 0.8rem;
+}
+
+.footerVersion {
+  color: var(--les-text-secondary);
+}
+
+.footerStatus {
+  color: var(--les-accent-secondary);
+  animation: status-blink 3s ease-in-out infinite;
+}
+
+@keyframes status-blink {
+  0%, 90%, 100% { opacity: 1; }
+  95% { opacity: 0.5; }
+}
+
+/* Global body reset */
+:global(body) {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+/* Scrollbar styles */
+.scrollable::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollable::-webkit-scrollbar-track {
+  background: var(--les-bg-secondary);
+  border-radius: 3px;
+}
+
+.scrollable::-webkit-scrollbar-thumb {
+  background: var(--les-accent-primary);
+  border-radius: 3px;
+  box-shadow: 0 0 3px var(--les-accent-primary);
+}
+
+.scrollable::-webkit-scrollbar-thumb:hover {
+  background: var(--les-accent-secondary);
+  box-shadow: 0 0 5px var(--les-accent-secondary);
+}
