@@ -1,1 +1,0 @@
-import{V as l,f as m,u as o,y as d,a as c,z as f,c as i}from"./index-L0yedsza.js";var n=m('<header data-widget-name="AppHeader" class="pl-3 text-center m-3"> </header> <span class="ml-auto mr-auto mb-3 w-[90%] h-1 bg-slate-700 block"></span>',1);function x(e,t){let r=l(t,"titleText",3,"");var a=n(),s=o(a),p=i(s);d(()=>f(p,r())),c(e,a)}export{x as A};
