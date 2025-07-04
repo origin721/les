@@ -53,7 +53,7 @@
   backButtonHref={ROUTES.HOME}
   backButtonText="← ГЛАВНАЯ"
   versionPrefix="SECURE_CHAT_TERMINAL_v"
-  contentClass="chat-content"
+  contentClass="chat-content flex"
 >
   {#snippet children()}
     <ChatSidebar 
