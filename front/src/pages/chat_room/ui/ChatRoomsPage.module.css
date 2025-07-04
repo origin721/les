@@ -18,17 +18,42 @@
 }
 
 .sidebarHeader {
+  border-bottom: 1px solid var(--les-border-primary);
+}
+
+.sidebarHeaderTop {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--les-border-primary);
+  background: var(--les-bg-tertiary, var(--les-bg-primary));
+}
+
+.sidebarHeaderBottom {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 1rem;
-  border-bottom: 1px solid var(--les-border-primary);
 }
 
 .sidebarTitle {
   margin: 0;
   color: var(--les-text-primary);
   font-size: 1.2rem;
+}
+
+.homeLink {
+  color: var(--les-text-primary) !important;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.9rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  display: inline-block;
+}
+
+.homeLink:hover {
+  background: var(--les-bg-secondary);
+  color: var(--les-accent-primary) !important;
 }
 
 .chatsList {
@@ -51,7 +76,7 @@
 }
 
 .chatItem:hover {
-  background: var(--les-bg-tertiary);
+  background: var(--les-bg-tertiary, rgba(255, 255, 255, 0.05));
 }
 
 .chatItemActive {

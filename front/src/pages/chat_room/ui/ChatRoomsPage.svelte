@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { Button, Input, Dialog } from '../../../components/ui';
+  import { Button, Input, Dialog, BackLink } from '../../../components/ui';
+  import { Link, ROUTES } from '../../../routing';
   import layoutStyles from '../../../styles/modules/layout.module.css';
   import styles from './ChatRoomsPage.module.css';
   import { onMount } from 'svelte';
@@ -100,8 +101,13 @@
   <!-- Sidebar -->
   <div class={`${styles.sidebar} ${!showSidebar ? styles.sidebarHidden : ''}`}>
     <div class={styles.sidebarHeader}>
-      <h2 class={styles.sidebarTitle}>Чаты</h2>
-      <Button onclick={() => showAddDialog = true} size="sm">+ Добавить</Button>
+      <div class={styles.sidebarHeaderTop}>
+        <Link href={ROUTES.HOME} className={styles.homeLink}>🏠 Главная</Link>
+      </div>
+      <div class={styles.sidebarHeaderBottom}>
+        <h2 class={styles.sidebarTitle}>Чаты</h2>
+        <Button onclick={() => showAddDialog = true} size="sm">+ Добавить</Button>
+      </div>
     </div>
     
     <div class={styles.chatsList}>
