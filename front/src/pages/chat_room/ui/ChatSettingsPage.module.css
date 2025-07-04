@@ -1,0 +1,126 @@
+@import "tailwindcss/theme" reference;
+
+.settingsPage {
+  background: var(--les-bg-primary);
+  min-height: 100vh;
+}
+
+.settingsContainer {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.settingsHeader {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--les-border-primary);
+}
+
+.settingsTitle {
+  flex: 1;
+  margin: 0;
+  color: var(--les-text-primary);
+  font-size: 1.5rem;
+}
+
+.settingsContent {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.settingsSection {
+  background: var(--les-bg-secondary);
+  border: 1px solid var(--les-border-primary);
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.sectionTitle {
+  margin: 0 0 1rem 0;
+  color: var(--les-accent-primary);
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.settingsGrid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+.settingItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: var(--les-bg-tertiary);
+  border: 1px solid var(--les-border-primary);
+  border-radius: 6px;
+}
+
+.settingInfo {
+  flex: 1;
+}
+
+.settingLabel {
+  font-weight: 600;
+  color: var(--les-text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.settingDescription {
+  font-size: 0.9rem;
+  color: var(--les-text-secondary);
+  margin: 0;
+}
+
+.settingControl {
+  margin-left: 1rem;
+}
+
+.settingsActions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  padding-top: 2rem;
+  border-top: 1px solid var(--les-border-primary);
+}
+
+.dangerZone {
+  border-color: var(--les-error, #ff4444);
+}
+
+.dangerZone .sectionTitle {
+  color: var(--les-error, #ff4444);
+}
+
+.dangerAction {
+  background: rgba(255, 68, 68, 0.1);
+  border-color: var(--les-error, #ff4444);
+}
+
+@media (max-width: 768px) {
+  .settingsContainer {
+    padding: 1rem;
+  }
+
+  .settingItem {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .settingControl {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .settingsActions {
+    flex-direction: column;
+  }
+}

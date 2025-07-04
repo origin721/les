@@ -80,15 +80,19 @@
             componentPromise = import(
                 `../../pages/accounts_new/ui/AccountNewPage.svelte`
             );
+        } else if (p.rState.pathname === ROUTES.CHAT_ROOMS_SETTINGS) {
+            componentPromise = import(
+                `../../pages/chat_room/ui/ChatSettingsPage.svelte`
+            );
         } else if (p.rState.pathname === ROUTES.CHAT_ROOMS) {
             if (p.rState.queryParams.get(QUERY_PARAMS.ROOM_ID)) {
                 componentPromise = import(
-                    `../../pages/chat_room/ui/ChatRoomPage.svelte`
+                    `../../pages/chat_room/ui/ChatRoomsPage.svelte`
                 );
             } else {
-                // Use the original ChatRoomsPage instead of ChatRoomsListPage
+                // Use our new ChatRoomsPage
                 componentPromise = import(
-                    `../../pages/chat_rooms/ui/ChatRoomsPage.svelte`
+                    `../../pages/chat_room/ui/ChatRoomsPage.svelte`
                 );
             }
         } else if (p.rState.pathname === ROUTES.CHAT_ROOMS_ADD) {

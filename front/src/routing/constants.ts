@@ -13,6 +13,7 @@ export const ROUTES = {
     CRYPTO: BASE_URL + '/crypto',
     API_KEYS: BASE_URL + '/api-keys',
     CHAT_ROOMS: BASE_URL + '/chat-rooms',
+    CHAT_ROOMS_SETTINGS: BASE_URL + '/chat-rooms/settings',
     CHAT_ROOMS_ADD: BASE_URL + '/chat-rooms/add',
     ADD_FRIEND: BASE_URL + '/add-friend',
     ADD_PEER: BASE_URL + '/add-peer',
