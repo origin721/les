@@ -127,7 +127,7 @@
                                 required={true}
                                 disabled={loading}
                                 onchange={handleFriendNameChange}
-                                {onkeydown}
+                                onkeydown={handleKeydown}
                             />
 
                             <FormFieldWithIcon
@@ -138,7 +138,7 @@
                                 placeholder="Отображаемое имя..."
                                 disabled={loading}
                                 onchange={handleFriendNicknameChange}
-                                {onkeydown}
+                                onkeydown={handleKeydown}
                             />
 
                             <FormMessage {message} type={messageType} />

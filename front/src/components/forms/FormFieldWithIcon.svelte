@@ -25,6 +25,13 @@
         onchange,
         onkeydown
     }: Props = $props();
+    
+    function handleInputChange(event: Event) {
+        const target = event.target as HTMLInputElement;
+        if (onchange) {
+            onchange(target.value);
+        }
+    }
 </script>
 
 <div class={formStyles.group}>
@@ -35,7 +42,7 @@
     <Input
         {id}
         {value}
-        {onchange}
+        onchange={handleInputChange}
         {onkeydown}
         {placeholder}
         {disabled}
