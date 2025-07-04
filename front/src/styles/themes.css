@@ -16,6 +16,7 @@
   --les-accent-primary: #007BFF;
   --les-accent-secondary: #0056b3;
   --les-border-primary: #DDDDDD;
+  --les-text-contrast: #FFFFFF;
   --les-success: #28a745;
   --les-warning: #ffc107;
   --les-error: #dc3545;
@@ -42,6 +43,7 @@
   --les-accent-primary: #BB86FC;
   --les-accent-secondary: #3700B3;
   --les-border-primary: #272727;
+  --les-text-contrast: #FFFFFF;
   --les-success: #4CAF50;
   --les-warning: #FFEB3B;
   --les-error: #F44336;
@@ -69,6 +71,7 @@
   --les-accent-primary: #ff00ff;
   --les-accent-secondary: #00ffff;
   --les-border-primary: #00ff00;
+  --les-text-contrast: #000000;
   --les-success: #00ff00;
   --les-warning: #ffff00;
   --les-error: #ff0000;
@@ -95,6 +98,7 @@
   --les-accent-primary: #ffaa00;
   --les-accent-secondary: #00aaff;
   --les-border-primary: #ffaa00;
+  --les-text-contrast: #000000;
   --les-success: #00ff00;
   --les-warning: #ffaa00;
   --les-error: #ff0000;
@@ -121,6 +125,7 @@
   --les-accent-primary: #00ff00;
   --les-accent-secondary: #ff00ff;
   --les-border-primary: #00ff00;
+  --les-text-contrast: #000000;
   --les-success: #00ff00;
   --les-warning: #ff00ff;
   --les-error: #ff0000;
@@ -148,6 +153,7 @@
   --les-accent-primary: #00D2D3;
   --les-accent-secondary: #00A8A9;
   --les-border-primary: #00D2D3;
+  --les-text-contrast: #2C2C54;
   --les-success: #5CB85C;
   --les-warning: #F0AD4E;
   --les-error: #D9534F;
@@ -198,6 +204,7 @@
   --les-accent-primary: #FFFFFF;
   --les-accent-secondary: #E8F5E8;
   --les-border-primary: #2E8B57;
+  --les-text-contrast: #0F4C3A;
   --les-success: #90EE90;
   --les-warning: #FFFFFF;
   --les-error: #FF6B6B;

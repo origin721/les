@@ -153,7 +153,9 @@
       </div>
       <div class={styles.sidebarHeaderBottom}>
         <h2 class={styles.sidebarTitle}>Чаты</h2>
-        <Button onclick={() => showAddDialog = true} size="sm">+ Добавить</Button>
+        <Link href={ROUTES.CHAT_ROOMS_ADD} className="inline-block">
+          <Button size="sm">+ Добавить</Button>
+        </Link>
       </div>
     </div>
     
