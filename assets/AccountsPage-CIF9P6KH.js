@@ -1,0 +1,1 @@
+import{f as o,i as s,aa as n,m as i,a as f}from"./index-Qu38PNMn.js";import{A as m}from"./AppHeader-jjSwrQ_g.js";var c=o("<!> <!>",1);function l(t){var a=c(),r=s(a);m(r,{titleText:"Аккаунты"});var e=i(r,2);n(e,{}),f(t,a)}export{l as default};
