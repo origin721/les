@@ -16,6 +16,14 @@
     unreadCount?: number;
   }
 
+  interface Message {
+    id: string;
+    author: string;
+    content: string;
+    time: string;
+    isOwn: boolean;
+  }
+
   // State
   let chats = $state<Chat[]>([]);
   let selectedChatId = $state<string | null>(null);
@@ -23,6 +31,7 @@
   let newChatName = $state('');
   let isMobile = $state(false);
   let showSidebar = $state(true);
+  let messages = $state<{ [chatId: string]: Message[] }>({});
 
   // Lifecycle
   onMount(() => {
@@ -52,6 +61,26 @@
       { id: '2', name: 'Разработка', lastMessage: 'Готов новый релиз', lastTime: '09:15', unreadCount: 1 },
       { id: '3', name: 'Поддержка', lastMessage: 'Как дела?', lastTime: 'вчера' }
     ];
+
+    // Mock messages
+    messages = {
+      '1': [
+        { id: '1', author: 'Алекс', content: 'Привет всем! Как дела?', time: '10:00', isOwn: false },
+        { id: '2', author: 'Вы', content: 'Привет! Всё отлично, работаем над новыми функциями', time: '10:15', isOwn: true },
+        { id: '3', author: 'Мария', content: 'Круто! А что именно делаете?', time: '10:20', isOwn: false },
+        { id: '4', author: 'Вы', content: 'Улучшаем систему безопасности чатов, добавляем E2E шифрование', time: '10:25', isOwn: true },
+        { id: '5', author: 'Алекс', content: 'Звучит интересно! Когда планируете релиз?', time: '10:30', isOwn: false }
+      ],
+      '2': [
+        { id: '1', author: 'Дев-тим', content: 'Готов новый релиз v2.1.0! 🚀', time: '09:00', isOwn: false },
+        { id: '2', author: 'Вы', content: 'Отлично! Что нового в этой версии?', time: '09:10', isOwn: true },
+        { id: '3', author: 'Дев-тим', content: 'Добавили поддержку тем, улучшили UI/UX и исправили баги', time: '09:15', isOwn: false }
+      ],
+      '3': [
+        { id: '1', author: 'Техподдержка', content: 'Как дела? Есть ли вопросы по работе системы?', time: 'вчера', isOwn: false },
+        { id: '2', author: 'Вы', content: 'Пока всё работает стабильно, спасибо!', time: 'вчера', isOwn: true }
+      ]
+    };
 
     return () => {
       window.removeEventListener('resize', checkMobile);
@@ -97,6 +126,7 @@
   }
 
   let selectedChat = $derived(selectedChatId ? chats.find(c => c.id === selectedChatId) : null);
+  let currentMessages = $derived(selectedChatId ? messages[selectedChatId] || [] : []);
 </script>
 
 <div class="chat-container" data-widget-name="ChatRoomsPage" data-theme="{$theme}">
@@ -170,10 +200,26 @@
       </div>
       
       <div class={styles.chatMessages}>
-        <div class={styles.messagePlaceholder}>
-          <p>Чат "{selectedChat.name}"</p>
-          <p>Здесь будут отображаться сообщения...</p>
-        </div>
+        {#if currentMessages.length > 0}
+          <div class={styles.messagesContainer}>
+            {#each currentMessages as message (message.id)}
+              <div class={`${styles.messageItem} ${message.isOwn ? styles.messageOwn : styles.messageOther}`}>
+                <div class={styles.messageHeader}>
+                  <span class={styles.messageAuthor}>{message.author}</span>
+                  <span class={styles.messageTime}>{message.time}</span>
+                </div>
+                <div class={styles.messageContent}>
+                  {message.content}
+                </div>
+              </div>
+            {/each}
+          </div>
+        {:else}
+          <div class={styles.messagePlaceholder}>
+            <p>Чат "{selectedChat.name}"</p>
+            <p>Здесь будут отображаться сообщения...</p>
+          </div>
+        {/if}
       </div>
       
       <div class={styles.chatInput}>
