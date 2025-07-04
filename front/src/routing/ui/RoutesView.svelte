@@ -86,8 +86,9 @@
                     `../../pages/chat_room/ui/ChatRoomPage.svelte`
                 );
             } else {
+                // src/pages/chat_room/ui/ChatRoomsListPage.svelte
                 componentPromise = import(
-                    `../../pages/chat_rooms/ui/ChatRoomsPage.svelte`
+                    `../../pages/chat_room/ui/ChatRoomsListPage.svelte`
                 );
             }
         } else if (p.rState.pathname === ROUTES.CHAT_ROOMS_ADD) {

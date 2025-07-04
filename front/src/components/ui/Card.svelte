@@ -6,6 +6,7 @@
     size?: 'sm' | 'md' | 'lg' | 'xl';
     effect?: 'shimmer' | 'pulse' | 'float';
     onclick?: () => void;
+    className?: string;
     children?: any;
   }
   
@@ -14,6 +15,7 @@
     size = 'md',
     effect,
     onclick,
+    className = '',
     children,
     ...restProps
   }: Props = $props();
@@ -22,6 +24,7 @@
     let classes = [cardStyles.card, cardStyles[size], cardStyles[variant]];
     
     if (effect) classes.push(cardStyles[effect]);
+    if (className) classes.push(className);
     
     return classes.join(' ');
   };
