@@ -26,8 +26,8 @@ function create_shared_worker_store() {
         // Добавляем timeout для защиты от зависания
         const timeout = setTimeout(() => {
           prodError('shared_worker_store.fetch TIMEOUT для запроса:', params);
-          rej(new Error('SharedWorker timeout: операция превысила 15 секунд'));
-        }, 15000);
+          rej(new Error('SharedWorker timeout: операция превысила 5 минут'));
+        }, 300000);
 
         const idRequest = workerGeneratorIds();
         devLog('shared_worker_store.fetch сгенерирован idRequest:', idRequest);

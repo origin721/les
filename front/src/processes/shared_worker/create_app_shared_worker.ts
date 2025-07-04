@@ -23,7 +23,7 @@ export async function createAppSharedWorker() {
           const timeout = setTimeout(() => {
             prodError('SharedWorker TIMEOUT idRequest:', event.idRequest);
             rej(new Error('SharedWorker sendMessage timeout'));
-          }, 12000);
+          }, 300000);
           
           promiseResolves[event.idRequest] = (value) => {
             devLog('SharedWorker ответ idRequest:', event.idRequest);
