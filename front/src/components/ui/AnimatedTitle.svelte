@@ -60,7 +60,10 @@
 
 <style>
   .animated-title-container {
-    position: relative;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     text-align: center;
     z-index: 5;
   }
