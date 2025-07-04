@@ -1,6 +1,8 @@
 <script lang="ts">
-  import { Button, Input, Dialog, BackLink } from '../../../components/ui';
+  import { Button, Input, Dialog, AnimatedTitle, PageFooter } from '../../../components/ui';
   import { Link, ROUTES } from '../../../routing';
+  import ThemeSwitcher from '../../../components/ThemeSwitcher.svelte';
+  import { theme } from '../../../stores/theme';
   import layoutStyles from '../../../styles/modules/layout.module.css';
   import styles from './ChatRoomsPage.module.css';
   import { onMount } from 'svelte';
@@ -97,7 +99,21 @@
   let selectedChat = $derived(selectedChatId ? chats.find(c => c.id === selectedChatId) : null);
 </script>
 
-<div class={`${layoutStyles.flex} ${layoutStyles.hScreen} ${styles.chatPage}`}>
+<div class="chat-container" data-widget-name="ChatRoomsPage" data-theme="{$theme}">
+  <header class="chat-header">
+    <AnimatedTitle 
+      title="SECURE_CHAT_SYSTEM"
+      subtitle="СИСТЕМА_БЕЗОПАСНЫХ_СООБЩЕНИЙ"
+      statusText="СИСТЕМА АКТИВНА"
+      className="chat-title"
+    />
+
+    <div class="theme-switcher-container">
+      <ThemeSwitcher />
+    </div>
+  </header>
+
+  <main class={`${styles.chatPage} ${layoutStyles.flex} ${layoutStyles.hScreen}`}>
   <!-- Sidebar -->
   <div class={`${styles.sidebar} ${!showSidebar ? styles.sidebarHidden : ''}`}>
     <div class={styles.sidebarHeader}>
@@ -171,6 +187,9 @@
       </div>
     {/if}
   </div>
+  </main>
+
+  <PageFooter />
 
   <!-- Add Chat Dialog -->
   <Dialog open={showAddDialog} onClose={() => showAddDialog = false} title="Новый чат">

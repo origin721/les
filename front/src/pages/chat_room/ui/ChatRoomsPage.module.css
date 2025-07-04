@@ -1,7 +1,42 @@
 @import "tailwindcss/theme" reference;
 
+/* Main container with theme support */
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100vw;
+  background-color: var(--les-bg-primary);
+  color: var(--les-text-primary);
+  font-family: "Courier New", Courier, monospace;
+  overflow-x: hidden;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  border: 2px solid var(--les-border-primary);
+  box-shadow: 0 0 25px var(--les-accent-primary) inset;
+}
+
+/* Header with AnimatedTitle */
+.chat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2rem;
+  border-bottom: 1px solid var(--les-border-primary);
+  min-height: 12.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.theme-switcher-container {
+  z-index: 10;
+}
+
+/* Main content area */
 .chatPage {
-  background: var(--les-bg-primary);
+  flex: 1;
+  background: linear-gradient(45deg, transparent 0%, rgba(255, 255, 255, 0.02) 50%, transparent 100%);
 }
 
 .sidebar {
@@ -217,7 +252,17 @@
   margin: 0;
 }
 
-@media (max-width: 767px) {
+/* Responsive styles */
+@media (max-width: 768px) {
+  .chat-header {
+    padding: 1.5rem;
+    min-height: 150px;
+  }
+  
+  .chatPage {
+    padding: 0;
+  }
+  
   .sidebar {
     position: absolute;
     top: 0;
@@ -229,4 +274,54 @@
   .chatArea {
     width: 100%;
   }
+}
+
+/* Additional theme-aware styles */
+.sidebar {
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.chatItem {
+  font-family: "Courier New", Courier, monospace;
+}
+
+.chatItemActive {
+  box-shadow: 0 0 10px var(--les-accent-primary);
+  border-left: 3px solid var(--les-accent-secondary);
+}
+
+.sidebarTitle {
+  font-family: "Courier New", Courier, monospace;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.homeLink {
+  font-family: "Courier New", Courier, monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: 1px solid transparent;
+}
+
+.homeLink:hover {
+  border-color: var(--les-accent-primary);
+  box-shadow: 0 0 5px var(--les-accent-primary);
+}
+
+.messagePlaceholder {
+  font-family: "Courier New", Courier, monospace;
+}
+
+.noChatSelected {
+  font-family: "Courier New", Courier, monospace;
+}
+
+.unreadBadge {
+  box-shadow: 0 0 5px var(--les-accent-secondary);
+}
+
+/* Enhanced dialog styles to match theme */
+:global(.dialog) {
+  font-family: "Courier New", Courier, monospace !important;
 }
