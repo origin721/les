@@ -36,7 +36,7 @@
 /* Main content area */
 .chatPage {
   flex: 1;
-  background: linear-gradient(45deg, transparent 0%, rgba(255, 255, 255, 0.02) 50%, transparent 100%);
+  background-color: var(--background-color);
 }
 
 .sidebar {
