@@ -47,20 +47,33 @@
 
     // Handlers
     async function handleAddFriend() {
-        if (loading) return; // Prevent double clicks
+        console.log('🔘 handleAddFriend вызван', { 
+            loading, 
+            friendName: friendName.trim(), 
+            selectedAccountId
+        });
+        
+        if (loading) {
+            console.log('❌ Отклонено - идет загрузка');
+            return;
+        }
         
         loading = true;
         message = '';
         messageType = '';
 
         const data: AddFriendData = {
-            friendName,
-            friendNickname,
+            friendName: friendName.trim(),
+            friendNickname: friendNickname.trim(),
             selectedAccountId
         };
 
+        console.log('📤 Отправляем данные:', data);
+
         try {
             const result = await useAddFriend(data, accounts);
+            
+            console.log('📥 Результат:', result);
             
             message = result.message;
             messageType = result.messageType;
@@ -69,14 +82,16 @@
                 // Clear form on success
                 friendName = '';
                 friendNickname = '';
+                console.log('✅ Форма очищена');
             }
         } catch (error) {
-            console.error('Error in handleAddFriend:', error);
+            console.error('❌ Error in handleAddFriend:', error);
             message = 'Произошла ошибка при добавлении друга';
             messageType = 'error';
         } finally {
             // Reset loading immediately
             loading = false;
+            console.log('🔄 Loading сброшен');
         }
     }
 
@@ -156,7 +171,7 @@
                                 secondaryIcon="⬅️"
                                 secondaryHref={ROUTES.FRIENDS}
                                 {loading}
-                                disabled={loading || !friendName.trim()}
+                                disabled={loading}
                                 onPrimaryClick={handleAddFriend}
                             />
 
