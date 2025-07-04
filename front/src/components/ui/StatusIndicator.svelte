@@ -82,21 +82,21 @@
 
   /* Status variants */
   .status-active .status-dot {
-    background: var(--les-accent-secondary);
-    box-shadow: 0 0 10px var(--les-accent-secondary);
+    background: var(--secondary-color);
+    box-shadow: 0 0 10px var(--secondary-color);
   }
 
   .status-active .status-text {
-    color: var(--les-accent-secondary);
+    color: var(--secondary-color);
   }
 
   .status-inactive .status-dot {
-    background: var(--les-text-secondary);
+    background: var(--text-color);
     opacity: 0.5;
   }
 
   .status-inactive .status-text {
-    color: var(--les-text-secondary);
+    color: var(--text-color);
     opacity: 0.7;
   }
 
@@ -119,12 +119,12 @@
   }
 
   .status-loading .status-dot {
-    background: var(--les-accent-primary);
-    box-shadow: 0 0 10px var(--les-accent-primary);
+    background: var(--primary-color);
+    box-shadow: 0 0 10px var(--primary-color);
   }
 
   .status-loading .status-text {
-    color: var(--les-accent-primary);
+    color: var(--primary-color);
   }
 
   /* Animations */
@@ -148,7 +148,7 @@
     0%, 100% { 
       opacity: 1;
       transform: scale(1);
-      box-shadow: 0 0 0 0 var(--les-accent-secondary);
+      box-shadow: 0 0 0 0 var(--secondary-color);
     }
     50% { 
       opacity: 0.8;

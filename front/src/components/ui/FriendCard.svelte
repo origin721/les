@@ -57,8 +57,8 @@
 
 <style>
     .friend-card {
-        background: var(--les-bg-secondary);
-        border: 1px solid var(--les-border-primary);
+        background: var(--card-background);
+        border: 1px solid var(--border-color);
         border-radius: 4px;
         padding: 1.5rem;
         transition: all 0.3s ease;
@@ -83,8 +83,8 @@
     }
 
     .friend-card:hover {
-        border-color: var(--les-accent-primary);
-        box-shadow: 0 0 15px var(--les-accent-primary);
+        border-color: var(--primary-color);
+        box-shadow: 0 0 15px var(--primary-color);
         transform: translateY(-3px);
     }
 
@@ -100,15 +100,15 @@
         width: 50px;
         height: 50px;
         border-radius: 50%;
-        background: var(--les-accent-primary);
+        background: var(--primary-color);
         display: flex;
         align-items: center;
         justify-content: center;
-        border: 2px solid var(--les-accent-primary);
+        border: 2px solid var(--primary-color);
     }
 
     .avatar-text {
-        color: var(--les-bg-primary);
+        color: var(--background-color);
         font-weight: bold;
         font-size: 1.2rem;
     }
@@ -118,15 +118,15 @@
     }
 
     .friend-name {
-        color: var(--les-accent-primary);
+        color: var(--primary-color);
         font-size: 1.2rem;
         font-weight: bold;
         margin-bottom: 0.3rem;
-        text-shadow: 0 0 3px var(--les-accent-primary);
+        text-shadow: 0 0 3px var(--primary-color);
     }
 
     .friend-id {
-        color: var(--les-accent-secondary);
+        color: var(--secondary-color);
         font-size: 0.8rem;
     }
 
@@ -143,11 +143,11 @@
     }
 
     .detail-label {
-        color: var(--les-accent-secondary);
+        color: var(--secondary-color);
     }
 
     .detail-value {
-        color: var(--les-text-primary);
+        color: var(--text-color);
         font-family: "Courier New", monospace;
     }
 
@@ -174,25 +174,25 @@
     }
 
     .action-btn.chat {
-        border-color: var(--les-accent-secondary);
-        color: var(--les-accent-secondary);
+        border-color: var(--secondary-color);
+        color: var(--secondary-color);
     }
 
     .action-btn.chat:hover {
-        background: var(--les-accent-secondary);
-        color: var(--les-bg-primary);
-        box-shadow: 0 0 10px var(--les-accent-secondary);
+        background: var(--secondary-color);
+        color: var(--background-color);
+        box-shadow: 0 0 10px var(--secondary-color);
     }
 
     .action-btn.delete {
-        border-color: var(--les-error);
-        color: var(--les-error);
+        border-color: #ff4444;
+        color: #ff4444;
     }
 
     .action-btn.delete:hover {
-        background: var(--les-error);
-        color: var(--les-bg-primary);
-        box-shadow: 0 0 10px var(--les-error);
+        background: #ff4444;
+        color: var(--background-color);
+        box-shadow: 0 0 10px #ff4444;
     }
 
     .btn-icon {
