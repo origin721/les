@@ -1,6 +1,7 @@
 import { indexdb_order } from "./indexdb_order";
 import { debugLog, prodError, prodInfo, devDB } from '../core/debug/logger';
 import { autoRunDataMigrations } from './migrations/data_migrations';
+import { runSchemaMigrations } from './migrations/schema_migrations';
 import { KEYS } from '../core/local-storage/constants';
 
 const counterInfo = {
@@ -46,7 +47,7 @@ export function indexdb_wrapper(
 
       let openRequest = indexedDB.open("main_les_store_v1", 1);
 
-      openRequest.onupgradeneeded = function (event) {
+      openRequest.onupgradeneeded = async function (event) {
         const db = openRequest.result;
         const oldVersion = event.oldVersion ?? 0;
         const newVersion = event.newVersion ?? 1;
@@ -57,36 +58,9 @@ export function indexdb_wrapper(
           existingStores: Array.from(db.objectStoreNames)
         });
         
-        // IndexedDB миграции должны выполняться синхронно
-        // Пока используем старый подход, но с возможностью расширения
+        // Выполняем миграции схемы с асинхронной загрузкой модулей
         try {
-          if (oldVersion === 0 && newVersion >= 1) {
-            prodInfo('📦 Создаем новую базу данных с базовыми хранилищами');
-            
-            if (!db.objectStoreNames.contains('accounts')) {
-              db.createObjectStore('accounts', { keyPath: 'id' });
-              devDB('✅ Хранилище accounts создано');
-            }
-            
-            if (!db.objectStoreNames.contains('friends')) {
-              db.createObjectStore('friends', { keyPath: 'id' });
-              devDB('✅ Хранилище friends создано');
-            }
-            
-            if (!db.objectStoreNames.contains('rooms')) {
-              db.createObjectStore('rooms', { keyPath: 'id' });
-              devDB('✅ Хранилище rooms создано');
-            }
-          }
-          
-          // Здесь можно добавить дополнительные миграции
-          // if (oldVersion === 1 && newVersion >= 2) { ... }
-          
-          prodInfo('🏁 IndexDB миграция завершена. Финальные хранилища:', Array.from(db.objectStoreNames));
-          
-          // Сохраняем версию схемы в localStorage для синхронизации
-          localStorage.setItem(KEYS.SCHEMA_VERSION, newVersion.toString());
-          prodInfo('📝 Версия схемы обновлена в localStorage:', newVersion);
+          await runSchemaMigrations(db, oldVersion, newVersion);
         } catch (error) {
           prodError('Критическая ошибка во время миграции IndexedDB:', error);
           throw error;
