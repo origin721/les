@@ -3,38 +3,51 @@
   import { Link, ROUTES } from "../../../routing";
   import { appAuthStore } from "../../../stores";
   import { SEARCH_PARAMS_KEYS as SETTINGS_S_P_KEYS } from "../../account_settings/constants/SEARCH_PARAMS_KEYS";
-  import { Button, Card } from "../../../components/ui";
+  import { ActionBar, Button, Card } from "../../../components/ui";
   import styles from "./AccountsScreen.module.css";
+
+  const accountActions = [
+    {
+      id: 'back',
+      title: 'НАЗАД',
+      icon: '←',
+      href: ROUTES.HOME,
+      variant: 'outline' as const,
+      description: 'Вернуться на главную страницу'
+    },
+    {
+      id: 'create',
+      title: 'СОЗДАТЬ_АККАУНТ',
+      icon: '+',
+      href: ROUTES.ACCOUNTS_NEW,
+      variant: 'primary' as const,
+      description: 'Создать новый аккаунт в системе'
+    },
+    {
+      id: 'auth',
+      title: 'АВТОРИЗИРОВАТЬСЯ',
+      icon: '🔐',
+      href: ROUTES.AUTH,
+      variant: 'secondary' as const,
+      description: 'Войти в существующий аккаунт'
+    },
+    {
+      id: 'delete-selected',
+      title: 'УДАЛИТЬ_ВЫБРАННОЕ',
+      icon: '🗑️',
+      variant: 'danger' as const,
+      description: 'Удалить выбранные аккаунты',
+      disabled: true,
+      onclick: () => {
+        // TODO: Implement bulk delete functionality
+        console.log('Bulk delete not implemented yet');
+      }
+    }
+  ];
 </script>
 
 <div class={styles.accountsScreen} data-widget-name="AccountsScreen">
-  <div class={styles.actionsSection}>
-    <div class={styles.navigationActions}>
-      <Link href={ROUTES.HOME}>
-        <Button variant="outline" size="sm">
-          ← НАЗАД
-        </Button>
-      </Link>
-    </div>
-    
-    <div class={styles.accountActions}>
-      <Link href={ROUTES.ACCOUNTS_NEW}>
-        <Button variant="primary" size="md">
-          + СОЗДАТЬ_АККАУНТ
-        </Button>
-      </Link>
-      
-      <Link href={ROUTES.AUTH}>
-        <Button variant="secondary" size="md">
-          🔐 АВТОРИЗИРОВАТЬСЯ
-        </Button>
-      </Link>
-      
-      <Button variant="danger" size="md">
-        🗑️ УДАЛИТЬ_ВЫБРАННОЕ
-      </Button>
-    </div>
-  </div>
+  <ActionBar actions={accountActions} />
 
   <div class={styles.accountsGrid}>
     {#each Object.values($appAuthStore.byId) as authItem}

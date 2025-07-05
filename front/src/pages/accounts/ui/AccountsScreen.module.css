@@ -21,51 +21,7 @@
   50% { opacity: 1; transform: translateX(100%); }
 }
 
-.actionsSection {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 2rem;
-  flex-wrap: wrap;
-  gap: 1rem;
-  padding: 1.5rem;
-  background: linear-gradient(135deg, rgba(0, 255, 255, 0.03), rgba(255, 0, 255, 0.03));
-  border: 1px solid var(--les-border-primary);
-  border-radius: 8px;
-  position: relative;
-  overflow: hidden;
-}
 
-.actionsSection::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.1), transparent);
-  animation: actionsSweep 4s ease-in-out infinite;
-}
-
-@keyframes actionsSweep {
-  0% { left: -100%; }
-  100% { left: 100%; }
-}
-
-.navigationActions {
-  display: flex;
-  gap: 1rem;
-  z-index: 2;
-  position: relative;
-}
-
-.accountActions {
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
-  z-index: 2;
-  position: relative;
-}
 
 .accountsGrid {
   display: grid;
@@ -336,16 +292,6 @@
 
 /* Responsive */
 @media (max-width: 768px) {
-  .actionsSection {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .navigationActions,
-  .accountActions {
-    justify-content: center;
-  }
-
   .accountsGrid {
     grid-template-columns: 1fr;
   }
@@ -363,7 +309,6 @@
 }
 
 @media (max-width: 480px) {
-  .accountActions,
   .accountActionsInline {
     flex-direction: column;
   }
