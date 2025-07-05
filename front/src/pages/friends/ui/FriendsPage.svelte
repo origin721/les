@@ -132,11 +132,10 @@
                     <div class="friends-container" data-widget-name="FriendsPage">
                         <!-- Status Message -->
                         <div class="status-message">
-                            <StatusIndicator 
-                                status="active" 
-                                text="OK - СИСТЕМА ДРУЗЕЙ АКТИВНА" 
-                                size="lg"
-                            />
+                            <div class="simple-status">
+                                <span class="status-dot">●</span>
+                                <span class="status-text">OK - СИСТЕМА ДРУЗЕЙ АКТИВНА</span>
+                            </div>
                         </div>
 
                         <!-- Action Buttons -->
@@ -227,6 +226,26 @@
         background: rgba(0, 255, 0, 0.1);
         border: 1px solid var(--primary-color);
         border-radius: 4px;
+    }
+
+    .simple-status {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-family: "Courier New", Courier, monospace;
+        font-weight: bold;
+    }
+
+    .status-dot {
+        color: var(--secondary-color);
+        font-size: 1rem;
+    }
+
+    .status-text {
+        color: var(--secondary-color);
+        font-size: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
     }
 
     /* Action Buttons */
