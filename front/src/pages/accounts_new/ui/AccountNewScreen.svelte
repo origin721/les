@@ -4,7 +4,7 @@
     import { appAuthStore } from "../../../stores";
     import { routingStore } from "../../../routing/stores";
     import { uuidv4 } from "../../../core/uuid";
-    import type { HttpServerParam } from "../../../indexdb/main_les_store_v1/accounts/add_accounts";
+    import type { HttpServerParam } from "../../../indexdb/main_les_store_v1/entities/accounts/add_accounts";
     import { FieldHttpServers } from "../../../widgets";
     import { PageLayout, FormContainer, FormField, BackLink } from "../../../components/ui";
 

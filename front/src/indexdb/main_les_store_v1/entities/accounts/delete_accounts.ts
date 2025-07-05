@@ -1,5 +1,5 @@
-import { indexdb_wrapper } from "../indexdb_wrapper";
-import { prodInfo, devDB } from "../../../core/debug/logger";
+import { indexdb_wrapper } from "../../indexdb_wrapper";
+import { prodInfo, devDB } from "../../../../core/debug/logger";
 
 
 export function delete_accounts(ids: string[]) {

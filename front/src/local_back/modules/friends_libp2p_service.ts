@@ -2,11 +2,11 @@ import { CHANNEL_NAMES } from "../../core/broadcast_channel/constants/CHANNEL_NA
 import { FrontMiddlewareActions } from "../../core/broadcast_channel/constants/FRONT_MIDDLEWARE_ACTIONS";
 import type { PostMessageParamAddAccounts } from "../../core/broadcast_channel/front_middleware_channel";
 import { connectionLibp2p } from "../../api/libp2p/createLibp2pNode";
-import { get_account_by_id } from "../../indexdb/main_les_store_v1/accounts/get_account_by_id";
-import { add_friend, type FriendEntity, type FriendEntityFull } from "../../indexdb/main_les_store_v1/friends/add_friend";
-import { get_friends } from "../../indexdb/main_les_store_v1/friends/get_friends";
-import { get_friend_by_id } from "../../indexdb/main_les_store_v1/friends/get_friend_by_id";
-import { delete_friend } from "../../indexdb/main_les_store_v1/friends/delete_friend";
+import { get_account_by_id } from "../../indexdb/main_les_store_v1/entities/accounts/get_account_by_id";
+import { add_friend, type FriendEntity, type FriendEntityFull } from "../../indexdb/main_les_store_v1/entities/friends/add_friend";
+import { get_friends } from "../../indexdb/main_les_store_v1/entities/friends/get_friends";
+import { get_friend_by_id } from "../../indexdb/main_les_store_v1/entities/friends/get_friend_by_id";
+import { delete_friend } from "../../indexdb/main_les_store_v1/entities/friends/delete_friend";
 import { privateKeyStringToPeerId } from "../../libs/libp2p";
 import { back_store, type Libp2pNodeInstance } from "../back_store/back_store";
 

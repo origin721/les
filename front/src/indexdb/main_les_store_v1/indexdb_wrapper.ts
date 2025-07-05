@@ -12,7 +12,7 @@ import {
   getPreviousDbVersion, 
   setUpdateStatus, 
   canStartUpdate 
-} from '../db_state_manager/db_state_manager';
+} from '../db_state_manager_v1/db_state_manager';
 
 const counterInfo = {
   open: 0,

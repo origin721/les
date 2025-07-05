@@ -1,17 +1,17 @@
-import { decrypt_curve25519_from_pass } from "../../../core/crypt";
-import { back_store } from "../../../local_back/back_store/back_store";
-import { indexdb_wrapper } from "../indexdb_wrapper";
-import type { FriendEntityFull } from "./add_friend";
+import { decrypt_curve25519_from_pass } from "../../../../core/crypt";
+import { back_store } from "../../../../local_back/back_store/back_store";
+import { indexdb_wrapper } from "../../indexdb_wrapper";
+import type { RoomEntityFull } from "./add_room";
 
-export function get_friends(): Promise<FriendEntityFull[]> {
+export function get_rooms(): Promise<RoomEntityFull[]> {
   return new Promise((mRes, rej) => {
     indexdb_wrapper((db) => {
       return new Promise((res, rej) => {
-        const transaction = db.transaction(["friends"], "readonly");
-        const store = transaction.objectStore("friends");
+        const transaction = db.transaction(["rooms"], "readonly");
+        const store = transaction.objectStore("rooms");
 
         const request = store.openCursor();
-        const result: FriendEntityFull[] = []
+        const result: RoomEntityFull[] = []
         
         request.onsuccess = async function (event) {
           const cursor = (event.target as IDBRequest).result;

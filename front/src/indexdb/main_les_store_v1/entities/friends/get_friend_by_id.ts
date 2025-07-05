@@ -1,6 +1,6 @@
-import { decrypt_curve25519_from_pass } from "../../../core/crypt";
-import { back_store } from "../../../local_back/back_store/back_store";
-import { indexdb_wrapper } from "../indexdb_wrapper";
+import { decrypt_curve25519_from_pass } from "../../../../core/crypt";
+import { back_store } from "../../../../local_back/back_store/back_store";
+import { indexdb_wrapper } from "../../indexdb_wrapper";
 import type { FriendEntityFull } from "./add_friend";
 
 export function get_friend_by_id(friendId: string): Promise<FriendEntityFull | null> {

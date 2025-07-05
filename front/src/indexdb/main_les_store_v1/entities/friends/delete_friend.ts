@@ -1,6 +1,6 @@
-import { indexdb_wrapper } from "../indexdb_wrapper";
-import { back_store } from "../../../local_back/back_store/back_store";
-import { prodError, prodInfo, devDB } from "../../../core/debug/logger";
+import { indexdb_wrapper } from "../../indexdb_wrapper";
+import { back_store } from "../../../../local_back/back_store/back_store";
+import { prodError, prodInfo, devDB } from "../../../../core/debug/logger";
 
 export function delete_friend(friendIds: string[]): Promise<void> {
   return indexdb_wrapper((db) => {
