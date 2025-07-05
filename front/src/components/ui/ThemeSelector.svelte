@@ -56,9 +56,9 @@
   }
 
   .themes-grid {
-    display: grid;
+    display: flex;
+    flex-direction: column;
     gap: 1rem;
-    grid-template-columns: 1fr;
   }
 
   .theme-option {
@@ -118,17 +118,5 @@
   .theme-actions {
     display: flex;
     justify-content: flex-end;
-  }
-
-  @media (min-width: 768px) {
-    .themes-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-
-  @media (min-width: 1024px) {
-    .themes-grid {
-      grid-template-columns: repeat(3, 1fr);
-    }
   }
 </style>
