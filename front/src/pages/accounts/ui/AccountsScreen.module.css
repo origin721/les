@@ -1,0 +1,374 @@
+.accountsScreen {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  position: relative;
+}
+
+.accountsScreen::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, var(--les-accent-primary) 50%, transparent 100%);
+  animation: scanLine 3s ease-in-out infinite;
+}
+
+@keyframes scanLine {
+  0%, 100% { opacity: 0; transform: translateX(-100%); }
+  50% { opacity: 1; transform: translateX(100%); }
+}
+
+.actionsSection {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, rgba(0, 255, 255, 0.03), rgba(255, 0, 255, 0.03));
+  border: 1px solid var(--les-border-primary);
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+.actionsSection::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.1), transparent);
+  animation: actionsSweep 4s ease-in-out infinite;
+}
+
+@keyframes actionsSweep {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+.navigationActions {
+  display: flex;
+  gap: 1rem;
+  z-index: 2;
+  position: relative;
+}
+
+.accountActions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  z-index: 2;
+  position: relative;
+}
+
+.accountsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.accountCard {
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.accountCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, rgba(0, 255, 255, 0.1), rgba(255, 0, 255, 0.1));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 1;
+}
+
+.accountCard:hover {
+  transform: translateY(-8px) rotateX(5deg);
+  box-shadow: 
+    0 20px 40px rgba(0, 255, 255, 0.3),
+    0 0 60px rgba(0, 255, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.accountCard:hover::before {
+  opacity: 1;
+}
+
+.accountInfo {
+  padding: 1.5rem;
+  position: relative;
+  z-index: 2;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.1));
+}
+
+.accountHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+  position: relative;
+}
+
+.accountHeader::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 30%;
+  height: 1px;
+  background: var(--les-accent-primary);
+  animation: headerGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes headerGlow {
+  0% { width: 30%; box-shadow: 0 0 5px var(--les-accent-primary); }
+  100% { width: 70%; box-shadow: 0 0 15px var(--les-accent-primary); }
+}
+
+.accountName {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: var(--les-accent-primary);
+  margin: 0;
+  font-family: "Courier New", Courier, monospace;
+  text-shadow: 0 0 10px var(--les-accent-primary);
+  animation: textGlitch 4s ease-in-out infinite;
+}
+
+@keyframes textGlitch {
+  0%, 90%, 100% { transform: translate(0); }
+  2% { transform: translate(-2px, 1px); }
+  4% { transform: translate(1px, -1px); }
+  6% { transform: translate(-1px, -1px); }
+  8% { transform: translate(2px, 1px); }
+  10% { transform: translate(0); }
+}
+
+.accountStatus {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: rgba(0, 255, 255, 0.1);
+  border-radius: 20px;
+  border: 1px solid var(--les-accent-secondary);
+}
+
+.statusDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--les-accent-secondary);
+  animation: statusPulse 2s ease-in-out infinite;
+  box-shadow: 0 0 10px var(--les-accent-secondary);
+}
+
+.statusText {
+  font-size: 0.75rem;
+  color: var(--les-accent-secondary);
+  font-weight: bold;
+  font-family: "Courier New", Courier, monospace;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+@keyframes statusPulse {
+  0%, 100% { 
+    opacity: 1;
+    transform: scale(1);
+    box-shadow: 0 0 10px var(--les-accent-secondary);
+  }
+  50% { 
+    opacity: 0.7;
+    transform: scale(1.2);
+    box-shadow: 0 0 20px var(--les-accent-secondary);
+  }
+}
+
+.accountMeta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin: 1rem 0;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 6px;
+  border-left: 3px solid var(--les-accent-primary);
+}
+
+.metaItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.metaLabel {
+  font-size: 0.7rem;
+  color: var(--les-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-family: "Courier New", Courier, monospace;
+}
+
+.metaValue {
+  font-size: 0.9rem;
+  color: var(--les-accent-primary);
+  font-family: "Courier New", Courier, monospace;
+  font-weight: bold;
+}
+
+.accountActionsInline {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(0, 255, 255, 0.1);
+}
+
+.emptyState {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 4rem;
+  background: 
+    linear-gradient(135deg, rgba(0, 255, 255, 0.05), rgba(255, 0, 255, 0.05)),
+    radial-gradient(circle at 50% 50%, rgba(0, 255, 255, 0.1) 0%, transparent 70%);
+  border: 2px dashed var(--les-border-primary);
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+.emptyState::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(from 0deg, transparent 0deg, rgba(0, 255, 255, 0.1) 90deg, transparent 180deg);
+  animation: rotateGlow 8s linear infinite;
+}
+
+@keyframes rotateGlow {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.emptyContent {
+  position: relative;
+  z-index: 2;
+}
+
+.emptyIcon {
+  font-size: 5rem;
+  opacity: 0.6;
+  margin-bottom: 1.5rem;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.emptyTitle {
+  font-size: 1.8rem;
+  color: var(--les-accent-primary);
+  margin: 0 0 1rem 0;
+  font-family: "Courier New", Courier, monospace;
+  text-shadow: 0 0 20px var(--les-accent-primary);
+  animation: titlePulse 2s ease-in-out infinite;
+}
+
+@keyframes titlePulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
+.emptyDescription {
+  color: var(--les-text-secondary);
+  margin-bottom: 2.5rem;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+.securityBadges {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin: 1rem 0;
+  flex-wrap: wrap;
+}
+
+.securityBadge {
+  padding: 0.3rem 0.8rem;
+  background: rgba(0, 255, 255, 0.1);
+  border: 1px solid var(--les-accent-secondary);
+  border-radius: 20px;
+  font-size: 0.7rem;
+  color: var(--les-accent-secondary);
+  font-family: "Courier New", Courier, monospace;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  animation: badgeGlow 3s ease-in-out infinite;
+}
+
+@keyframes badgeGlow {
+  0%, 100% { box-shadow: 0 0 5px rgba(0, 255, 255, 0.3); }
+  50% { box-shadow: 0 0 15px rgba(0, 255, 255, 0.6); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .actionsSection {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .navigationActions,
+  .accountActions {
+    justify-content: center;
+  }
+
+  .accountsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .accountHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .accountActionsInline {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .accountActions,
+  .accountActionsInline {
+    flex-direction: column;
+  }
+
+  .emptyState {
+    padding: 2rem 1rem;
+  }
+}

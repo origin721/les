@@ -60,6 +60,7 @@
         rState: (typeof routState)["state"];
         apauState: (typeof appAuthState)["state"];
     }) {
+        // TODO: сделать защиту от рендера если  данные не менялись сохранив prev в ссылку
         if(prevRoutParams && 
            p.rState.pathname === prevRoutParams.rState.pathname &&
            Object.keys(p.apauState.byId).length === Object.keys(prevRoutParams.apauState.byId).length &&
@@ -73,86 +74,95 @@
         //type = null;
         await tick(); // подождать 1 кадр, чтобы отрендерилось "ничего"
 
-        await new Promise((r) => setTimeout(r, 1000));
+        let nextComponentPromise = null;
+        await new Promise((r) => setTimeout(r, 500));
 
-        // TODO: сделать защиту от рендера если  данные не менялись сохранив prev в ссылку
         if (p.rState.pathname === ROUTES.ACCOUNTS_NEW) {
-            componentPromise = import(
+            nextComponentPromise = import(
                 `../../pages/accounts_new/ui/AccountNewPage.svelte`
             );
-        } else if (p.rState.pathname === ROUTES.CHAT_ROOMS_SETTINGS) {
-            componentPromise = import(
-                `../../pages/chat_room/ui/ChatSettingsPage.svelte`
-            );
+        }
+        else if (p.rState.pathname === ROUTES.AUTH_DOCS) {
+            nextComponentPromise = import(`../../pages/auth_docs/ui/AuthDocsPage.svelte`);
+        } else if (!Object.entries(p.apauState.byId).length) {
+            nextComponentPromise = import(`../../pages/auth/ui/AuthPage.svelte`);
+        } else if (p.rState.pathname === ROUTES.AUTH) {
+            nextComponentPromise = import(`../../pages/auth/ui/AuthPage.svelte`);
         } else if (p.rState.pathname === ROUTES.CHAT_ROOMS) {
             if (p.rState.queryParams.get(QUERY_PARAMS.ROOM_ID)) {
-                componentPromise = import(
-                    `../../pages/chat_room/ui/ChatRoomsPage.svelte`
-                );
+                // Check if settings page is requested
+                if (p.rState.pathname.includes('/settings')) {
+                    nextComponentPromise = import(
+                        `../../pages/chat_room/ui/ChatSettingsPage.svelte`
+                    );
+                } else {
+                    nextComponentPromise = import(
+                        `../../pages/chat_room/ui/ChatRoomsPage.svelte`
+                    );
+                }
             } else {
                 // Use our new ChatRoomsPage
-                componentPromise = import(
+                nextComponentPromise = import(
                     `../../pages/chat_room/ui/ChatRoomsPage.svelte`
                 );
             }
         } else if (p.rState.pathname === ROUTES.CHAT_ROOMS_ADD) {
             // TODO: проверить что до логина не все страницы могут быть
-            componentPromise = import(
+            nextComponentPromise = import(
                 `../../pages/chat_rooms_add/ui/ChatRoomsAddPage.svelte`
             );
-        } else if (p.rState.pathname === ROUTES.AUTH_DOCS) {
-            componentPromise = import(`../../pages/auth_docs/ui/AuthDocsPage.svelte`);
-        } else if (!Object.entries(p.apauState.byId).length) {
-            componentPromise = import(`../../pages/auth/ui/AuthPage.svelte`);
-        } else if (p.rState.pathname === ROUTES.AUTH) {
-            componentPromise = import(`../../pages/auth/ui/AuthPage.svelte`);
-        } else if (p.rState.pathname === ROUTES.CRYPTO) {
-            componentPromise = import(
+        }
+        else if (p.rState.pathname === ROUTES.CRYPTO) {
+            nextComponentPromise = import(
                 `../../pages/crypto_page/ui/CryptoPage.svelte`
             );
         } else if (p.rState.pathname === ROUTES.API_KEYS) {
-            componentPromise = import(
+            nextComponentPromise = import(
                 `../../pages/api_keys_page/ui/ApiKeysPage.svelte`
             );
         } else if (p.rState.pathname === ROUTES.ADD_FRIEND) {
-            componentPromise = import(
+            nextComponentPromise = import(
                 `../../pages/add_friend_page/ui/AddFriendByName.svelte`
             );
         } else if (p.rState.pathname === ROUTES.ADD_PEER) {
-            componentPromise = import(
+            nextComponentPromise = import(
                 `../../pages/add_peer_page/ui/AddPeerPage.svelte`
             );
         } else if (p.rState.pathname === ROUTES.RANDOM) {
-            componentPromise = import(
+            nextComponentPromise = import(
                 `../../pages/random/ui/RandomPage.svelte`
             );
         } else if (p.rState.pathname === ROUTES.HOME) {
-            componentPromise = import(`../../pages/home/ui/HomePage.svelte`);
+            nextComponentPromise = import(`../../pages/home/ui/HomePage.svelte`);
         } else if (p.rState.pathname === ROUTES.SETTINGS) {
-            componentPromise = import(
+            nextComponentPromise = import(
                 `../../pages/settings/ui/SettingsPage.svelte`
             );
         } else if (p.rState.pathname === ROUTES.ACCOUNTS) {
-            componentPromise = import(
+            nextComponentPromise = import(
                 `../../pages/accounts/ui/AccountsPage.svelte`
             );
         } else if (p.rState.pathname === ROUTES.ACCOUNT_SETTINGS) {
-            componentPromise = import(
+            nextComponentPromise = import(
                 `../../pages/account_settings/ui/AccountSettingsPage.svelte`
             );
         } else if (p.rState.pathname === ROUTES.FRIENDS) {
-            componentPromise = import(
+            nextComponentPromise = import(
                 `../../pages/friends/ui/FriendsPage.svelte`
             );
         } else if (p.rState.pathname === ROUTES.NOT_FOUND) {
-            componentPromise = import(`../../pages/404/ui/Page404.svelte`);
+            nextComponentPromise = import(`../../pages/404/ui/Page404.svelte`);
         } else {
-            componentPromise = import(`../../pages/404/ui/Page404.svelte`);
+            nextComponentPromise = import(`../../pages/404/ui/Page404.svelte`);
         }
         //if (type === 'one') {
         //} else if (type === 'two') {
         //  //componentPromise = import(`./TwoComponent.svelte`);
         //}
+
+        await new Promise((r) => setTimeout(r, 500));
+
+        componentPromise = nextComponentPromise;
     }
 </script>
 
