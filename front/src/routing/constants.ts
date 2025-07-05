@@ -3,7 +3,7 @@ const BASE_URL = '/les';
 export const ROUTES = {
     HOME: BASE_URL + '/home',
     AUTH: BASE_URL + '/auth',
-    AUTH_DOCS: BASE_URL + '/auth/docs',
+    DOCS: BASE_URL + '/docs',
     SETTINGS: BASE_URL + '/settings',
     ACCOUNTS: BASE_URL + '/accounts',
     ACCOUNT_SETTINGS: BASE_URL + '/account/settings',

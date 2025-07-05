@@ -300,7 +300,7 @@
                     <Link className={styles.createLink} href={ROUTES.ACCOUNTS_NEW}
                         >[CREATE_NEW_ID]</Link
                     >
-                    <Link className={styles.docsLink} href={ROUTES.AUTH_DOCS}
+                    <Link className={styles.docsLink} href={ROUTES.DOCS}
                         >[SYSTEM_DOCUMENTATION]</Link
                     >
                     

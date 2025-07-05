@@ -8,3 +8,4 @@ export { RandomPage } from './random';
 export { AesEncrPage } from './aes_encr_page';
 export { CryptoPage } from './crypto_page';
 export { ApiKeysPage } from './api_keys_page';
+export { DocsPage } from './docs';

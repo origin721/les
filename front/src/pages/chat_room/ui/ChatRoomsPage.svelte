@@ -139,9 +139,6 @@
       className="chat-title"
     />
 
-    <div class="theme-switcher-container">
-      <ThemeSwitcher />
-    </div>
   </header>
 
   <main class={`${styles.chatPage} ${layoutStyles.flex} ${layoutStyles.hScreen}`}>

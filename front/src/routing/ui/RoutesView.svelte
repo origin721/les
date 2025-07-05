@@ -85,8 +85,8 @@
             nextComponentPromise = import(
                 `../../pages/settings/ui/SettingsPage.svelte`
             );
-        } else if (p.rState.pathname === ROUTES.AUTH_DOCS) {
-            nextComponentPromise = import(`../../pages/auth_docs/ui/AuthDocsPage.svelte`);
+        } else if (p.rState.pathname === ROUTES.DOCS) {
+            nextComponentPromise = import(`../../pages/docs/ui/DocsPage.svelte`);
         } else if (!Object.entries(p.apauState.byId).length) {
             nextComponentPromise = import(`../../pages/auth/ui/AuthPage.svelte`);
         } else if (p.rState.pathname === ROUTES.AUTH) {
