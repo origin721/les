@@ -1,7 +1,12 @@
-<script>
-  import { AppHeader } from "../../../widgets";
+<script lang="ts">
+  import { BasePage } from "../../../components/page_templates";
   import SettingsScreen from "./SettingsScreen.svelte";
 </script>
 
-<AppHeader titleText="Настройки" />
-<SettingsScreen />
+<BasePage
+  title="СИСТЕМА_НАСТРОЕК"
+  subtitle="КОНФИГУРАЦИЯ_И_УПРАВЛЕНИЕ_СИСТЕМОЙ"
+  pageName="SettingsPage"
+>
+  <SettingsScreen />
+</BasePage>
