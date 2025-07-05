@@ -56,8 +56,8 @@
 .accountCard:hover {
   transform: translateY(-8px) rotateX(5deg);
   box-shadow: 
-    0 20px 40px color-mix(in srgb, var(--les-accent-secondary) 30%, transparent),
-    0 0 60px color-mix(in srgb, var(--les-accent-secondary) 10%, transparent),
+    0 20px 40px color-mix(in srgb, var(--les-accent-primary) 30%, transparent),
+    0 0 60px color-mix(in srgb, var(--les-accent-primary) 10%, transparent),
     inset 0 1px 0 color-mix(in srgb, var(--les-text-primary) 10%, transparent);
 }
 
