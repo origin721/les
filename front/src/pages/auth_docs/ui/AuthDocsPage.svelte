@@ -1,11 +1,5 @@
 <script lang="ts">
     import { Link, ROUTES } from "../../../routing";
-    import { theme } from "../../../stores/theme";
-    import ThemeSwitcher from "../../../components/ThemeSwitcher.svelte";
-
-    // Import theme styles
-    import "../../../styles/cyberpunk.css";
-    import "../../../styles/pixel.css";
 
     let currentSection = $state("overview");
 
@@ -22,66 +16,61 @@
     }
 </script>
 
-<div class="theme-{$theme}">
-    <div class="docs-container" data-widget-name="AuthDocsPage">
-        <header class="docs-header">
-            <div class="back-link-container">
-                <Link href={ROUTES.HOME} className="back-link">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                    >
-                        <path d="M19 12H5M12 19l-7-7 7-7" />
-                    </svg>
-                    <span>AUTH.SYS</span>
-                </Link>
+<div class="docs-container" data-widget-name="AuthDocsPage">
+    <header class="docs-header">
+        <div class="back-link-container">
+            <Link href={ROUTES.HOME} className="back-link">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                >
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                <span>AUTH.SYS</span>
+            </Link>
+        </div>
+        
+        <div class="animated-title-container">
+            <div class="matrix-rain">
+                {#each Array(20) as _, i}
+                    <div class="matrix-column" style="animation-delay: {i * 0.1}s;">
+                        {#each Array(10) as _, j}
+                            <span class="matrix-char" style="animation-delay: {(i * 0.1) + (j * 0.05)}s;">
+                                {String.fromCharCode(65 + Math.floor(Math.random() * 26))}
+                            </span>
+                        {/each}
+                    </div>
+                {/each}
             </div>
             
-            <div class="animated-title-container">
-                <div class="matrix-rain">
-                    {#each Array(20) as _, i}
-                        <div class="matrix-column" style="animation-delay: {i * 0.1}s;">
-                            {#each Array(10) as _, j}
-                                <span class="matrix-char" style="animation-delay: {(i * 0.1) + (j * 0.05)}s;">
-                                    {String.fromCharCode(65 + Math.floor(Math.random() * 26))}
-                                </span>
-                            {/each}
-                        </div>
-                    {/each}
-                </div>
-                
-                <h1 class="animated-title">
-                    <span class="title-word glitch-word" style="animation-delay: 0s;">КАК</span>
-                    <span class="title-separator">_</span>
-                    <span class="title-word glitch-word" style="animation-delay: 0.3s;">ЭТО</span>
-                    <span class="title-separator">_</span>
-                    <span class="title-word glitch-word" style="animation-delay: 0.6s;">РАБОТАЕТ</span>
-                    <span class="title-question">?</span>
-                </h1>
-                
-                <div class="subtitle">
-                    <span class="typing-text">СИСТЕМА_АУТЕНТИФИКАЦИИ_И_ШИФРОВАНИЯ</span>
-                    <span class="cursor">█</span>
-                </div>
-                
-                <div class="question-animation">
-                    <div class="question-mark">?</div>
-                    <div class="question-mark">?</div>
-                    <div class="question-mark">?</div>
-                </div>
+            <h1 class="animated-title">
+                <span class="title-word glitch-word" style="animation-delay: 0s;">КАК</span>
+                <span class="title-separator">_</span>
+                <span class="title-word glitch-word" style="animation-delay: 0.3s;">ЭТО</span>
+                <span class="title-separator">_</span>
+                <span class="title-word glitch-word" style="animation-delay: 0.6s;">РАБОТАЕТ</span>
+                <span class="title-question">?</span>
+            </h1>
+            
+            <div class="subtitle">
+                <span class="typing-text">СИСТЕМА_АУТЕНТИФИКАЦИИ_И_ШИФРОВАНИЯ</span>
+                <span class="cursor">█</span>
             </div>
-
-            <div class="theme-switcher-container">
-                <ThemeSwitcher />
+            
+            <div class="question-animation">
+                <div class="question-mark">?</div>
+                <div class="question-mark">?</div>
+                <div class="question-mark">?</div>
             </div>
-        </header>
+        </div>
+    </header>
 
         <nav class="docs-nav">
             {#each sections as section}
@@ -225,55 +214,20 @@
         <footer class="docs-footer">
             <p>// SECURE_DOCUMENTATION_TERMINAL_v0.0.1 //</p>
         </footer>
-    </div>
 </div>
 
 <style>
-    /* Theme Variables */
-    .theme-cyberpunk {
-        --background-color: #0a0a0a;
-        --text-color: #00ff00;
-        --primary-color: #ff00ff;
-        --secondary-color: #00ffff;
-        --border-color: #00ff00;
-        --card-background: #1a1a1a;
-        --nav-active: #ff00ff;
-        --accent-color: #ffff00;
-    }
-    
-    .theme-watchdogs {
-        --background-color: #1a1a1a;
-        --text-color: #cccccc;
-        --primary-color: #ffc400;
-        --secondary-color: #00aaff;
-        --border-color: #444444;
-        --card-background: #222222;
-        --nav-active: #ffc400;
-        --accent-color: #00aaff;
-    }
-    
-    .theme-pixel {
-        --background-color: #000000;
-        --text-color: #00ff00;
-        --primary-color: #00ff00;
-        --secondary-color: #ff00ff;
-        --border-color: #00ff00;
-        --card-background: #222222;
-        --nav-active: #ff00ff;
-        --accent-color: #00ff00;
-    }
-
     .docs-container {
         display: flex;
         flex-direction: column;
         height: 100vh;
         width: 100vw;
-        background-color: var(--background-color);
-        color: var(--text-color);
+        background-color: var(--les-bg-primary);
+        color: var(--les-text-primary);
         font-family: "Courier New", Courier, monospace;
         overflow: hidden;
-        border: 2px solid var(--border-color);
-        box-shadow: 0 0 25px var(--primary-color) inset;
+        border: 2px solid var(--les-border-primary);
+        box-shadow: 0 0 25px var(--les-accent-primary) inset;
     }
 
     /* Header */
@@ -282,7 +236,7 @@
         justify-content: space-between;
         align-items: center;
         padding: 1rem;
-        border-bottom: 1px solid var(--border-color);
+        border-bottom: 1px solid var(--les-border-primary);
         min-height: 120px;
         position: relative;
         overflow: hidden;
@@ -292,15 +246,15 @@
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        color: var(--secondary-color);
+        color: var(--les-accent-secondary);
         text-decoration: none;
         transition: all 0.2s;
         z-index: 10;
     }
     
     .back-link:hover {
-        color: var(--primary-color);
-        text-shadow: 0 0 5px var(--primary-color);
+        color: var(--les-accent-primary);
+        text-shadow: 0 0 5px var(--les-accent-primary);
     }
 
     /* Animated Title */
@@ -342,7 +296,7 @@
 
     .matrix-char {
         display: block;
-        color: var(--primary-color);
+        color: var(--les-accent-primary);
         font-size: 12px;
         line-height: 1.2;
         animation: matrix-glow 2s ease-in-out infinite alternate;
@@ -368,11 +322,11 @@
 
     .title-word {
         display: inline-block;
-        color: var(--primary-color);
+        color: var(--les-accent-primary);
         text-shadow: 
-            0 0 5px var(--primary-color),
-            0 0 10px var(--primary-color),
-            0 0 15px var(--primary-color);
+            0 0 5px var(--les-accent-primary),
+            0 0 10px var(--les-accent-primary),
+            0 0 15px var(--les-accent-primary);
     }
 
     .glitch-word {
@@ -392,23 +346,23 @@
 
     .glitch-word::before {
         animation: glitch-1 0.5s infinite;
-        color: var(--secondary-color);
+        color: var(--les-accent-secondary);
         z-index: -1;
     }
 
     .glitch-word::after {
         animation: glitch-2 0.5s infinite;
-        color: var(--accent-color);
+        color: var(--les-text-secondary);
         z-index: -2;
     }
 
     .title-separator {
-        color: var(--secondary-color);
+        color: var(--les-accent-secondary);
         animation: separator-pulse 1.5s ease-in-out infinite;
     }
 
     .title-question {
-        color: var(--accent-color);
+        color: var(--les-text-secondary);
         animation: question-bounce 2s ease-in-out infinite;
         display: inline-block;
         font-size: 1.2em;
@@ -424,7 +378,7 @@
     }
 
     .question-mark {
-        color: var(--accent-color);
+        color: var(--les-text-secondary);
         font-size: 1.5rem;
         animation: float-question 3s ease-in-out infinite;
         opacity: 0.7;
@@ -488,19 +442,19 @@
     @keyframes question-bounce {
         0%, 100% { 
             transform: translateY(0) scale(1);
-            text-shadow: 0 0 10px var(--accent-color);
+            text-shadow: 0 0 10px var(--les-text-secondary);
         }
         25% { 
             transform: translateY(-10px) scale(1.1);
-            text-shadow: 0 0 20px var(--accent-color);
+            text-shadow: 0 0 20px var(--les-text-secondary);
         }
         50% { 
             transform: translateY(0) scale(1.2);
-            text-shadow: 0 0 30px var(--accent-color);
+            text-shadow: 0 0 30px var(--les-text-secondary);
         }
         75% { 
             transform: translateY(-5px) scale(1.1);
-            text-shadow: 0 0 20px var(--accent-color);
+            text-shadow: 0 0 20px var(--les-text-secondary);
         }
     }
 
@@ -531,17 +485,17 @@
     .subtitle {
         margin-top: 1rem;
         font-size: 1rem;
-        color: var(--secondary-color);
+        color: var(--les-accent-secondary);
     }
 
     .typing-text {
         animation: typing 4s steps(40) infinite;
-        border-right: 2px solid var(--accent-color);
+        border-right: 2px solid var(--les-text-secondary);
     }
 
     .cursor {
         animation: cursor-blink 1s infinite;
-        color: var(--accent-color);
+        color: var(--les-text-secondary);
     }
 
     @keyframes typing {
@@ -562,7 +516,7 @@
     .docs-nav {
         display: flex;
         padding: 0.5rem 1rem;
-        border-bottom: 1px solid var(--border-color);
+        border-bottom: 1px solid var(--les-border-primary);
         background: rgba(0, 0, 0, 0.3);
         gap: 0.5rem;
         overflow-x: auto;
@@ -574,8 +528,8 @@
         gap: 0.5rem;
         padding: 0.75rem 1rem;
         background: transparent;
-        border: 1px solid var(--border-color);
-        color: var(--text-color);
+        border: 1px solid var(--les-border-primary);
+        color: var(--les-text-primary);
         cursor: pointer;
         transition: all 0.2s;
         white-space: nowrap;
@@ -584,13 +538,13 @@
 
     .nav-item:hover {
         background: rgba(255, 255, 255, 0.1);
-        box-shadow: 0 0 10px var(--primary-color);
+        box-shadow: 0 0 10px var(--les-accent-primary);
     }
 
     .nav-item.active {
-        background: var(--nav-active);
-        color: var(--background-color);
-        box-shadow: 0 0 15px var(--nav-active);
+        background: var(--les-accent-primary);
+        color: var(--les-bg-primary);
+        box-shadow: 0 0 15px var(--les-accent-primary);
     }
 
     .nav-icon {
@@ -612,10 +566,10 @@
 
     .section-title {
         font-size: 2rem;
-        color: var(--primary-color);
+        color: var(--les-accent-primary);
         margin-bottom: 2rem;
         text-align: center;
-        text-shadow: 0 0 10px var(--primary-color);
+        text-shadow: 0 0 10px var(--les-accent-primary);
     }
 
     /* Info Grid */
@@ -627,15 +581,15 @@
     }
 
     .info-card {
-        background: var(--card-background);
-        border: 1px solid var(--border-color);
+        background: var(--les-bg-secondary);
+        border: 1px solid var(--les-border-primary);
         padding: 1.5rem;
         border-radius: 4px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     }
 
     .info-card h3 {
-        color: var(--secondary-color);
+        color: var(--les-accent-secondary);
         margin-bottom: 1rem;
         font-size: 1.2rem;
     }
@@ -651,7 +605,7 @@
         width: 12px;
         height: 12px;
         border-radius: 50%;
-        background: var(--accent-color);
+        background: var(--les-accent-primary);
         animation: status-pulse 2s ease-in-out infinite;
     }
 
@@ -678,14 +632,14 @@
     }
 
     .crypto-card {
-        background: var(--card-background);
-        border: 1px solid var(--border-color);
+        background: var(--les-bg-secondary);
+        border: 1px solid var(--les-border-primary);
         padding: 2rem;
         border-radius: 4px;
     }
 
     .crypto-card h3 {
-        color: var(--primary-color);
+        color: var(--les-accent-primary);
         margin-bottom: 1rem;
     }
 
@@ -697,8 +651,8 @@
     }
 
     .tech-tag {
-        background: var(--primary-color);
-        color: var(--background-color);
+        background: var(--les-accent-primary);
+        color: var(--les-bg-primary);
         padding: 0.25rem 0.5rem;
         font-size: 0.8rem;
         border-radius: 2px;
@@ -708,11 +662,11 @@
         margin-top: 1rem;
         padding: 1rem;
         background: rgba(0, 0, 0, 0.5);
-        border-left: 3px solid var(--accent-color);
+        border-left: 3px solid var(--les-accent-primary);
     }
 
     .use-case code {
-        color: var(--accent-color);
+        color: var(--les-accent-primary);
         font-family: inherit;
     }
 
@@ -724,8 +678,8 @@
     }
 
     .feature-status, .security-note {
-        background: var(--card-background);
-        border: 1px solid var(--border-color);
+        background: var(--les-bg-secondary);
+        border: 1px solid var(--les-border-primary);
         padding: 2rem;
         border-radius: 4px;
     }
@@ -741,15 +695,15 @@
     }
 
     .status-list li.implemented {
-        color: var(--accent-color);
+        color: var(--les-accent-primary);
     }
 
     .status-list li.in-progress {
-        color: var(--secondary-color);
+        color: var(--les-accent-secondary);
     }
 
     .status-list li.planned {
-        color: var(--text-color);
+        color: var(--les-text-primary);
         opacity: 0.6;
     }
 
@@ -766,7 +720,7 @@
         top: 0;
         bottom: 0;
         width: 2px;
-        background: var(--border-color);
+        background: var(--les-border-primary);
     }
 
     .roadmap-item {
@@ -782,36 +736,36 @@
         width: 1rem;
         height: 1rem;
         border-radius: 50%;
-        border: 2px solid var(--border-color);
-        background: var(--background-color);
+        border: 2px solid var(--les-border-primary);
+        background: var(--les-bg-primary);
     }
 
     .roadmap-item.completed .roadmap-marker {
-        background: var(--accent-color);
-        border-color: var(--accent-color);
+        background: var(--les-accent-primary);
+        border-color: var(--les-accent-primary);
     }
 
     .roadmap-item.current .roadmap-marker {
-        background: var(--primary-color);
-        border-color: var(--primary-color);
+        background: var(--les-accent-primary);
+        border-color: var(--les-accent-primary);
         animation: roadmap-pulse 2s ease-in-out infinite;
     }
 
     @keyframes roadmap-pulse {
-        0%, 100% { box-shadow: 0 0 0 0 var(--primary-color); }
+        0%, 100% { box-shadow: 0 0 0 0 var(--les-accent-primary); }
         50% { box-shadow: 0 0 0 10px transparent; }
     }
 
     .roadmap-content h3 {
-        color: var(--secondary-color);
+        color: var(--les-accent-secondary);
         margin-bottom: 0.5rem;
     }
 
     .roadmap-status {
         display: inline-block;
         padding: 0.25rem 0.5rem;
-        background: var(--primary-color);
-        color: var(--background-color);
+        background: var(--les-accent-primary);
+        color: var(--les-bg-primary);
         font-size: 0.8rem;
         border-radius: 2px;
         margin-top: 0.5rem;
@@ -825,15 +779,15 @@
     }
 
     .security-principle {
-        background: var(--card-background);
-        border: 1px solid var(--border-color);
+        background: var(--les-bg-secondary);
+        border: 1px solid var(--les-border-primary);
         padding: 2rem;
         border-radius: 4px;
         text-align: center;
     }
 
     .security-principle h3 {
-        color: var(--primary-color);
+        color: var(--les-accent-primary);
         margin-bottom: 1rem;
         font-size: 1.5rem;
     }
@@ -841,7 +795,7 @@
     /* Footer */
     .docs-footer {
         padding: 1rem;
-        border-top: 1px solid var(--border-color);
+        border-top: 1px solid var(--les-border-primary);
         text-align: center;
         font-size: 0.8rem;
         background: rgba(0, 0, 0, 0.3);
