@@ -16,7 +16,7 @@ export const DATA_MIGRATION_REGISTRY: MigrationInfo[] = [
     fromVersion: 0,
     toVersion: 1,
     description: 'Миграция accounts для добавления поля friendsByIds',
-    fileName: 'data_migration_accounts_friends'
+    fileName: '1_data_migration_accounts_friends'
   },
   // Здесь будут другие миграции данных
 ];
