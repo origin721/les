@@ -4,6 +4,7 @@
  */
 
 import { prodError, prodInfo, devMigration } from '../../core/debug/logger';
+import { KEYS } from '../../core/local-storage/constants';
 import type { MigrationInfo } from './types';
 
 /**
@@ -86,7 +87,7 @@ export async function runDataMigrations(
   }
 
   // Обновляем версию данных в localStorage
-  localStorage.setItem('data_migration_version', targetDataVersion.toString());
+  localStorage.setItem(KEYS.DATA_MIGRATION_VERSION, targetDataVersion.toString());
   prodInfo(`✅ Все миграции данных выполнены. Версия данных обновлена до ${targetDataVersion}`);
 }
 
@@ -94,7 +95,7 @@ export async function runDataMigrations(
  * Получает текущую версию данных из localStorage
  */
 export function getCurrentDataVersion(): number {
-  const version = localStorage.getItem('data_migration_version');
+  const version = localStorage.getItem(KEYS.DATA_MIGRATION_VERSION);
   return version ? parseInt(version, 10) : 0;
 }
 
