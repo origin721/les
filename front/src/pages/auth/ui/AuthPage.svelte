@@ -11,11 +11,10 @@
     import styles from "./AuthPage.module.css";
 
     // Svelte 5 state
-    const pass = writable(null);
-    const passState = writableToState(pass);
     const themeState = writableToState(theme);
     const appAuthStoreState = writableToState(appAuthStore);
     
+    let pass = $state<string | null>(null);
     let keyboardLayout = $state("UNKNOWN");
     let passwordInput: HTMLInputElement;
     let isLoading = $state(false);
@@ -23,7 +22,7 @@
     let loginSuccess = $state(false);
 
     async function submit(e: Event) {
-        if (!passState.state || isLoading) return;
+        if (!pass || isLoading) return;
         e.preventDefault();
         
         // Сброс предыдущих состояний
@@ -34,7 +33,7 @@
         devLog('AuthPage: начинается процесс аутентификации с паролем');
         
         try {
-            await appAuthStore.onLogin(passState.state!);
+            await appAuthStore.onLogin(pass!);
             devLog('AuthPage: процесс аутентификации завершен');
             
             // Проверяем, были ли загружены аккаунты после логина
@@ -136,7 +135,7 @@
     function handlePasswordKeydown(event: KeyboardEvent) {
         // Обработка Escape для очистки поля
         if (event.key === 'Escape') {
-            pass.set(null);
+            pass = null;
             loginError = null;
             loginSuccess = false;
             return;
@@ -267,7 +266,7 @@
                         <input
                             id="password-input"
                             bind:this={passwordInput}
-                            bind:value={passState.state}
+                            bind:value={pass}
                             class={styles.passwordInput}
                             type="password"
                             placeholder="> ACCESS_KEY"
