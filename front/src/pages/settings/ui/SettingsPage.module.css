@@ -119,6 +119,10 @@
   border: 1px solid #ffff00;
 }
 
+.themeSelector {
+  margin-top: 1rem;
+}
+
 .clearOptions {
   display: flex;
   flex-direction: column;

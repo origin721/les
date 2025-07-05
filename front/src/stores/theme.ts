@@ -2,7 +2,28 @@ import { writable } from "svelte/store";
 
 export const themes = ["cyberpunk", "watchdogs", "pixel", "terminal", "arabic"];
 
-export const theme = writable(themes[0]);
+// Получаем начальную тему из localStorage или используем первую по умолчанию
+function getInitialTheme() {
+    if (typeof window !== 'undefined') {
+        const savedTheme = localStorage.getItem('selected-theme');
+        if (savedTheme && themes.includes(savedTheme)) {
+            return savedTheme;
+        }
+    }
+    return themes[0];
+}
+
+export const theme = writable(getInitialTheme());
+
+// Сохраняем тему при изменении
+theme.subscribe((value) => {
+    if (typeof window !== 'undefined') {
+        localStorage.setItem('selected-theme', value);
+        // Применяем класс темы к body
+        document.body.className = document.body.className.replace(/theme-\w+/g, '');
+        document.body.classList.add(`theme-${value}`);
+    }
+});
 
 export function toggleTheme() {
     theme.update((currentTheme) => {
@@ -10,4 +31,10 @@ export function toggleTheme() {
         const nextIndex = (currentIndex + 1) % themes.length;
         return themes[nextIndex];
     });
+}
+
+export function setTheme(selectedTheme: string) {
+    if (themes.includes(selectedTheme)) {
+        theme.set(selectedTheme);
+    }
 }

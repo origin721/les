@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button, StatusIndicator } from "../../../components/ui";
+  import { Button, StatusIndicator, ThemeSelector } from "../../../components/ui";
   import { ROUTES, Link } from "../../../routing";
   import { clearAllAppData, clearServiceWorkersOnly, clearStorageOnly, clearIndexedDBOnly } from '../../../core/clear_app_data';
   import { theme } from '../../../stores/theme';
@@ -54,7 +54,7 @@
         <div class={styles.settingHeader}>
           <div class={styles.settingName}>
             <span class={styles.settingIcon}>🎨</span>
-            Текущая тема
+            Темы интерфейса
           </div>
           <StatusIndicator 
             status="active" 
@@ -63,8 +63,11 @@
           />
         </div>
         <div class={styles.settingDescription}>
-          Активная тема интерфейса: {$theme.toUpperCase()}. 
-          Используйте переключатель тем в правом верхнем углу для изменения.
+          Выберите тему интерфейса для персонализации внешнего вида приложения. 
+          Изменения применяются мгновенно.
+        </div>
+        <div class={styles.themeSelector}>
+          <ThemeSelector />
         </div>
       </div>
 
