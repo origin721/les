@@ -1,5 +1,6 @@
-import { DB_NAMES, DB_UPDATE_STATUS, type DbStateRecord, type DbUpdateStatus } from '../constants';
+import { DB_NAMES, DB_UPDATE_STATUS } from '../constants';
 import { prodInfo, prodError, debugLog } from '../../core/debug/logger';
+
 
 /**
  * Версия схемы базы состояний
@@ -11,7 +12,7 @@ const DB_STATE_MANAGER_VERSION = 1;
  */
 function openStateDatabase(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open(DB_NAMES.DB_STATE_MANAGER, DB_STATE_MANAGER_VERSION);
+    const request = indexedDB.open(DB_NAMES.DB_STATE_MANAGER_V1, DB_STATE_MANAGER_VERSION);
     
     request.onupgradeneeded = (event) => {
       const db = request.result;

@@ -53,7 +53,7 @@ export async function indexdb_wrapper(
 
     try {
       indexdb_order(async (onFinishOrder) => {
-        const dbName = DB_NAMES.MAIN_LES_STORE;
+        const dbName = DB_NAMES.MAIN_LES_STORE_V1;
 
         resultPromise.finally(onFinishOrder);
 
