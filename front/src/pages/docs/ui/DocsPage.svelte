@@ -19,7 +19,7 @@
 
 <div class={styles["docs-container"]} data-widget-name="DocsPage">
     <header class={styles["docs-header"]}>
-        <div class="back-link-container">
+        <div class="back-link-container z-10">
             <Link href={ROUTES.HOME} className={styles["back-link"]}>
                 <svg
                     xmlns="http://www.w3.org/2000/svg"

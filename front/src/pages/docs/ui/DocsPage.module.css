@@ -30,7 +30,6 @@
     color: var(--les-accent-secondary);
     text-decoration: none;
     transition: all 0.2s;
-    z-index: 10;
 }
 
 .back-link:hover {
