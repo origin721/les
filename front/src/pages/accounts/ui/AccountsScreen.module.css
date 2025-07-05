@@ -44,7 +44,10 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(45deg, rgba(0, 255, 255, 0.1), rgba(255, 0, 255, 0.1));
+  background: linear-gradient(45deg, 
+    color-mix(in srgb, var(--les-accent-secondary) 10%, transparent), 
+    color-mix(in srgb, var(--les-accent-primary) 10%, transparent)
+  );
   opacity: 0;
   transition: opacity 0.3s ease;
   z-index: 1;
@@ -53,9 +56,9 @@
 .accountCard:hover {
   transform: translateY(-8px) rotateX(5deg);
   box-shadow: 
-    0 20px 40px rgba(0, 255, 255, 0.3),
-    0 0 60px rgba(0, 255, 255, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    0 20px 40px color-mix(in srgb, var(--les-accent-secondary) 30%, transparent),
+    0 0 60px color-mix(in srgb, var(--les-accent-secondary) 10%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--les-text-primary) 10%, transparent);
 }
 
 .accountCard:hover::before {
@@ -75,7 +78,7 @@
   align-items: center;
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+  border-bottom: 1px solid color-mix(in srgb, var(--les-accent-secondary) 20%, transparent);
   position: relative;
 }
 
@@ -119,7 +122,7 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 1rem;
-  background: rgba(0, 255, 255, 0.1);
+  background: color-mix(in srgb, var(--les-accent-secondary) 10%, transparent);
   border-radius: 20px;
   border: 1px solid var(--les-accent-secondary);
 }
@@ -193,7 +196,7 @@
   justify-content: flex-end;
   margin-top: 1rem;
   padding-top: 1rem;
-  border-top: 1px solid rgba(0, 255, 255, 0.1);
+  border-top: 1px solid color-mix(in srgb, var(--les-accent-secondary) 10%, transparent);
 }
 
 .emptyState {
@@ -201,8 +204,14 @@
   text-align: center;
   padding: 4rem;
   background: 
-    linear-gradient(135deg, rgba(0, 255, 255, 0.05), rgba(255, 0, 255, 0.05)),
-    radial-gradient(circle at 50% 50%, rgba(0, 255, 255, 0.1) 0%, transparent 70%);
+    linear-gradient(135deg, 
+      color-mix(in srgb, var(--les-accent-secondary) 5%, transparent), 
+      color-mix(in srgb, var(--les-accent-primary) 5%, transparent)
+    ),
+    radial-gradient(circle at 50% 50%, 
+      color-mix(in srgb, var(--les-accent-secondary) 10%, transparent) 0%, 
+      transparent 70%
+    );
   border: 2px dashed var(--les-border-primary);
   border-radius: 12px;
   position: relative;
@@ -216,7 +225,11 @@
   left: -50%;
   width: 200%;
   height: 200%;
-  background: conic-gradient(from 0deg, transparent 0deg, rgba(0, 255, 255, 0.1) 90deg, transparent 180deg);
+  background: conic-gradient(from 0deg, 
+    transparent 0deg, 
+    color-mix(in srgb, var(--les-accent-secondary) 10%, transparent) 90deg, 
+    transparent 180deg
+  );
   animation: rotateGlow 8s linear infinite;
 }
 
@@ -274,7 +287,7 @@
 
 .securityBadge {
   padding: 0.3rem 0.8rem;
-  background: rgba(0, 255, 255, 0.1);
+  background: color-mix(in srgb, var(--les-accent-secondary) 10%, transparent);
   border: 1px solid var(--les-accent-secondary);
   border-radius: 20px;
   font-size: 0.7rem;
@@ -286,8 +299,8 @@
 }
 
 @keyframes badgeGlow {
-  0%, 100% { box-shadow: 0 0 5px rgba(0, 255, 255, 0.3); }
-  50% { box-shadow: 0 0 15px rgba(0, 255, 255, 0.6); }
+  0%, 100% { box-shadow: 0 0 5px color-mix(in srgb, var(--les-accent-secondary) 30%, transparent); }
+  50% { box-shadow: 0 0 15px color-mix(in srgb, var(--les-accent-secondary) 60%, transparent); }
 }
 
 /* Responsive */
