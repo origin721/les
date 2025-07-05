@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { onMount } from "svelte";
     import { generateRandomString } from "../../core/random/generateRandomString";
     import { getRandomInRange } from "../../core/random/getRandomInRange";
     import { theme } from "../../stores/theme";
@@ -18,6 +19,16 @@
             clearInterval(interval);
         };
     });
+
+    let viewText = generateRandomString(getRandomInRange(100, 130));
+
+    onMount(() => {
+        const idInterval = setInterval(() => {
+            viewText = generateRandomString(getRandomInRange(100, 130));
+        }, 30);
+
+        return () => clearInterval(idInterval);
+    })
 </script>
 
 <div class="theme-{$theme} loading-phase">
@@ -27,7 +38,7 @@
             x="50%"
             y="50%"
             dominant-baseline="middle"
-            text-anchor="middle">{generateRandomString(getRandomInRange(100, 130))}</text
+            text-anchor="middle">{viewText}</text
         >
     </svg>
     <div class="progress-bar-container">
