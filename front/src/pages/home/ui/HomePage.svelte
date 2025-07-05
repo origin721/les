@@ -13,7 +13,7 @@
         { href: ROUTES.ADD_PEER, title: "ДОБАВИТЬ ПИРА", icon: "🤝", description: "Подключение к P2P сети" },
         { href: ROUTES.RANDOM, title: "РАНДОМ", icon: "🎲", description: "Генерация случайных данных" },
         { href: ROUTES.SETTINGS, title: "НАСТРОЙКИ", icon: "⚙️", description: "Конфигурация системы" },
-        { href: ROUTES.AUTH_DOCS, title: "ДОКУМЕНТАЦИЯ", icon: "📋", description: "Техническая информация" },
+        { href: ROUTES.DOCS, title: "ДОКУМЕНТАЦИЯ", icon: "📋", description: "Техническая информация" },
         { href: ROUTES.NOT_FOUND, title: "404 СТРАНИЦА", icon: "⚠️", description: "Демо ошибки не найдено" }
     ];
 </script>
