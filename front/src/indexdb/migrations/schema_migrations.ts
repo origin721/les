@@ -1,5 +1,7 @@
 import { prodInfo, prodError, devDB } from '../../core/debug/logger';
-import { KEYS } from '../../core/local-storage/constants';
+
+// Статические импорты всех миграций
+import * as migration_0_initialization_clear from './schema_migrations/0_initialization_clear';
 
 /**
  * Информация о миграции схемы
@@ -14,7 +16,7 @@ interface SchemaMigrationInfo {
 /**
  * Функция миграции схемы
  */
-type SchemaMigrationFunction = (db: IDBDatabase) => Promise<void>;
+type SchemaMigrationFunction = (db: IDBDatabase) => void;
 
 /**
  * Загружаемый модуль миграции
@@ -36,28 +38,29 @@ const SCHEMA_MIGRATIONS_REGISTRY: Record<number, string> = {
 };
 
 /**
- * Асинхронно загружает модуль миграции по версии
+ * Объект со статически загруженными модулями миграций
  */
-async function loadSchemaMigration(version: number): Promise<SchemaMigrationModule | null> {
-  const migrationName = SCHEMA_MIGRATIONS_REGISTRY[version];
+const MIGRATION_MODULES: Record<number, SchemaMigrationModule> = {
+  0: migration_0_initialization_clear as SchemaMigrationModule,
+  // Добавлять новые миграции:
+  // 1: migration_1_add_indexes as SchemaMigrationModule,
+  // 2: migration_2_add_settings_store as SchemaMigrationModule,
+};
+
+/**
+ * Синхронно получает модуль миграции по версии
+ */
+function getSchemaMigration(version: number): SchemaMigrationModule | null {
+  const migrationModule = MIGRATION_MODULES[version];
   
-  if (!migrationName) {
-    prodError(`Миграция для версии ${version} не найдена в реестре`);
+  if (!migrationModule) {
+    prodError(`Миграция для версии ${version} не найдена в модулях`);
     return null;
   }
 
-  try {
-    prodInfo(`🔄 Загружаем модуль миграции схемы: ${migrationName}`);
-    
-    // Динамический импорт модуля миграции
-    const module = await import(`./schema_migrations/${migrationName}`);
-    
-    devDB(`✅ Модуль миграции ${migrationName} успешно загружен`);
-    return module;
-  } catch (error) {
-    prodError(`Ошибка загрузки модуля миграции ${migrationName}:`, error);
-    return null;
-  }
+  prodInfo(`🔄 Используем модуль миграции схемы для версии: ${version}`);
+  devDB(`✅ Модуль миграции версии ${version} загружен`);
+  return migrationModule;
 }
 
 /**
@@ -81,8 +84,8 @@ export async function runSchemaMigrations(
       
       prodInfo(`📋 Выполняем миграцию с версии ${version} до ${targetVersion}`);
       
-      // Загружаем модуль миграции
-      const migrationModule = await loadSchemaMigration(version);
+      // Получаем модуль миграции
+      const migrationModule = getSchemaMigration(version);
       
       if (!migrationModule) {
         throw new Error(`Не удалось загрузить миграцию для версии ${version}`);
@@ -98,7 +101,7 @@ export async function runSchemaMigrations(
 
       // Выполняем миграцию
       const startTime = Date.now();
-      await migrationFunction(db);
+      migrationFunction(db);
       const executionTime = Date.now() - startTime;
       
       prodInfo(`✅ Миграция ${migrationFunctionName} выполнена за ${executionTime}мс`);
@@ -106,10 +109,6 @@ export async function runSchemaMigrations(
 
     prodInfo('🏁 Все миграции схемы IndexedDB выполнены успешно. Финальные хранилища:', 
       Array.from(db.objectStoreNames));
-    
-    // Сохраняем версию схемы в localStorage
-    localStorage.setItem(KEYS.SCHEMA_VERSION, newVersion.toString());
-    prodInfo('📝 Версия схемы обновлена в localStorage:', newVersion);
     
   } catch (error) {
     prodError('❌ Критическая ошибка во время выполнения миграций схемы IndexedDB:', error);
@@ -129,4 +128,133 @@ export function getAvailableSchemaMigrations(): Record<number, string> {
  */
 export function hasSchemaMigration(version: number): boolean {
   return version in SCHEMA_MIGRATIONS_REGISTRY;
+}
+
+/**
+ * Получает максимальную версию схемы из реестра миграций
+ */
+export function getMaxSchemaVersion(): number {
+  const versions = Object.keys(SCHEMA_MIGRATIONS_REGISTRY).map(Number);
+  return versions.length > 0 ? Math.max(...versions) + 1 : 1;
+}
+
+/**
+ * Предварительно загружает только необходимые модули миграций
+ */
+export async function preloadSchemaMigrations(
+  oldVersion: number, 
+  newVersion: number
+): Promise<Map<number, SchemaMigrationModule>> {
+  const loadedMigrations = new Map<number, SchemaMigrationModule>();
+  
+  prodInfo('🔄 Предварительная загрузка миграций схемы:', {
+    oldVersion,
+    newVersion
+  });
+
+  try {
+    // Получаем только необходимые миграции
+    for (let version = oldVersion; version < newVersion; version++) {
+      const migrationModule = getSchemaMigration(version);
+      
+      if (!migrationModule) {
+        throw new Error(`Не удалось получить миграцию для версии ${version}`);
+      }
+      
+      loadedMigrations.set(version, migrationModule);
+    }
+    
+    prodInfo('✅ Необходимые модули миграций предварительно загружены');
+    return loadedMigrations;
+    
+  } catch (error) {
+    prodError('❌ Ошибка предварительной загрузки миграций:', error);
+    throw error;
+  }
+}
+
+/**
+ * Выполняет миграции схемы IndexedDB с предварительно загруженными модулями
+ * ВАЖНО: Эта функция должна выполняться синхронно в контексте version change transaction
+ */
+export function runSchemaMigrationsSync(
+  db: IDBDatabase, 
+  oldVersion: number, 
+  newVersion: number,
+  preloadedMigrations: Map<number, SchemaMigrationModule>
+): void {
+  prodInfo('🚀 Начинаем выполнение миграций схемы IndexedDB:', {
+    oldVersion,
+    newVersion,
+    existingStores: Array.from(db.objectStoreNames)
+  });
+
+  try {
+    // Выполняем миграции последовательно от oldVersion до newVersion
+    for (let version = oldVersion; version < newVersion; version++) {
+      const targetVersion = version + 1;
+      
+      prodInfo(`📋 Выполняем миграцию с версии ${version} до ${targetVersion}`);
+      
+      // Получаем предварительно загруженный модуль миграции
+      const migrationModule = preloadedMigrations.get(version);
+      
+      if (!migrationModule) {
+        throw new Error(`Предварительно загруженная миграция для версии ${version} не найдена`);
+      }
+
+      // Находим функцию миграции в модуле
+      const migrationFunctionName = `migration_${version}_${migrationModule.migrationInfo.name}`;
+      const migrationFunction = migrationModule[migrationFunctionName] as SchemaMigrationFunction;
+      
+      if (!migrationFunction || typeof migrationFunction !== 'function') {
+        throw new Error(`Функция миграции ${migrationFunctionName} не найдена в модуле`);
+      }
+
+      // Выполняем миграцию синхронно
+      const startTime = Date.now();
+      migrationFunction(db);
+      const executionTime = Date.now() - startTime;
+      
+      prodInfo(`✅ Миграция ${migrationFunctionName} выполнена за ${executionTime}мс`);
+    }
+
+    prodInfo('🏁 Все миграции схемы IndexedDB выполнены успешно. Финальные хранилища:', 
+      Array.from(db.objectStoreNames));
+    
+  } catch (error) {
+    prodError('❌ Критическая ошибка во время выполнения миграций схемы IndexedDB:', error);
+    throw error;
+  }
+}
+
+/**
+ * Получает текущую версию базы данных без её обновления
+ */
+export async function getCurrentDbVersion(dbName: string): Promise<number> {
+  return new Promise((resolve, reject) => {
+    try {
+      // Открываем БД без указания версии для проверки текущей версии
+      const checkRequest = indexedDB.open(dbName);
+      
+      checkRequest.onsuccess = () => {
+        const currentVersion = checkRequest.result.version;
+        checkRequest.result.close(); // Сразу закрываем соединение
+        resolve(currentVersion);
+      };
+      
+      checkRequest.onerror = () => {
+        reject(checkRequest.error);
+      };
+      
+      // Если БД не существует, onupgradeneeded не вызовется и мы получим версию 1
+      checkRequest.onupgradeneeded = () => {
+        checkRequest.result.close();
+        resolve(0); // БД не существует
+      };
+      
+    } catch (error) {
+      reject(error);
+    }
+  });
 }

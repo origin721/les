@@ -4,7 +4,6 @@
  */
 
 import { prodError, prodInfo, devMigration } from '../../core/debug/logger';
-import { KEYS } from '../../core/local-storage/constants';
 import type { MigrationInfo } from './types';
 
 /**
@@ -30,24 +29,27 @@ const migrationModules = import.meta.glob('./data_migrations/*.ts', {
 
 /**
  * Проверяет и выполняет необходимые миграции данных
- * @param currentDataVersion - текущая версия данных (хранится в localStorage)
- * @param targetDataVersion - целевая версия данных
  */
-export async function runDataMigrations(
-  currentDataVersion: number,
-  targetDataVersion: number
-): Promise<void> {
+export async function runDataMigrations({
+  db,
+  oldVersion,
+  newVersion
+}: {
+  db: IDBDatabase;
+  oldVersion: number;
+  newVersion: number;
+}): Promise<void> {
   prodInfo(
-    `🔄 Проверяем необходимость миграции данных: ${currentDataVersion} -> ${targetDataVersion}`
+    `🔄 Проверяем необходимость миграции данных: ${oldVersion} -> ${newVersion}`
   );
 
-  if (currentDataVersion >= targetDataVersion) {
+  if (oldVersion >= newVersion) {
     prodInfo('✅ Миграции данных не требуются');
     return;
   }
 
   const migrationsToRun = DATA_MIGRATION_REGISTRY.filter(
-    migration => migration.fromVersion >= currentDataVersion && migration.toVersion <= targetDataVersion
+    migration => migration.fromVersion >= oldVersion && migration.toVersion <= newVersion
   );
 
   if (migrationsToRun.length === 0) {
@@ -76,7 +78,7 @@ export async function runDataMigrations(
       }
       
       prodInfo(`⚡ Выполняем миграцию данных: ${migration.description}`);
-      await migrationFunction();
+      await migrationFunction(db);
       
       prodInfo(`✅ Миграция данных ${migration.fileName} выполнена успешно`);
       
@@ -86,27 +88,25 @@ export async function runDataMigrations(
     }
   }
 
-  // Обновляем версию данных в localStorage
-  localStorage.setItem(KEYS.DATA_MIGRATION_VERSION, targetDataVersion.toString());
-  prodInfo(`✅ Все миграции данных выполнены. Версия данных обновлена до ${targetDataVersion}`);
-}
-
-/**
- * Получает текущую версию данных из localStorage
- */
-export function getCurrentDataVersion(): number {
-  const version = localStorage.getItem(KEYS.DATA_MIGRATION_VERSION);
-  return version ? parseInt(version, 10) : 0;
+  prodInfo(`✅ Все миграции данных выполнены до версии ${newVersion}`);
 }
 
 /**
  * Автоматически проверяет и выполняет миграции данных при инициализации
  */
-export async function autoRunDataMigrations(): Promise<void> {
-  const currentVersion = getCurrentDataVersion();
+export async function autoRunDataMigrations({
+  db,
+  oldVersion,
+  newVersion
+}: {
+  db: IDBDatabase;
+  oldVersion: number;
+  newVersion: number;
+}): Promise<void> {
   const targetVersion = Math.max(...DATA_MIGRATION_REGISTRY.map(m => m.toVersion), 0);
   
-  if (currentVersion < targetVersion) {
-    await runDataMigrations(currentVersion, targetVersion);
+  // Если есть миграции данных для выполнения
+  if (oldVersion < targetVersion && newVersion >= targetVersion) {
+    await runDataMigrations({ db, oldVersion, newVersion });
   }
 }

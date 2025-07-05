@@ -4,7 +4,7 @@ import { prodInfo, devDB } from '../../../core/debug/logger';
  * Миграция 0: Инициализация базы данных с базовыми хранилищами
  * Создает начальную структуру БД с accounts, friends и rooms
  */
-export async function migration_0_initialization_clear(db: IDBDatabase): Promise<void> {
+export function migration_0_initialization_clear(db: IDBDatabase): void {
   prodInfo('📦 Выполняем миграцию 0: Создание базовых хранилищ');
   
   // Создание хранилища accounts

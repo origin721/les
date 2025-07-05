@@ -2,7 +2,6 @@ import { indexdb_order } from "./indexdb_order";
 import { debugLog, prodError, prodInfo, devDB } from '../core/debug/logger';
 import { autoRunDataMigrations } from './migrations/data_migrations';
 import { runSchemaMigrations } from './migrations/schema_migrations';
-import { KEYS } from '../core/local-storage/constants';
 
 const counterInfo = {
   open: 0,
@@ -41,16 +40,18 @@ export function indexdb_wrapper(
       ++counterInfo.error;
       debugLog({counterInfo});
     }
-    indexdb_order(onFinishOrder => {
+    indexdb_order((onFinishOrder) => {
+      const dbName = "main_les_store_v1";
 
       resultPromise.finally(onFinishOrder);
 
-      let openRequest = indexedDB.open("main_les_store_v1", 1);
+      const targetVersion = 1; // Устанавливаем фиксированную целевую версию
+      let openRequest = indexedDB.open(dbName, targetVersion);
 
-      openRequest.onupgradeneeded = async function (event) {
+      openRequest.onupgradeneeded = function (event) {
         const db = openRequest.result;
         const oldVersion = event.oldVersion ?? 0;
-        const newVersion = event.newVersion ?? 1;
+        const newVersion = event.newVersion ?? targetVersion;
         
         prodInfo('🔄 IndexDB onupgradeneeded:', {
           oldVersion,
@@ -58,12 +59,34 @@ export function indexdb_wrapper(
           existingStores: Array.from(db.objectStoreNames)
         });
         
-        // Выполняем миграции схемы с асинхронной загрузкой модулей
-        try {
-          await runSchemaMigrations(db, oldVersion, newVersion);
-        } catch (error) {
-          prodError('Критическая ошибка во время миграции IndexedDB:', error);
-          throw error;
+        // Выполняем миграции схемы синхронно (IndexedDB требует синхронного выполнения)
+        if (oldVersion < newVersion) {
+          try {
+            // Используем простой подход для базовой инициализации
+            if (oldVersion === 0 && newVersion >= 1) {
+              prodInfo('📦 Создаем новую базу данных с базовыми хранилищами');
+
+              if (!db.objectStoreNames.contains('accounts')) {
+                db.createObjectStore('accounts', { keyPath: 'id' });
+                devDB('✅ Хранилище accounts создано');
+              }
+
+              if (!db.objectStoreNames.contains('friends')) {
+                db.createObjectStore('friends', { keyPath: 'id' });
+                devDB('✅ Хранилище friends создано');
+              }
+
+              if (!db.objectStoreNames.contains('rooms')) {
+                db.createObjectStore('rooms', { keyPath: 'id' });
+                devDB('✅ Хранилище rooms создано');
+              }
+            }
+
+            prodInfo('🏁 IndexDB миграция завершена. Финальные хранилища:', Array.from(db.objectStoreNames));
+          } catch (error) {
+            prodError('Критическая ошибка во время миграции IndexedDB:', error);
+            throw error;
+          }
         }
       };
 
@@ -75,29 +98,13 @@ export function indexdb_wrapper(
       openRequest.onsuccess = function () {
         let db = openRequest.result;
 
-        // Проверяем синхронизацию версий
-        const schemaVersion = parseInt(localStorage.getItem(KEYS.SCHEMA_VERSION) || '0', 10);
-        const currentDBVersion = db.version;
-        
-        prodInfo('🔍 Проверка синхронизации версий:', {
-          schemaVersionInStorage: schemaVersion,
-          currentDBVersion: currentDBVersion,
-          isSync: schemaVersion === currentDBVersion
-        });
+        prodInfo('✅ IndexDB соединение установлено, версия БД:', db.version);
 
-        // Сначала выполняем миграции данных, затем вызываем onChange
-        autoRunDataMigrations()
+        // Выполняем миграции данных, затем вызываем onChange
+        const finalVersion = db.version;
+        autoRunDataMigrations({ db, oldVersion: 0, newVersion: finalVersion })
           .then(() => {
             prodInfo('✅ Миграции данных выполнены, БД готова к использованию');
-            
-            // Финальная проверка синхронизации
-            const dataVersion = parseInt(localStorage.getItem(KEYS.DATA_MIGRATION_VERSION) || '0', 10);
-            prodInfo('📊 Финальное состояние версий:', {
-              schemaVersion: currentDBVersion,
-              dataVersion: dataVersion,
-              allInSync: currentDBVersion === dataVersion
-            });
-            
             return onChange(db);
           })
           .then(() => {
@@ -106,25 +113,15 @@ export function indexdb_wrapper(
           })
           .catch(rej);
 
-
         db.onversionchange = function () {
           db.close();
-          //console.log("База данных устарела, пожалуйста, перезагрузите страницу.");
-          //rej();
         };
-
-        // продолжить работу с базой данных, используя объект db
       };
 
       openRequest.onblocked = function () {
-        // это событие не должно срабатывать, если мы правильно обрабатываем onversionchange
-
-        // это означает, что есть ещё одно открытое соединение с той же базой данных
-        // и он не был закрыт после того, как для него сработал db.onversionchange
-        debugLog('Событие не должно было сработать');
+        debugLog('Database connection blocked');
         rej(new Error('Database connection blocked'));
       };
-
     });
   });
 
