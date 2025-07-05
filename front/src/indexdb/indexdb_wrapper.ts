@@ -1,5 +1,7 @@
 import { indexdb_order } from "./indexdb_order";
 import { debugLog, prodError, prodInfo, devDB } from '../core/debug/logger';
+import { autoRunDataMigrations } from './migrations/data_migrations';
+import { KEYS } from '../core/local-storage/constants';
 
 const counterInfo = {
   open: 0,
@@ -81,6 +83,10 @@ export function indexdb_wrapper(
           // if (oldVersion === 1 && newVersion >= 2) { ... }
           
           prodInfo('🏁 IndexDB миграция завершена. Финальные хранилища:', Array.from(db.objectStoreNames));
+          
+          // Сохраняем версию схемы в localStorage для синхронизации
+          localStorage.setItem(KEYS.SCHEMA_VERSION, newVersion.toString());
+          prodInfo('📝 Версия схемы обновлена в localStorage:', newVersion);
         } catch (error) {
           prodError('Критическая ошибка во время миграции IndexedDB:', error);
           throw error;
@@ -95,7 +101,31 @@ export function indexdb_wrapper(
       openRequest.onsuccess = function () {
         let db = openRequest.result;
 
-        onChange(db)
+        // Проверяем синхронизацию версий
+        const schemaVersion = parseInt(localStorage.getItem(KEYS.SCHEMA_VERSION) || '0', 10);
+        const currentDBVersion = db.version;
+        
+        prodInfo('🔍 Проверка синхронизации версий:', {
+          schemaVersionInStorage: schemaVersion,
+          currentDBVersion: currentDBVersion,
+          isSync: schemaVersion === currentDBVersion
+        });
+
+        // Сначала выполняем миграции данных, затем вызываем onChange
+        autoRunDataMigrations()
+          .then(() => {
+            prodInfo('✅ Миграции данных выполнены, БД готова к использованию');
+            
+            // Финальная проверка синхронизации
+            const dataVersion = parseInt(localStorage.getItem(KEYS.DATA_MIGRATION_VERSION) || '0', 10);
+            prodInfo('📊 Финальное состояние версий:', {
+              schemaVersion: currentDBVersion,
+              dataVersion: dataVersion,
+              allInSync: currentDBVersion === dataVersion
+            });
+            
+            return onChange(db);
+          })
           .then(() => {
             db.close();
             res(undefined);

@@ -15,7 +15,6 @@ import {
   generate_keys_ed25519,
 } from "../core/crypt";
 import { connectionLibp2p } from "../api/libp2p/createLibp2pNode";
-import { autoRunDataMigrations } from "../indexdb/migrations/data_migrations";
 import { devLog, prodInfo } from "../core/debug/logger";
 //import { createLibp2pNode } from "../api/libp2p/createLibp2pNode";
 //import { tmpTest } from "../api/libp2p/tmp";
@@ -53,11 +52,6 @@ export const appProcessesMount = () => {
     broadcast_middleware();
     prodInfo('broadcast_middleware completed');
     
-    // Автоматическая миграция данных (асинхронная загрузка миграций)
-    devLog('Starting autoRunDataMigrations...');
-    await autoRunDataMigrations();
-    prodInfo('autoRunDataMigrations completed');
-
 
    //Promise.all([generate_keys_curve25519(), generate_keys_ed25519()]).then(
    //  ([c25519, e25519]) => {
