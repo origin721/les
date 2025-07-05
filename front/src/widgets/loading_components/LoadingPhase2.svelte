@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { getRandomInRange } from "../../core/random/getRandomInRange";
     import { theme } from "../../stores/theme";
 
     let progress = $state(0);
@@ -25,7 +26,7 @@
             x="50%"
             y="50%"
             dominant-baseline="middle"
-            text-anchor="middle">AUTSECURCATING</text
+            text-anchor="middle">{getRandomInRange(7, 18)}</text
         >
     </svg>
     <div class="progress-bar-container">
