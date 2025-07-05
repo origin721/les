@@ -6,9 +6,16 @@
     import { theme } from "../../../stores/theme";
     import AuthPageLoading from "./AuthPageLoading.svelte";
     import { devLog, prodError } from "../../../core/debug/logger";
+    import { writableToState } from "../../../core/svelte_default/runs/writableToState.svelte";
+    import { onMount } from 'svelte';
+    import styles from "./AuthPage.module.css";
 
-
+    // Svelte 5 state
     const pass = writable(null);
+    const passState = writableToState(pass);
+    const themeState = writableToState(theme);
+    const appAuthStoreState = writableToState(appAuthStore);
+    
     let keyboardLayout = $state("UNKNOWN");
     let passwordInput: HTMLInputElement;
     let isLoading = $state(false);
@@ -16,7 +23,7 @@
     let loginSuccess = $state(false);
 
     async function submit(e: Event) {
-        if (!$pass || isLoading) return;
+        if (!passState.state || isLoading) return;
         e.preventDefault();
         
         // Сброс предыдущих состояний
@@ -27,13 +34,13 @@
         devLog('AuthPage: начинается процесс аутентификации с паролем');
         
         try {
-            await appAuthStore.onLogin($pass!);
+            await appAuthStore.onLogin(passState.state!);
             devLog('AuthPage: процесс аутентификации завершен');
             
             // Проверяем, были ли загружены аккаунты после логина
             // Добавляем небольшую задержку для обновления store
             setTimeout(() => {
-                const currentAccounts = Object.keys($appAuthStore.byId);
+                const currentAccounts = Object.keys(appAuthStoreState.state.byId);
                 devLog('AuthPage: найдено аккаунтов после логина:', currentAccounts.length);
                 
                 if (currentAccounts.length > 0) {
@@ -71,9 +78,6 @@
             }, 5000);
         }
     }
-
-
-    // TODO: Доработать при добавление акаунта инфу что добавлен или ошибка
 
     // Функция для определения раскладки клавиатуры
     function detectKeyboardLayout(event: KeyboardEvent) {
@@ -142,17 +146,11 @@
         detectKeyboardLayout(event);
     }
 
-    // Получаем цвет индикатора в зависимости от раскладки
+    // Получаем класс индикатора в зависимости от раскладки
     function getLayoutIndicatorClass(layout: string) {
         switch (layout) {
-            case "RU": return "layout-ru";
-            case "EN": return "layout-en";
-            case "PL": return "layout-pl";
-            case "DE": return "layout-de";
-            case "FR": return "layout-fr";
-            case "IT": return "layout-it";
-            case "ES": return "layout-es";
-            default: return "layout-unknown";
+            case "UNKNOWN": return styles.layoutUnknown;
+            default: return ""; // Используем базовый стиль из CSS модуля
         }
     }
 
@@ -178,7 +176,6 @@
     }
 
     // Вызываем инициализацию при монтировании
-    import { onMount } from 'svelte';
     onMount(() => {
         initKeyboardDetection();
     });
@@ -189,12 +186,12 @@
     <AuthPageLoading />
 {/if}
 
-<div class="theme-{$theme}">
-    <div class="auth-page-container" data-widget-name="AuthPage">
-        <header class="auth-header">
-            <div class="back-link-container">
-                {#if Object.entries($appAuthStore.byId).length}
-                    <Link href={ROUTES.ACCOUNTS} className="back-link">
+<div class="theme-{themeState.state}">
+    <div class={styles.authPageContainer} data-widget-name="AuthPage">
+        <header class={styles.authHeader}>
+            <div class={styles.backLinkContainer}>
+                {#if Object.entries(appAuthStoreState.state.byId).length}
+                    <Link href={ROUTES.ACCOUNTS} className={styles.backLink}>
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="24"
@@ -211,9 +208,9 @@
                     </Link>
                 {/if}
             </div>
-            <div class="logo-container">
+            <div class={styles.logoContainer}>
                 <svg
-                    class="glitch-svg"
+                    class={styles.glitchSvg}
                     viewBox="0 0 200 60"
                     xmlns="http://www.w3.org/2000/svg"
                 >
@@ -229,513 +226,95 @@
                         text-anchor="middle"
                         font-family="monospace"
                         font-size="24"
-                        fill="var(--primary-color)">AUTH.SYS</text
+                        fill="var(--les-accent-primary)">AUTH.SYS</text
                     >
                     <g clip-path="url(#clip)">
                         <text
-                            class="glitch-layer layer1"
+                            class="{styles.glitchLayer} {styles.layer1}"
                             x="50%"
                             y="50%"
                             dominant-baseline="middle"
                             text-anchor="middle"
                             font-family="monospace"
                             font-size="24"
-                            fill="var(--secondary-color)">AUTH.SYS</text
+                            fill="var(--les-accent-secondary)">AUTH.SYS</text
                         >
                         <text
-                            class="glitch-layer layer2"
+                            class="{styles.glitchLayer} {styles.layer2}"
                             x="50%"
                             y="50%"
                             dominant-baseline="middle"
                             text-anchor="middle"
                             font-family="monospace"
                             font-size="24"
-                            fill="var(--primary-color)">AUTH.SYS</text
+                            fill="var(--les-accent-primary)">AUTH.SYS</text
                         >
                     </g>
                 </svg>
             </div>
-            <div class="theme-switcher-container">
+            <div class={styles.themeSwitcherContainer}>
                 <ThemeSwitcher />
             </div>
         </header>
 
-        <main class="auth-main">
-            <form onsubmit={submit} class="auth-form">
-                <div class="input-group">
+        <main class={styles.authMain}>
+            <form onsubmit={submit} class={styles.authForm}>
+                <div class={styles.inputGroup}>
                     <label for="password-input">
-                        <span class="label-text">[PASSWORD_REQUIRED]</span>
+                        <span class={styles.labelText}>[PASSWORD_REQUIRED]</span>
                     </label>
-                    <div class="password-input-container">
+                    <div class={styles.passwordInputContainer}>
                         <input
                             id="password-input"
                             bind:this={passwordInput}
-                            bind:value={$pass}
-                            class="password-input"
+                            bind:value={passState.state}
+                            class={styles.passwordInput}
                             type="password"
                             placeholder="> ACCESS_KEY"
                             onkeydown={handlePasswordKeydown}
                         />
-                        <div class="keyboard-layout-indicator {getLayoutIndicatorClass(keyboardLayout)}">
-                            <span class="layout-text">[{keyboardLayout}]</span>
+                        <div class="{styles.keyboardLayoutIndicator} {getLayoutIndicatorClass(keyboardLayout)}">
+                            <span class={styles.layoutText}>[{keyboardLayout}]</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Error/Success Messages -->
                 {#if loginError}
-                    <div class="message-container error-message">
-                        <div class="message-icon">⚠</div>
-                        <div class="message-text">[ERROR] {loginError}</div>
+                    <div class="{styles.messageContainer} {styles.errorMessage}">
+                        <div class={styles.messageIcon}>⚠</div>
+                        <div class={styles.messageText}>[ERROR] {loginError}</div>
                     </div>
                 {/if}
 
                 {#if loginSuccess}
-                    <div class="message-container success-message">
-                        <div class="message-icon">✓</div>
-                        <div class="message-text">[ACCESS_GRANTED] Аутентификация успешна</div>
+                    <div class="{styles.messageContainer} {styles.successMessage}">
+                        <div class={styles.messageIcon}>✓</div>
+                        <div class={styles.messageText}>[ACCESS_GRANTED] Аутентификация успешна</div>
                     </div>
                 {/if}
 
-                <div class="actions">
-                    <button type="submit" class="submit-btn" disabled={isLoading}>
+                <div class={styles.actions}>
+                    <button type="submit" class={styles.submitBtn} disabled={isLoading}>
                         <span>{isLoading ? '[CONNECTING...]' : '[INITIATE_CONNECTION]'}</span>
                     </button>
-                    <Link className="create-link" href={ROUTES.ACCOUNTS_NEW}
+                    <Link className={styles.createLink} href={ROUTES.ACCOUNTS_NEW}
                         >[CREATE_NEW_ID]</Link
                     >
-                    <Link className="docs-link" href={ROUTES.AUTH_DOCS}
+                    <Link className={styles.docsLink} href={ROUTES.AUTH_DOCS}
                         >[SYSTEM_DOCUMENTATION]</Link
                     >
                     
                     <!-- Settings Link -->
-                    <Link className="settings-link" href={ROUTES.SETTINGS}
+                    <Link className={styles.settingsLink} href={ROUTES.SETTINGS}
                         >[SYSTEM_SETTINGS]</Link
                     >
                 </div>
             </form>
         </main>
 
-        <footer class="auth-footer">
+        <footer class={styles.authFooter}>
             <p>// SECURE_TERMINAL_INTERFACE //</p>
         </footer>
     </div>
 </div>
-
-<style>
-
-    .auth-page-container {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        height: 100vh;
-        width: 100vw;
-        background-color: var(--background-color);
-        color: var(--text-color);
-        font-family: "Courier New", Courier, monospace;
-        padding: 0;
-        margin: 0;
-        overflow: hidden;
-        box-sizing: border-box;
-    }
-
-    .auth-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        width: 100%;
-        padding: 1rem;
-        padding-bottom: 1rem;
-        border-bottom: 1px solid var(--border-color);
-        min-height: 60px;
-    }
-
-    .back-link-container,
-    .theme-switcher-container {
-        flex: 1;
-    }
-    .theme-switcher-container {
-        display: flex;
-        justify-content: flex-end;
-    }
-
-    .back-link {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        color: var(--link-color);
-        text-decoration: none;
-        transition: all 0.2s;
-    }
-    .back-link:hover {
-        color: var(--link-hover-color);
-        text-shadow: 0 0 5px var(--link-hover-color);
-    }
-
-    .logo-container {
-        flex: 2;
-        display: flex;
-        justify-content: center;
-    }
-
-    .glitch-svg {
-        width: 100%;
-        max-width: 300px;
-        height: auto;
-    }
-
-    .glitch-layer {
-        animation: glitch 2.5s infinite steps(1);
-    }
-
-    .layer1 {
-        animation-delay: 0.6s;
-    }
-
-    .layer2 {
-        animation-delay: 1.2s;
-        opacity: 0.8;
-    }
-
-    @keyframes glitch {
-        0% {
-            transform: translate(0, 0);
-        }
-        10% {
-            transform: translate(-3px, 3px);
-        }
-        20% {
-            transform: translate(3px, -3px);
-        }
-        30% {
-            transform: translate(-3px, -3px);
-        }
-        40% {
-            transform: translate(3px, 3px);
-        }
-        50% {
-            transform: translate(0, 0);
-        }
-        100% {
-            transform: translate(0, 0);
-        }
-    }
-
-    .auth-main {
-        flex-grow: 1;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .auth-form {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        width: 100%;
-        max-width: 90vw;
-        padding: 2rem;
-        border: 1px solid var(--border-color);
-        background: #00000033;
-    }
-
-    .input-group {
-        width: 100%;
-        margin-bottom: 1.5rem;
-    }
-
-    .label-text {
-        display: block;
-        margin-bottom: 0.5rem;
-        text-transform: uppercase;
-        font-size: 0.9rem;
-        letter-spacing: 0.1em;
-    }
-
-    .password-input-container {
-        position: relative;
-        width: 100%;
-    }
-
-    .password-input {
-        width: 100%;
-        background-color: var(--input-background);
-        color: var(--input-text);
-        border: 1px solid var(--border-color);
-        padding: 0.75rem;
-        padding-right: 4rem; /* Место для индикатора */
-        font-family: inherit;
-        box-sizing: border-box;
-    }
-    .password-input:focus {
-        outline: 2px solid var(--primary-color);
-        box-shadow: 0 0 10px var(--primary-color);
-    }
-
-    .keyboard-layout-indicator {
-        position: absolute;
-        right: 0.5rem;
-        top: 50%;
-        transform: translateY(-50%);
-        padding: 0.25rem 0.5rem;
-        border: 1px solid var(--border-color);
-        background-color: var(--input-background);
-        border-radius: 3px;
-        font-size: 0.7rem;
-        font-weight: bold;
-        letter-spacing: 0.05em;
-        min-width: 2rem;
-        text-align: center;
-        transition: all 0.2s ease;
-        pointer-events: none;
-    }
-
-    .layout-text {
-        display: block;
-        white-space: nowrap;
-    }
-
-    /* Цвета для разных раскладок */
-    .layout-ru {
-        color: #ff6b6b;
-        border-color: #ff6b6b;
-        text-shadow: 0 0 3px #ff6b6b;
-    }
-
-    .layout-en {
-        color: #51cf66;
-        border-color: #51cf66;
-        text-shadow: 0 0 3px #51cf66;
-    }
-
-    .layout-pl {
-        color: #ff8cc8;
-        border-color: #ff8cc8;
-        text-shadow: 0 0 3px #ff8cc8;
-    }
-
-    .layout-de {
-        color: #ffd43b;
-        border-color: #ffd43b;
-        text-shadow: 0 0 3px #ffd43b;
-    }
-
-    .layout-fr {
-        color: #74c0fc;
-        border-color: #74c0fc;
-        text-shadow: 0 0 3px #74c0fc;
-    }
-
-    .layout-it {
-        color: #69db7c;
-        border-color: #69db7c;
-        text-shadow: 0 0 3px #69db7c;
-    }
-
-    .layout-es {
-        color: #ffa8a8;
-        border-color: #ffa8a8;
-        text-shadow: 0 0 3px #ffa8a8;
-    }
-
-    .layout-unknown {
-        color: var(--text-color);
-        border-color: var(--border-color);
-        opacity: 0.6;
-    }
-
-    /* Анимация при изменении раскладки */
-    .keyboard-layout-indicator {
-        animation: layoutChange 0.3s ease;
-    }
-
-    @keyframes layoutChange {
-        0% {
-            transform: translateY(-50%) scale(1);
-        }
-        50% {
-            transform: translateY(-50%) scale(1.1);
-        }
-        100% {
-            transform: translateY(-50%) scale(1);
-        }
-    }
-
-    /* Message styles */
-    .message-container {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        width: 100%;
-        padding: 0.75rem;
-        margin-bottom: 1rem;
-        border: 1px solid;
-        font-family: inherit;
-        font-size: 0.9rem;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        animation: messageSlideIn 0.3s ease-out;
-        box-sizing: border-box;
-    }
-
-    .message-icon {
-        font-size: 1.2rem;
-        font-weight: bold;
-        flex-shrink: 0;
-    }
-
-    .message-text {
-        flex: 1;
-        word-break: break-word;
-    }
-
-    .error-message {
-        border-color: #ff4444;
-        background-color: rgba(255, 68, 68, 0.1);
-        color: #ff4444;
-    }
-
-    .error-message .message-icon {
-        color: #ff4444;
-        text-shadow: 0 0 3px #ff4444;
-    }
-
-    .success-message {
-        border-color: #00ff00;
-        background-color: rgba(0, 255, 0, 0.1);
-        color: #00ff00;
-    }
-
-    .success-message .message-icon {
-        color: #00ff00;
-        text-shadow: 0 0 3px #00ff00;
-    }
-
-    @keyframes messageSlideIn {
-        from {
-            opacity: 0;
-            transform: translateY(-10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .actions {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 1rem;
-        width: 100%;
-    }
-
-    .submit-btn,
-    .create-link,
-    .docs-link,
-    .settings-link {
-        width: 100%;
-        padding: 0.75rem;
-        border: 1px solid var(--border-color);
-        background-color: var(--button-background);
-        color: var(--button-text);
-        text-transform: uppercase;
-        cursor: pointer;
-        text-align: center;
-        text-decoration: none;
-        transition: all 0.2s ease-in-out;
-        box-sizing: border-box;
-    }
-
-    .submit-btn:hover,
-    .create-link:hover,
-    .docs-link:hover,
-    .settings-link:hover {
-        background-color: var(--button-hover-background);
-        color: var(--button-hover-text);
-        box-shadow: 0 0 10px var(--button-hover-background);
-    }
-
-    .submit-btn:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-        background-color: var(--button-background);
-        color: var(--button-text);
-        box-shadow: none;
-    }
-
-    .submit-btn:disabled:hover {
-        background-color: var(--button-background);
-        color: var(--button-text);
-        box-shadow: none;
-    }
-
-    .docs-link {
-        background-color: transparent;
-        border-style: dashed;
-        opacity: 0.8;
-    }
-
-    .docs-link:hover {
-        opacity: 1;
-        border-style: solid;
-    }
-
-    .settings-link {
-        background-color: transparent;
-        border-style: dotted;
-        opacity: 0.9;
-    }
-
-    .settings-link:hover {
-        opacity: 1;
-        border-style: solid;
-    }
-
-    .auth-footer {
-        width: 100%;
-        padding: 1rem;
-        border-top: 1px solid var(--border-color);
-        text-align: center;
-        font-size: 0.8rem;
-    }
-
-    /* Responsive adjustments */
-    @media (max-width: 48rem) {
-        /* --tablet */
-        .auth-header {
-            flex-direction: column;
-            gap: 1rem;
-        }
-        .logo-container {
-            order: -1;
-        }
-        .back-link-container,
-        .theme-switcher-container {
-            width: 100%;
-            flex: none;
-        }
-        .back-link-container {
-            justify-content: flex-start;
-        }
-        .auth-form {
-            max-width: 90%;
-            padding: 1.5rem;
-        }
-    }
-
-    @media (min-width: 64rem) {
-        /* --desktop */
-        .auth-form {
-            max-width: 700px;
-            padding: 3rem;
-        }
-    }
-
-    @media (min-width: 80rem) {
-        /* --large desktop */
-        .auth-form {
-            max-width: 800px;
-        }
-    }
-</style>
