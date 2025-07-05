@@ -53,7 +53,7 @@
     border-bottom: 1px solid var(--les-border-primary);
     background: linear-gradient(135deg, rgba(0, 255, 255, 0.03), rgba(255, 0, 255, 0.03));
     gap: 0.75rem;
-    overflow-x: auto;
+    overflow: hidden;
     position: relative;
   }
 
