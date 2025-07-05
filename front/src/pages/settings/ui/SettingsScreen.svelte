@@ -1,88 +1,50 @@
 <script lang="ts">
-  import { Button, Card, StatusIndicator } from "../../../components/ui";
+  import { Button, StatusIndicator } from "../../../components/ui";
   import { ROUTES, Link } from "../../../routing";
-  import { clearAllLocalStorage } from '../../../core';
+  import { clearAllAppData, clearServiceWorkersOnly, clearStorageOnly, clearIndexedDBOnly } from '../../../core/clear_app_data';
   import { theme } from '../../../stores/theme';
   import styles from './SettingsPage.module.css';
   
   // State for settings
-  let isStorageClearing = false;
-  let storageStatus = 'active';
   let systemStatus = 'operational';
+  let showClearOptions = false;
   
-  // Handlers
-  const handleClearStorage = async () => {
-    if (confirm('Вы уверены, что хотите очистить все данные? Это действие нельзя отменить.')) {
-      isStorageClearing = true;
-      try {
-        await clearAllLocalStorage();
-        storageStatus = 'cleared';
-        setTimeout(() => {
-          storageStatus = 'active';
-          isStorageClearing = false;
-        }, 2000);
-      } catch (error) {
-        console.error('Ошибка при очистке данных:', error);
-        isStorageClearing = false;
-      }
+  // Clear data handlers from AuthPage
+  function toggleClearOptions() {
+    showClearOptions = !showClearOptions;
+  }
+
+  async function handleClearAll() {
+    if (confirm('Вы уверены, что хотите очистить ВСЕ данные приложения? Это действие нельзя отменить.')) {
+      await clearAllAppData();
     }
-  };
-  
-  const handleExportData = () => {
-    // TODO: Implement data export
-    alert('Экспорт данных будет реализован в следующих версиях');
-  };
-  
-  const handleImportData = () => {
-    // TODO: Implement data import
-    alert('Импорт данных будет реализован в следующих версиях');
-  };
+  }
+
+  async function handleClearServiceWorkers() {
+    if (confirm('Очистить только Service Workers?')) {
+      await clearServiceWorkersOnly();
+    }
+  }
+
+  function handleClearStorage() {
+    if (confirm('Очистить только локальное хранилище?')) {
+      clearStorageOnly();
+    }
+  }
+
+  async function handleClearIndexedDB() {
+    if (confirm('Очистить только IndexedDB базы данных?')) {
+      await clearIndexedDBOnly();
+    }
+  }
   
   const handleSystemDiagnostics = () => {
     // TODO: Implement system diagnostics
     alert('Диагностика системы будет реализована в следующих версиях');
   };
-  
-  const handleCacheClean = () => {
-    // TODO: Implement cache cleaning
-    if (confirm('Очистить кэш системы?')) {
-      alert('Кэш очищен успешно');
-    }
-  };
 </script>
 
 <div class={styles.settingsContainer}>
-  <!-- Quick Actions -->
-  <div class={styles.quickActions}>
-    <div class={styles.quickActionButton}>
-      <Button 
-        variant="secondary" 
-        size="md" 
-        onclick={handleSystemDiagnostics}
-      >
-        🔍 ДИАГНОСТИКА
-      </Button>
-    </div>
-    
-    <div class={styles.quickActionButton}>
-      <Button 
-        variant="outline" 
-        size="md" 
-        onclick={handleCacheClean}
-      >
-        🧹 ОЧИСТИТЬ КЭШ
-      </Button>
-    </div>
-    
-    <div class={styles.quickActionButton}>
-      <Link href={ROUTES.HOME}>
-        <Button variant="ghost" size="md">
-          🏠 ГЛАВНАЯ
-        </Button>
-      </Link>
-    </div>
-  </div>
-
   <div class={styles.settingsGrid}>
     <!-- System Settings Section -->
     <div class={styles.settingSection}>
@@ -125,7 +87,7 @@
             size="sm"
             onclick={handleSystemDiagnostics}
           >
-            Диагностика
+            🔍 Диагностика
           </Button>
         </div>
       </div>
@@ -139,10 +101,10 @@
         <div class={styles.settingHeader}>
           <div class={styles.settingName}>
             <span class={styles.settingIcon}>💽</span>
-            Локальное хранилище
+            Очистка данных
           </div>
-          <span class={`${styles.statusIndicator} ${storageStatus === 'active' ? styles.statusActive : styles.statusInactive}`}>
-            ● {storageStatus === 'active' ? 'АКТИВНО' : 'ОЧИЩЕНО'}
+          <span class={`${styles.statusIndicator} ${styles.statusActive}`}>
+            ● ДОСТУПНО
           </span>
         </div>
         <div class={styles.settingDescription}>
@@ -152,50 +114,67 @@
           <Button 
             variant="outline" 
             size="sm"
-            onclick={handleExportData}
+            onclick={toggleClearOptions}
           >
-            📤 Экспорт
-          </Button>
-          <Button 
-            variant="outline" 
-            size="sm"
-            onclick={handleImportData}
-          >
-            📥 Импорт
+            {showClearOptions ? 'Скрыть опции' : 'Показать опции очистки'}
           </Button>
         </div>
+        
+        {#if showClearOptions}
+          <div class={styles.clearOptions}>
+            <Button 
+              variant="danger" 
+              size="sm"
+              onclick={handleClearAll}
+            >
+              🗑️ Очистить все данные
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onclick={handleClearServiceWorkers}
+            >
+              🔧 Очистить Service Workers
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onclick={handleClearStorage}
+            >
+              💾 Очистить локальное хранилище
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onclick={handleClearIndexedDB}
+            >
+              🗄️ Очистить IndexedDB
+            </Button>
+          </div>
+        {/if}
       </div>
-
     </div>
 
-
-    <!-- Danger Zone Section -->
-    <div class={`${styles.settingSection} ${styles.dangerZone}`}>
-      <h2 class={styles.sectionTitle}>⚠️ Опасная зона</h2>
+    <!-- Navigation Section -->
+    <div class={styles.settingSection}>
+      <h2 class={styles.sectionTitle}>🧭 Навигация</h2>
       
       <div class={styles.settingItem}>
         <div class={styles.settingHeader}>
           <div class={styles.settingName}>
-            <span class={styles.settingIcon}>🗑️</span>
-            Сброс всех данных
+            <span class={styles.settingIcon}>🏠</span>
+            Главная страница
           </div>
-          <span class={`${styles.statusIndicator} ${styles.statusInactive}`}>
-            ⚠️ ОПАСНО
-          </span>
         </div>
         <div class={styles.settingDescription}>
-          Полная очистка всех локальных данных, настроек и кэша. 
-          <strong>Это действие нельзя отменить!</strong>
+          Вернуться на главную страницу приложения.
         </div>
         <div class={styles.settingActions}>
-          <Button 
-            variant="danger" 
-            size="sm"
-            loading={isStorageClearing}
-            onclick={handleClearStorage}
-          >
-            {isStorageClearing ? '🔄 Очистка...' : '🗑️ Очистить все данные'}
-          </Button>
+          <Link href={ROUTES.HOME}>
+            <Button variant="outline" size="sm">
+              Перейти на главную
+            </Button>
+          </Link>
         </div>
       </div>
     </div>

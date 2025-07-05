@@ -81,8 +81,11 @@
             nextComponentPromise = import(
                 `../../pages/accounts_new/ui/AccountNewPage.svelte`
             );
-        }
-        else if (p.rState.pathname === ROUTES.AUTH_DOCS) {
+        } else if (p.rState.pathname === ROUTES.SETTINGS) {
+            nextComponentPromise = import(
+                `../../pages/settings/ui/SettingsPage.svelte`
+            );
+        } else if (p.rState.pathname === ROUTES.AUTH_DOCS) {
             nextComponentPromise = import(`../../pages/auth_docs/ui/AuthDocsPage.svelte`);
         } else if (!Object.entries(p.apauState.byId).length) {
             nextComponentPromise = import(`../../pages/auth/ui/AuthPage.svelte`);
@@ -134,10 +137,6 @@
             );
         } else if (p.rState.pathname === ROUTES.HOME) {
             nextComponentPromise = import(`../../pages/home/ui/HomePage.svelte`);
-        } else if (p.rState.pathname === ROUTES.SETTINGS) {
-            nextComponentPromise = import(
-                `../../pages/settings/ui/SettingsPage.svelte`
-            );
         } else if (p.rState.pathname === ROUTES.ACCOUNTS) {
             nextComponentPromise = import(
                 `../../pages/accounts/ui/AccountsPage.svelte`

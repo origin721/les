@@ -4,7 +4,6 @@
     import { Link, ROUTES } from "../../../routing";
     import ThemeSwitcher from "../../../components/ThemeSwitcher.svelte";
     import { theme } from "../../../stores/theme";
-    import { clearAllAppData, clearServiceWorkersOnly, clearStorageOnly, clearIndexedDBOnly } from "../../../core/clear_app_data";
     import AuthPageLoading from "./AuthPageLoading.svelte";
     import { devLog, prodError } from "../../../core/debug/logger";
 
@@ -15,7 +14,6 @@
     import "../../../styles/terminal.css";
 
     const pass = writable(null);
-    let showClearOptions = false;
     let keyboardLayout = $state("UNKNOWN");
     let passwordInput: HTMLInputElement;
     let isLoading = $state(false);
@@ -80,33 +78,6 @@
     }
 
 
-    function toggleClearOptions() {
-        showClearOptions = !showClearOptions;
-    }
-
-    async function handleClearAll() {
-        if (confirm('Вы уверены, что хотите очистить ВСЕ данные приложения? Это действие нельзя отменить.')) {
-            await clearAllAppData();
-        }
-    }
-
-    async function handleClearServiceWorkers() {
-        if (confirm('Очистить только Service Workers?')) {
-            await clearServiceWorkersOnly();
-        }
-    }
-
-    function handleClearStorage() {
-        if (confirm('Очистить только локальное хранилище?')) {
-            clearStorageOnly();
-        }
-    }
-
-    async function handleClearIndexedDB() {
-        if (confirm('Очистить только IndexedDB базы данных?')) {
-            await clearIndexedDBOnly();
-        }
-    }
     // TODO: Доработать при добавление акаунта инфу что добавлен или ошибка
 
     // Функция для определения раскладки клавиатуры
@@ -342,49 +313,10 @@
                         >[SYSTEM_DOCUMENTATION]</Link
                     >
                     
-                    <!-- Clear Data Section -->
-                    <div class="clear-section">
-                        <button 
-                            type="button" 
-                            class="clear-toggle-btn" 
-                            onclick={toggleClearOptions}
-                        >
-                            {showClearOptions ? '[HIDE_CLEAR_OPTIONS]' : '[CLEAR_APP_DATA]'}
-                        </button>
-                        
-                        {#if showClearOptions}
-                            <div class="clear-options">
-                                <button 
-                                    type="button" 
-                                    class="clear-btn clear-all" 
-                                    onclick={handleClearAll}
-                                >
-                                    [CLEAR_ALL_DATA]
-                                </button>
-                                <button 
-                                    type="button" 
-                                    class="clear-btn clear-sw" 
-                                    onclick={handleClearServiceWorkers}
-                                >
-                                    [CLEAR_SERVICE_WORKERS]
-                                </button>
-                                <button 
-                                    type="button" 
-                                    class="clear-btn clear-storage" 
-                                    onclick={handleClearStorage}
-                                >
-                                    [CLEAR_STORAGE]
-                                </button>
-                                <button 
-                                    type="button" 
-                                    class="clear-btn clear-indexeddb" 
-                                    onclick={handleClearIndexedDB}
-                                >
-                                    [CLEAR_INDEXEDDB]
-                                </button>
-                            </div>
-                        {/if}
-                    </div>
+                    <!-- Settings Link -->
+                    <Link className="settings-link" href={ROUTES.SETTINGS}
+                        >[SYSTEM_SETTINGS]</Link
+                    >
                 </div>
             </form>
         </main>
@@ -751,7 +683,8 @@
 
     .submit-btn,
     .create-link,
-    .docs-link {
+    .docs-link,
+    .settings-link {
         width: 100%;
         padding: 0.75rem;
         border: 1px solid var(--border-color);
@@ -767,7 +700,8 @@
 
     .submit-btn:hover,
     .create-link:hover,
-    .docs-link:hover {
+    .docs-link:hover,
+    .settings-link:hover {
         background-color: var(--button-hover-background);
         color: var(--button-hover-text);
         box-shadow: 0 0 10px var(--button-hover-background);
@@ -798,117 +732,15 @@
         border-style: solid;
     }
 
-    /* Clear data section styles */
-    .clear-section {
-        width: 100%;
-        margin-top: 1rem;
-        padding-top: 1rem;
-        border-top: 1px solid var(--border-color);
-    }
-
-    .clear-toggle-btn {
-        width: 100%;
-        padding: 0.5rem;
-        border: 1px solid var(--border-color);
+    .settings-link {
         background-color: transparent;
-        color: var(--text-color);
-        text-transform: uppercase;
-        cursor: pointer;
-        text-align: center;
-        transition: all 0.2s ease-in-out;
-        box-sizing: border-box;
-        font-size: 0.8rem;
-        opacity: 0.7;
+        border-style: dotted;
+        opacity: 0.9;
     }
 
-    .clear-toggle-btn:hover {
+    .settings-link:hover {
         opacity: 1;
-        border-color: var(--primary-color);
-        color: var(--primary-color);
-        text-shadow: 0 0 5px var(--primary-color);
-    }
-
-    .clear-options {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-        margin-top: 1rem;
-        animation: slideDown 0.3s ease-out;
-    }
-
-    @keyframes slideDown {
-        from {
-            opacity: 0;
-            transform: translateY(-10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .clear-btn {
-        width: 100%;
-        padding: 0.5rem;
-        border: 1px solid var(--border-color);
-        background-color: transparent;
-        color: var(--text-color);
-        text-transform: uppercase;
-        cursor: pointer;
-        text-align: center;
-        transition: all 0.2s ease-in-out;
-        box-sizing: border-box;
-        font-size: 0.75rem;
-        opacity: 0.8;
-    }
-
-    .clear-btn:hover {
-        opacity: 1;
-        text-shadow: 0 0 3px currentColor;
-    }
-
-    .clear-all {
-        border-color: #ff4444;
-        color: #ff4444;
-    }
-
-    .clear-all:hover {
-        background-color: #ff4444;
-        color: #000000;
-        box-shadow: 0 0 10px #ff4444;
-    }
-
-    .clear-sw {
-        border-color: #ffaa00;
-        color: #ffaa00;
-    }
-
-    .clear-sw:hover {
-        background-color: #ffaa00;
-        color: #000000;
-        box-shadow: 0 0 10px #ffaa00;
-    }
-
-    .clear-storage {
-        border-color: #44ff44;
-        color: #44ff44;
-    }
-
-    .clear-storage:hover {
-        background-color: #44ff44;
-        color: #000000;
-        box-shadow: 0 0 10px #44ff44;
-    }
-
-    .clear-indexeddb {
-        border-color: #8844ff;
-        color: #8844ff;
-    }
-
-    .clear-indexeddb:hover {
-        background-color: #8844ff;
-        color: #000000;
-        box-shadow: 0 0 10px #8844ff;
+        border-style: solid;
     }
 
     .auth-footer {
