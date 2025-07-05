@@ -42,7 +42,7 @@ export function indexdb_wrapper(
 
       resultPromise.finally(onFinishOrder);
 
-      let openRequest = indexedDB.open("les_store_v3", 1);
+      let openRequest = indexedDB.open("main_les_store_v1", 1);
 
       openRequest.onupgradeneeded = function (event) {
         const db = openRequest.result;
