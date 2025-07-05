@@ -1,4 +1,4 @@
-import { sharedWorkerApi } from "../api/shared_worker";
+import { sharedWorkerApi } from "../../../api/shared_worker";
 
 export interface AddFriendData {
     friendName: string;

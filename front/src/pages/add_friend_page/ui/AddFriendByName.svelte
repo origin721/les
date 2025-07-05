@@ -11,7 +11,7 @@
         FormActions, 
         FormInfo 
     } from "../../../components/forms";
-    import { useAddFriend, type AddFriendData } from "../../../composables/useAddFriend";
+    import { useAddFriend, type AddFriendData } from "../composables/useAddFriend";
     import layoutStyles from "../../../styles/modules/form-layout.module.css";
 
     // State
