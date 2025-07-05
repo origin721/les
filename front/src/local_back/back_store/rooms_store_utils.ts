@@ -1,4 +1,4 @@
-import type { RoomEntity, RoomEntityFull } from "../../indexdb/rooms/add_room";
+import type { RoomEntity, RoomEntityFull } from "../../indexdb/main_les_store_v1/rooms/add_room";
 import { back_store } from "./back_store";
 
 export const rooms_store_utils = create_rooms_service_utils();

@@ -1,6 +1,6 @@
 import { PATHS } from "../../local_back/constant/PATHS";
 import { shared_worker_store } from "../../processes/shared_worker/shared_worker_store";
-import type { Account } from "../../indexdb/accounts/get_accounts";
+import type { Account } from "../../indexdb/main_les_store_v1/accounts/get_accounts";
 import { friends } from "./friends";
 
 

@@ -1,4 +1,5 @@
-import { prodInfo, devDB } from '../../../core/debug/logger';
+import { prodInfo, devDB } from '../../../../core/debug/logger';
+import type { MigrationInfo } from '../types';
 
 /**
  * Информация о миграции

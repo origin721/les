@@ -1,10 +1,10 @@
-import { encrypt_curve25519_from_pass } from "../../core/crypt";
-import { uuidv4 } from "../../core/uuid";
+import { encrypt_curve25519_from_pass } from "../../../core/crypt";
+import { uuidv4 } from "../../../core/uuid";
 import { indexdb_wrapper } from "../indexdb_wrapper";
-import { back_store } from "../../local_back/back_store/back_store";
-import { prodError, prodInfo, devDB, devCrypto, devAuth } from "../../core/debug/logger";
+import { back_store } from "../../../local_back/back_store/back_store";
+import { prodError, prodInfo, devDB, devCrypto, devAuth } from "../../../core/debug/logger";
 import { get_accounts } from "../accounts/get_accounts";
-import { rooms_store_utils } from "../../local_back/back_store";
+import { rooms_store_utils } from "../../../local_back/back_store";
 
 export type RoomEntityFull = {
   id: string;

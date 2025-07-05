@@ -18,8 +18,8 @@ export type AsyncMigrationFunction = (db: IDBDatabase) => Promise<void>;
  * Описание миграции
  */
 export interface MigrationInfo {
-  fromVersion: number;
-  toVersion: number;
+  version: number;
+  name: string;
   description: string;
   fileName: string;
 }

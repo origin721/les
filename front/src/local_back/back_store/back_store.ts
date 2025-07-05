@@ -1,6 +1,6 @@
-import type { Account } from "../../indexdb/accounts/get_accounts";
-import type { FriendEntityFull } from "../../indexdb/friends/add_friend";
-import type { RoomEntityFull } from "../../indexdb/rooms/add_room";
+import type { Account } from "../../indexdb/main_les_store_v1/accounts/get_accounts";
+import type { FriendEntityFull } from "../../indexdb/main_les_store_v1/friends/add_friend";
+import type { RoomEntityFull } from "../../indexdb/main_les_store_v1/rooms/add_room";
 
 export interface Libp2pNodeInstance {
   peerId: string;

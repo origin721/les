@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { add_friend, type FriendEntity } from '../indexdb/friends/add_friend';
-import { delete_friend } from '../indexdb/friends/delete_friend';
-import { migrateAccountsFriends, checkAccountsMigrationNeeded } from '../indexdb/accounts/migrate/migrate_accounts_friends';
+import { add_friend, type FriendEntity } from '../indexdb/main_les_store_v1/friends/add_friend';
+import { delete_friend } from '../indexdb/main_les_store_v1/friends/delete_friend';
+import { migrateAccountsFriends, checkAccountsMigrationNeeded } from '../indexdb/main_les_store_v1/accounts/migrate/migrate_accounts_friends';
 import { back_store } from '../local_back/back_store/back_store';
 
 // Mock IndexedDB и зависимости

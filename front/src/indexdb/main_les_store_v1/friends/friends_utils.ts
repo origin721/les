@@ -1,4 +1,4 @@
-import { back_store } from "../../local_back/back_store/back_store";
+import { back_store } from "../../../local_back/back_store/back_store";
 import type { FriendEntityFull } from "./add_friend";
 
 /**

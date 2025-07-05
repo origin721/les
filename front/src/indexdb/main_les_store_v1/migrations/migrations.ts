@@ -1,4 +1,4 @@
-import { prodInfo, prodError, devMigration } from '../../core/debug/logger';
+import { prodInfo, prodError, devMigration } from '../../../core/debug/logger';
 
 /**
  * Информация о миграции

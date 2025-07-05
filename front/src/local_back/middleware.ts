@@ -1,17 +1,17 @@
 import { CHANNEL_NAMES } from "../core/broadcast_channel/constants/CHANNEL_NAMES";
 import { FrontMiddlewareActions } from "../core/broadcast_channel/constants/FRONT_MIDDLEWARE_ACTIONS";
 import type { PostMessageParamAddAccounts } from "../core/broadcast_channel/front_middleware_channel";
-import { add_accounts, type AccountEntity } from "../indexdb/accounts/add_accounts";
-import { delete_accounts } from "../indexdb/accounts/delete_accounts";
-import { get_accounts, type Account } from "../indexdb/accounts/get_accounts";
-import { login } from "../indexdb/accounts/login";
-import { put_accounts, type AccountEntityPut } from "../indexdb/accounts/put_accounts";
+import { add_accounts, type AccountEntity } from "../indexdb/main_les_store_v1/accounts/add_accounts";
+import { delete_accounts } from "../indexdb/main_les_store_v1/accounts/delete_accounts";
+import { get_accounts, type Account } from "../indexdb/main_les_store_v1/accounts/get_accounts";
+import { login } from "../indexdb/main_les_store_v1/accounts/login";
+import { put_accounts, type AccountEntityPut } from "../indexdb/main_les_store_v1/accounts/put_accounts";
 import { back_store } from "./back_store/back_store";
 import { EVENT_TYPES, PATHS } from "./constant";
 import { accounts_service } from "./modules/accounts_service";
 import { friends_service } from "./modules/friends_service";
-import type { FriendEntity } from "../indexdb/friends/add_friend";
-import type { FriendEntityPut } from "../indexdb/friends/put_friends";
+import type { FriendEntity } from "../indexdb/main_les_store_v1/friends/add_friend";
+import type { FriendEntityPut } from "../indexdb/main_les_store_v1/friends/put_friends";
 import { devLog, prodError } from "../core/debug/logger";
 
 type IdRequest = string | number;

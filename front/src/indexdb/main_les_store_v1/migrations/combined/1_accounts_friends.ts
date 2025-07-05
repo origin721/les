@@ -1,4 +1,4 @@
-import { prodInfo, prodError, devMigration } from '../../../core/debug/logger';
+import { prodInfo, prodError, devMigration } from '../../../../core/debug/logger';
 
 /**
  * Информация о миграции
@@ -38,7 +38,7 @@ export async function migrationData(db: IDBDatabase): Promise<void> {
   
   return new Promise<void>((resolve, reject) => {
     try {
-      const transaction = db.transaction(["accounts"], "readonly");
+      const transaction = db.transaction(["accounts"], "readwrite");
       const store = transaction.objectStore("accounts");
       const getAllRequest = store.getAll();
       
@@ -68,5 +68,5 @@ export async function migrationData(db: IDBDatabase): Promise<void> {
       prodError('❌ Критическая ошибка в migrationData:', error);
       reject(error);
     }
-  });
+  })
 }

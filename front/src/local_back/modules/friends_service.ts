@@ -1,12 +1,12 @@
 import { CHANNEL_NAMES } from "../../core/broadcast_channel/constants/CHANNEL_NAMES";
 import { FrontMiddlewareActions } from "../../core/broadcast_channel/constants/FRONT_MIDDLEWARE_ACTIONS";
 import type { PostMessageParamAddFriends, PostMessageParamDeleteFriends, FriendDto } from "../../core/broadcast_channel/front_middleware_channel";
-import { add_friend, type FriendEntity, type FriendEntityFull } from "../../indexdb/friends/add_friend";
-import { delete_friend } from "../../indexdb/friends/delete_friend";
-import { get_friends } from "../../indexdb/friends/get_friends";
-import { get_friend_by_id } from "../../indexdb/friends/get_friend_by_id";
-import { put_friends, type FriendEntityPut } from "../../indexdb/friends/put_friends";
-import { get_accounts } from "../../indexdb/accounts/get_accounts";
+import { add_friend, type FriendEntity, type FriendEntityFull } from "../../indexdb/main_les_store_v1/friends/add_friend";
+import { delete_friend } from "../../indexdb/main_les_store_v1/friends/delete_friend";
+import { get_friends } from "../../indexdb/main_les_store_v1/friends/get_friends";
+import { get_friend_by_id } from "../../indexdb/main_les_store_v1/friends/get_friend_by_id";
+import { put_friends, type FriendEntityPut } from "../../indexdb/main_les_store_v1/friends/put_friends";
+import { get_accounts } from "../../indexdb/main_les_store_v1/accounts/get_accounts";
 import { back_store } from "../back_store/back_store";
 import { devLog, prodError, prodInfo } from "../../core/debug/logger";
 

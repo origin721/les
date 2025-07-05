@@ -1,12 +1,12 @@
 import { CHANNEL_NAMES } from "../../core/broadcast_channel/constants/CHANNEL_NAMES";
 import { FrontMiddlewareActions } from "../../core/broadcast_channel/constants/FRONT_MIDDLEWARE_ACTIONS";
 import type { PostMessageParamAddAccounts, PostMessageParamDeleteAccounts } from "../../core/broadcast_channel/front_middleware_channel";
-import type { AccountEntity } from "../../indexdb/accounts/add_accounts";
-import { delete_accounts } from "../../indexdb/accounts/delete_accounts";
-import { get_account_by_id } from "../../indexdb/accounts/get_account_by_id";
-import { get_accounts, type Account } from "../../indexdb/accounts/get_accounts";
-import { login } from "../../indexdb/accounts/login";
-import { put_accounts, type AccountEntityPut } from "../../indexdb/accounts/put_accounts";
+import type { AccountEntity } from "../../indexdb/main_les_store_v1/accounts/add_accounts";
+import { delete_accounts } from "../../indexdb/main_les_store_v1/accounts/delete_accounts";
+import { get_account_by_id } from "../../indexdb/main_les_store_v1/accounts/get_account_by_id";
+import { get_accounts, type Account } from "../../indexdb/main_les_store_v1/accounts/get_accounts";
+import { login } from "../../indexdb/main_les_store_v1/accounts/login";
+import { put_accounts, type AccountEntityPut } from "../../indexdb/main_les_store_v1/accounts/put_accounts";
 import { privateKeyStringToPeerId } from "../../libs/libp2p";
 import { back_store } from "../back_store/back_store";
 import type { LoginPayload } from "../middleware";

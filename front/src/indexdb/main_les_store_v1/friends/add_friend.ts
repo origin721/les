@@ -1,10 +1,10 @@
 //import { AES } from "../../../core/crypt";
-import { encrypt_curve25519_from_pass } from "../../core/crypt";
-import { gen_pass } from "../../core/random/gen_pass";
-import { uuidv4 } from "../../core/uuid";
+import { encrypt_curve25519_from_pass } from "../../../core/crypt";
+import { gen_pass } from "../../../core/random/gen_pass";
+import { uuidv4 } from "../../../core/uuid";
 import { indexdb_wrapper } from "../indexdb_wrapper";
-import { privateKeyToString, recommendedGenerateKeyPair } from "../../libs/libp2p";
-import { back_store } from "../../local_back/back_store/back_store";
+import { privateKeyToString, recommendedGenerateKeyPair } from "../../../libs/libp2p";
+import { back_store } from "../../../local_back/back_store/back_store";
 
 export type FriendEntityFull = {
   id: string;

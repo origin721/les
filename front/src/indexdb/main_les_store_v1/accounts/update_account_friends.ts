@@ -1,7 +1,7 @@
-import { encrypt_curve25519_from_pass } from "../../core/crypt";
-import { back_store } from "../../local_back/back_store/back_store";
+import { encrypt_curve25519_from_pass } from "../../../core/crypt";
+import { back_store } from "../../../local_back/back_store/back_store";
 import { indexdb_wrapper } from "../indexdb_wrapper";
-import { prodError, prodInfo, devDB } from "../../core/debug/logger";
+import { prodError, prodInfo, devDB } from "../../../core/debug/logger";
 
 export type UpdateAccountFriendsOperation = {
   add?: string[];

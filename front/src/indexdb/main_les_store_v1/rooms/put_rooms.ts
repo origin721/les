@@ -1,10 +1,10 @@
-import { encrypt_curve25519_from_pass } from "../../core/crypt";
+import { encrypt_curve25519_from_pass } from "../../../core/crypt";
 import { indexdb_wrapper } from "../indexdb_wrapper";
-import { back_store } from "../../local_back/back_store/back_store";
-import { prodError, prodInfo, devDB, devCrypto, devAuth } from "../../core/debug/logger";
+import { back_store } from "../../../local_back/back_store/back_store";
+import { prodError, prodInfo, devDB, devCrypto, devAuth } from "../../../core/debug/logger";
 import { get_accounts } from "../accounts/get_accounts";
 import type { RoomEntityFull } from "./add_room";
-import { rooms_store_utils } from "../../local_back/back_store";
+import { rooms_store_utils } from "../../../local_back/back_store";
 
 export function put_rooms(
   update_list: RoomEntityFull[],
