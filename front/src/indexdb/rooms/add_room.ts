@@ -4,6 +4,7 @@ import { indexdb_wrapper } from "../indexdb_wrapper";
 import { back_store } from "../../local_back/back_store/back_store";
 import { prodError, prodInfo, devDB, devCrypto, devAuth } from "../../core/debug/logger";
 import { get_accounts } from "../accounts/get_accounts";
+import { rooms_store_utils } from "../../local_back/back_store";
 
 export type RoomEntityFull = {
   id: string;
@@ -130,7 +131,7 @@ export function add_room(
               id: id,
             });
           }
-          back_store.rooms.add(roomsToAdd);
+          rooms_store_utils.add(roomsToAdd);
           
           devDB('✅ Комнаты добавлены в back_store через сервис');
           devDB('🎯 Вызываем res() для завершения add_room');

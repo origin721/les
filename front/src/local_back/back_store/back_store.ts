@@ -1,6 +1,6 @@
 import type { Account } from "../../indexdb/accounts/get_accounts";
 import type { FriendEntityFull } from "../../indexdb/friends/add_friend";
-import { create_rooms_service } from "./createRoomsService";
+import type { RoomEntityFull } from "../../indexdb/rooms/add_room";
 
 export interface Libp2pNodeInstance {
   peerId: string;
@@ -12,5 +12,5 @@ export interface Libp2pNodeInstance {
 export const back_store = {
   accounts_by_id: {} as Record<string, Account>,
   friends_by_id: {} as Record<string, FriendEntityFull>,
-  rooms: create_rooms_service(),
+  rooms_by_id: {} as Record<string, RoomEntityFull>,
 }

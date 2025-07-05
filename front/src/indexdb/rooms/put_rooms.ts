@@ -4,6 +4,7 @@ import { back_store } from "../../local_back/back_store/back_store";
 import { prodError, prodInfo, devDB, devCrypto, devAuth } from "../../core/debug/logger";
 import { get_accounts } from "../accounts/get_accounts";
 import type { RoomEntityFull } from "./add_room";
+import { rooms_store_utils } from "../../local_back/back_store";
 
 export function put_rooms(
   update_list: RoomEntityFull[],
@@ -105,7 +106,7 @@ export function put_rooms(
             devDB("✅ Данные обновлены успешно в IndexDB");
             
             // Обновляем комнаты в back_store через сервис
-            back_store.rooms.put(update_list);
+            rooms_store_utils.put(update_list);
             
             devDB('✅ Комнаты обновлены в back_store через сервис');
             devDB('🎯 Вызываем res() для завершения put_rooms');

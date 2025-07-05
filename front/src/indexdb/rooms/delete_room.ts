@@ -1,6 +1,7 @@
 import { indexdb_wrapper } from "../indexdb_wrapper";
 import { back_store } from "../../local_back/back_store/back_store";
 import { prodError, prodInfo, devDB } from "../../core/debug/logger";
+import { rooms_store_utils } from "../../local_back/back_store";
 
 export function delete_room(roomId: string): Promise<void> {
   devDB('🔄 Удаление комнаты начато, ID:', roomId);
@@ -27,7 +28,7 @@ export function delete_room(roomId: string): Promise<void> {
           devDB("✅ Комната удалена успешно из IndexDB");
           
           // Удаляем из back_store через сервис
-          back_store.rooms.delete([roomId]);
+          rooms_store_utils.delete([roomId]);
           
           devDB('✅ Комната удалена из back_store через сервис');
           devDB('🎯 Вызываем res() для завершения delete_room');
