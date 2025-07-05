@@ -19,9 +19,8 @@ export const theme = writable(getInitialTheme());
 theme.subscribe((value) => {
     if (typeof window !== 'undefined') {
         localStorage.setItem('selected-theme', value);
-        // Применяем класс темы к body
-        document.body.className = document.body.className.replace(/theme-\w+/g, '');
-        document.body.classList.add(`theme-${value}`);
+        // Применяем data-theme атрибут к body (не класс!)
+        document.body.setAttribute('data-theme', value);
     }
 });
 

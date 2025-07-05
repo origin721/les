@@ -3,10 +3,6 @@
   import ThemeSwitcher from "../ThemeSwitcher.svelte";
   import { Link, ROUTES } from "../../routing";
   
-  // Import theme styles
-  import "../../styles/cyberpunk.css";
-  import "../../styles/pixel.css";
-  import "../../styles/terminal.css";
 
   interface Props {
     title: string;
@@ -35,8 +31,7 @@
   }: Props = $props();
 </script>
 
-<div class="theme-{$theme}">
-  <div class="base-container" data-widget-name={pageName}>
+<div class="base-container" data-widget-name={pageName}>
     <header class="base-header">
       {#if showBackLink}
         <div class="back-link-container">
@@ -106,66 +101,21 @@
         <span class="footer-status">{footerStatus}</span>
       </div>
     </footer>
-  </div>
 </div>
 
 <style>
-  /* Theme Variables */
-  .theme-cyberpunk {
-    --background-color: #0a0a0a;
-    --text-color: #00ff00;
-    --primary-color: #ff00ff;
-    --secondary-color: #00ffff;
-    --border-color: #00ff00;
-    --card-background: #1a1a1a;
-    --nav-active: #ff00ff;
-    --accent-color: #ffff00;
-  }
-  
-  .theme-watchdogs {
-    --background-color: #1a1a1a;
-    --text-color: #cccccc;
-    --primary-color: #ffc400;
-    --secondary-color: #00aaff;
-    --border-color: #444444;
-    --card-background: #222222;
-    --nav-active: #ffc400;
-    --accent-color: #00aaff;
-  }
-  
-  .theme-pixel {
-    --background-color: #000000;
-    --text-color: #00ff00;
-    --primary-color: #00ff00;
-    --secondary-color: #ff00ff;
-    --border-color: #00ff00;
-    --card-background: #222222;
-    --nav-active: #ff00ff;
-    --accent-color: #00ff00;
-  }
-
-  .theme-terminal {
-    --background-color: #001040;
-    --text-color: #FFFFFF;
-    --primary-color: #FFFF60;
-    --secondary-color: #4080FF;
-    --border-color: #4080FF;
-    --card-background: #002060;
-    --nav-active: #FFFF60;
-    --accent-color: #FFDD40;
-  }
 
   .base-container {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
     width: 100vw;
-    background-color: var(--background-color);
-    color: var(--text-color);
+    background-color: var(--les-bg-primary);
+    color: var(--les-text-primary);
     font-family: "Courier New", Courier, monospace;
     overflow-x: hidden;
-    border: 2px solid var(--border-color);
-    box-shadow: 0 0 25px var(--primary-color) inset;
+    border: 2px solid var(--les-border-primary);
+    box-shadow: 0 0 25px var(--les-accent-primary) inset;
   }
 
   /* Header */
@@ -174,7 +124,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 1.5rem;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--les-border-primary);
     min-height: 160px;
     position: relative;
     overflow: hidden;
@@ -188,19 +138,19 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    color: var(--secondary-color);
+    color: var(--les-accent-secondary);
     text-decoration: none;
     transition: all 0.2s;
     padding: 0.5rem 1rem;
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--les-border-primary);
     border-radius: 4px;
   }
   
   :global(.back-link:hover) {
-    color: var(--primary-color);
-    text-shadow: 0 0 5px var(--primary-color);
-    border-color: var(--primary-color);
-    box-shadow: 0 0 10px var(--primary-color);
+    color: var(--les-accent-primary);
+    text-shadow: 0 0 5px var(--les-accent-primary);
+    border-color: var(--les-accent-primary);
+    box-shadow: 0 0 10px var(--les-accent-primary);
   }
 
   /* Animated Title */
@@ -242,7 +192,7 @@
 
   .matrix-char {
     display: block;
-    color: var(--primary-color);
+    color: var(--les-accent-primary);
     font-size: 12px;
     line-height: 1.3;
     animation: matrix-glow 2.5s ease-in-out infinite alternate;
@@ -268,11 +218,11 @@
 
   .title-word {
     display: inline-block;
-    color: var(--primary-color);
+    color: var(--les-accent-primary);
     text-shadow: 
-      0 0 5px var(--primary-color),
-      0 0 10px var(--primary-color),
-      0 0 15px var(--primary-color);
+      0 0 5px var(--les-accent-primary),
+      0 0 10px var(--les-accent-primary),
+      0 0 15px var(--les-accent-primary);
   }
 
   .glitch-word {
@@ -281,7 +231,7 @@
   }
 
   .title-separator {
-    color: var(--secondary-color);
+    color: var(--les-accent-secondary);
     animation: separator-pulse 1.8s ease-in-out infinite;
   }
 
@@ -320,17 +270,17 @@
   .subtitle {
     margin-top: 1rem;
     font-size: 1rem;
-    color: var(--secondary-color);
+    color: var(--les-accent-secondary);
   }
 
   .typing-text {
     animation: typing 4.5s steps(35) infinite;
-    border-right: 2px solid var(--accent-color);
+    border-right: 2px solid var(--les-accent-primary);
   }
 
   .cursor {
     animation: cursor-blink 1s infinite;
-    color: var(--accent-color);
+    color: var(--les-accent-primary);
   }
 
   @keyframes typing {
@@ -358,7 +308,7 @@
   /* Footer */
   .base-footer {
     padding: 1rem 2rem;
-    border-top: 1px solid var(--border-color);
+    border-top: 1px solid var(--les-border-primary);
     background: rgba(0, 0, 0, 0.3);
   }
 
@@ -372,11 +322,11 @@
   }
 
   .footer-version {
-    color: var(--secondary-color);
+    color: var(--les-accent-secondary);
   }
 
   .footer-status {
-    color: var(--accent-color);
+    color: var(--les-accent-primary);
     animation: status-pulse 2.5s ease-in-out infinite;
   }
 

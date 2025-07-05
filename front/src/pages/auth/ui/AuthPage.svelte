@@ -7,11 +7,6 @@
     import AuthPageLoading from "./AuthPageLoading.svelte";
     import { devLog, prodError } from "../../../core/debug/logger";
 
-    // Import theme styles. The `theme` store will toggle a class on the wrapper
-    // to apply the correct styles.
-    import "../../../styles/cyberpunk.css";
-    import "../../../styles/pixel.css";
-    import "../../../styles/terminal.css";
 
     const pass = writable(null);
     let keyboardLayout = $state("UNKNOWN");
@@ -328,52 +323,6 @@
 </div>
 
 <style>
-    /* Apply a theme-specific class to the root of the component */
-    .theme-cyberpunk {
-        --background-color: #0a0a0a;
-        --text-color: #00ff00;
-        --primary-color: #ff00ff;
-        --secondary-color: #00ffff;
-        --border-color: #00ff00;
-        --input-background: #1a1a1a;
-        --input-text: #00ff00;
-        --button-background: transparent;
-        --button-text: #00ff00;
-        --button-hover-background: #00ff00;
-        --button-hover-text: #0a0a0a;
-        --link-color: #00ffff;
-        --link-hover-color: #ff00ff;
-    }
-    .theme-watchdogs {
-        --background-color: #1a1a1a;
-        --text-color: #cccccc;
-        --primary-color: #ffc400;
-        --secondary-color: #00aaff;
-        --border-color: #444444;
-        --input-background: #222222;
-        --input-text: #dddddd;
-        --button-background: #ffc400;
-        --button-text: #1a1a1a;
-        --button-hover-background: #00aaff;
-        --button-hover-text: #ffffff;
-        --link-color: #00aaff;
-        --link-hover-color: #ffc400;
-    }
-    .theme-pixel {
-        --background-color: #000000;
-        --text-color: #00ff00;
-        --primary-color: #00ff00;
-        --secondary-color: #ff00ff;
-        --border-color: #00ff00;
-        --input-background: #222222;
-        --input-text: #00ff00;
-        --button-background: #00ff00;
-        --button-text: #000000;
-        --button-hover-background: #ff00ff;
-        --button-hover-text: #000000;
-        --link-color: #00ff00;
-        --link-hover-color: #ff00ff;
-    }
 
     .auth-page-container {
         display: flex;

@@ -62,21 +62,21 @@
   }
 
   .theme-option {
-    border: 1px solid var(--border-color, #333);
+    border: 1px solid var(--les-border-primary);
     border-radius: 8px;
     padding: 1rem;
-    background: var(--surface-color, #1a1a1a);
+    background: var(--les-bg-secondary);
     transition: all 0.2s ease;
   }
 
   .theme-option:hover {
-    border-color: var(--accent-color, #00ff88);
+    border-color: var(--les-accent-primary);
     transform: translateY(-1px);
   }
 
   .theme-option.active {
-    border-color: var(--accent-color, #00ff88);
-    background: var(--surface-active-color, #252525);
+    border-color: var(--les-accent-primary);
+    background: var(--les-bg-primary);
   }
 
   .theme-preview {
@@ -94,8 +94,8 @@
     width: 3rem;
     height: 3rem;
     border-radius: 50%;
-    background: var(--accent-color, #00ff88);
-    color: var(--bg-color, #000);
+    background: var(--les-accent-primary);
+    color: var(--les-text-contrast);
   }
 
   .theme-info {
@@ -105,13 +105,13 @@
   .theme-name {
     font-size: 1.1rem;
     font-weight: bold;
-    color: var(--text-primary, #fff);
+    color: var(--les-text-primary);
     margin-bottom: 0.25rem;
   }
 
   .theme-description {
     font-size: 0.9rem;
-    color: var(--text-secondary, #aaa);
+    color: var(--les-text-secondary);
     line-height: 1.4;
   }
 
