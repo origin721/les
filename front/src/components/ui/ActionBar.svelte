@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { Link } from "../../routing";
+
   interface ActionConfig {
     id: string;
     title: string;
@@ -21,16 +23,19 @@
 <nav class="action-bar {className}">
   {#each actions as action}
     {#if action.href}
-      <a 
+      <Link
         href={action.href}
-        class="action-tab action-{action.variant || 'primary'} {action.disabled ? 'disabled' : ''}"
+        className={[
+          "action-tab",
+          `action-${action.variant || 'primary'}`,
+          action.disabled ? 'disabled' : ''
+        ]}
         title={action.description}
-        class:disabled={action.disabled}
       >
         <span class="action-icon">{action.icon}</span>
         <span class="action-text">{action.title}</span>
         <div class="action-indicator"></div>
-      </a>
+      </Link>
     {:else}
       <button 
         class="action-tab action-{action.variant || 'primary'} {action.disabled ? 'disabled' : ''}"
@@ -73,7 +78,7 @@
     100% { left: 100%; }
   }
 
-  .action-tab {
+  .action-tab, :global(.action-tab) {
     display: flex;
     align-items: center;
     gap: 0.6rem;
@@ -92,7 +97,7 @@
     border-radius: 4px;
   }
 
-  .action-tab::before {
+  .action-tab::before, :global(.action-tab::before) {
     content: '';
     position: absolute;
     top: 0;
@@ -103,84 +108,84 @@
     transition: left 0.5s ease;
   }
 
-  .action-tab:hover::before {
+  .action-tab:hover::before, :global(.action-tab:hover::before) {
     left: 100%;
   }
 
-  .action-tab:hover {
+  .action-tab:hover, :global(.action-tab:hover) {
     transform: translateY(-2px) scale(1.02);
     box-shadow: 0 8px 25px rgba(0, 255, 255, 0.3);
   }
 
-  .action-tab.disabled {
+  .action-tab.disabled, :global(.action-tab.disabled) {
     opacity: 0.5;
     cursor: not-allowed;
     transform: none !important;
     box-shadow: none !important;
   }
 
-  .action-tab.disabled:hover::before {
+  .action-tab.disabled:hover::before, :global(.action-tab.disabled:hover::before) {
     left: -100%;
   }
 
   /* Variants */
-  .action-primary {
+  .action-primary, :global(.action-primary) {
     border-color: var(--les-accent-primary);
     background: linear-gradient(135deg, rgba(0, 255, 255, 0.1), rgba(0, 255, 255, 0.05));
   }
 
-  .action-primary:hover {
+  .action-primary:hover, :global(.action-primary:hover) {
     background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(0, 255, 255, 0.1));
     box-shadow: 0 8px 25px rgba(0, 255, 255, 0.4);
     border-color: var(--les-accent-primary);
   }
 
-  .action-secondary {
+  .action-secondary, :global(.action-secondary) {
     border-color: var(--les-accent-secondary);
     background: linear-gradient(135deg, rgba(255, 0, 255, 0.1), rgba(255, 0, 255, 0.05));
   }
 
-  .action-secondary:hover {
+  .action-secondary:hover, :global(.action-secondary:hover) {
     background: linear-gradient(135deg, rgba(255, 0, 255, 0.2), rgba(255, 0, 255, 0.1));
     box-shadow: 0 8px 25px rgba(255, 0, 255, 0.4);
     border-color: var(--les-accent-secondary);
   }
 
-  .action-danger {
+  .action-danger, :global(.action-danger) {
     border-color: #ff4444;
     background: linear-gradient(135deg, rgba(255, 68, 68, 0.1), rgba(255, 68, 68, 0.05));
   }
 
-  .action-danger:hover {
+  .action-danger:hover, :global(.action-danger:hover) {
     background: linear-gradient(135deg, rgba(255, 68, 68, 0.2), rgba(255, 68, 68, 0.1));
     box-shadow: 0 8px 25px rgba(255, 68, 68, 0.4);
     border-color: #ff4444;
   }
 
-  .action-outline {
+  .action-outline, :global(.action-outline) {
     border-color: var(--les-border-primary);
     background: rgba(0, 0, 0, 0.2);
   }
 
-  .action-outline:hover {
+  .action-outline:hover, :global(.action-outline:hover) {
     background: rgba(255, 255, 255, 0.05);
     border-color: var(--les-accent-primary);
   }
 
-  .action-icon {
+  .action-icon, :global(.action-icon) {
     font-size: 1.3rem;
     display: flex;
     align-items: center;
   }
 
-  .action-text {
+  .action-text, :global(.action-text) {
     font-weight: bold;
     font-size: 0.9rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
 
-  .action-indicator {
+  .action-indicator, :global(.action-indicator) {
     position: absolute;
     bottom: 0;
     left: 0;
@@ -191,19 +196,19 @@
     transition: transform 0.3s ease;
   }
 
-  .action-tab:hover .action-indicator {
+  .action-tab:hover .action-indicator, :global(.action-tab:hover .action-indicator) {
     transform: scaleX(1);
   }
 
-  .action-primary .action-indicator {
+  .action-primary .action-indicator, :global(.action-primary .action-indicator) {
     background: var(--les-accent-primary);
   }
 
-  .action-secondary .action-indicator {
+  .action-secondary .action-indicator, :global(.action-secondary .action-indicator) {
     background: var(--les-accent-secondary);
   }
 
-  .action-danger .action-indicator {
+  .action-danger .action-indicator, :global(.action-danger .action-indicator) {
     background: #ff4444;
   }
 

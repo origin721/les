@@ -5,12 +5,13 @@
   interface Props {
     href?: undefined|string;
     className?: string|string[];
+    title?: string;
     children?: import('svelte').Snippet;
   }
 
-  let { href = undefined, className = "", children }: Props = $props();
+  let { href = undefined, className = "", title, children }: Props = $props();
 
-    function handleClick(event) {
+    function handleClick(event: MouseEvent) {
         event.preventDefault();
         if(!href) return;
         routingStore.setPath(href);
@@ -25,10 +26,8 @@ rel="nofollow" для ненадёжных ссылок
   data-widget-name="Link"
   href={href}
   onclick={handleClick}
-  class={[
-    className,
-    "text-white"
-  ].flat()}
+  class={Array.isArray(className) ? className.join(' ') : className}
+  title={title}
   rel="noopener noreferrer"
   referrerpolicy="no-referrer"
 >
