@@ -14,6 +14,7 @@ import {
   setUpdateStatus, 
   canStartUpdate 
 } from '../db_state_manager_v1/db_state_manager';
+import { REQUIRED_STORES } from "./REQUIRED_STORES";
 
 const counterInfo = {
   open: 0,
@@ -91,21 +92,6 @@ function startCloseTimer() {
   if (isDebugMode) {
     debugLog(`⏰ Запущен таймер закрытия на 5 минут. Активных запросов: ${activeRequestsCount}`);
   }
-}
-
-// Функция для сброса таймера закрытия (для обратной совместимости)
-function resetCloseTimer() {
-  // Если есть активные запросы, не запускаем таймер
-  if (activeRequestsCount > 0) {
-    if (closeTimer) {
-      clearTimeout(closeTimer);
-      closeTimer = null;
-    }
-    return;
-  }
-  
-  // Если нет активных запросов, запускаем таймер
-  startCloseTimer();
 }
 
 // Функция для получения или создания соединения
@@ -266,9 +252,7 @@ async function createNewConnection(): Promise<IDBDatabase> {
         prodInfo('✅ IndexDB соединение установлено, версия БД:', db.version);
 
         try {
-          // Проверяем существование критичных object stores
-          const requiredStores = ['accounts', 'friends', 'rooms'];
-          const missingStores = requiredStores.filter(storeName => !db.objectStoreNames.contains(storeName));
+          const missingStores = REQUIRED_STORES.filter(storeName => !db.objectStoreNames.contains(storeName));
           
           if (missingStores.length > 0) {
             prodError('🚨 Обнаружены отсутствующие object stores:', missingStores);
