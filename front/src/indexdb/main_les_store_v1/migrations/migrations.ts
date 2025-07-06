@@ -1,4 +1,6 @@
+// TODO: во время начало миграции нужно показывать экран что бы не обновляли страницу и вообще спрашивать готовы ли они сейчас начать обновляться!!!!!!
 import { prodInfo, prodError, devMigration } from '../../../core/debug/logger';
+import { MIGRATIONS_REGISTRY } from './MIGRATIONS_REGISTRY';
 
 /**
  * Информация о миграции
@@ -19,17 +21,6 @@ export interface MigrationModule {
   migrationData: (db: IDBDatabase) => Promise<void>;
 }
 
-/**
- * Реестр доступных миграций
- * Имена файлов должны следовать схеме: {версия}_{название}.ts
- */
-const MIGRATIONS_REGISTRY: Record<number, string> = {
-  0: '0_initialization',
-  1: '1_accounts_friends',
-  // Здесь можно добавлять новые миграции:
-  // 2: '2_add_settings_store',
-  // 3: '3_optimize_indexes',
-};
 
 /**
  * Получает текущую версию базы данных без её обновления
