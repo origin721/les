@@ -41,7 +41,7 @@ export async function migrationData(db: IDBDatabase): Promise<void> {
       const transaction = db.transaction(["accounts"], "readwrite");
       const store = transaction.objectStore("accounts");
       const getAllRequest = store.getAll();
-      
+
       getAllRequest.onsuccess = function() {
         const accountRecords = getAllRequest.result;
         
