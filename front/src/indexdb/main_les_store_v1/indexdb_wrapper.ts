@@ -30,32 +30,88 @@ let connectionPromise: Promise<IDBDatabase> | null = null;
 let closeTimer: NodeJS.Timeout | null = null;
 let isClosing = false;
 
+// Счетчик активных запросов
+let activeRequestsCount = 0;
+
 const IDLE_TIMEOUT = 5 * 60 * 1000; // 5 минут
 
-// Функция для сброса таймера закрытия
-function resetCloseTimer() {
+// Функция для увеличения счетчика активных запросов
+function incrementActiveRequests() {
+  activeRequestsCount++;
+  if (isDebugMode) {
+    debugLog(`📈 Увеличен счетчик активных запросов: ${activeRequestsCount}`);
+  }
+  
+  // Сбрасываем таймер если он был активен
+  if (closeTimer) {
+    clearTimeout(closeTimer);
+    closeTimer = null;
+    if (isDebugMode) {
+      debugLog('⏰ Таймер закрытия сброшен из-за нового активного запроса');
+    }
+  }
+}
+
+// Функция для уменьшения счетчика активных запросов
+function decrementActiveRequests() {
+  activeRequestsCount = Math.max(0, activeRequestsCount - 1);
+  if (isDebugMode) {
+    debugLog(`📉 Уменьшен счетчик активных запросов: ${activeRequestsCount}`);
+  }
+  
+  // Если нет активных запросов, запускаем таймер закрытия
+  if (activeRequestsCount === 0) {
+    startCloseTimer();
+  }
+}
+
+// Функция для запуска таймера закрытия (только когда нет активных запросов)
+function startCloseTimer() {
+  // Сбрасываем предыдущий таймер, если он был
   if (closeTimer) {
     clearTimeout(closeTimer);
   }
   
   closeTimer = setTimeout(() => {
-    if (cachedConnection && !isClosing) {
-      prodInfo('🔒 Закрытие соединения IndexDB по таймауту (5 минут бездействия)');
+    if (cachedConnection && !isClosing && activeRequestsCount === 0) {
+      prodInfo(`🔒 Закрытие соединения IndexDB по таймауту (5 минут после завершения всех запросов). Активных запросов: ${activeRequestsCount}`);
       isClosing = true;
       cachedConnection.close();
       cachedConnection = null;
       connectionPromise = null;
       closeTimer = null;
       isClosing = false;
+    } else if (activeRequestsCount > 0) {
+      if (isDebugMode) {
+        debugLog(`⏰ Таймер не сработал - есть активные запросы: ${activeRequestsCount}`);
+      }
     }
   }, IDLE_TIMEOUT);
+  
+  if (isDebugMode) {
+    debugLog(`⏰ Запущен таймер закрытия на 5 минут. Активных запросов: ${activeRequestsCount}`);
+  }
+}
+
+// Функция для сброса таймера закрытия (для обратной совместимости)
+function resetCloseTimer() {
+  // Если есть активные запросы, не запускаем таймер
+  if (activeRequestsCount > 0) {
+    if (closeTimer) {
+      clearTimeout(closeTimer);
+      closeTimer = null;
+    }
+    return;
+  }
+  
+  // Если нет активных запросов, запускаем таймер
+  startCloseTimer();
 }
 
 // Функция для получения или создания соединения
 async function getOrCreateConnection(): Promise<IDBDatabase> {
   // Если соединение уже существует и активно
   if (cachedConnection && !isClosing) {
-    resetCloseTimer();
     return cachedConnection;
   }
 
@@ -70,7 +126,6 @@ async function getOrCreateConnection(): Promise<IDBDatabase> {
   try {
     const db = await connectionPromise;
     cachedConnection = db;
-    resetCloseTimer();
     
     // Обработчик для принудительного закрытия извне
     db.onversionchange = function () {
@@ -80,6 +135,8 @@ async function getOrCreateConnection(): Promise<IDBDatabase> {
         closeTimer = null;
       }
       isClosing = true;
+      // Сбрасываем счетчик при принудительном закрытии
+      activeRequestsCount = 0;
       db.close();
       cachedConnection = null;
       connectionPromise = null;
@@ -92,6 +149,8 @@ async function getOrCreateConnection(): Promise<IDBDatabase> {
         clearTimeout(closeTimer);
         closeTimer = null;
       }
+      // Сбрасываем счетчик при закрытии
+      activeRequestsCount = 0;
       cachedConnection = null;
       connectionPromise = null;
       isClosing = false;
@@ -286,8 +345,13 @@ export async function indexdb_wrapper(
     debugLog({counterInfo});
   }
 
+  // Увеличиваем счетчик активных запросов при начале запроса
+  incrementActiveRequests();
+
   const resultPromise = new Promise(async (_res, _rej) => {
     const res = (_data: any) => {
+      // Уменьшаем счетчик активных запросов при завершении
+      decrementActiveRequests();
       _res(_data);
       
       if(!isDebugMode) return
@@ -297,6 +361,8 @@ export async function indexdb_wrapper(
       debugLog({counterInfo});
     }
     const rej = (_err: any) => {
+      // Уменьшаем счетчик активных запросов при ошибке
+      decrementActiveRequests();
       _rej(_err);
 
       if(!isDebugMode) return
@@ -333,6 +399,34 @@ export async function indexdb_wrapper(
   });
 
   return resultPromise;
+}
+
+// Функция для получения информации о состоянии соединения
+export function getConnectionInfo() {
+  return {
+    hasConnection: !!cachedConnection,
+    isClosing,
+    activeRequestsCount,
+    hasCloseTimer: !!closeTimer,
+    connectionPromiseActive: !!connectionPromise
+  };
+}
+
+// Функция для принудительного закрытия соединения (для тестирования/отладки)
+export function forceCloseConnection() {
+  if (cachedConnection) {
+    prodInfo('🔒 Принудительное закрытие соединения IndexDB');
+    if (closeTimer) {
+      clearTimeout(closeTimer);
+      closeTimer = null;
+    }
+    isClosing = true;
+    activeRequestsCount = 0; // Сбрасываем счетчик
+    cachedConnection.close();
+    cachedConnection = null;
+    connectionPromise = null;
+    isClosing = false;
+  }
 }
 
 // Функция для создания менеджера соединений
