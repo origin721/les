@@ -1,0 +1,45 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4F46E5;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7C3AED;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#059669;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0D9488;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <circle cx="16" cy="16" r="15" fill="url(#grad1)" stroke="#E5E7EB" stroke-width="1"/>
+  
+  <!-- Message Bubble -->
+  <path d="M6 9C6 7.89543 6.89543 7 8 7H20C21.1046 7 22 7.89543 22 9V15C22 16.1046 21.1046 17 20 17H11L7 20V17H8C6.89543 17 6 16.1046 6 15V9Z" 
+        fill="white" 
+        fill-opacity="0.95"/>
+  
+  <!-- Message Lines -->
+  <line x1="9" y1="11" x2="19" y2="11" stroke="url(#grad1)" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="9" y1="14" x2="15" y2="14" stroke="url(#grad1)" stroke-width="1.5" stroke-linecap="round"/>
+  
+  <!-- Security Lock -->
+  <g transform="translate(20, 20)">
+    <rect x="0" y="3" width="8" height="6" rx="1" fill="url(#grad2)"/>
+    <path d="M2 3V2C2 0.895431 2.89543 0 4 0C5.10457 0 6 0.895431 6 2V3" 
+          stroke="url(#grad2)" 
+          stroke-width="1.5" 
+          fill="none" 
+          stroke-linecap="round"/>
+    <circle cx="4" cy="6" r="0.8" fill="white"/>
+  </g>
+  
+  <!-- Security Shield -->
+  <path d="M25 8L23 9V12C23 13.5 24 14.5 25 15C26 14.5 27 13.5 27 12V9L25 8Z" 
+        fill="url(#grad2)" 
+        stroke="white" 
+        stroke-width="0.5"/>
+  <path d="M24.5 10.5L24.5 12.5M24.5 10.5L25.5 11.5" 
+        stroke="white" 
+        stroke-width="0.7" 
+        stroke-linecap="round"/>
+</svg>
