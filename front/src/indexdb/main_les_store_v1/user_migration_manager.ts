@@ -198,9 +198,9 @@ export class UserMigrationManager {
   /**
    * Проверить что ВСЕ пользователи прошли определенную версию (для удаления таблиц)
    */
-  static async allUsersCompletedVersion(version: number): Promise<boolean> {
+  static async allUsersCompletedVersion(db: IDBDatabase, version: number): Promise<boolean> {
     // Получить всех пользователей из accounts таблицы
-    const allSystemUserIds = await this.scanAllUserIds();
+    const allSystemUserIds = await this.scanAllUserIds(db);
     
     // Получить пользователей, завершивших версию
     const completedUserIds = new Set(await UserStateManager.getUsersCompletedVersion(version));
@@ -212,12 +212,25 @@ export class UserMigrationManager {
 
   /**
    * Сканировать accounts таблицу для получения всех ID пользователей
-   * TODO: Реализовать под конкретную структуру accounts таблицы
    */
-  private static async scanAllUserIds(): Promise<Set<string>> {
-    // Временная заглушка - нужно будет реализовать под конкретную структуру
-    console.warn('⚠️ scanAllUserIds() требует реализации под конкретную структуру accounts');
-    return new Set<string>();
+  private static async scanAllUserIds(db: IDBDatabase): Promise<Set<string>> {
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(['accounts'], 'readonly');
+      const store = transaction.objectStore('accounts');
+      const request = store.getAll();
+      
+      request.onsuccess = () => {
+        const accounts = request.result;
+        const userIds = new Set(accounts.map((account: any) => account.id));
+        console.log(`📊 Найдено ${userIds.size} пользователей в системе:`, [...userIds]);
+        resolve(userIds);
+      };
+      
+      request.onerror = () => {
+        console.error('❌ Ошибка сканирования accounts для получения userIds:', request.error);
+        reject(request.error);
+      };
+    });
   }
 
   /**

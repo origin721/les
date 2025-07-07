@@ -3,7 +3,6 @@ import {
   getCurrentDbVersion, 
   preloadMigrations, 
   runSchemaMigrations, 
-  runDataMigrations,
   getMaxVersion
 } from './migrations/migrations';
 import { runEmergencyMigrations } from './migrations/emergency_migrations';
@@ -250,18 +249,11 @@ export class ConnectionManager {
               return;
             }
 
-            // Если была рассинхронизация версий, перезагружаем миграции для данных
-            if (actualOldVersion !== currentVersion || preloadedMigrations.size === 0) {
-              prodInfo('🔄 Перезагрузка миграций для данных с реальной версии:', actualOldVersion);
-              preloadedMigrations = await preloadMigrations(actualOldVersion, targetVersion);
-            }
-
-            // 6. Выполняем миграции данных асинхронно с отслеживанием времени
-            if (actualOldVersion < targetVersion && preloadedMigrations.size > 0) {
-              await runDataMigrations(db, actualOldVersion, targetVersion, preloadedMigrations, dbName);
-            }
-
-            prodInfo('✅ Все миграции выполнены, БД готова к использованию');
+            // 6. В пользователь-центричной архитектуре миграции данных выполняются 
+            // только при авторизации пользователей в accounts_service.onLogin()
+            // ConnectionManager выполняет только миграции схемы
+            prodInfo('✅ Миграции схемы выполнены, БД готова к использованию');
+            prodInfo('ℹ️ Миграции данных будут выполнены при авторизации пользователей');
             
             // 7. Обновляем статус успешного завершения + ВРЕМЯ
             await setUpdateStatus(dbName, DB_UPDATE_STATUS.UPDATE_SUCCESS, db.version);
