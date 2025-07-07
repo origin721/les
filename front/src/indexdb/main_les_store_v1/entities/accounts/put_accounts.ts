@@ -4,6 +4,7 @@ import { back_store } from "../../../../local_back/back_store/back_store";
 import { uuidv4 } from "../../../../core/uuid";
 import { indexdb_wrapper } from "../../indexdb_wrapper";
 import type { HttpServerParam } from "./add_accounts";
+import { ACCOUNTS_VERSION } from "./constants";
 
 
 export type AccountEntityPut = {
@@ -43,7 +44,7 @@ export function put_accounts(new_list: AccountEntityPut[]) {
           message: JSON.stringify(updatedAccount),
         });
         
-        store.put({ id: item.id, data: newData, version: db.version });
+        store.put({ id: item.id, data: newData, version: ACCOUNTS_VERSION });
       }
 
       transaction.oncomplete = function () {

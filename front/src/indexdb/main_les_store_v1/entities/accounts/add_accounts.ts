@@ -5,6 +5,7 @@ import { uuidv4 } from "../../../../core/uuid";
 import { indexdb_wrapper } from "../../indexdb_wrapper";
 import { privateKeyToString, recommendedGenerateKeyPair } from "../../../../libs/libp2p";
 import { prodError, prodInfo } from "../../../../core/debug/logger";
+import { ACCOUNTS_VERSION } from "./constants";
 
 export type HttpServerParam = {
   url: string;
@@ -40,7 +41,7 @@ export function add_accounts(new_list: AccountEntity[]) {
             friendsByIds: item.friendsByIds || [],  // Инициализируем пустым массивом
           }),
         });
-        store.add({ id: newId, data: newData, version: db.version });
+        store.add({ id: newId, data: newData, version: ACCOUNTS_VERSION });
       }
 
       transaction.oncomplete = function () {

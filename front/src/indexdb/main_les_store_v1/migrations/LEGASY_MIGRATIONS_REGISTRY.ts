@@ -6,6 +6,8 @@
 export const LEGACY_MIGRATIONS_REGISTRY: Record<number, string> = {
   0: '0_initialization',
   1: '1_accounts_friends',
+  //2: '2_accounts_versioning',
+
   //2: '-1_tmp_test',
   // Здесь legacy миграции для старых версий:
   // 2: '2_old_feature',

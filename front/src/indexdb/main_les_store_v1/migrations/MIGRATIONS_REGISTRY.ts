@@ -13,7 +13,7 @@ export const MIGRATIONS_REGISTRY: Record<number, string> = {
   // Временно оставляем базовые миграции для разработки
   0: '0_initialization',
   1: '1_accounts_friends',
-  //2: '-1_tmp_test',
+  2: '2_accounts_versioning',
 };
 
 /**
