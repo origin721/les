@@ -40,7 +40,7 @@ export function add_accounts(new_list: AccountEntity[]) {
             friendsByIds: item.friendsByIds || [],  // Инициализируем пустым массивом
           }),
         });
-        store.add({ id: newId, data: newData });
+        store.add({ id: newId, data: newData, version: db.version });
       }
 
       transaction.oncomplete = function () {

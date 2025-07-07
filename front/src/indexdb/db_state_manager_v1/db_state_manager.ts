@@ -1,5 +1,6 @@
 import { DB_NAMES, DB_UPDATE_STATUS } from '../constants';
 import { prodInfo, prodError, debugLog } from '../../core/debug/logger';
+import type { DbStateRecord, DbUpdateStatus } from './constants';
 
 
 /**
@@ -186,5 +187,240 @@ export async function getAllDbStates(): Promise<DbStateRecord[]> {
   } catch (error) {
     prodError('❌ Ошибка получения всех состояний БД:', error);
     return [];
+  }
+}
+
+/**
+ * Записать начало миграции с временной меткой
+ */
+export async function startMigrationTimer(
+  dbName: string, 
+  fromVersion: number, 
+  toVersion: number
+): Promise<void> {
+  try {
+    let stateRecord = await getDbState(dbName);
+    
+    if (!stateRecord) {
+      stateRecord = {
+        id: dbName,
+        dbName,
+        version: fromVersion,
+        status: DB_UPDATE_STATUS.UPDATE_STARTED,
+        lastUpdated: Date.now()
+      };
+    }
+    
+    stateRecord.migrationStartTime = Date.now();
+    stateRecord.targetVersion = toVersion;
+    stateRecord.executedMigrations = [];
+    stateRecord.migratedTables = [];
+    
+    await updateDbState(stateRecord);
+    prodInfo('⏱️ Начат таймер миграции:', { dbName, fromVersion, toVersion });
+  } catch (error) {
+    prodError('❌ Ошибка записи начала миграции:', error);
+    throw error;
+  }
+}
+
+/**
+ * Записать окончание миграции и вычислить общее время
+ */
+export async function endMigrationTimer(dbName: string): Promise<void> {
+  try {
+    const stateRecord = await getDbState(dbName);
+    if (!stateRecord || !stateRecord.migrationStartTime) {
+      prodError('❌ Не найдено начало миграции для расчета времени:', dbName);
+      return;
+    }
+    
+    const endTime = Date.now();
+    stateRecord.migrationEndTime = endTime;
+    stateRecord.migrationDurationMs = endTime - stateRecord.migrationStartTime;
+    
+    await updateDbState(stateRecord);
+    prodInfo('✅ Завершен таймер миграции:', { 
+      dbName, 
+      durationMs: stateRecord.migrationDurationMs,
+      durationSec: Math.round(stateRecord.migrationDurationMs / 1000)
+    });
+  } catch (error) {
+    prodError('❌ Ошибка записи окончания миграции:', error);
+    throw error;
+  }
+}
+
+/**
+ * Записать время выполнения конкретной миграции
+ */
+export async function recordMigrationStep(
+  dbName: string,
+  stepInfo: {
+    version: number;
+    fileName: string; 
+    schemaDuration: number;
+    dataDuration: number;
+  }
+): Promise<void> {
+  try {
+    const stateRecord = await getDbState(dbName);
+    if (!stateRecord) {
+      prodError('❌ Не найдено состояние БД для записи шага миграции:', dbName);
+      return;
+    }
+    
+    if (!stateRecord.executedMigrations) {
+      stateRecord.executedMigrations = [];
+    }
+    
+    const now = Date.now();
+    stateRecord.executedMigrations.push({
+      version: stepInfo.version,
+      fileName: stepInfo.fileName,
+      schemaDuration: stepInfo.schemaDuration,
+      dataDuration: stepInfo.dataDuration,
+      startTime: now - stepInfo.schemaDuration - stepInfo.dataDuration,
+      endTime: now
+    });
+    
+    await updateDbState(stateRecord);
+    prodInfo('📝 Записан шаг миграции:', stepInfo);
+  } catch (error) {
+    prodError('❌ Ошибка записи шага миграции:', error);
+    throw error;
+  }
+}
+
+/**
+ * Проверка зависших миграций (старше 10 минут)
+ */
+export async function detectStuckMigrations(dbName: string): Promise<boolean> {
+  try {
+    const stateRecord = await getDbState(dbName);
+    if (!stateRecord || stateRecord.status !== DB_UPDATE_STATUS.UPDATE_STARTED) {
+      return false;
+    }
+    
+    const STUCK_TIMEOUT_MS = 10 * 60 * 1000; // 10 минут
+    const now = Date.now();
+    const migrationAge = stateRecord.migrationStartTime ? 
+      now - stateRecord.migrationStartTime : 
+      now - stateRecord.lastUpdated;
+    
+    const isStuck = migrationAge > STUCK_TIMEOUT_MS;
+    
+    if (isStuck) {
+      prodInfo('⚠️ Обнаружена зависшая миграция:', {
+        dbName,
+        ageMinutes: Math.round(migrationAge / 60000),
+        lastUpdated: new Date(stateRecord.lastUpdated).toISOString()
+      });
+    }
+    
+    return isStuck;
+  } catch (error) {
+    prodError('❌ Ошибка проверки зависших миграций:', error);
+    return false;
+  }
+}
+
+/**
+ * Сброс статуса зависшей миграции
+ */
+export async function resetStuckMigration(dbName: string): Promise<void> {
+  try {
+    const stateRecord = await getDbState(dbName);
+    if (!stateRecord) {
+      prodInfo('ℹ️ Состояние БД не найдено, сброс не требуется:', dbName);
+      return;
+    }
+    
+    // Сбрасываем статус на IDLE
+    stateRecord.status = DB_UPDATE_STATUS.IDLE;
+    stateRecord.errorMessage = 'Миграция была сброшена из-за зависания';
+    
+    // Очищаем временные данные миграции
+    delete stateRecord.migrationStartTime;
+    delete stateRecord.migrationEndTime;
+    delete stateRecord.migrationDurationMs;
+    delete stateRecord.targetVersion;
+    
+    await updateDbState(stateRecord);
+    prodInfo('🔄 Сброшена зависшая миграция:', dbName);
+  } catch (error) {
+    prodError('❌ Ошибка сброса зависшей миграции:', error);
+    throw error;
+  }
+}
+
+/**
+ * Обновление информации о мигрированных таблицах
+ */
+export async function updateMigratedTables(dbName: string, tables: string[]): Promise<void> {
+  try {
+    const stateRecord = await getDbState(dbName);
+    if (!stateRecord) {
+      prodError('❌ Не найдено состояние БД для обновления таблиц:', dbName);
+      return;
+    }
+    
+    if (!stateRecord.migratedTables) {
+      stateRecord.migratedTables = [];
+    }
+    
+    // Добавляем уникальные таблицы
+    tables.forEach(table => {
+      if (!stateRecord.migratedTables!.includes(table)) {
+        stateRecord.migratedTables!.push(table);
+      }
+    });
+    
+    await updateDbState(stateRecord);
+    prodInfo('📊 Обновлен список мигрированных таблиц:', { dbName, tables });
+  } catch (error) {
+    prodError('❌ Ошибка обновления мигрированных таблиц:', error);
+    throw error;
+  }
+}
+
+/**
+ * Получить статистику времени выполнения для UI
+ */
+export async function getMigrationStats(dbName: string): Promise<{
+  totalDuration: number;
+  lastMigrationDate: Date | null;
+  executedMigrations: Array<{
+    version: number;
+    fileName: string;
+    schemaDuration: number;
+    dataDuration: number;
+    startTime: number;
+    endTime: number;
+  }>;
+}> {
+  try {
+    const stateRecord = await getDbState(dbName);
+    
+    if (!stateRecord) {
+      return {
+        totalDuration: 0,
+        lastMigrationDate: null,
+        executedMigrations: []
+      };
+    }
+    
+    return {
+      totalDuration: stateRecord.migrationDurationMs || 0,
+      lastMigrationDate: stateRecord.migrationEndTime ? new Date(stateRecord.migrationEndTime) : null,
+      executedMigrations: stateRecord.executedMigrations || []
+    };
+  } catch (error) {
+    prodError('❌ Ошибка получения статистики миграций:', error);
+    return {
+      totalDuration: 0,
+      lastMigrationDate: null,
+      executedMigrations: []
+    };
   }
 }

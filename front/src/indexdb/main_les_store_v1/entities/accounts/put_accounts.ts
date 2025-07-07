@@ -43,7 +43,7 @@ export function put_accounts(new_list: AccountEntityPut[]) {
           message: JSON.stringify(updatedAccount),
         });
         
-        store.put({ id: item.id, data: newData });
+        store.put({ id: item.id, data: newData, version: db.version });
       }
 
       transaction.oncomplete = function () {

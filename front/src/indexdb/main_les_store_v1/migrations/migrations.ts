@@ -1,6 +1,13 @@
 // TODO: во время начало миграции нужно показывать экран что бы не обновляли страницу и вообще спрашивать готовы ли они сейчас начать обновляться!!!!!!
 import { prodInfo, prodError, devMigration } from '../../../core/debug/logger';
 import { MIGRATIONS_REGISTRY } from './MIGRATIONS_REGISTRY';
+import { 
+  startMigrationTimer, 
+  endMigrationTimer, 
+  recordMigrationStep 
+} from '../../db_state_manager_v1/db_state_manager';
+import { VersionManager } from '../version_manager';
+import { REQUIRED_STORES } from '../REQUIRED_STORES';
 
 /**
  * Информация о миграции
@@ -161,12 +168,14 @@ export function runSchemaMigrations(
 
 /**
  * Выполняет миграции данных с предварительно загруженными модулями
+ * Включает отслеживание времени и добавление версий к записям
  */
 export async function runDataMigrations(
   db: IDBDatabase, 
   oldVersion: number, 
   newVersion: number,
-  preloadedMigrations: Map<number, MigrationModule>
+  preloadedMigrations: Map<number, MigrationModule>,
+  dbName: string
 ): Promise<void> {
   prodInfo('🚀 Начинаем выполнение миграций данных IndexedDB:', {
     oldVersion,
@@ -174,6 +183,8 @@ export async function runDataMigrations(
   });
 
   try {
+    const migratedTables: string[] = [];
+
     // Выполняем миграции данных последовательно от oldVersion до newVersion
     for (let version = oldVersion; version < newVersion; version++) {
       const targetVersion = version + 1;
@@ -190,9 +201,28 @@ export async function runDataMigrations(
       // Выполняем миграцию данных асинхронно
       const startTime = Date.now();
       await migrationModule.migrationData(db);
-      const executionTime = Date.now() - startTime;
+      const dataDuration = Date.now() - startTime;
       
-      prodInfo(`✅ Миграция данных ${migrationModule.migrationInfo.fileName} выполнена за ${executionTime}мс`);
+      prodInfo(`✅ Миграция данных ${migrationModule.migrationInfo.fileName} выполнена за ${dataDuration}мс`);
+      
+      // Записываем детальную информацию о выполненной миграции
+      await recordMigrationStep(dbName, {
+        version: targetVersion,
+        fileName: migrationModule.migrationInfo.fileName,
+        schemaDuration: (migrationModule as any)._schemaDuration || 0,
+        dataDuration
+      });
+
+      migratedTables.push(migrationModule.migrationInfo.fileName);
+    }
+
+    // ДОБАВЛЯЕМ ВЕРСИИ КО ВСЕМ ЗАПИСЯМ после успешных миграций
+    prodInfo('🔖 Добавляем поле version ко всем записям...');
+    for (const storeName of Array.from(db.objectStoreNames)) {
+      if (REQUIRED_STORES.includes(storeName)) {
+        await VersionManager.addVersionToAllRecords(db, storeName, newVersion);
+        prodInfo(`✅ Добавлена версия ${newVersion} ко всем записям в ${storeName}`);
+      }
     }
 
     prodInfo('🏁 Все миграции данных IndexedDB выполнены успешно');
