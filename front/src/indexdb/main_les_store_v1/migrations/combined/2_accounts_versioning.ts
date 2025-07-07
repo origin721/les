@@ -1,7 +1,7 @@
 import { prodInfo, prodError, devMigration } from '../../../../core/debug/logger';
 import { decrypt_curve25519_from_pass, encrypt_curve25519_from_pass } from '../../../../core/crypt';
 import type { MigrationContext } from '../../../db_state_manager_v1/constants';
-import { ACCOUNTS_VERSION } from '../../entities/accounts/constants';
+import { ACCOUNTS_VERSION } from '../../../main_les_store_v1/entities/accounts/constants';
 
 export const migrationInfo = {
   version: 2,
@@ -49,8 +49,13 @@ export async function migrationData(context: MigrationContext): Promise<void> {
             // Дешифруем данные
             const decryptedData = await decrypt_curve25519_from_pass({
               pass: currentUser.pass,
-              encryptedMessage: record.data
+              cipherText: record.data
             });
+            
+            if (!decryptedData) {
+              devMigration(`⚠️ Не удалось дешифровать аккаунт ${record.id}, пропускаем`);
+              continue;
+            }
             
             const accountData = JSON.parse(decryptedData);
             
@@ -73,11 +78,10 @@ export async function migrationData(context: MigrationContext): Promise<void> {
               message: JSON.stringify(updatedAccountData),
             });
             
-            // Обновляем запись в IndexedDB (с entity version, а не db.version)
+            // Обновляем запись в IndexedDB (version теперь только внутри зашифрованных данных)
             const updatedRecord = {
               id: record.id,
-              data: encryptedData,
-              version: ACCOUNTS_VERSION  // ← Используем версию entity, а не db.version
+              data: encryptedData
             };
             
             store.put(updatedRecord);
