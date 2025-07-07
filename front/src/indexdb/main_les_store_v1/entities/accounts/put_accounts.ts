@@ -37,6 +37,7 @@ export function put_accounts(new_list: AccountEntityPut[]) {
           _pass: existingAccount._pass,
           _libp2p_keyPair: existingAccount._libp2p_keyPair,
           date_created: existingAccount.date_created,
+          version: ACCOUNTS_VERSION,  // Версия внутри зашифрованных данных
         };
 
         const newData = await encrypt_curve25519_from_pass({
@@ -44,7 +45,7 @@ export function put_accounts(new_list: AccountEntityPut[]) {
           message: JSON.stringify(updatedAccount),
         });
         
-        store.put({ id: item.id, data: newData, version: ACCOUNTS_VERSION });
+        store.put({ id: item.id, data: newData });
       }
 
       transaction.oncomplete = function () {

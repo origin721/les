@@ -39,9 +39,10 @@ export function add_accounts(new_list: AccountEntity[]) {
             _libp2p_keyPair: privateKeyToString(libp2p_keyPair),
             date_created: new Date(),
             friendsByIds: item.friendsByIds || [],  // Инициализируем пустым массивом
+            version: ACCOUNTS_VERSION,  // Версия внутри зашифрованных данных
           }),
         });
-        store.add({ id: newId, data: newData, version: ACCOUNTS_VERSION });
+        store.add({ id: newId, data: newData });
       }
 
       transaction.oncomplete = function () {

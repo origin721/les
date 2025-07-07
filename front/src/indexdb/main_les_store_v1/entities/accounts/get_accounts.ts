@@ -14,6 +14,7 @@ export type Account = {
   _pass: string;
   _libp2p_keyPair: string;
   friendsByIds?: string[];  // Массив ID друзей для данного аккаунта
+  version: number;  // Версия entity для отслеживания изменений структуры
 };
 
 export function get_accounts(

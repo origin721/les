@@ -105,6 +105,7 @@ function accountToDto(a: Account): AccountDto {
     date_updated: a.date_updated,
     _pass: a._pass,
     friendsByIds: a.friendsByIds,
+    version: a.version,
   }
 
 }
