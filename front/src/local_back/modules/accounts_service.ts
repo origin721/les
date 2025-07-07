@@ -10,6 +10,10 @@ import { put_accounts, type AccountEntityPut } from "../../indexdb/main_les_stor
 import { privateKeyStringToPeerId } from "../../libs/libp2p";
 import { back_store } from "../back_store/back_store";
 import type { LoginPayload } from "../middleware";
+import { UserMigrationManager } from "../../indexdb/main_les_store_v1/user_migration_manager";
+import { UserStateManager } from "../../indexdb/db_state_manager_v1/user_state_manager";
+import { MIGRATIONS_REGISTRY } from "../../indexdb/main_les_store_v1/migrations/MIGRATIONS_REGISTRY";
+import { ConnectionManager } from "../../indexdb/main_les_store_v1/connection_manager";
 
 const channel = new BroadcastChannel(CHANNEL_NAMES.FRONT_MIDDLEWARE);
 
@@ -52,6 +56,28 @@ export const accounts_service = {
   },
   async onLogin(props: LoginPayload) {
       const accounts = await login(props.body.pass);
+      
+      // Выполняем пользовательские миграции для каждого аккаунта
+      for (const account of accounts) {
+        try {
+          const userState = await UserStateManager.getUserState(account.id);
+          const oldVersion = userState?.currentVersion || 0;
+          const newVersion = Math.max(...Object.keys(MIGRATIONS_REGISTRY).map(Number)) + 1;
+          
+          if (oldVersion < newVersion) {
+            await UserMigrationManager.migrateUser({
+              db: await ConnectionManager.getConnection(),
+              currentUser: { id: account.id, pass: props.body.pass },
+              oldVersion,
+              newVersion
+            });
+          }
+        } catch (error) {
+          console.error(`❌ Ошибка миграции пользователя ${account.id}:`, error);
+          // Не блокируем вход при ошибке миграции конкретного пользователя
+        }
+      }
+      
       for(let ac of accounts) {
         back_store.accounts_by_id[ac.id] = ac;
       }
@@ -79,6 +105,8 @@ function accountToDto(a: Account): AccountDto {
     httpServers: a.httpServers,
     date_created: a.date_created,
     date_updated: a.date_updated,
+    _pass: a._pass,
+    friendsByIds: a.friendsByIds,
   }
 
 }

@@ -1,4 +1,5 @@
 import { prodInfo, prodError, devMigration, devDB } from '../../../../core/debug/logger';
+import type { MigrationContext } from '../../../db_state_manager_v1/constants';
 
 /**
  * Информация о миграции
@@ -39,8 +40,9 @@ export function migrationScheme(db: IDBDatabase): void {
  * Миграция данных: добавление тестовых записей в таблицу tmp_test
  * Демонстрирует различные операции с IndexedDB
  */
-export async function migrationData(db: IDBDatabase): Promise<void> {
-  prodInfo('🔄 Начинаем миграцию данных tmp_test: добавление тестовых записей');
+export async function migrationData(context: MigrationContext): Promise<void> {
+  const { db, currentUser } = context;
+  prodInfo(`🔄 Выполняем миграцию данных tmp_test для пользователя: ${currentUser.id}`);
   
   return new Promise<void>((resolve, reject) => {
     try {

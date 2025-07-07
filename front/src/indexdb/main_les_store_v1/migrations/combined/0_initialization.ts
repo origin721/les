@@ -1,5 +1,6 @@
 import { prodInfo, devDB } from '../../../../core/debug/logger';
-import type { MigrationInfo } from '../types';
+import type { MigrationInfo, MigrationFunction } from '../types';
+import type { MigrationContext } from '../../../db_state_manager_v1/constants';
 
 /**
  * Информация о миграции
@@ -42,9 +43,10 @@ export function migrationScheme(db: IDBDatabase): void {
 /**
  * Миграция данных: Инициализация - нет данных для миграции
  */
-export async function migrationData(db: IDBDatabase): Promise<void> {
-  prodInfo('📦 Выполняем миграцию данных 0: Инициализация');
+export async function migrationData(context: MigrationContext): Promise<void> {
+  const { currentUser } = context;
+  prodInfo(`📦 Выполняем миграцию данных 0 для пользователя: ${currentUser.id}`);
   
   // При инициализации нет данных для миграции
-  prodInfo('✅ Миграция данных 0 завершена (нет данных для миграции)');
+  prodInfo(`✅ Миграция данных 0 завершена для пользователя ${currentUser.id} (нет данных для миграции)`);
 }

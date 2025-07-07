@@ -2,17 +2,15 @@
  * Типы для системы миграций IndexedDB
  */
 
-/**
- * Функция миграции
- * @param db - объект базы данных IndexedDB
- */
-export type MigrationFunction = (db: IDBDatabase) => void | Promise<void>;
+// Импортируем новый контекст
+import type { MigrationContext } from '../../db_state_manager_v1/constants';
 
-/**
- * Асинхронная функция миграции (для импорта)
- * @param db - объект базы данных IndexedDB
- */
-export type AsyncMigrationFunction = (db: IDBDatabase) => Promise<void>;
+// НОВЫЕ типы для пользователь-центричной архитектуры:
+export type MigrationFunction = (context: MigrationContext) => void | Promise<void>;
+export type AsyncMigrationFunction = (context: MigrationContext) => Promise<void>;
+
+// Для обратной совместимости schema migrations (они остаются глобальными)
+export type SchemaMigrationFunction = (db: IDBDatabase) => void | Promise<void>;
 
 /**
  * Описание миграции
@@ -22,6 +20,17 @@ export interface MigrationInfo {
   name: string;
   description: string;
   fileName: string;
+}
+
+/**
+ * Полная структура миграции
+ */
+export interface Migration {
+  migrationInfo: MigrationInfo;
+  migrationScheme?: SchemaMigrationFunction;  // Глобальная schema
+  migrationData?: MigrationFunction;          // Пользователь-центричная data
+  version: number;
+  fileName?: string;
 }
 
 /**
