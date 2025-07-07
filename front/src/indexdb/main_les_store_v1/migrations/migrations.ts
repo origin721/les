@@ -1,6 +1,6 @@
 // TODO: во время начало миграции нужно показывать экран что бы не обновляли страницу и вообще спрашивать готовы ли они сейчас начать обновляться!!!!!!
 import { prodInfo, prodError, devMigration } from '../../../core/debug/logger';
-import { MIGRATIONS_REGISTRY } from './MIGRATIONS_REGISTRY';
+import { MIGRATIONS_REGISTRY, MIN_CURRENT_VERSION } from './MIGRATIONS_REGISTRY';
 import { 
   startMigrationTimer, 
   endMigrationTimer, 
@@ -28,6 +28,68 @@ export interface MigrationModule {
   migrationData: (db: IDBDatabase) => Promise<void>;
 }
 
+/**
+ * Асинхронно загружает legacy реестр миграций
+ * Загружается только при необходимости для оптимизации производительности
+ */
+async function loadLegacyRegistry(): Promise<Record<number, string>> {
+  try {
+    devMigration('🔄 Загружаем legacy реестр миграций...');
+    
+    // Динамический импорт legacy реестра
+    const legacyModule = await import('./LEGASY_MIGRATIONS_REGISTRY');
+    
+    if (!legacyModule.LEGACY_MIGRATIONS_REGISTRY) {
+      throw new Error('Legacy реестр не содержит LEGACY_MIGRATIONS_REGISTRY');
+    }
+    
+    prodInfo('✅ Legacy реестр миграций загружен успешно');
+    return legacyModule.LEGACY_MIGRATIONS_REGISTRY;
+    
+  } catch (error) {
+    prodError('❌ Ошибка загрузки legacy реестра миграций:', error);
+    throw error;
+  }
+}
+
+/**
+ * Получает объединенный реестр миграций для указанного диапазона версий
+ * Автоматически определяет необходимость загрузки legacy миграций
+ */
+async function getCombinedRegistry(
+  oldVersion: number, 
+  newVersion: number
+): Promise<Record<number, string>> {
+  const needsLegacy = oldVersion < MIN_CURRENT_VERSION;
+  
+  if (!needsLegacy) {
+    prodInfo('🚀 Используем только основной реестр миграций (legacy не требуется)');
+    return { ...MIGRATIONS_REGISTRY };
+  }
+  
+  prodInfo('📦 Требуются legacy миграции, загружаем объединенный реестр:', {
+    oldVersion,
+    newVersion,
+    minCurrentVersion: MIN_CURRENT_VERSION
+  });
+  
+  // Загружаем legacy реестр асинхронно
+  const legacyRegistry = await loadLegacyRegistry();
+  
+  // Объединяем реестры: legacy + current
+  const combinedRegistry = {
+    ...legacyRegistry,
+    ...MIGRATIONS_REGISTRY
+  };
+  
+  prodInfo('✅ Объединенный реестр создан:', {
+    legacyCount: Object.keys(legacyRegistry).length,
+    currentCount: Object.keys(MIGRATIONS_REGISTRY).length,
+    totalCount: Object.keys(combinedRegistry).length
+  });
+  
+  return combinedRegistry;
+}
 
 /**
  * Получает текущую версию базы данных без её обновления
@@ -61,13 +123,16 @@ export async function getCurrentDbVersion(dbName: string): Promise<number> {
 }
 
 /**
- * Асинхронно загружает модуль миграции
+ * Асинхронно загружает модуль миграции из объединенного реестра
  */
-async function loadMigrationModule(version: number): Promise<MigrationModule> {
-  const fileName = MIGRATIONS_REGISTRY[version];
+async function loadMigrationModule(
+  version: number, 
+  combinedRegistry: Record<number, string>
+): Promise<MigrationModule> {
+  const fileName = combinedRegistry[version];
   
   if (!fileName) {
-    throw new Error(`Миграция для версии ${version} не найдена в реестре`);
+    throw new Error(`Миграция для версии ${version} не найдена в объединенном реестре`);
   }
 
   try {
@@ -91,6 +156,7 @@ async function loadMigrationModule(version: number): Promise<MigrationModule> {
 
 /**
  * Предварительно загружает модули миграций для указанного диапазона версий
+ * Использует объединенный реестр с поддержкой legacy миграций
  */
 export async function preloadMigrations(
   oldVersion: number, 
@@ -104,9 +170,12 @@ export async function preloadMigrations(
   });
 
   try {
+    // Получаем объединенный реестр (с legacy если нужно)
+    const combinedRegistry = await getCombinedRegistry(oldVersion, newVersion);
+    
     // Загружаем только необходимые миграции
     for (let version = oldVersion; version < newVersion; version++) {
-      const migrationModule = await loadMigrationModule(version);
+      const migrationModule = await loadMigrationModule(version, combinedRegistry);
       loadedMigrations.set(version, migrationModule);
     }
     
@@ -235,6 +304,7 @@ export async function runDataMigrations(
 
 /**
  * Получает максимальную версию схемы из реестра миграций
+ * Учитывает только основной реестр (новые версии)
  */
 export function getMaxVersion(): number {
   const versions = Object.keys(MIGRATIONS_REGISTRY).map(Number);
@@ -242,15 +312,59 @@ export function getMaxVersion(): number {
 }
 
 /**
- * Получает список всех доступных миграций
+ * Получает список всех доступных миграций (только основной реестр)
+ * Для получения legacy миграций используйте getCombinedAvailableMigrations
  */
 export function getAvailableMigrations(): Record<number, string> {
   return { ...MIGRATIONS_REGISTRY };
 }
 
 /**
- * Проверяет, существует ли миграция для указанной версии
+ * Получает список всех доступных миграций включая legacy
+ * Асинхронная функция для полного списка миграций
+ */
+export async function getCombinedAvailableMigrations(): Promise<Record<number, string>> {
+  try {
+    const legacyRegistry = await loadLegacyRegistry();
+    return {
+      ...legacyRegistry,
+      ...MIGRATIONS_REGISTRY
+    };
+  } catch (error) {
+    prodError('❌ Ошибка получения объединенного списка миграций:', error);
+    // Fallback на основной реестр
+    return { ...MIGRATIONS_REGISTRY };
+  }
+}
+
+/**
+ * Проверяет, существует ли миграция для указанной версии (только основной реестр)
+ * Для проверки включая legacy используйте hasCombinedMigration
  */
 export function hasMigration(version: number): boolean {
   return version in MIGRATIONS_REGISTRY;
+}
+
+/**
+ * Проверяет, существует ли миграция для указанной версии включая legacy
+ * Асинхронная функция для полной проверки
+ */
+export async function hasCombinedMigration(version: number): Promise<boolean> {
+  // Сначала проверяем основной реестр (быстро)
+  if (version in MIGRATIONS_REGISTRY) {
+    return true;
+  }
+  
+  // Если версия меньше минимальной в основном реестре, проверяем legacy
+  if (version < MIN_CURRENT_VERSION) {
+    try {
+      const legacyRegistry = await loadLegacyRegistry();
+      return version in legacyRegistry;
+    } catch (error) {
+      prodError('❌ Ошибка проверки legacy миграции:', error);
+      return false;
+    }
+  }
+  
+  return false;
 }
