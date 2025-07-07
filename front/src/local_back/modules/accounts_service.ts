@@ -43,9 +43,7 @@ export const accounts_service = {
   async getList() {
 
     const accounts = await get_accounts();
-   //for (let ac of accounts) {
-   //  back_store.accounts_by_id[ac.id] = ac;
-   //}
+
     const broadcast_event: PostMessageParamAddAccounts = {
       action: FrontMiddlewareActions.ADD_ACCOUNTS,
       data: {
