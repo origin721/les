@@ -62,7 +62,7 @@ export const accounts_service = {
         try {
           const userState = await UserStateManager.getUserState(account.id);
           const oldVersion = userState?.currentVersion || 0;
-          const newVersion = Math.max(...Object.keys(MIGRATIONS_REGISTRY).map(Number)) + 1;
+          const newVersion = Math.max(...Object.keys(MIGRATIONS_REGISTRY).map(Number));
           
           if (oldVersion < newVersion) {
             await UserMigrationManager.migrateUser({
