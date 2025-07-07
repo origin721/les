@@ -13,8 +13,8 @@ beforeAll(async () => {
   // IndexedDB polyfill для тестов
   if (typeof window !== 'undefined' && !('indexedDB' in window)) {
     try {
-      const FDBFactory = (await import('fake-indexeddb/lib/FDBFactory.js')).default
-      const FDBKeyRange = (await import('fake-indexeddb/lib/FDBKeyRange.js')).default
+      const { default: FDBFactory } = await import('fake-indexeddb/lib/FDBFactory')
+      const { default: FDBKeyRange } = await import('fake-indexeddb/lib/FDBKeyRange')
       
       Object.defineProperty(window, 'indexedDB', {
         value: new FDBFactory(),
