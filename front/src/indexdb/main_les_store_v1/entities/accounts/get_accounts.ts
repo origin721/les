@@ -18,6 +18,12 @@ export type Account = {
 
 export function get_accounts(
 ): Promise<Account[]> {
+  // Оптимизированный возврат аккаунтов из оперативной памяти
+  return Promise.resolve(Object.values(back_store.accounts_by_id));
+
+  // Старый код как пример брудфорса через IndexDB - больше не нужен,
+  // так как можно оптимизировать и возвращать аккаунты из оперативки
+  /*
   return new Promise((mRes, rej) => {
     indexdb_wrapper((db) => {
       return new Promise((res, rej) => {
@@ -70,4 +76,5 @@ export function get_accounts(
     })
 
   });
+  */
 }
