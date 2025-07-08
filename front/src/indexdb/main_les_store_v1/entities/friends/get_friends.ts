@@ -3,7 +3,7 @@ import { back_store } from "../../../../local_back/back_store/back_store";
 import { indexdb_wrapper } from "../../indexdb_wrapper";
 import type { FriendEntityFull } from "./add_friend";
 
-export function get_friends(): Promise<FriendEntityFull[]> {
+export function get_friends({ userId }: { userId: string }): Promise<FriendEntityFull[]> {
   return new Promise((mRes, rej) => {
     indexdb_wrapper((db) => {
       return new Promise((res, rej) => {
@@ -17,23 +17,18 @@ export function get_friends(): Promise<FriendEntityFull[]> {
           const cursor = (event.target as IDBRequest).result;
           if (cursor) {
             try {
-              const passwords = new Set<string>();
-              for(let ac of Object.values(back_store.accounts_by_id)) {
-                passwords.add(ac.pass);
-              }
+              const account = back_store.accounts_by_id[userId];
+              if (!account) throw new Error(`Account ${userId} not found`);
               
-              for (let pass of passwords) {
-                const _item = await decrypt_curve25519_from_pass({
-                    pass,
-                    cipherText: cursor.value.data,
-                });
-                const decrData = !_item 
-                  ? null
-                  : JSON.parse(_item);
-                if (decrData) {
-                  result.push(decrData);
-                  break; // Found valid decryption, move to next
-                }
+              const _item = await decrypt_curve25519_from_pass({
+                  pass: account.pass,
+                  cipherText: cursor.value.data,
+              });
+              const decrData = !_item 
+                ? null
+                : JSON.parse(_item);
+              if (decrData && decrData.myAccId === userId) {
+                result.push(decrData);
               }
             }
             catch(err) {}

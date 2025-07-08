@@ -1,5 +1,7 @@
 import { prodInfo, prodError, devMigration } from '../../../../core/debug/logger';
+import { decrypt_curve25519_from_pass, encrypt_curve25519_from_pass } from '../../../../core/crypt';
 import type { MigrationContext } from '../../../db_state_manager_v1/constants';
+import { FRIENDS_VERSION } from '../../../main_les_store_v1/entities/friends/constants';
 
 /**
  * Информация о миграции
@@ -7,7 +9,7 @@ import type { MigrationContext } from '../../../db_state_manager_v1/constants';
 export const migrationInfo = {
   version: 1,
   name: 'accounts_friends',
-  description: 'Добавление индексов и миграция аккаунтов для поля friendsByIds',
+  description: 'Добавление поля version ко всем записям friends',
   fileName: '1_accounts_friends.ts'
 };
 
@@ -32,7 +34,7 @@ export function migrationScheme(db: IDBDatabase): void {
 }
 
 /**
- * Миграция данных: добавление поля friendsByIds к существующим аккаунтам
+ * Миграция данных: добавление поля version ко всем записям friends
  */
 export async function migrationData(context: MigrationContext): Promise<void> {
   const { db, currentUser } = context;
@@ -40,43 +42,95 @@ export async function migrationData(context: MigrationContext): Promise<void> {
   
   return new Promise<void>((resolve, reject) => {
     try {
-      const transaction = db.transaction(["accounts"], "readwrite");
-      const store = transaction.objectStore("accounts");
+      const transaction = db.transaction(["friends"], "readwrite");
+      const store = transaction.objectStore("friends");
       const getAllRequest = store.getAll();
 
-      getAllRequest.onsuccess = function() {
-        const allAccountRecords = getAllRequest.result;
-        
-        // ✅ Фильтрация по конкретному пользователю
-        const userAccounts = allAccountRecords.filter(account => account.id === currentUser.id);
-        
-        if (userAccounts.length === 0) {
-          prodInfo(`✅ Нет аккаунтов для миграции для пользователя ${currentUser.id}`);
-          resolve();
-          return;
+      getAllRequest.onsuccess = async function() {
+        try {
+          const allFriendRecords = getAllRequest.result;
+          
+          if (allFriendRecords.length === 0) {
+            prodInfo(`✅ Нет записей friends для миграции для пользователя ${currentUser.id}`);
+            resolve();
+            return;
+          }
+          
+          prodInfo(`📋 Найдено ${allFriendRecords.length} записей friends для проверки`);
+          
+          let migratedCount = 0;
+          
+          for (const record of allFriendRecords) {
+            devMigration(`🔄 Проверяем запись friends ${record.id}`);
+            
+            // Дешифруем данные
+            const decryptedData = await decrypt_curve25519_from_pass({
+              pass: currentUser.pass,
+              cipherText: record.data
+            });
+            
+            if (!decryptedData) {
+              devMigration(`⚠️ Не удалось дешифровать запись friends ${record.id}, пропускаем`);
+              continue;
+            }
+            
+            const friendData = JSON.parse(decryptedData);
+            
+            // Фильтруем по текущему пользователю
+            if (friendData.myAccId !== currentUser.id) {
+              devMigration(`⏭️ Запись friends ${record.id} принадлежит другому пользователю (${friendData.myAccId}), пропускаем`);
+              continue;
+            }
+            
+            // Проверяем, есть ли уже поле version
+            if (friendData.version !== undefined) {
+              devMigration(`⏭️ Запись friends ${record.id} уже содержит поле version: ${friendData.version}, пропускаем`);
+              continue;
+            }
+            
+            // Добавляем version
+            const updatedFriendData = {
+              ...friendData,
+              version: FRIENDS_VERSION,
+              date_updated: new Date(),
+            };
+            
+            // Шифруем обновленные данные
+            const encryptedData = await encrypt_curve25519_from_pass({
+              pass: currentUser.pass,
+              message: JSON.stringify(updatedFriendData),
+            });
+            
+            // Обновляем запись в IndexedDB
+            const updatedRecord = {
+              id: record.id,
+              data: encryptedData
+            };
+            
+            store.put(updatedRecord);
+            migratedCount++;
+            
+            devMigration(`✅ Запись friends ${record.id} обновлена с version: ${FRIENDS_VERSION}`);
+          }
+          
+          transaction.oncomplete = function() {
+            prodInfo(`✅ Миграция данных 1 завершена для пользователя ${currentUser.id}. Обновлено: ${migratedCount} записей friends`);
+            resolve();
+          };
+          
+          transaction.onerror = function() {
+            prodError(`❌ Ошибка транзакции при миграции для пользователя ${currentUser.id}:`, transaction.error);
+            reject(transaction.error);
+          };
+          
+        } catch (error) {
+          prodError(`❌ Ошибка обработки данных для пользователя ${currentUser.id}:`, error);
+          reject(error);
         }
-        
-        prodInfo(`📋 Найдено ${userAccounts.length} записей аккаунтов для пользователя ${currentUser.id}`);
-        
-        // ✅ Обработка данных с учетом пользователя
-        // TODO: Здесь будет логика дешифровки с currentUser.pass
-        // TODO: Здесь будет логика обновления данных конкретного пользователя
-        
-        // Пример обновления (если нужно добавить поле friendsByIds):
-        // for (const account of userAccounts) {
-        //   if (!account.friendsByIds) {
-        //     account.friendsByIds = [];
-        //     // Дешифровать данные с currentUser.pass
-        //     // Обновить запись в базе
-        //   }
-        // }
-        
-        prodInfo(`✅ Миграция данных 1 завершена для пользователя ${currentUser.id}`);
-        resolve();
       };
       
       getAllRequest.onerror = function() {
-        prodError(`❌ Ошибка при чтении аккаунтов для пользователя ${currentUser.id}:`, getAllRequest.error);
+        prodError(`❌ Ошибка при чтении friends для пользователя ${currentUser.id}:`, getAllRequest.error);
         reject(getAllRequest.error);
       };
 
@@ -84,5 +138,5 @@ export async function migrationData(context: MigrationContext): Promise<void> {
       prodError(`❌ Критическая ошибка в migrationData для пользователя ${currentUser.id}:`, error);
       reject(error);
     }
-  })
+  });
 }
