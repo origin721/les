@@ -3,11 +3,26 @@
   import { ROUTES, Link } from "../../../routing";
   import { clearAllAppData, clearServiceWorkersOnly, clearStorageOnly, clearIndexedDBOnly } from '../../../core/clear_app_data';
   import { theme } from '../../../stores/theme';
+  import { VersionManager } from '../../../indexdb/main_les_store_v1/version_manager';
+  import { AllUsersChecker } from '../../../indexdb/main_les_store_v1/all_users_checker';
+  import { ConnectionManager } from '../../../indexdb/main_les_store_v1/connection_manager';
+  import { appAuthStore } from '../../../stores/app_auth_store/app_auth_store';
   import styles from './SettingsPage.module.css';
   
   // State for settings
   let systemStatus = 'operational';
   let showClearOptions = false;
+  
+  // State for version management
+  let showVersionInfo = false;
+  let versionCheckInProgress = false;
+  let versionCheckResults: {
+    userStats: any;
+    versionStats: any;
+    allUserIds: string[];
+  } | null = null;
+  let versionCheckError: string | null = null;
+  let isNotAuthorized = false;
   
   // Clear data handlers from AuthPage
   function toggleClearOptions() {
@@ -42,6 +57,50 @@
     // TODO: Implement system diagnostics
     alert('Диагностика системы будет реализована в следующих версиях');
   };
+
+  async function handleVersionCheck() {
+    versionCheckInProgress = true;
+    versionCheckError = null;
+    versionCheckResults = null;
+    isNotAuthorized = false;
+    
+    try {
+      // Проверяем авторизацию
+      const authStore = $appAuthStore;
+      const authIds = Object.keys(authStore.byId);
+      
+      if (authIds.length === 0) {
+        isNotAuthorized = true;
+        showVersionInfo = true;
+        return;
+      }
+      
+      // Получить соединение с БД
+      const db = await ConnectionManager.getConnection();
+      
+      // Получить статистику пользователей
+      const userStats = await AllUsersChecker.getUserReadinessStats(db, 2); // версия 2
+      
+      // Получить общую статистику версий
+      const versionStats = await VersionManager.getVersionStats(db);
+      
+      // Получить список всех пользователей с ID
+      const allUserIds = await AllUsersChecker.scanAllUserIds(db);
+      
+      versionCheckResults = {
+        userStats,
+        versionStats,
+        allUserIds: Array.from(allUserIds)
+      };
+      
+      showVersionInfo = true;
+      
+    } catch (error) {
+      versionCheckError = error instanceof Error ? error.message : String(error);
+    } finally {
+      versionCheckInProgress = false;
+    }
+  }
 </script>
 
 <div class={styles.settingsContainer}>
@@ -153,6 +212,90 @@
             >
               🗄️ Очистить IndexedDB
             </Button>
+          </div>
+        {/if}
+      </div>
+    </div>
+
+    <!-- Version Management Section -->
+    <div class={styles.settingSection}>
+      <h2 class={styles.sectionTitle}>🔍 Диагностика версий</h2>
+      
+      <div class={styles.settingItem}>
+        <div class={styles.settingHeader}>
+          <div class={styles.settingName}>
+            <span class={styles.settingIcon}>📊</span>
+            Проверка версий сущностей
+          </div>
+          <span class={`${styles.statusIndicator} ${styles.statusActive}`}>
+            ● ДОСТУПНО
+          </span>
+        </div>
+        <div class={styles.settingDescription}>
+          Проверка версий всех пользователей и сущностей в базе данных.
+          Показывает ID пользователей и их текущие версии.
+        </div>
+        <div class={styles.settingActions}>
+          <Button 
+            variant="outline" 
+            size="sm"
+            onclick={handleVersionCheck}
+            disabled={versionCheckInProgress}
+          >
+            {versionCheckInProgress ? '⏳ Проверка...' : '🔍 Проверить версии'}
+          </Button>
+        </div>
+        
+        <!-- Ошибка -->
+        {#if versionCheckError}
+          <div class={styles.errorMessage}>
+            ❌ Ошибка: {versionCheckError}
+          </div>
+        {/if}
+        
+        <!-- Требование авторизации -->
+        {#if showVersionInfo && isNotAuthorized}
+          <div class={styles.authRequired}>
+            <div class={styles.authMessage}>
+              🔐 Для просмотра версий необходимо авторизоваться
+            </div>
+            <div class={styles.authDescription}>
+              Данные версий зашифрованы и требуют авторизации для доступа.
+            </div>
+            <div class={styles.authActions}>
+              <Link href={ROUTES.AUTH}>
+                <Button variant="primary" size="sm">
+                  Перейти к авторизации
+                </Button>
+              </Link>
+            </div>
+          </div>
+        {/if}
+        
+        <!-- Результаты проверки -->
+        {#if showVersionInfo && versionCheckResults && !isNotAuthorized}
+          <div class={styles.versionResults}>
+            <h4>👥 Пользователи в системе:</h4>
+            <div class={styles.userList}>
+              {#if versionCheckResults.allUserIds.length === 0}
+                <div class={styles.emptyMessage}>
+                  База данных пуста
+                </div>
+              {:else}
+                {#each versionCheckResults.allUserIds as userId}
+                  <div class={styles.userItem}>
+                    User ID: {userId} | Version: {versionCheckResults.userStats.completedUsers > 0 ? '2' : '1'}
+                  </div>
+                {/each}
+              {/if}
+            </div>
+            
+            <h4>📈 Статистика:</h4>
+            <div class={styles.statsGrid}>
+              <div>Всего пользователей: {versionCheckResults.userStats.totalUsers}</div>
+              <div>Завершили миграцию: {versionCheckResults.userStats.completedUsers}</div>
+              <div>Готовность: {versionCheckResults.userStats.completionPercentage}%</div>
+            </div>
           </div>
         {/if}
       </div>

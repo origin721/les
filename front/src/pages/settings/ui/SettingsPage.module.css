@@ -177,6 +177,71 @@
   }
 }
 
+.versionResults {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: var(--color-background-secondary);
+  border-radius: 8px;
+}
+
+.userList {
+  margin: 0.5rem 0;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.userItem {
+  padding: 0.25rem 0;
+  font-family: monospace;
+  font-size: 0.9rem;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.errorMessage {
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  background: var(--color-error-background);
+  color: var(--color-error-text);
+  border-radius: 4px;
+}
+
+.authRequired {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: var(--color-warning-background);
+  border-radius: 8px;
+  text-align: center;
+}
+
+.authMessage {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.authDescription {
+  color: var(--color-text-secondary);
+  margin-bottom: 1rem;
+}
+
+.authActions {
+  display: flex;
+  justify-content: center;
+}
+
+.emptyMessage {
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-style: italic;
+  padding: 1rem;
+}
+
 @media (max-width: 480px) {
   .settingsContainer {
     padding: 0 0.5rem;

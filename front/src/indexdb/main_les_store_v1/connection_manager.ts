@@ -317,8 +317,22 @@ export class ConnectionManager {
         
         prodInfo(`✅ Миграция схемы ${migrationModule.migrationInfo.fileName} выполнена за ${schemaDuration}мс`);
         
-        // Сохраняем информацию о времени выполнения схемы (записывается позже в данных)
-        migrationModule._schemaDuration = schemaDuration;
+        // Безопасно сохраняем информацию о времени выполнения схемы
+        try {
+          if (migrationModule && typeof migrationModule === 'object') {
+            Object.defineProperty(migrationModule, '_schemaDuration', {
+              value: schemaDuration,
+              writable: true,
+              configurable: true
+            });
+          }
+        } catch (error) {
+          // Если не можем записать в модуль миграции (объект не расширяемый),
+          // просто логируем время выполнения - это не критично для работы
+          const errorMessage = error instanceof Error ? error.message : String(error);
+          console.warn(`Cannot set _schemaDuration on migration module ${migrationModule.migrationInfo?.fileName}:`, errorMessage);
+          prodInfo(`⚠️ Время выполнения схемы ${migrationModule.migrationInfo?.fileName}: ${schemaDuration}мс (сохранено только в логах)`);
+        }
       }
 
       prodInfo('🏁 Все миграции схемы IndexedDB выполнены успешно. Финальные хранилища:', 
