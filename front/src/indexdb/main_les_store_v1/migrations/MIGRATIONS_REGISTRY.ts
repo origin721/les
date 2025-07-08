@@ -9,11 +9,12 @@ export const MIGRATIONS_REGISTRY: Record<number, string> = {
   // 8: '8_optimize_performance',
   // 9: '9_add_settings_store',
   // 10: '10_modern_indexes',
-  
+
   // Временно оставляем базовые миграции для разработки
-  0: '0_initialization',
-  1: '1_accounts_friends',
-  2: '2_accounts_versioning',
+  0: "0_initialization",
+  1: "1_accounts_friends",
+  2: "2_accounts_versioning",
+  3: "3_rooms_versioning",
 };
 
 /**
