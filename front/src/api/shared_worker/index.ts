@@ -7,6 +7,7 @@ import type { Account } from "../../indexdb/main_les_store_v1/entities/accounts/
 import { devAPI, prodError } from "../../core/debug/logger";
 import { friends } from "./friends";
 import { accounts } from "./accounts";
+import { tabs } from "./tabs";
 
 
 /**
@@ -15,6 +16,7 @@ import { accounts } from "./accounts";
 export const sharedWorkerApi = {
   friends: friends,
   accounts: accounts,
+  tabs: tabs,
 };
 
 export default sharedWorkerApi;

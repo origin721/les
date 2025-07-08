@@ -6,6 +6,13 @@ import {
 import { shared_worker_store } from "./shared_worker_store";
 import SharedWorkerConstructor from './process/sharedWorker.js?sharedworker';
 import { devLog, prodError, prodWarn } from "../../core/debug/logger";
+import { EVENT_TYPES } from "../../local_back/constant";
+
+type SendProps = BackMiddlewareEvent | {
+  idRequest: string | number;
+  type: typeof EVENT_TYPES['SUBSCRIBE'];
+  payload: any;
+};
 
 export async function createAppSharedWorker() {
   devLog('createAppSharedWorker инициализация SharedWorker...');
@@ -15,8 +22,11 @@ export async function createAppSharedWorker() {
     
     const promiseResolves: PromiseResolves = {};
     
-    shared_worker_store.set({
-      sendMessage: (event: BackMiddlewareEvent) => {
+    // Храним текущее значение store для доступа из listener
+    let currentStoreValue: any = null;
+    
+    const storeValue = {
+      sendMessage: (event: SendProps) => {
         devLog('Отправка в SharedWorker:', event.type, 'idRequest:', event.idRequest);
         
         const result = new Promise<any>(async(res, rej) => {
@@ -35,12 +45,16 @@ export async function createAppSharedWorker() {
         sharedWorker.port.postMessage({ message: JSON.stringify(event) });
         return result;
       },
-    });
+      onSubscriptionMessage: {}
+    };
+    
+    currentStoreValue = storeValue;
+    shared_worker_store.set(storeValue);
 
     sharedWorker.port.onmessage = function (event) {
       devLog('SharedWorker получен ответ');
       try {
-        listener(event.data, promiseResolves);
+        listener(event.data, promiseResolves, currentStoreValue);
       } catch (error) {
         prodError('Ошибка обработки ответа SharedWorker:', error);
       }
@@ -67,6 +81,7 @@ type PromiseResolves = Record<
 async function listener(
   param: string,
   promiseResolves: PromiseResolves,
+  currentStoreValue: any
 ) {
   try {
     devLog('Обработка ответа от SharedWorker, raw param:', param);
@@ -95,7 +110,13 @@ async function listener(
       promiseResolves[props.idRequest](props);
       delete promiseResolves[props.idRequest];
     } else {
-      prodWarn('Не найден resolver для idRequest:', props.idRequest);
+      // Проверяем, это ли уведомление от подписки
+      if (currentStoreValue?.onSubscriptionMessage?.[props.idRequest]) {
+        devLog('Найден subscription callback для idRequest:', props.idRequest);
+        currentStoreValue.onSubscriptionMessage[props.idRequest](props.payload);
+      } else {
+        prodWarn('Не найден resolver или subscription callback для idRequest:', props.idRequest);
+      }
     }
   } catch (err) {
     prodError('Ошибка обработки ответа от SharedWorker:', err);

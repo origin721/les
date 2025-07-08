@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import { Button, StatusIndicator, ThemeSelector } from "../../../components/ui";
   import { ROUTES, Link } from "../../../routing";
   import { clearAllAppData, clearServiceWorkersOnly, clearStorageOnly, clearIndexedDBOnly } from '../../../core/clear_app_data';
@@ -8,11 +9,15 @@
   import { ConnectionManager } from '../../../indexdb/main_les_store_v1/connection_manager';
   import { appAuthStore } from '../../../stores/app_auth_store/app_auth_store';
   import { TabManagement } from '../../../core/broadcast_channel/tab_management';
+  import { sharedWorkerApi } from '../../../api/shared_worker';
   import styles from './SettingsPage.module.css';
   
   // State for settings
   let systemStatus = 'operational';
   let showClearOptions = false;
+  
+  // State for active tabs monitoring
+  let activeTabsCount = 0;
   
   // State for version management
   let showVersionInfo = false;
@@ -24,6 +29,17 @@
   } | null = null;
   let versionCheckError: string | null = null;
   let isNotAuthorized = false;
+  
+  // Initialize active tabs monitoring
+  onMount(() => {
+    const unsubscribe = sharedWorkerApi.tabs.subscribeActiveTabsCount(
+      (count) => {
+        activeTabsCount = count;
+      }
+    );
+    
+    return unsubscribe;
+  });
   
   // Clear data handlers from AuthPage
   function toggleClearOptions() {
@@ -234,6 +250,22 @@
     <!-- Tab Management Section -->
     <div class={styles.settingSection}>
       <h2 class={styles.sectionTitle}>🗂️ Управление вкладками</h2>
+      
+      <div class={styles.settingItem}>
+        <div class={styles.settingHeader}>
+          <div class={styles.settingName}>
+            <span class={styles.settingIcon}>📊</span>
+            Мониторинг активных вкладок
+          </div>
+          <span class={`${styles.statusIndicator} ${styles.statusActive}`}>
+            ● {activeTabsCount} АКТИВНЫХ
+          </span>
+        </div>
+        <div class={styles.settingDescription}>
+          Отслеживание количества активных вкладок приложения в реальном времени через SharedWorker. 
+          Счетчик автоматически обновляется при открытии/закрытии вкладок.
+        </div>
+      </div>
       
       <div class={styles.settingItem}>
         <div class={styles.settingHeader}>

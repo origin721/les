@@ -47,6 +47,41 @@ function create_shared_worker_store() {
         });
         devLog('shared_worker_store.fetch добавлен в requestBefore, общая длина:', requestBefore.length);
       });
+    },
+    subscribeToWorker: (
+      params: SubscribeParams
+    ): (() => void) => {
+      devLog('shared_worker_store.subscribeToWorker ВЫЗОВ с параметрами:', params);
+      
+      const idRequest = workerGeneratorIds();
+      devLog('shared_worker_store.subscribeToWorker сгенерирован idRequest:', idRequest);
+      
+      let storeValue: Store | undefined;
+      const unsubscribeFromStore = store.subscribe(value => {
+        storeValue = value;
+      });
+      
+      // Если store уже инициализирован, отправляем подписку сразу
+      if (storeValue) {
+        storeValue.sendMessage({
+          payload: params.payload,
+          idRequest,
+          type: EVENT_TYPES.SUBSCRIBE,
+        });
+        
+        // Слушаем ответы от worker для этой подписки
+        storeValue.onSubscriptionMessage = storeValue.onSubscriptionMessage || {};
+        storeValue.onSubscriptionMessage[idRequest] = params.callback;
+      }
+      
+      // Возвращаем функцию отписки
+      return () => {
+        devLog('shared_worker_store.subscribeToWorker ОТПИСКА для idRequest:', idRequest);
+        unsubscribeFromStore();
+        if (storeValue?.onSubscriptionMessage) {
+          delete storeValue.onSubscriptionMessage[idRequest];
+        }
+      };
     }
   }
 
@@ -80,11 +115,20 @@ function create_shared_worker_store() {
 }
 
 type FetchParams = BackMiddlewarePayload;
+type SubscribeParams = {
+  payload: BackMiddlewarePayload;
+  callback: (data: any) => void;
+};
 type _SendProps = {
   data: SendProps;
   res: (p: SendProps) => void;
 }
-type SendProps = BackMiddlewareEvent;
+type SendProps = BackMiddlewareEvent | {
+  idRequest: string | number;
+  type: typeof EVENT_TYPES['SUBSCRIBE'];
+  payload: BackMiddlewarePayload;
+};
 type Store = {
   sendMessage: (p: SendProps) => Promise<any>;
+  onSubscriptionMessage?: { [idRequest: string]: (data: any) => void };
 }

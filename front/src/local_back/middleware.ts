@@ -105,6 +105,10 @@ export type GetFriendByIdPayload = {
   };
 }
 
+export type GetActiveTabsCountPayload = {
+  path: typeof PATHS['GET_ACTIVE_TABS_COUNT'];
+}
+
 export type ResultByPath = {
   [PATHS.GET_ACCOUNTS]: ReturnType<typeof get_accounts>;
   [PATHS.ADD_ACCOUNTS]: void;
@@ -118,6 +122,7 @@ export type ResultByPath = {
   [PATHS.DELETE_FRIENDS]: void;
   [PATHS.GET_FRIENDS_BY_ACCOUNT_ID]: ReturnType<typeof friends_service.getFriendsByAccountId>;
   [PATHS.GET_FRIEND_BY_ID]: ReturnType<typeof friends_service.getFriendById>;
+  [PATHS.GET_ACTIVE_TABS_COUNT]: { count: number };
 };
 
 export type BackMiddlewarePayload = Extract<
@@ -133,6 +138,7 @@ export type BackMiddlewarePayload = Extract<
   |GetFriendsPayload
   |GetFriendsByAccountIdPayload
   |GetFriendByIdPayload
+  |GetActiveTabsCountPayload
 ,{
   path: keyof typeof PATHS;
   body?: any;
