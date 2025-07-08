@@ -56,6 +56,14 @@ export type PostMessageParamDeleteRooms = {
   },
 }
 
+export type PostMessageParamCloseAllTabs = {
+  action: typeof FrontMiddlewareActions['CLOSE_ALL_TABS'],
+  data: {
+    excludeCurrentTab?: boolean; // исключить текущую вкладку
+    reason?: string; // причина закрытия
+  },
+}
+
 export type PostMessageParam = Extract<
   PostMessageParamAddAccounts
   | PostMessageParamDeleteAccounts
@@ -63,6 +71,7 @@ export type PostMessageParam = Extract<
   | PostMessageParamDeleteFriends
   | PostMessageParamAddRooms
   | PostMessageParamDeleteRooms
+  | PostMessageParamCloseAllTabs
   ,
   {
     action: string;

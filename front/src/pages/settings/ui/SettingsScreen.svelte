@@ -7,6 +7,7 @@
   import { AllUsersChecker } from '../../../indexdb/main_les_store_v1/all_users_checker';
   import { ConnectionManager } from '../../../indexdb/main_les_store_v1/connection_manager';
   import { appAuthStore } from '../../../stores/app_auth_store/app_auth_store';
+  import { TabManagement } from '../../../core/broadcast_channel/tab_management';
   import styles from './SettingsPage.module.css';
   
   // State for settings
@@ -57,6 +58,19 @@
     // TODO: Implement system diagnostics
     alert('Диагностика системы будет реализована в следующих версиях');
   };
+
+  // Tab management handlers
+  function handleCloseAllOtherTabs() {
+    if (confirm('Закрыть все остальные вкладки приложения? Текущая вкладка останется открытой.')) {
+      TabManagement.closeAllOtherTabs();
+    }
+  }
+
+  function handleCloseAllTabs() {
+    if (confirm('Закрыть ВСЕ вкладки приложения включая текущую? Это действие закроет все открытые вкладки приложения.')) {
+      TabManagement.closeAllTabsIncludingCurrent();
+    }
+  }
 
   async function handleVersionCheck() {
     versionCheckInProgress = true;
@@ -214,6 +228,47 @@
             </Button>
           </div>
         {/if}
+      </div>
+    </div>
+
+    <!-- Tab Management Section -->
+    <div class={styles.settingSection}>
+      <h2 class={styles.sectionTitle}>🗂️ Управление вкладками</h2>
+      
+      <div class={styles.settingItem}>
+        <div class={styles.settingHeader}>
+          <div class={styles.settingName}>
+            <span class={styles.settingIcon}>🚪</span>
+            Закрытие вкладок
+          </div>
+          <span class={`${styles.statusIndicator} ${styles.statusActive}`}>
+            ● ДОСТУПНО
+          </span>
+        </div>
+        <div class={styles.settingDescription}>
+          Управление открытыми вкладками приложения через broadcast сообщения. 
+          Позволяет закрывать вкладки синхронно через все экземпляры приложения.
+        </div>
+        <div class={styles.settingActions}>
+          <Button 
+            variant="outline" 
+            size="sm"
+            onclick={handleCloseAllOtherTabs}
+          >
+            🗂️ Закрыть остальные вкладки
+          </Button>
+          <Button 
+            variant="danger" 
+            size="sm"
+            onclick={handleCloseAllTabs}
+          >
+            ❌ Закрыть все вкладки
+          </Button>
+        </div>
+        <div class={styles.settingDescription} style="margin-top: 8px; font-size: 0.9em; color: var(--color-text-secondary);">
+          ⚠️ "Закрыть остальные вкладки" - закроет все вкладки кроме текущей<br/>
+          ⚠️ "Закрыть все вкладки" - закроет включая текущую вкладку
+        </div>
       </div>
     </div>
 

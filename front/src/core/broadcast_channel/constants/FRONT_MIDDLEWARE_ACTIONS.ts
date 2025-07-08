@@ -12,5 +12,6 @@ function getChannelNames() {
     DELETE_FRIENDS: 'DELETE_FRIENDS',
     ADD_ROOMS: 'ADD_ROOMS',
     DELETE_ROOMS: 'DELETE_ROOMS',
+    CLOSE_ALL_TABS: 'CLOSE_ALL_TABS',
   })
 }

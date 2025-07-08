@@ -21,5 +21,19 @@ export function broadcast_middleware() {
     if(param.action === FrontMiddlewareActions.DELETE_ACCOUNTS) {
       appAuthStore._onDeleteSecret(param.data.ids)
     }
+    if (param.action === FrontMiddlewareActions.CLOSE_ALL_TABS) {
+      if (param.data.excludeCurrentTab) {
+        // Закрываем только если это НЕ активная вкладка
+        if (!document.hasFocus()) {
+          console.log('Closing inactive tab - redirecting to blank page');
+          window.location.replace('about:blank');
+        }
+        // Если это активная вкладка - ничего не делаем
+      } else {
+        // Закрываем все вкладки включая текущую
+        console.log('Closing tab - redirecting to blank page');
+        window.location.replace('about:blank');
+      }
+    }
   };
 }
