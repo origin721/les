@@ -32,7 +32,7 @@ export async function generate_keys_curve25519_from_password(password) {
     
     devCrypto('🔄 Генерируем ключевой материал...');
     const hashStart = Date.now();
-    const keyMaterial = sodium.crypto_generichash(32, passwordBytes); // Получаем 32 байта
+    const keyMaterial = sodium.crypto_generichash(32, passwordBytes, null); // Получаем 32 байта
     const hashDuration = Date.now() - hashStart;
     devCrypto('✅ Ключевой материал сгенерирован за', hashDuration, 'мс');
 
