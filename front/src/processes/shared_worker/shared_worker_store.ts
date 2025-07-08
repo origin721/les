@@ -1,5 +1,10 @@
 import { writable } from "svelte/store";
-import type { BackMiddlewareEvent, BackMiddlewarePayload, BackMiddlewareProps, ResultByPath } from "../../local_back/middleware";
+import type {
+  BackMiddlewareEvent,
+  BackMiddlewarePayload,
+  BackMiddlewareProps,
+  ResultByPath,
+} from "../../local_back/middleware";
 import { create_counter_generator } from "../../core/create_counter_generator";
 import { EVENT_TYPES } from "../../local_back/constant";
 import { devLog, prodError } from "../../core/debug/logger";
@@ -10,115 +15,171 @@ export const shared_worker_store = create_shared_worker_store();
 
 function create_shared_worker_store() {
   const store = writable<Store>();
+  let currentStore: Store | null = null;
+  const pendingRequests: Map<
+    string,
+    { resolve: Function; reject: Function; timeout: NodeJS.Timeout }
+  > = new Map();
+  const pendingOperations: Array<{
+    params: FetchParams;
+    resolve: Function;
+    reject: Function;
+  }> = [];
 
-  const requestBefore: _SendProps[] = [];
   const result = {
     subscribe: store.subscribe,
-    set: store.set,
-    fetch: (
-      params: FetchParams
-    ): any => {
-      devLog('shared_worker_store.fetch ВЫЗОВ с параметрами:', params);
-      devLog('shared_worker_store.fetch состояние store инициализирован:', !!store);
-      devLog('shared_worker_store.fetch requestBefore.length:', requestBefore.length);
-      
-      return new Promise((res, rej) => {
-        // Добавляем timeout для защиты от зависания
-        const timeout = setTimeout(() => {
-          prodError('shared_worker_store.fetch TIMEOUT для запроса:', params);
-          rej(new Error('SharedWorker timeout: операция превысила 5 минут'));
-        }, 300000);
+    set: (value: Store) => {
+      devLog("shared_worker_store.set: инициализация store");
+      currentStore = value;
+      store.set(value);
 
-        const idRequest = workerGeneratorIds();
-        devLog('shared_worker_store.fetch сгенерирован idRequest:', idRequest);
-        
-        requestBefore.push({
-          // @ts-ignore
-          data: {
-            ...params,
-            idRequest,
-            type: EVENT_TYPES.FETCH,
-          },
-          res: (result: any) => {
-            devLog('shared_worker_store.fetch получен ответ для idRequest:', idRequest, 'результат:', result);
-            clearTimeout(timeout);
-            res(result);
-          },
-        });
-        devLog('shared_worker_store.fetch добавлен в requestBefore, общая длина:', requestBefore.length);
+      // Обрабатываем отложенные операции
+      processPendingOperations();
+    },
+    fetch: async (params: FetchParams): Promise<any> => {
+      devLog("shared_worker_store.fetch ВЫЗОВ с параметрами:", params);
+
+      return new Promise((resolve, reject) => {
+        if (!currentStore) {
+          devLog(
+            "shared_worker_store.fetch: store не инициализирован, добавляем в очередь",
+          );
+          pendingOperations.push({ params, resolve, reject });
+          return;
+        }
+
+        performFetch(params, resolve, reject);
       });
     },
-    subscribeToWorker: (
-      params: SubscribeParams
-    ): (() => void) => {
-      devLog('shared_worker_store.subscribeToWorker ВЫЗОВ с параметрами:', params);
-      
-      const idRequest = workerGeneratorIds();
-      devLog('shared_worker_store.subscribeToWorker сгенерирован idRequest:', idRequest);
-      
-      let storeValue: Store | undefined;
-      let subscriptionSent = false;
-      
-      const unsubscribeFromStore = store.subscribe(value => {
-        storeValue = value;
-        
-      // Отправляем подписку, как только store станет доступен
-      if (storeValue && !subscriptionSent) {
-        devLog('shared_worker_store.subscribeToWorker отправка подписки после инициализации store, idRequest:', idRequest);
-        
-        // Сначала регистрируем callback
-        storeValue.onSubscriptionMessage = storeValue.onSubscriptionMessage || {};
-        storeValue.onSubscriptionMessage[idRequest] = params.callback;
-        
-        // Затем отправляем подписку
-        storeValue.sendMessage({
+    subscribeToWorker: (params: SubscribeParams): (() => void) => {
+      devLog(
+        "shared_worker_store.subscribeToWorker ВЫЗОВ с параметрами:",
+        params,
+      );
+
+      const idRequest = workerGeneratorIds().toString();
+      devLog(
+        "shared_worker_store.subscribeToWorker сгенерирован idRequest:",
+        idRequest,
+      );
+
+      if (!currentStore) {
+        prodError("SharedWorker не инициализирован для подписки");
+        return () => {};
+      }
+
+      // Регистрируем callback
+      currentStore.onSubscriptionMessage =
+        currentStore.onSubscriptionMessage || {};
+      currentStore.onSubscriptionMessage[idRequest] = params.callback;
+
+      // Отправляем подписку
+      currentStore
+        .sendMessage({
           payload: params.payload,
           idRequest,
           type: EVENT_TYPES.SUBSCRIBE,
-        }).catch(error => {
-          devLog('shared_worker_store.subscribeToWorker ошибка отправки подписки:', error);
+        })
+        .catch((error) => {
+          devLog(
+            "shared_worker_store.subscribeToWorker ошибка отправки подписки:",
+            error,
+          );
         });
-        
-        subscriptionSent = true;
-      }
-      });
-      
+
       // Возвращаем функцию отписки
       return () => {
-        devLog('shared_worker_store.subscribeToWorker ОТПИСКА для idRequest:', idRequest);
-        unsubscribeFromStore();
-        if (storeValue?.onSubscriptionMessage) {
-          delete storeValue.onSubscriptionMessage[idRequest];
+        devLog(
+          "shared_worker_store.subscribeToWorker ОТПИСКА для idRequest:",
+          idRequest,
+        );
+        if (currentStore?.onSubscriptionMessage) {
+          delete currentStore.onSubscriptionMessage[idRequest];
         }
       };
+    },
+  };
+
+  function performFetch(
+    params: FetchParams,
+    resolve: Function,
+    reject: Function,
+  ) {
+    if (!currentStore) {
+      reject(new Error("SharedWorker не инициализирован"));
+      return;
     }
+
+    const idRequest = workerGeneratorIds().toString();
+    devLog(
+      "shared_worker_store.performFetch сгенерирован idRequest:",
+      idRequest,
+    );
+
+    // Добавляем timeout
+    const timeout = setTimeout(() => {
+      const request = pendingRequests.get(idRequest);
+      if (request) {
+        pendingRequests.delete(idRequest);
+        prodError(
+          "shared_worker_store.performFetch TIMEOUT для запроса:",
+          params,
+        );
+        reject(new Error("SharedWorker timeout: операция превысила 5 минут"));
+      }
+    }, 300000);
+
+    // Сохраняем resolve/reject для этого запроса
+    pendingRequests.set(idRequest, { resolve, reject, timeout });
+
+    // Отправляем запрос
+    currentStore
+      .sendMessage({
+        payload: params,
+        idRequest,
+        type: EVENT_TYPES.FETCH,
+      })
+      .then((response) => {
+        const request = pendingRequests.get(idRequest);
+        if (request) {
+          clearTimeout(request.timeout);
+          pendingRequests.delete(idRequest);
+          devLog(
+            "shared_worker_store.performFetch успешный ответ для idRequest:",
+            idRequest,
+          );
+          resolve(response.payload);
+        }
+      })
+      .catch((error) => {
+        const request = pendingRequests.get(idRequest);
+        if (request) {
+          clearTimeout(request.timeout);
+          pendingRequests.delete(idRequest);
+          prodError(
+            "shared_worker_store.performFetch ошибка для idRequest:",
+            idRequest,
+            error,
+          );
+          reject(error);
+        }
+      });
   }
 
-  store.subscribe(async (newStore) => {
-    if(!newStore) return;
-    result.fetch = (
-      p: FetchParams
-    ): ResultByPath[typeof p['path']] => {
-      return newStore.sendMessage({
-        payload: p,
-        idRequest: workerGeneratorIds(),
-        type: EVENT_TYPES.FETCH,
-      }).then(v => v.payload);
-    };
-    for (
-      let _item = requestBefore.pop();
-      _item;
-      _item = requestBefore.pop()
-    ) {
-      const item = _item;
-      // @ts-ignore
-      result.fetch(item.data)
-        .then((param: any) => {
-          item.res(param as SendProps)
-          //requestBefore[item.idRequest]
-        });
+  function processPendingOperations() {
+    devLog(
+      "shared_worker_store.processPendingOperations: обрабатываем",
+      pendingOperations.length,
+      "отложенных операций",
+    );
+
+    while (pendingOperations.length > 0) {
+      const operation = pendingOperations.shift();
+      if (operation) {
+        performFetch(operation.params, operation.resolve, operation.reject);
+      }
     }
-  });
+  }
 
   return result;
 }
@@ -128,16 +189,14 @@ type SubscribeParams = {
   payload: BackMiddlewarePayload;
   callback: (data: any) => void;
 };
-type _SendProps = {
-  data: SendProps;
-  res: (p: SendProps) => void;
-}
-type SendProps = BackMiddlewareEvent | {
-  idRequest: string | number;
-  type: typeof EVENT_TYPES['SUBSCRIBE'];
-  payload: BackMiddlewarePayload;
-};
 type Store = {
   sendMessage: (p: SendProps) => Promise<any>;
   onSubscriptionMessage?: { [idRequest: string]: (data: any) => void };
-}
+};
+type SendProps =
+  | BackMiddlewareEvent
+  | {
+      idRequest: string | number;
+      type: (typeof EVENT_TYPES)["SUBSCRIBE"];
+      payload: BackMiddlewarePayload;
+    };

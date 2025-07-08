@@ -1,25 +1,27 @@
-import { debugLog, prodError, prodInfo } from '../../core/debug/logger';
-import { 
-  getCurrentDbVersion, 
-  preloadMigrations, 
-  runSchemaMigrations, 
-  getMaxVersion
-} from './migrations/migrations';
-import { runEmergencyMigrations } from './migrations/emergency_migrations';
-import { DB_NAMES, DB_UPDATE_STATUS } from '../constants';
-import { 
-  getPreviousDbVersion, 
-  setUpdateStatus, 
+import { debugLog, prodError, prodInfo } from "../../core/debug/logger";
+import {
+  getCurrentDbVersion,
+  preloadMigrations,
+  runSchemaMigrations,
+  getMaxVersion,
+} from "./migrations/migrations";
+import { runEmergencyMigrations } from "./migrations/emergency_migrations";
+import { DB_NAMES, DB_UPDATE_STATUS } from "../constants";
+import {
+  getPreviousDbVersion,
+  setUpdateStatus,
   canStartUpdate,
   startMigrationTimer,
   endMigrationTimer,
   recordMigrationStep,
   detectStuckMigrations,
-  resetStuckMigration as resetStuckMigrationState
-} from '../db_state_manager_v1/db_state_manager';
+  resetStuckMigration as resetStuckMigrationState,
+} from "../db_state_manager_v1/db_state_manager";
 import { REQUIRED_STORES } from "./REQUIRED_STORES";
-import { RecoveryManager } from './recovery_manager';
-import { VersionManager } from './version_manager';
+import { RecoveryManager } from "./recovery_manager";
+import { VersionManager } from "./version_manager";
+import { UserMigrationManager } from "./user_migration_manager";
+import { AllUsersChecker } from "./all_users_checker";
 
 const isDebugMode = false;
 
@@ -39,7 +41,6 @@ const IDLE_TIMEOUT = 5 * 60 * 1000; // 5 минут
  * Promise-based архитектура, независимая от lifecycle страницы
  */
 export class ConnectionManager {
-  
   /**
    * Получить соединение с базой данных
    * Основная точка входа для всех операций с БД
@@ -47,7 +48,7 @@ export class ConnectionManager {
   static async getConnection(): Promise<IDBDatabase> {
     // Проверяем и восстанавливаем после возможных сбоев
     await ConnectionManager.checkAndRecoverFromFailures();
-    
+
     // Если соединение уже существует и активно
     if (cachedConnection && !isClosing) {
       return cachedConnection;
@@ -60,11 +61,11 @@ export class ConnectionManager {
 
     // Создаем новое соединение
     connectionPromise = ConnectionManager.createNewConnection();
-    
+
     try {
       const db = await connectionPromise;
       cachedConnection = db;
-      
+
       // Настраиваем обработчики событий
       ConnectionManager.setupConnectionHandlers(db);
 
@@ -81,20 +82,21 @@ export class ConnectionManager {
   static async checkAndRecoverFromFailures(): Promise<void> {
     try {
       const dbName = DB_NAMES.MAIN_LES_STORE_V1;
-      
+
       // Проверяем зависшие миграции
       const hasStuckMigration = await detectStuckMigrations(dbName);
-      
+
       if (hasStuckMigration) {
-        prodInfo('🔧 Обнаружена зависшая миграция, выполняем восстановление...');
+        prodInfo(
+          "🔧 Обнаружена зависшая миграция, выполняем восстановление...",
+        );
         await ConnectionManager.resetStuckMigration(dbName);
       }
 
       // Делегируем дополнительные проверки Recovery Manager
       await RecoveryManager.checkOnAppStart();
-      
     } catch (error) {
-      prodError('❌ Ошибка при проверке состояния БД:', error);
+      prodError("❌ Ошибка при проверке состояния БД:", error);
       // Не блокируем работу приложения при ошибках восстановления
     }
   }
@@ -105,17 +107,17 @@ export class ConnectionManager {
   static async resetStuckMigration(dbName: string): Promise<void> {
     try {
       await resetStuckMigrationState(dbName);
-      
+
       // Сбрасываем кешированное соединение
       if (cachedConnection) {
         cachedConnection.close();
         cachedConnection = null;
       }
       connectionPromise = null;
-      
-      prodInfo('✅ Заблокированная миграция сброшена');
+
+      prodInfo("✅ Заблокированная миграция сброшена");
     } catch (error) {
-      prodError('❌ Ошибка сброса заблокированной миграции:', error);
+      prodError("❌ Ошибка сброса заблокированной миграции:", error);
       throw error;
     }
   }
@@ -131,27 +133,37 @@ export class ConnectionManager {
         // 0. Проверяем, можно ли начать обновление
         const canStart = await canStartUpdate(dbName);
         if (!canStart) {
-          throw new Error('База данных уже обновляется. Дождитесь завершения текущего обновления.');
+          throw new Error(
+            "База данных уже обновляется. Дождитесь завершения текущего обновления.",
+          );
         }
 
         // 1. Получаем версии базы данных из разных источников
         const currentVersion = await getCurrentDbVersion(dbName);
         const previousStateVersion = await getPreviousDbVersion(dbName);
         const targetVersion = getMaxVersion();
-        
-        prodInfo('📊 Информация о версиях БД:', {
+
+        prodInfo("📊 Информация о версиях БД:", {
           currentVersion,
           previousStateVersion,
           targetVersion,
-          needsMigration: currentVersion < targetVersion
+          needsMigration: currentVersion < targetVersion,
         });
 
         // Используем более надежную версию для предзагрузки миграций
-        const reliableOldVersion = Math.max(currentVersion, previousStateVersion);
-        
+        const reliableOldVersion = Math.max(
+          currentVersion,
+          previousStateVersion,
+        );
+
         // 2. Устанавливаем статус начала обновления + ВРЕМЯ
         if (reliableOldVersion < targetVersion) {
-          await setUpdateStatus(dbName, DB_UPDATE_STATUS.UPDATE_STARTED, reliableOldVersion, targetVersion);
+          await setUpdateStatus(
+            dbName,
+            DB_UPDATE_STATUS.UPDATE_STARTED,
+            reliableOldVersion,
+            targetVersion,
+          );
           await startMigrationTimer(dbName, reliableOldVersion, targetVersion);
         }
 
@@ -161,8 +173,14 @@ export class ConnectionManager {
         // 3. Если нужны миграции, предварительно загружаем модули
         if (reliableOldVersion < targetVersion) {
           const preloadStart = Date.now();
-          prodInfo('🔄 Предварительная загрузка модулей миграций c версии:', reliableOldVersion);
-          preloadedMigrations = await preloadMigrations(reliableOldVersion, targetVersion);
+          prodInfo(
+            "🔄 Предварительная загрузка модулей миграций c версии:",
+            reliableOldVersion,
+          );
+          preloadedMigrations = await preloadMigrations(
+            reliableOldVersion,
+            targetVersion,
+          );
           const preloadDuration = Date.now() - preloadStart;
           prodInfo(`✅ Предзагрузка завершена за ${preloadDuration}мс`);
         }
@@ -175,26 +193,29 @@ export class ConnectionManager {
           const db = openRequest.result;
           const realOldVersion = event.oldVersion ?? 0;
           const newVersion = event.newVersion ?? targetVersion;
-          
+
           actualOldVersion = realOldVersion;
-          
-          prodInfo('🔄 IndexDB onupgradeneeded:', {
+
+          prodInfo("🔄 IndexDB onupgradeneeded:", {
             oldVersion: realOldVersion,
             newVersion,
             existingStores: Array.from(db.objectStoreNames),
             detectedCurrentVersion: currentVersion,
-            usingRealOldVersion: realOldVersion
+            usingRealOldVersion: realOldVersion,
           });
-          
+
           // Перезагружаем миграции для реальной версии, если она отличается
           if (realOldVersion !== currentVersion) {
-            prodInfo('⚠️ Обнаружена рассинхронизация версий, сбрасываем предзагруженные миграции:', {
-              detectedVersion: currentVersion,
-              realVersion: realOldVersion
-            });
+            prodInfo(
+              "⚠️ Обнаружена рассинхронизация версий, сбрасываем предзагруженные миграции:",
+              {
+                detectedVersion: currentVersion,
+                realVersion: realOldVersion,
+              },
+            );
             preloadedMigrations = new Map();
           }
-          
+
           // 5. Выполняем миграции схемы синхронно
           if (realOldVersion < newVersion) {
             try {
@@ -202,11 +223,18 @@ export class ConnectionManager {
                 runEmergencyMigrations({ db, realOldVersion, newVersion });
               } else {
                 ConnectionManager.runSchemaMigrationsWithTiming(
-                  db, realOldVersion, newVersion, preloadedMigrations, dbName
+                  db,
+                  realOldVersion,
+                  newVersion,
+                  preloadedMigrations,
+                  dbName,
                 );
               }
             } catch (error) {
-              prodError('Критическая ошибка во время миграции схемы IndexedDB:', error);
+              prodError(
+                "Критическая ошибка во время миграции схемы IndexedDB:",
+                error,
+              );
               throw error;
             }
           }
@@ -214,69 +242,96 @@ export class ConnectionManager {
 
         openRequest.onerror = async function () {
           prodError("IndexDB openRequest error:", openRequest.error);
-          await setUpdateStatus(dbName, DB_UPDATE_STATUS.UPDATE_FAILED, undefined, undefined, openRequest.error?.message);
+          await setUpdateStatus(
+            dbName,
+            DB_UPDATE_STATUS.UPDATE_FAILED,
+            undefined,
+            undefined,
+            openRequest.error?.message,
+          );
           reject(openRequest.error);
         };
 
         openRequest.onsuccess = async function () {
           let db = openRequest.result;
 
-          prodInfo('✅ IndexDB соединение установлено, версия БД:', db.version);
+          prodInfo("✅ IndexDB соединение установлено, версия БД:", db.version);
 
           try {
-            const missingStores = REQUIRED_STORES.filter(storeName => !db.objectStoreNames.contains(storeName));
-            
+            const missingStores = REQUIRED_STORES.filter(
+              (storeName) => !db.objectStoreNames.contains(storeName),
+            );
+
             if (missingStores.length > 0) {
-              prodError('🚨 Обнаружены отсутствующие object stores:', missingStores);
-              prodInfo('🔄 Принудительное пересоздание базы данных...');
-              
+              prodError(
+                "🚨 Обнаружены отсутствующие object stores:",
+                missingStores,
+              );
+              prodInfo("🔄 Принудительное пересоздание базы данных...");
+
               db.close();
-              
+
               const deleteRequest = indexedDB.deleteDatabase(dbName);
               deleteRequest.onsuccess = () => {
-                prodInfo('✅ Поврежденная база удалена');
+                prodInfo("✅ Поврежденная база удалена");
                 setTimeout(() => {
-                  prodInfo('🔄 Перезапуск создания базы...');
-                  ConnectionManager.createNewConnection().then(resolve).catch(reject);
+                  prodInfo("🔄 Перезапуск создания базы...");
+                  ConnectionManager.createNewConnection()
+                    .then(resolve)
+                    .catch(reject);
                 }, 100);
               };
-              
+
               deleteRequest.onerror = () => {
-                prodError('❌ Ошибка удаления поврежденной базы:', deleteRequest.error);
+                prodError(
+                  "❌ Ошибка удаления поврежденной базы:",
+                  deleteRequest.error,
+                );
                 reject(deleteRequest.error);
               };
-              
+
               return;
             }
 
-            // 6. В пользователь-центричной архитектуре миграции данных выполняются 
+            // 6. В пользователь-центричной архитектуре миграции данных выполняются
             // только при авторизации пользователей в accounts_service.onLogin()
             // ConnectionManager выполняет только миграции схемы
-            prodInfo('✅ Миграции схемы выполнены, БД готова к использованию');
-            prodInfo('ℹ️ Миграции данных будут выполнены при авторизации пользователей');
-            
+            prodInfo("✅ Миграции схемы выполнены, БД готова к использованию");
+            prodInfo(
+              "ℹ️ Миграции данных будут выполнены при авторизации пользователей",
+            );
+
             // 7. Обновляем статус успешного завершения + ВРЕМЯ
-            await setUpdateStatus(dbName, DB_UPDATE_STATUS.UPDATE_SUCCESS, db.version);
+            await setUpdateStatus(
+              dbName,
+              DB_UPDATE_STATUS.UPDATE_SUCCESS,
+              db.version,
+            );
             await endMigrationTimer(dbName);
-            
+
             resolve(db);
-            
           } catch (error) {
-            prodError('Ошибка при выполнении миграций данных:', error);
-            const errorMessage = error instanceof Error ? error.message : String(error);
-            await setUpdateStatus(dbName, DB_UPDATE_STATUS.UPDATE_FAILED, undefined, undefined, errorMessage);
+            prodError("Ошибка при выполнении миграций данных:", error);
+            const errorMessage =
+              error instanceof Error ? error.message : String(error);
+            await setUpdateStatus(
+              dbName,
+              DB_UPDATE_STATUS.UPDATE_FAILED,
+              undefined,
+              undefined,
+              errorMessage,
+            );
             db.close();
             reject(error);
           }
         };
 
         openRequest.onblocked = function () {
-          debugLog('Database connection blocked');
-          reject(new Error('Database connection blocked'));
+          debugLog("Database connection blocked");
+          reject(new Error("Database connection blocked"));
         };
-        
       } catch (error) {
-        prodError('Ошибка при инициализации IndexDB:', error);
+        prodError("Ошибка при инициализации IndexDB:", error);
         reject(error);
       }
     });
@@ -290,60 +345,75 @@ export class ConnectionManager {
     oldVersion: number,
     newVersion: number,
     preloadedMigrations: Map<number, any>,
-    dbName: string
+    dbName: string,
   ): void {
-    prodInfo('🚀 Начинаем выполнение миграций схемы IndexedDB:', {
+    prodInfo("🚀 Начинаем выполнение миграций схемы IndexedDB:", {
       oldVersion,
       newVersion,
-      existingStores: Array.from(db.objectStoreNames)
+      existingStores: Array.from(db.objectStoreNames),
     });
 
     try {
       for (let version = oldVersion; version < newVersion; version++) {
         const targetVersion = version + 1;
-        
-        prodInfo(`📋 Выполняем миграцию схемы с версии ${version} до ${targetVersion}`);
-        
+
+        prodInfo(
+          `📋 Выполняем миграцию схемы с версии ${version} до ${targetVersion}`,
+        );
+
         const migrationModule = preloadedMigrations.get(version);
-        
+
         if (!migrationModule) {
-          throw new Error(`Предварительно загруженная миграция для версии ${version} не найдена`);
+          throw new Error(
+            `Предварительно загруженная миграция для версии ${version} не найдена`,
+          );
         }
 
         // Засекаем время выполнения схемы
         const schemaStart = Date.now();
         migrationModule.migrationScheme(db);
         const schemaDuration = Date.now() - schemaStart;
-        
-        prodInfo(`✅ Миграция схемы ${migrationModule.migrationInfo.fileName} выполнена за ${schemaDuration}мс`);
-        
+
+        prodInfo(
+          `✅ Миграция схемы ${migrationModule.migrationInfo.fileName} выполнена за ${schemaDuration}мс`,
+        );
+
         // Безопасно сохраняем информацию о времени выполнения схемы
         try {
-          if (migrationModule && typeof migrationModule === 'object') {
-            Object.defineProperty(migrationModule, '_schemaDuration', {
+          if (migrationModule && typeof migrationModule === "object") {
+            Object.defineProperty(migrationModule, "_schemaDuration", {
               value: schemaDuration,
               writable: true,
-              configurable: true
+              configurable: true,
             });
           }
         } catch (error) {
           // Если не можем записать в модуль миграции (объект не расширяемый),
           // просто логируем время выполнения - это не критично для работы
-          const errorMessage = error instanceof Error ? error.message : String(error);
-          console.warn(`Cannot set _schemaDuration on migration module ${migrationModule.migrationInfo?.fileName}:`, errorMessage);
-          prodInfo(`⚠️ Время выполнения схемы ${migrationModule.migrationInfo?.fileName}: ${schemaDuration}мс (сохранено только в логах)`);
+          const errorMessage =
+            error instanceof Error ? error.message : String(error);
+          console.warn(
+            `Cannot set _schemaDuration on migration module ${migrationModule.migrationInfo?.fileName}:`,
+            errorMessage,
+          );
+          prodInfo(
+            `⚠️ Время выполнения схемы ${migrationModule.migrationInfo?.fileName}: ${schemaDuration}мс (сохранено только в логах)`,
+          );
         }
       }
 
-      prodInfo('🏁 Все миграции схемы IndexedDB выполнены успешно. Финальные хранилища:', 
-        Array.from(db.objectStoreNames));
-      
+      prodInfo(
+        "🏁 Все миграции схемы IndexedDB выполнены успешно. Финальные хранилища:",
+        Array.from(db.objectStoreNames),
+      );
     } catch (error) {
-      prodError('❌ Критическая ошибка во время выполнения миграций схемы IndexedDB:', error);
+      prodError(
+        "❌ Критическая ошибка во время выполнения миграций схемы IndexedDB:",
+        error,
+      );
       throw error;
     }
   }
-
 
   /**
    * Настройка обработчиков событий для соединения
@@ -351,7 +421,9 @@ export class ConnectionManager {
   private static setupConnectionHandlers(db: IDBDatabase): void {
     // Обработчик для принудительного закрытия извне
     db.onversionchange = function () {
-      prodInfo('🔄 Принудительное закрытие соединения IndexDB (version change)');
+      prodInfo(
+        "🔄 Принудительное закрытие соединения IndexDB (version change)",
+      );
       if (closeTimer) {
         clearTimeout(closeTimer);
         closeTimer = null;
@@ -365,7 +437,7 @@ export class ConnectionManager {
     };
 
     db.onclose = function () {
-      prodInfo('🔒 Соединение IndexDB закрыто');
+      prodInfo("🔒 Соединение IndexDB закрыто");
       if (closeTimer) {
         clearTimeout(closeTimer);
         closeTimer = null;
@@ -385,12 +457,12 @@ export class ConnectionManager {
     if (isDebugMode) {
       debugLog(`📈 Увеличен счетчик активных запросов: ${activeRequestsCount}`);
     }
-    
+
     if (closeTimer) {
       clearTimeout(closeTimer);
       closeTimer = null;
       if (isDebugMode) {
-        debugLog('⏰ Таймер закрытия сброшен из-за нового активного запроса');
+        debugLog("⏰ Таймер закрытия сброшен из-за нового активного запроса");
       }
     }
   }
@@ -403,7 +475,7 @@ export class ConnectionManager {
     if (isDebugMode) {
       debugLog(`📉 Уменьшен счетчик активных запросов: ${activeRequestsCount}`);
     }
-    
+
     if (activeRequestsCount === 0) {
       ConnectionManager.startCloseTimer();
     }
@@ -416,10 +488,12 @@ export class ConnectionManager {
     if (closeTimer) {
       clearTimeout(closeTimer);
     }
-    
+
     closeTimer = setTimeout(() => {
       if (cachedConnection && !isClosing && activeRequestsCount === 0) {
-        prodInfo(`🔒 Закрытие соединения IndexDB по таймауту (5 минут после завершения всех запросов). Активных запросов: ${activeRequestsCount}`);
+        prodInfo(
+          `🔒 Закрытие соединения IndexDB по таймауту (5 минут после завершения всех запросов). Активных запросов: ${activeRequestsCount}`,
+        );
         isClosing = true;
         cachedConnection.close();
         cachedConnection = null;
@@ -428,13 +502,17 @@ export class ConnectionManager {
         isClosing = false;
       } else if (activeRequestsCount > 0) {
         if (isDebugMode) {
-          debugLog(`⏰ Таймер не сработал - есть активные запросы: ${activeRequestsCount}`);
+          debugLog(
+            `⏰ Таймер не сработал - есть активные запросы: ${activeRequestsCount}`,
+          );
         }
       }
     }, IDLE_TIMEOUT);
-    
+
     if (isDebugMode) {
-      debugLog(`⏰ Запущен таймер закрытия на 5 минут. Активных запросов: ${activeRequestsCount}`);
+      debugLog(
+        `⏰ Запущен таймер закрытия на 5 минут. Активных запросов: ${activeRequestsCount}`,
+      );
     }
   }
 
@@ -443,7 +521,7 @@ export class ConnectionManager {
    */
   static forceCloseConnection(): void {
     if (cachedConnection) {
-      prodInfo('🔒 Принудительное закрытие соединения IndexDB');
+      prodInfo("🔒 Принудительное закрытие соединения IndexDB");
       if (closeTimer) {
         clearTimeout(closeTimer);
         closeTimer = null;
@@ -466,7 +544,99 @@ export class ConnectionManager {
       isClosing,
       activeRequestsCount,
       hasCloseTimer: !!closeTimer,
-      connectionPromiseActive: !!connectionPromise
+      connectionPromiseActive: !!connectionPromise,
     };
+  }
+
+  /**
+   * НОВЫЙ МЕТОД: Проверить готовность системы для миграций
+   */
+  static async checkMigrationReadiness(): Promise<{
+    isReady: boolean;
+    pendingUsers: string[];
+    systemStatus: "ready" | "partial" | "blocked";
+  }> {
+    try {
+      const db = await this.getConnection();
+      const maxVersion = getMaxVersion();
+
+      const isReady = await AllUsersChecker.allUsersReady(db, maxVersion);
+      const pendingUsers = await AllUsersChecker.getPendingUsers(
+        db,
+        maxVersion,
+      );
+
+      return {
+        isReady,
+        pendingUsers,
+        systemStatus: isReady
+          ? "ready"
+          : pendingUsers.length > 0
+            ? "partial"
+            : "blocked",
+      };
+    } catch (error) {
+      console.error("❌ Ошибка проверки готовности миграций:", error);
+      return {
+        isReady: false,
+        pendingUsers: [],
+        systemStatus: "blocked",
+      };
+    }
+  }
+
+  /**
+   * НОВЫЙ МЕТОД: Получить статистику пользователей по миграциям
+   */
+  static async getUsersMigrationSummary(): Promise<{
+    totalUsers: number;
+    completedUsers: number;
+    pendingUsers: string[];
+    completionPercentage: number;
+    userDetails: Array<{
+      userId: string;
+      currentVersion: number;
+      completedMigrations: number[];
+      isReady: boolean;
+    }>;
+  }> {
+    try {
+      const db = await this.getConnection();
+      const maxVersion = getMaxVersion();
+
+      const stats = await AllUsersChecker.getUserReadinessStats(db, maxVersion);
+
+      // Получить детали по каждому пользователю
+      const allUserIds = await AllUsersChecker.scanAllUserIds(db);
+      const userDetails = [];
+
+      for (const userId of allUserIds) {
+        const userStats =
+          await UserMigrationManager.getUserMigrationStats(userId);
+        userDetails.push({
+          userId,
+          currentVersion: userStats?.currentVersion || 0,
+          completedMigrations: userStats?.completedMigrations || [],
+          isReady: userStats?.currentVersion === maxVersion,
+        });
+      }
+
+      return {
+        totalUsers: stats.totalUsers,
+        completedUsers: stats.completedUsers,
+        pendingUsers: stats.pendingUsers,
+        completionPercentage: stats.completionPercentage,
+        userDetails,
+      };
+    } catch (error) {
+      console.error("❌ Ошибка получения статистики пользователей:", error);
+      return {
+        totalUsers: 0,
+        completedUsers: 0,
+        pendingUsers: [],
+        completionPercentage: 0,
+        userDetails: [],
+      };
+    }
   }
 }
