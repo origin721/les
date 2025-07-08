@@ -67,6 +67,21 @@ export async function createAppSharedWorker() {
     sharedWorker.port.start();
     devLog('SharedWorker запущен');
     
+    // КРИТИЧНО: отправляем disconnect при закрытии/обновлении страницы
+    const handleBeforeUnload = () => {
+      try {
+        devLog('Отправка disconnect в SharedWorker перед закрытием страницы');
+        sharedWorker.port.postMessage({ 
+          message: JSON.stringify({ type: 'disconnect' }) 
+        });
+      } catch (error) {
+        prodError('Ошибка отправки disconnect:', error);
+      }
+    };
+    
+    // Добавляем обработчики только для реального закрытия страницы
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    
   } catch (error) {
     prodError('Ошибка создания SharedWorker:', error);
     throw error;

@@ -57,22 +57,31 @@ function create_shared_worker_store() {
       devLog('shared_worker_store.subscribeToWorker сгенерирован idRequest:', idRequest);
       
       let storeValue: Store | undefined;
+      let subscriptionSent = false;
+      
       const unsubscribeFromStore = store.subscribe(value => {
         storeValue = value;
-      });
-      
-      // Если store уже инициализирован, отправляем подписку сразу
-      if (storeValue) {
+        
+      // Отправляем подписку, как только store станет доступен
+      if (storeValue && !subscriptionSent) {
+        devLog('shared_worker_store.subscribeToWorker отправка подписки после инициализации store, idRequest:', idRequest);
+        
+        // Сначала регистрируем callback
+        storeValue.onSubscriptionMessage = storeValue.onSubscriptionMessage || {};
+        storeValue.onSubscriptionMessage[idRequest] = params.callback;
+        
+        // Затем отправляем подписку
         storeValue.sendMessage({
           payload: params.payload,
           idRequest,
           type: EVENT_TYPES.SUBSCRIBE,
+        }).catch(error => {
+          devLog('shared_worker_store.subscribeToWorker ошибка отправки подписки:', error);
         });
         
-        // Слушаем ответы от worker для этой подписки
-        storeValue.onSubscriptionMessage = storeValue.onSubscriptionMessage || {};
-        storeValue.onSubscriptionMessage[idRequest] = params.callback;
+        subscriptionSent = true;
       }
+      });
       
       // Возвращаем функцию отписки
       return () => {

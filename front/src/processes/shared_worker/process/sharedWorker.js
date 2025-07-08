@@ -9,12 +9,69 @@ const subscribers = {
   activeTabsCount: new Map() // subscriptionId -> {port, params}
 };
 
+// Улучшенная функция очистки мертвых портов
+function cleanupDeadPorts() {
+  devLog('SharedWorker: запуск очистки мертвых портов, всего портов:', activeTabs.size);
+  
+  const deadPorts = new Set();
+  
+  activeTabs.forEach(port => {
+    try {
+      // Проверяем состояние порта через его readyState или отправляем ping
+      if (port.readyState && port.readyState === 'closed') {
+        deadPorts.add(port);
+        return;
+      }
+      
+      // Пинг порт для проверки жизнеспособности
+      port.postMessage(JSON.stringify({ type: 'ping', timestamp: Date.now() }));
+    } catch (error) {
+      // Порт мертв - помечаем для удаления
+      devLog('SharedWorker: обнаружен мертвый порт при ping:', error.message);
+      deadPorts.add(port);
+    }
+  });
+  
+  // Удаляем мертвые порты
+  deadPorts.forEach(port => {
+    removeTabbedPort(port);
+  });
+  
+  if (deadPorts.size > 0) {
+    devLog('SharedWorker: очищено мертвых портов:', deadPorts.size, 'осталось активных:', activeTabs.size);
+    notifyActiveTabsSubscribers();
+  }
+}
+
+// Функция для безопасного удаления порта
+function removeTabbedPort(port) {
+  devLog('SharedWorker: удаление порта из activeTabs');
+  activeTabs.delete(port);
+  
+  // Удаляем все подписки этого порта
+  subscribers.activeTabsCount.forEach((subscription, subscriptionId) => {
+    if (subscription.port === port) {
+      devLog('SharedWorker: удаление подписки для порта:', subscriptionId);
+      subscribers.activeTabsCount.delete(subscriptionId);
+    }
+  });
+}
+
+// Автоматическая очистка каждые 15 секунд для более быстрого отклика
+setInterval(() => {
+  cleanupDeadPorts();
+}, 15000);
+
 // Функция для уведомления всех подписчиков об изменении количества вкладок
 function notifyActiveTabsSubscribers() {
+  // ВАЖНО: Используем реальное количество активных вкладок
   const count = activeTabs.size;
-  devLog('SharedWorker: уведомление подписчиков о количестве вкладок:', count);
+  devLog('SharedWorker: уведомление подписчиков о количестве вкладок:', count, 'activeTabs.size:', activeTabs.size);
   
-  subscribers.activeTabsCount.forEach((subscription, subscriptionId) => {
+  // Создаем список подписок для безопасного обхода
+  const subscriptionsToNotify = Array.from(subscribers.activeTabsCount.entries());
+  
+  subscriptionsToNotify.forEach(([subscriptionId, subscription]) => {
     try {
       const response = {
         idRequest: subscriptionId,
@@ -26,6 +83,8 @@ function notifyActiveTabsSubscribers() {
       prodError('SharedWorker: ошибка при отправке уведомления подписчику:', subscriptionId, error);
       // Удаляем неработающую подписку
       subscribers.activeTabsCount.delete(subscriptionId);
+      // Также удаляем порт из activeTabs если он мертв
+      removeTabbedPort(subscription.port);
     }
   });
 }
@@ -40,30 +99,53 @@ self.onconnect = function (event) {
     activeTabs.add(port);
     devLog('SharedWorker: добавлена активная вкладка, всего:', activeTabs.size);
     
-    // Уведомляем подписчиков об изменении количества
-    notifyActiveTabsSubscribers();
+    // Обработка закрытия порта - используем несколько событий для надежности
+    const handlePortClosure = () => {
+      devLog('SharedWorker: порт закрыт');
+      if (activeTabs.has(port)) {
+        activeTabs.delete(port);
+        
+        // Удаляем все подписки этого порта
+        subscribers.activeTabsCount.forEach((subscription, subscriptionId) => {
+          if (subscription.port === port) {
+            subscribers.activeTabsCount.delete(subscriptionId);
+          }
+        });
+        
+        devLog('SharedWorker: удалена активная вкладка, всего:', activeTabs.size);
+        notifyActiveTabsSubscribers();
+      }
+    };
     
+    // Используем несколько событий для надежного отслеживания закрытия
+    port.addEventListener('close', handlePortClosure);
+    
+    // ИСПРАВЛЕНО: Единый обработчик сообщений (убрано дублирование port.onmessage)
     port.onmessage = function (e) {
+      // Сначала проверяем на disconnect сообщения
+      try {
+        const data = JSON.parse(e.data.message || e.data);
+        if (data.type === 'disconnect') {
+          devLog('SharedWorker: получено сообщение disconnect от порта');
+          handlePortClosure();
+          return;
+        }
+      } catch (parseError) {
+        // Игнорируем ошибки парсинга - это обычные сообщения, не disconnect
+      }
+      
+      // Затем обрабатываем обычные сообщения
       devLog("SharedWorker received:", e.data);
       listener(e.data, port);
     };
-
-    // Обработка закрытия порта
-    port.addEventListener('close', () => {
-      devLog('SharedWorker: порт закрыт');
-      activeTabs.delete(port);
-      
-      // Удаляем все подписки этого порта
-      subscribers.activeTabsCount.forEach((subscription, subscriptionId) => {
-        if (subscription.port === port) {
-          subscribers.activeTabsCount.delete(subscriptionId);
-        }
-      });
-      
-      devLog('SharedWorker: удалена активная вкладка, всего:', activeTabs.size);
-      notifyActiveTabsSubscribers();
-    });
   });
+  
+  // КРИТИЧНО: Уведомляем подписчиков об изменении количества ПОСЛЕ обработки всех портов
+  // Это обеспечивает синхронизацию между всеми вкладками
+  setTimeout(() => {
+    notifyActiveTabsSubscribers();
+    devLog('SharedWorker: принудительное уведомление после onconnect, activeTabs.size:', activeTabs.size);
+  }, 100); // Увеличено время для гарантии обработки
 };
 
 /**
@@ -130,6 +212,19 @@ async function listener(data, port) {
           };
           port.postMessage(JSON.stringify(response));
           devLog("SharedWorker: отправлено начальное значение count:", activeTabs.size, "для subscriptionId:", subscriptionId);
+          
+          // КРИТИЧНО: После новой подписки уведомляем всех о текущем количестве
+          // Это гарантирует синхронизацию между всеми вкладками
+          setTimeout(() => {
+            notifyActiveTabsSubscribers();
+            devLog('SharedWorker: принудительное уведомление после подписки, activeTabs.size:', activeTabs.size);
+          }, 100);
+          
+          // Дополнительное уведомление для обеспечения синхронизации
+          setTimeout(() => {
+            notifyActiveTabsSubscribers();
+            devLog('SharedWorker: дополнительное уведомление для синхронизации, activeTabs.size:', activeTabs.size);
+          }, 200);
         }
         else {
           prodWarn("SharedWorker: неизвестный path для SUBSCRIBE:", props.payload.path);
