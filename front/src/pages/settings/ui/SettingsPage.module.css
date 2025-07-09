@@ -286,6 +286,50 @@
     font-family: monospace;
 }
 
+.migrationList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.migrationItem {
+    padding: 0.75rem;
+    background: var(--les-bg-primary);
+    border: 1px solid var(--les-border-primary);
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.migrationItem:hover {
+    border-color: var(--les-accent-primary);
+    box-shadow: 0 0 8px var(--les-accent-primary);
+}
+
+.migrationHeader {
+    font-size: 0.95rem;
+    font-weight: bold;
+    color: var(--les-text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.migrationDetails {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--les-text-secondary);
+}
+
+.migrationDetails span {
+    padding: 0.25rem 0.5rem;
+    background: var(--les-bg-secondary);
+    border-radius: 4px;
+    font-family: monospace;
+}
+
 @media (max-width: 480px) {
     .settingsContainer {
         padding: 0 0.5rem;

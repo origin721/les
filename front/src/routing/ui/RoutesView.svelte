@@ -61,11 +61,15 @@
         apauState: (typeof appAuthState)["state"];
     }) {
         // TODO: сделать защиту от рендера если  данные не менялись сохранив prev в ссылку
-        if(prevRoutParams && 
-           p.rState.pathname === prevRoutParams.rState.pathname &&
-           Object.keys(p.apauState.byId).length === Object.keys(prevRoutParams.apauState.byId).length &&
-           p.rState.queryParams.toString() === prevRoutParams.rState.queryParams.toString()) {
-            return
+        if (
+            prevRoutParams &&
+            p.rState.pathname === prevRoutParams.rState.pathname &&
+            Object.keys(p.apauState.byId).length ===
+                Object.keys(prevRoutParams.apauState.byId).length &&
+            p.rState.queryParams.toString() ===
+                prevRoutParams.rState.queryParams.toString()
+        ) {
+            return;
         }
 
         prevRoutParams = p;
@@ -86,15 +90,21 @@
                 `../../pages/settings/ui/SettingsPage.svelte`
             );
         } else if (p.rState.pathname === ROUTES.DOCS) {
-            nextComponentPromise = import(`../../pages/docs/ui/DocsPage.svelte`);
+            nextComponentPromise = import(
+                `../../pages/docs/ui/DocsPage.svelte`
+            );
         } else if (!Object.entries(p.apauState.byId).length) {
-            nextComponentPromise = import(`../../pages/auth/ui/AuthPage.svelte`);
+            nextComponentPromise = import(
+                `../../pages/auth/ui/AuthPage.svelte`
+            );
         } else if (p.rState.pathname === ROUTES.AUTH) {
-            nextComponentPromise = import(`../../pages/auth/ui/AuthPage.svelte`);
+            nextComponentPromise = import(
+                `../../pages/auth/ui/AuthPage.svelte`
+            );
         } else if (p.rState.pathname === ROUTES.CHAT_ROOMS) {
             if (p.rState.queryParams.get(QUERY_PARAMS.ROOM_ID)) {
                 // Check if settings page is requested
-                if (p.rState.pathname.includes('/settings')) {
+                if (p.rState.pathname.includes("/settings")) {
                     nextComponentPromise = import(
                         `../../pages/chat_room/ui/ChatSettingsPage.svelte`
                     );
@@ -114,8 +124,7 @@
             nextComponentPromise = import(
                 `../../pages/chat_rooms_add/ui/ChatRoomsAddPage.svelte`
             );
-        }
-        else if (p.rState.pathname === ROUTES.CRYPTO) {
+        } else if (p.rState.pathname === ROUTES.CRYPTO) {
             nextComponentPromise = import(
                 `../../pages/crypto_page/ui/CryptoPage.svelte`
             );
@@ -136,7 +145,9 @@
                 `../../pages/random/ui/RandomPage.svelte`
             );
         } else if (p.rState.pathname === ROUTES.HOME) {
-            nextComponentPromise = import(`../../pages/home/ui/HomePage.svelte`);
+            nextComponentPromise = import(
+                `../../pages/home/ui/HomePage.svelte`
+            );
         } else if (p.rState.pathname === ROUTES.ACCOUNTS) {
             nextComponentPromise = import(
                 `../../pages/accounts/ui/AccountsPage.svelte`
