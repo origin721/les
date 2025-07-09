@@ -2,4 +2,4 @@
  * Версия entity accounts
  * Увеличивается при изменении структуры данных accounts
  */
-export const ACCOUNTS_VERSION = 1;
+export const ACCOUNTS_VERSION = 2;

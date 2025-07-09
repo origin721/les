@@ -3,7 +3,10 @@ import { encrypt_curve25519_from_pass } from "../../../../core/crypt";
 import { gen_pass } from "../../../../core/random/gen_pass";
 import { uuidv4 } from "../../../../core/uuid";
 import { indexdb_wrapper } from "../../indexdb_wrapper";
-import { privateKeyToString, recommendedGenerateKeyPair } from "../../../../libs/libp2p";
+import {
+  privateKeyToString,
+  recommendedGenerateKeyPair,
+} from "../../../../libs/libp2p";
 import { prodError, prodInfo } from "../../../../core/debug/logger";
 import { ACCOUNTS_VERSION } from "./constants";
 
@@ -11,14 +14,15 @@ export type HttpServerParam = {
   url: string;
   isActive: boolean;
   id: string;
-}
+};
 
 export type AccountEntity = {
   namePub: string;
   pass: string;
   httpServers: HttpServerParam[];
-  friendsByIds?: string[];  // Опциональное для обратной совместимости
-}
+  friendsByIds?: string[]; // Опциональное для обратной совместимости
+  roomIds?: string[]; // Связанные комнаты
+};
 
 export function add_accounts(new_list: AccountEntity[]) {
   return indexdb_wrapper((db) => {
@@ -29,7 +33,7 @@ export function add_accounts(new_list: AccountEntity[]) {
       for (let item of new_list) {
         const newId = uuidv4();
         const libp2p_keyPair = await recommendedGenerateKeyPair();
-        
+
         const newData = await encrypt_curve25519_from_pass({
           pass: item.pass,
           message: JSON.stringify({
@@ -38,8 +42,9 @@ export function add_accounts(new_list: AccountEntity[]) {
             _pass: gen_pass(),
             _libp2p_keyPair: privateKeyToString(libp2p_keyPair),
             date_created: new Date(),
-            friendsByIds: item.friendsByIds || [],  // Инициализируем пустым массивом
-            version: ACCOUNTS_VERSION,  // Версия внутри зашифрованных данных
+            friendsByIds: item.friendsByIds || [], // Инициализируем пустым массивом
+            roomIds: item.roomIds || [], // Инициализируем пустым массивом
+            version: ACCOUNTS_VERSION, // Версия внутри зашифрованных данных
           }),
         });
         store.add({ id: newId, data: newData });
@@ -55,5 +60,5 @@ export function add_accounts(new_list: AccountEntity[]) {
         rej(new Error("Ошибка при добавлении данных в IndexedDB"));
       };
     });
-  })
+  });
 }
