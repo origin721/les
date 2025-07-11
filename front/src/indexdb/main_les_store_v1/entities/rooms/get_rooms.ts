@@ -1,7 +1,7 @@
 import { decrypt_curve25519_from_pass } from "../../../../core/crypt";
 import { back_store } from "../../../../local_back/back_store/back_store";
 import { indexdb_wrapper } from "../../indexdb_wrapper";
-import type { RoomEntityFull } from "./add_room";
+import type { RoomEntityFull } from "./types";
 
 export function get_rooms(): Promise<RoomEntityFull[]> {
   return new Promise((mRes, rej) => {
@@ -11,32 +11,29 @@ export function get_rooms(): Promise<RoomEntityFull[]> {
         const store = transaction.objectStore("rooms");
 
         const request = store.openCursor();
-        const result: RoomEntityFull[] = []
-        
+        const result: RoomEntityFull[] = [];
+
         request.onsuccess = async function (event) {
           const cursor = (event.target as IDBRequest).result;
           if (cursor) {
             try {
               const passwords = new Set<string>();
-              for(let ac of Object.values(back_store.accounts_by_id)) {
+              for (let ac of Object.values(back_store.accounts_by_id)) {
                 passwords.add(ac.pass);
               }
-              
+
               for (let pass of passwords) {
                 const _item = await decrypt_curve25519_from_pass({
-                    pass,
-                    cipherText: cursor.value.data,
+                  pass,
+                  cipherText: cursor.value.data,
                 });
-                const decrData = !_item 
-                  ? null
-                  : JSON.parse(_item);
+                const decrData = !_item ? null : JSON.parse(_item);
                 if (decrData) {
                   result.push(decrData);
                   break; // Found valid decryption, move to next
                 }
               }
-            }
-            catch(err) {}
+            } catch (err) {}
             cursor.continue();
           } else {
             mRes(result);
@@ -44,10 +41,10 @@ export function get_rooms(): Promise<RoomEntityFull[]> {
           }
         };
 
-        request.onerror = function(event) {
+        request.onerror = function (event) {
           rej(event);
         };
       });
-    })
+    });
   });
 }

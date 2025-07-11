@@ -1,7 +1,7 @@
 import { decrypt_curve25519_from_pass } from "../../../../core/crypt";
 import { back_store } from "../../../../local_back/back_store/back_store";
 import { indexdb_wrapper } from "../../indexdb_wrapper";
-import type { RoomEntityFull } from "./add_room";
+import type { RoomEntityFull } from "./types";
 
 export function get_room_by_id(roomId: string): Promise<RoomEntityFull | null> {
   return new Promise((mRes, mRej) => {
@@ -14,7 +14,7 @@ export function get_room_by_id(roomId: string): Promise<RoomEntityFull | null> {
 
         request.onsuccess = async function (event) {
           const result = (event.target as IDBRequest).result;
-          
+
           if (!result) {
             mRes(null);
             res();
@@ -23,19 +23,17 @@ export function get_room_by_id(roomId: string): Promise<RoomEntityFull | null> {
 
           try {
             const passwords = new Set<string>();
-            for(let ac of Object.values(back_store.accounts_by_id)) {
+            for (let ac of Object.values(back_store.accounts_by_id)) {
               passwords.add(ac.pass);
             }
-            
+
             for (let pass of passwords) {
               try {
                 const _item = await decrypt_curve25519_from_pass({
                   pass,
                   cipherText: result.data,
                 });
-                const decrData = !_item 
-                  ? null
-                  : JSON.parse(_item);
+                const decrData = !_item ? null : JSON.parse(_item);
                 if (decrData) {
                   mRes(decrData);
                   res();
@@ -45,7 +43,7 @@ export function get_room_by_id(roomId: string): Promise<RoomEntityFull | null> {
                 // Continue with next password
               }
             }
-            
+
             // If no password worked, return null
             mRes(null);
             res();
@@ -55,7 +53,7 @@ export function get_room_by_id(roomId: string): Promise<RoomEntityFull | null> {
           }
         };
 
-        request.onerror = function(event) {
+        request.onerror = function (event) {
           mRej(event);
           rej(event);
         };
