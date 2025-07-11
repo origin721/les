@@ -2,5 +2,5 @@
  * Типы для сущностей комнат
  */
 
-export { RoomEntity } from "./room_entity";
-export { RoomEntityFull } from "./room_entity_full";
+export type { RoomEntity } from "./room_entity";
+export type { RoomEntityFull } from "./room_entity_full";
