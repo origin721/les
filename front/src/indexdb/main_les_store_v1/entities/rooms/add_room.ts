@@ -3,17 +3,7 @@ import { prodError, prodInfo } from "../../../../core/debug/logger";
 import { rooms_store_utils } from "../../../../local_back/back_store";
 import { ROOMS_VERSION } from "./constants";
 import { EntityService } from "../../services/entity_service";
-
-export type RoomEntityFull = {
-  id: string;
-} & RoomEntity;
-
-export type RoomEntity = {
-  id: string;
-  sourceName: string;
-  viewName: string;
-  myAccId: string;
-};
+import { RoomEntity, RoomEntityFull } from "./types";
 
 export async function add_room(
   new_list: RoomEntity[],
