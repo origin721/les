@@ -2,7 +2,7 @@
 import { decrypt_curve25519_from_pass } from "../../../../core/crypt";
 import { back_store } from "../../../../local_back/back_store/back_store";
 import { indexdb_wrapper } from "../../indexdb_wrapper";
-import type { HttpServerParam } from "./add_accounts";
+import type { HttpServerParam } from "./types";
 import { prodError } from "../../../../core/debug/logger";
 
 export type Account = {
@@ -16,21 +16,21 @@ export type Account = {
   date_updated?: Date;
 };
 
-export function get_account_by_id(
-  accId: string,
-): Promise<Account> {
+export function get_account_by_id(accId: string): Promise<Account> {
   return new Promise((mRes, rej) => {
     indexdb_wrapper((db) => {
       return new Promise((res, rej) => {
         const transaction = db.transaction(["accounts"], "readwrite");
         const store = transaction.objectStore("accounts");
 
-
         // Получаем запись по идентификатору
         const getRequest = store.get(accId);
 
         getRequest.onerror = function (event) {
-          prodError('Ошибка при получении записи:', (event.target as any)?.error);
+          prodError(
+            "Ошибка при получении записи:",
+            (event.target as any)?.error,
+          );
         };
 
         getRequest.onsuccess = async function (event) {
@@ -44,21 +44,17 @@ export function get_account_by_id(
               if (decryptedData) {
                 mRes(JSON.parse(decryptedData));
               } else {
-                throw 'Не удалось расшифровать данные для аккаунта ' + accId;
+                throw "Не удалось расшифровать данные для аккаунта " + accId;
               }
             } else {
-              throw 'Сущность с таким id не найдена ' + accId;
+              throw "Сущность с таким id не найдена " + accId;
             }
-
-          }
-          catch (err) {
+          } catch (err) {
             prodError(err);
-            rej(err)
+            rej(err);
           }
-        }
-
+        };
       });
-    })
-
+    });
   });
 }

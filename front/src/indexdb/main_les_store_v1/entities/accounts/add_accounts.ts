@@ -9,20 +9,7 @@ import {
 } from "../../../../libs/libp2p";
 import { prodError, prodInfo } from "../../../../core/debug/logger";
 import { ACCOUNTS_VERSION } from "./constants";
-
-export type HttpServerParam = {
-  url: string;
-  isActive: boolean;
-  id: string;
-};
-
-export type AccountEntity = {
-  namePub: string;
-  pass: string;
-  httpServers: HttpServerParam[];
-  friendsByIds?: string[]; // Опциональное для обратной совместимости
-  roomIds?: string[]; // Связанные комнаты
-};
+import type { AccountEntity, HttpServerParam } from "./types";
 
 export function add_accounts(new_list: AccountEntity[]) {
   return indexdb_wrapper((db) => {

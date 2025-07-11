@@ -3,18 +3,8 @@ import { encrypt_curve25519_from_pass } from "../../../../core/crypt";
 import { back_store } from "../../../../local_back/back_store/back_store";
 import { uuidv4 } from "../../../../core/uuid";
 import { indexdb_wrapper } from "../../indexdb_wrapper";
-import type { HttpServerParam } from "./add_accounts";
+import type { HttpServerParam, AccountEntityPut } from "./types";
 import { ACCOUNTS_VERSION } from "./constants";
-
-
-export type AccountEntityPut = {
-  id: string;
-  namePub: string;
-  pass: string;
-  httpServers: HttpServerParam[];
-  friendsByIds?: string[];
-  date_updated?: Date;
-}
 
 export function put_accounts(new_list: AccountEntityPut[]) {
   return indexdb_wrapper((db) => {
@@ -37,14 +27,14 @@ export function put_accounts(new_list: AccountEntityPut[]) {
           _pass: existingAccount._pass,
           _libp2p_keyPair: existingAccount._libp2p_keyPair,
           date_created: existingAccount.date_created,
-          version: ACCOUNTS_VERSION,  // Версия внутри зашифрованных данных
+          version: ACCOUNTS_VERSION, // Версия внутри зашифрованных данных
         };
 
         const newData = await encrypt_curve25519_from_pass({
           pass: existingAccount.pass,
           message: JSON.stringify(updatedAccount),
         });
-        
+
         store.put({ id: item.id, data: newData });
       }
 
@@ -58,5 +48,5 @@ export function put_accounts(new_list: AccountEntityPut[]) {
         rej();
       };
     });
-  })
+  });
 }

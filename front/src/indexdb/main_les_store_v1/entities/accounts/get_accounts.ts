@@ -2,7 +2,7 @@
 import { decrypt_curve25519_from_pass } from "../../../../core/crypt";
 import { back_store } from "../../../../local_back/back_store/back_store";
 import { indexdb_wrapper } from "../../indexdb_wrapper";
-import type { HttpServerParam } from "./add_accounts";
+import type { HttpServerParam } from "./types";
 
 export type Account = {
   namePub: string;
@@ -13,12 +13,11 @@ export type Account = {
   date_updated?: Date;
   _pass: string;
   _libp2p_keyPair: string;
-  friendsByIds?: string[];  // Массив ID друзей для данного аккаунта
-  version: number;  // Версия entity для отслеживания изменений структуры
+  friendsByIds?: string[]; // Массив ID друзей для данного аккаунта
+  version: number; // Версия entity для отслеживания изменений структуры
 };
 
-export function get_accounts(
-): Promise<Account[]> {
+export function get_accounts(): Promise<Account[]> {
   // Оптимизированный возврат аккаунтов из оперативной памяти
   return Promise.resolve(Object.values(back_store.accounts_by_id));
 
@@ -54,7 +53,7 @@ export function get_accounts(
                       pass,
                       cipherText: cursor.value.data,
                   });
-                  const decrData = !_item 
+                  const decrData = !_item
                     ? null
                     : JSON.parse(_item);
                   if (decrData)

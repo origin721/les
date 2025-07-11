@@ -2,13 +2,10 @@
 import { decrypt_curve25519_from_pass } from "../../../../core/crypt";
 import { back_store } from "../../../../local_back/back_store/back_store";
 import { indexdb_wrapper } from "../../indexdb_wrapper";
-import type { HttpServerParam } from "./add_accounts";
+import type { HttpServerParam } from "./types";
 import type { Account } from "./get_accounts";
 
-
-export function login(
-  pass: string
-): Promise<Account[]> {
+export function login(pass: string): Promise<Account[]> {
   return new Promise((mRes, rej) => {
     indexdb_wrapper((db) => {
       return new Promise((res, rej) => {
@@ -19,7 +16,7 @@ export function login(
         let found = true;
 
         const request = store.openCursor();
-        const result: Account[] = []
+        const result: Account[] = [];
         request.onsuccess = async function (event) {
           const cursor = event.target.result;
           if (cursor) {
@@ -32,14 +29,10 @@ export function login(
                   pass,
                   cipherText: cursor.value.data,
                 });
-                const decrData = !_item
-                  ? null
-                  : JSON.parse(_item);
+                const decrData = !_item ? null : JSON.parse(_item);
 
-                if (decrData)
-                  result.push(decrData);
-              }
-              catch(err) {}
+                if (decrData) result.push(decrData);
+              } catch (err) {}
             }
             cursor.continue(); // Продолжаем обход
           } else {
@@ -47,9 +40,7 @@ export function login(
             res();
           }
         };
-
       });
-    })
-
+    });
   });
 }

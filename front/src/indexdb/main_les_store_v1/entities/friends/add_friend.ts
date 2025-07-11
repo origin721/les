@@ -1,5 +1,6 @@
 //import { AES } from "../../../core/crypt";
 import { encrypt_curve25519_from_pass } from "../../../../core/crypt";
+import type { FriendEntity, FriendEntityFull } from "./types";
 import { gen_pass } from "../../../../core/random/gen_pass";
 import { uuidv4 } from "../../../../core/uuid";
 import { indexdb_wrapper } from "../../indexdb_wrapper";
@@ -11,18 +12,6 @@ import { back_store } from "../../../../local_back/back_store/back_store";
 import { FRIENDS_VERSION } from "./constants";
 import { prodInfo, prodError, devDB } from "../../../../core/debug/logger";
 
-export type FriendEntityFull = {
-  id: string;
-} & FriendEntity;
-
-export type FriendEntity = {
-  namePub: string;
-  // TODO: сделать проверку что расшифрованный accId соотвествует если буду по той таблице идти
-  myAccId: string;
-  friendPubKeyLibp2p: string;
-  version?: number; // Добавить это поле
-  date_updated?: Date; // Добавить это поле
-};
 // 1. нужно получать myId из аргумента
 export function add_friend(
   new_list: FriendEntity[],

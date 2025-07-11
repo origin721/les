@@ -1,5 +1,5 @@
 import { back_store } from "../../../../local_back/back_store/back_store";
-import type { FriendEntityFull } from "./add_friend";
+import type { FriendEntityFull } from "./types";
 
 /**
  * Простые утилиты для работы с друзьями через back_store.friends_by_id
@@ -30,7 +30,7 @@ export function getFriendById(friendId: string): FriendEntityFull | undefined {
  */
 export function getFriendsByAccountId(accountId: string): FriendEntityFull[] {
   return Object.values(back_store.friends_by_id).filter(
-    friend => friend.myAccId === accountId
+    (friend) => friend.myAccId === accountId,
   );
 }
 

@@ -2,12 +2,11 @@ import { get, writable } from "svelte/store";
 import { type Account } from "../../indexdb/main_les_store_v1/entities/accounts/get_accounts";
 import { shared_worker_store } from "../../processes";
 import { PATHS } from "../../local_back";
-import type { AccountEntity } from "../../indexdb/main_les_store_v1/entities/accounts/add_accounts";
-import type { AccountDto } from "../../local_back/middleware";
+import type { AccountEntity } from "../../indexdb/main_les_store_v1/entities/accounts/types";
 
 /**
  * @type {Object}
- * @prop add 
+ * @prop add
  * добавляет в localStore + в appAuthStore
  * @prop onLogin
  * Проходит все и получает доступные по паролю в localStorage
@@ -17,13 +16,11 @@ import type { AccountDto } from "../../local_back/middleware";
 export const appAuthStore = createAppAuthStore();
 
 export type AppAuthStore = {
-  byId: Record<string, AccountDto>;
-}
+  byId: Record<string, Account>;
+};
 
-export function authListToRecordById(list: AccountDto[]) {
-  return Object.fromEntries(
-    list.map(el => [el.id, el])
-  )
+export function authListToRecordById(list: Account[]) {
+  return Object.fromEntries(list.map((el) => [el.id, el]));
 }
 
 function createAppAuthStore() {
@@ -31,54 +28,52 @@ function createAppAuthStore() {
 
   const result = {
     subscribe: store.subscribe,
-    _add: (newList: AccountDto[]) => {
+    _add: (newList: Account[]) => {
       store.update((prev) => ({
         byId: {
           ...prev.byId,
           ...authListToRecordById(newList),
-        }
+        },
       }));
-
     },
-    add: async(newAcc: AccountEntity) => {
-     //appLocalStorage.addSecret(newAcc);
-     //const newList = appLocalStorage.onLogin(newAcc.pass);
+    add: async (newAcc: AccountEntity) => {
+      //appLocalStorage.addSecret(newAcc);
+      //const newList = appLocalStorage.onLogin(newAcc.pass);
       await shared_worker_store.fetch({
         path: PATHS.ADD_ACCOUNTS,
         body: {
           list: [newAcc],
-        }
+        },
       });
       await shared_worker_store.fetch({
         path: PATHS.LOGIN,
         body: {
-          pass: newAcc.pass
-        }
+          pass: newAcc.pass,
+        },
       });
 
-     //store.update(prev => ({
-     //  byId: {
-     //    ...prev.byId,
-     //    ...authListToRecordById(newList),
-     //  }
-     //}));
+      //store.update(prev => ({
+      //  byId: {
+      //    ...prev.byId,
+      //    ...authListToRecordById(newList),
+      //  }
+      //}));
     },
     async onLogin(pass: string) {
       const newList = await shared_worker_store.fetch({
         path: PATHS.LOGIN,
         body: {
-          pass: pass
-        }
+          pass: pass,
+        },
       });
     },
     _onDeleteSecret(ids: string[]) {
-
-      store.update(prev => {
+      store.update((prev) => {
         const newData = {
           ...prev,
-          byId: {...prev.byId}
-        }
-        for(let id of ids) {
+          byId: { ...prev.byId },
+        };
+        for (let id of ids) {
           delete newData.byId[id];
         }
 
@@ -88,12 +83,12 @@ function createAppAuthStore() {
     async onDeleteSecret(id: string) {
       // TODO: доделать удаление
       // appLocalStorage.onDeleteSecret(storeData.byId[id].origin);
-     // await delete_accounts([id]);
+      // await delete_accounts([id]);
       await shared_worker_store.fetch({
         path: PATHS.DELETE_ACCOUNTS,
         body: {
           ids: [id],
-        }
+        },
       });
     },
     //getById
