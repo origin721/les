@@ -1,5 +1,5 @@
 import { get, writable } from "svelte/store";
-import { type Account } from "../../indexdb/main_les_store_v1/entities/accounts/get_accounts";
+import type { AccountDto } from "../../local_back/modules/accounts_service";
 import { shared_worker_store } from "../../processes";
 import { PATHS } from "../../local_back";
 import type { AccountEntity } from "../../indexdb/main_les_store_v1/entities/accounts/types";
@@ -16,10 +16,10 @@ import type { AccountEntity } from "../../indexdb/main_les_store_v1/entities/acc
 export const appAuthStore = createAppAuthStore();
 
 export type AppAuthStore = {
-  byId: Record<string, Account>;
+  byId: Record<string, AccountDto>;
 };
 
-export function authListToRecordById(list: Account[]) {
+export function authListToRecordById(list: AccountDto[]) {
   return Object.fromEntries(list.map((el) => [el.id, el]));
 }
 
@@ -28,7 +28,7 @@ function createAppAuthStore() {
 
   const result = {
     subscribe: store.subscribe,
-    _add: (newList: Account[]) => {
+    _add: (newList: AccountDto[]) => {
       store.update((prev) => ({
         byId: {
           ...prev.byId,
