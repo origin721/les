@@ -36,7 +36,7 @@ RUN cargo build --release
 ARG LES_CONTAINER_PORT=8080
 
 # Запускаем только Rust сервер
-ENTRYPOINT ["./back/target/release/back"]
+ENTRYPOINT ["/app/back/target/release/back"]
 
 # Открываем порт из переменной окружения
 EXPOSE ${LES_CONTAINER_PORT}
