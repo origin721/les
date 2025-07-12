@@ -30,7 +30,7 @@ type DistFiles = Vec<DistFileItem>;
 
 fn get_content_type(file_path: &str) -> &'static str {
     let path = Path::new(file_path);
-    
+
     // Получаем расширение файла
     if let Some(extension) = path.extension() {
         // Сравниваем расширение файла
@@ -61,9 +61,16 @@ pub fn create_dist_utils(params: RelativePathParamsBase) -> DistFiles {
     for item in dist_files_list {
 
         let itemId = extract_substring(&params.absolute_dir, &item);
-        println!("route: {}", itemId);
+        let endpointId = if itemId == "/index.html" {
+            itemId.clone()
+        } else {
+            format!("/les{}", itemId)
+        };
+
+        println!("route: {}", endpointId);
+
         let dist_item = DistFileItem {
-            id: itemId.clone(),
+            id: endpointId.clone(),
             content_type: get_content_type(&itemId).to_string(),
             file_content: match read_file_contents(&item) {
                 Ok(content) => content,
