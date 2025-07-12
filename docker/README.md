@@ -4,6 +4,11 @@
 
 ## Быстрый запуск проекта
 
+```bash
+docker pull origin721/les:latest
+docker run -p 8080:8080 origin721/les:latest
+```
+
 ### Запуск Alpine Linux контейнера для разработки
 
 ```bash
