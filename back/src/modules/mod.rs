@@ -11,7 +11,7 @@ pub mod my_events;
 
 
 pub struct AppStateWithCounter {
-  counter: Mutex<i32>, // <- Mutex is necessary to mutate safely across threads 
+  counter: Mutex<i32>, // <- Mutex is necessary to mutate safely across threads
 }
 
 
@@ -50,16 +50,16 @@ pub async fn create_server(params: AppParams) -> Result<(), io::Error> {
             .default_service(
                 web::to(move || {
                     let index_html = index_html.clone();
-                    
+
                     async move {
                         HttpResponse::Ok().body(index_html.clone())
                     }
                     }
                 ),
             )
-    
+
     })
-    .bind(("127.0.0.1", params.port))?
+    .bind(("0.0.0.0", params.port))?
     .run()
     .await
 }
