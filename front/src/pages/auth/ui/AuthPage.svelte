@@ -7,13 +7,13 @@
     import AuthPageLoading from "./AuthPageLoading.svelte";
     import { devLog, prodError } from "../../../core/debug/logger";
     import { writableToState } from "../../../core/svelte_default/runs/writableToState.svelte";
-    import { onMount } from 'svelte';
+    import { onMount } from "svelte";
     import styles from "./AuthPage.module.css";
 
     // Svelte 5 state
     const themeState = writableToState(theme);
     const appAuthStoreState = writableToState(appAuthStore);
-    
+
     let pass = $state<string | null>(null);
     let keyboardLayout = $state("UNKNOWN");
     let passwordInput: HTMLInputElement;
@@ -24,42 +24,52 @@
     async function submit(e: Event) {
         if (!pass || isLoading) return;
         e.preventDefault();
-        
+
         // Сброс предыдущих состояний
         loginError = null;
         loginSuccess = false;
         isLoading = true;
-        
-        devLog('AuthPage: начинается процесс аутентификации с паролем');
-        
+
+        devLog("AuthPage: начинается процесс аутентификации с паролем");
+
         try {
             await appAuthStore.onLogin(pass!);
-            devLog('AuthPage: процесс аутентификации завершен');
-            
+            devLog("AuthPage: процесс аутентификации завершен");
+
             // Проверяем, были ли загружены аккаунты после логина
             // Добавляем небольшую задержку для обновления store
             setTimeout(() => {
-                const currentAccounts = Object.keys(appAuthStoreState.state.byId);
-                devLog('AuthPage: найдено аккаунтов после логина:', currentAccounts.length);
-                
+                const currentAccounts = Object.keys(
+                    appAuthStoreState.state.byId,
+                );
+                devLog(
+                    "AuthPage: найдено аккаунтов после логина:",
+                    currentAccounts.length,
+                );
+
                 if (currentAccounts.length > 0) {
                     loginSuccess = true;
-                    devLog('AuthPage: аутентификация успешна, найдены аккаунты:', currentAccounts);
-                    
+                    devLog(
+                        "AuthPage: аутентификация успешна, найдены аккаунты:",
+                        currentAccounts,
+                    );
+
                     // Добавляем задержку для показа успешного состояния
                     setTimeout(() => {
                         isLoading = false;
                     }, 800);
-                    
+
                     // Автоочистка сообщения об успехе через 3 секунды
                     setTimeout(() => {
                         loginSuccess = false;
                     }, 3000);
                 } else {
                     loginError = "Неверный пароль или аккаунт не найден";
-                    devLog('AuthPage: аутентификация неудачна - аккаунты не найдены');
+                    devLog(
+                        "AuthPage: аутентификация неудачна - аккаунты не найдены",
+                    );
                     isLoading = false;
-                    
+
                     // Автоочистка ошибки через 5 секунд
                     setTimeout(() => {
                         loginError = null;
@@ -67,10 +77,13 @@
                 }
             }, 300);
         } catch (error) {
-            prodError('AuthPage: ошибка при аутентификации:', error);
-            loginError = error instanceof Error ? error.message : "Произошла ошибка при входе";
+            prodError("AuthPage: ошибка при аутентификации:", error);
+            loginError =
+                error instanceof Error
+                    ? error.message
+                    : "Произошла ошибка при входе";
             isLoading = false;
-            
+
             // Автоочистка ошибки через 5 секунд
             setTimeout(() => {
                 loginError = null;
@@ -82,7 +95,7 @@
     function detectKeyboardLayout(event: KeyboardEvent) {
         const key = event.key;
         const code = event.code;
-        
+
         // Определяем раскладку по характерным символам
         if (key.match(/[а-яё]/i)) {
             keyboardLayout = "RU";
@@ -98,11 +111,16 @@
             keyboardLayout = "IT";
         } else if (key.match(/[ñáéíóúü]/i)) {
             keyboardLayout = "ES";
-        } else if (key === "Backspace" || key === "Delete" || key === "Tab" || key === "Enter") {
+        } else if (
+            key === "Backspace" ||
+            key === "Delete" ||
+            key === "Tab" ||
+            key === "Enter"
+        ) {
             // Не изменяем раскладку для служебных клавиш
             return;
         }
-        
+
         // Дополнительное определение по позиции клавиш
         if (keyboardLayout === "UNKNOWN" && key.length === 1) {
             // Анализируем по коду клавиши и символу
@@ -134,13 +152,13 @@
     // Обработчик события ввода в поле пароля
     function handlePasswordKeydown(event: KeyboardEvent) {
         // Обработка Escape для очистки поля
-        if (event.key === 'Escape') {
+        if (event.key === "Escape") {
             pass = null;
             loginError = null;
             loginSuccess = false;
             return;
         }
-        
+
         // Определение раскладки клавиатуры
         detectKeyboardLayout(event);
     }
@@ -148,28 +166,33 @@
     // Получаем класс индикатора в зависимости от раскладки
     function getLayoutIndicatorClass(layout: string) {
         switch (layout) {
-            case "UNKNOWN": return styles.layoutUnknown;
-            default: return ""; // Используем базовый стиль из CSS модуля
+            case "UNKNOWN":
+                return styles.layoutUnknown;
+            default:
+                return ""; // Используем базовый стиль из CSS модуля
         }
     }
 
     // Инициализация определения раскладки при монтировании компонента
     function initKeyboardDetection() {
-        if (typeof navigator !== 'undefined' && 'keyboard' in navigator) {
+        if (typeof navigator !== "undefined" && "keyboard" in navigator) {
             // Современный API для определения раскладки (если доступен)
             const keyboard = (navigator as any).keyboard;
-            if (keyboard && 'getLayoutMap' in keyboard) {
-                keyboard.getLayoutMap().then((layoutMap: any) => {
-                    const qKey = layoutMap.get('KeyQ');
-                    if (qKey === 'й') {
-                        keyboardLayout = "RU";
-                    } else if (qKey === 'q') {
-                        keyboardLayout = "EN";
-                    }
-                }).catch(() => {
-                    // Если API недоступен, используем обработчик событий
-                    keyboardLayout = "UNKNOWN";
-                });
+            if (keyboard && "getLayoutMap" in keyboard) {
+                keyboard
+                    .getLayoutMap()
+                    .then((layoutMap: any) => {
+                        const qKey = layoutMap.get("KeyQ");
+                        if (qKey === "й") {
+                            keyboardLayout = "RU";
+                        } else if (qKey === "q") {
+                            keyboardLayout = "EN";
+                        }
+                    })
+                    .catch(() => {
+                        // Если API недоступен, используем обработчик событий
+                        keyboardLayout = "UNKNOWN";
+                    });
             }
         }
     }
@@ -260,7 +283,8 @@
             <form onsubmit={submit} class={styles.authForm}>
                 <div class={styles.inputGroup}>
                     <label for="password-input">
-                        <span class={styles.labelText}>[PASSWORD_REQUIRED]</span>
+                        <span class={styles.labelText}>[PASSWORD_REQUIRED]</span
+                        >
                     </label>
                     <div class={styles.passwordInputContainer}>
                         <input
@@ -272,38 +296,61 @@
                             placeholder="> ACCESS_KEY"
                             onkeydown={handlePasswordKeydown}
                         />
-                        <div class="{styles.keyboardLayoutIndicator} {getLayoutIndicatorClass(keyboardLayout)}">
-                            <span class={styles.layoutText}>[{keyboardLayout}]</span>
+                        <div
+                            class="{styles.keyboardLayoutIndicator} {getLayoutIndicatorClass(
+                                keyboardLayout,
+                            )}"
+                        >
+                            <span class={styles.layoutText}
+                                >[{keyboardLayout}]</span
+                            >
                         </div>
                     </div>
                 </div>
 
                 <!-- Error/Success Messages -->
                 {#if loginError}
-                    <div class="{styles.messageContainer} {styles.errorMessage}">
+                    <div
+                        class="{styles.messageContainer} {styles.errorMessage}"
+                    >
                         <div class={styles.messageIcon}>⚠</div>
-                        <div class={styles.messageText}>[ERROR] {loginError}</div>
+                        <div class={styles.messageText}>
+                            [ERROR] {loginError}
+                        </div>
                     </div>
                 {/if}
 
                 {#if loginSuccess}
-                    <div class="{styles.messageContainer} {styles.successMessage}">
+                    <div
+                        class="{styles.messageContainer} {styles.successMessage}"
+                    >
                         <div class={styles.messageIcon}>✓</div>
-                        <div class={styles.messageText}>[ACCESS_GRANTED] Аутентификация успешна</div>
+                        <div class={styles.messageText}>
+                            [ACCESS_GRANTED] Аутентификация успешна
+                        </div>
                     </div>
                 {/if}
 
                 <div class={styles.actions}>
-                    <button type="submit" class={styles.submitBtn} disabled={isLoading}>
-                        <span>{isLoading ? '[CONNECTING...]' : '[INITIATE_CONNECTION]'}</span>
+                    <button
+                        type="submit"
+                        class={styles.submitBtn}
+                        disabled={isLoading}
+                    >
+                        <span
+                            >{isLoading
+                                ? "[CONNECTING...]"
+                                : "[INITIATE_CONNECTION]"}</span
+                        >
                     </button>
-                    <Link className={styles.createLink} href={ROUTES.ACCOUNTS_NEW}
-                        >[CREATE_NEW_ID]</Link
+                    <Link
+                        className={styles.createLink}
+                        href={ROUTES.ACCOUNTS_NEW}>[CREATE_NEW_ID]</Link
                     >
                     <Link className={styles.docsLink} href={ROUTES.DOCS}
                         >[SYSTEM_DOCUMENTATION]</Link
                     >
-                    
+
                     <!-- Settings Link -->
                     <Link className={styles.settingsLink} href={ROUTES.SETTINGS}
                         >[SYSTEM_SETTINGS]</Link
