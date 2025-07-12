@@ -3,18 +3,19 @@
  * Управляет отдельной базой данных для отслеживания версий сущностей по пользователям
  */
 
-import { prodInfo, prodError, debugLog } from '../../core/debug/logger';
+import { prodInfo, prodError, debugLog } from "../../core/debug/logger";
+import { back_store } from "../../local_back/back_store/back_store";
 import type {
   EntityVersionRecord,
   EntityType,
   EntityMigrationProgress,
-  EntityMigrationStatus
-} from './types';
+  EntityMigrationStatus,
+} from "./types";
 import {
   ENTITY_VERSIONS_CONSTANTS,
   CURRENT_ENTITY_VERSIONS,
-  createEntityVersionId
-} from './types';
+  createEntityVersionId,
+} from "./types";
 
 /**
  * Открытие базы данных версий сущностей
@@ -23,23 +24,27 @@ function openEntityVersionsDB(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(
       ENTITY_VERSIONS_CONSTANTS.DB_NAME,
-      ENTITY_VERSIONS_CONSTANTS.VERSION
+      ENTITY_VERSIONS_CONSTANTS.VERSION,
     );
 
     request.onupgradeneeded = (event) => {
       const db = request.result;
 
       // Создаем store для версий сущностей
-      if (!db.objectStoreNames.contains(ENTITY_VERSIONS_CONSTANTS.STORES.ENTITY_VERSIONS)) {
+      if (
+        !db.objectStoreNames.contains(
+          ENTITY_VERSIONS_CONSTANTS.STORES.ENTITY_VERSIONS,
+        )
+      ) {
         const store = db.createObjectStore(
           ENTITY_VERSIONS_CONSTANTS.STORES.ENTITY_VERSIONS,
-          { keyPath: 'id' }
+          { keyPath: "id" },
         );
 
         // Индекс по userId для быстрого поиска всех сущностей пользователя
-        store.createIndex('userId', 'userId', { unique: false });
+        store.createIndex("userId", "userId", { unique: false });
 
-        prodInfo('✅ Создано хранилище entity_versions');
+        prodInfo("✅ Создано хранилище entity_versions");
       }
     };
 
@@ -58,12 +63,17 @@ function openEntityVersionsDB(): Promise<IDBDatabase> {
  */
 export async function getEntityVersion(
   userId: string,
-  entityType: EntityType
+  entityType: EntityType,
 ): Promise<number> {
   try {
     const db = await openEntityVersionsDB();
-    const transaction = db.transaction([ENTITY_VERSIONS_CONSTANTS.STORES.ENTITY_VERSIONS], 'readonly');
-    const store = transaction.objectStore(ENTITY_VERSIONS_CONSTANTS.STORES.ENTITY_VERSIONS);
+    const transaction = db.transaction(
+      [ENTITY_VERSIONS_CONSTANTS.STORES.ENTITY_VERSIONS],
+      "readonly",
+    );
+    const store = transaction.objectStore(
+      ENTITY_VERSIONS_CONSTANTS.STORES.ENTITY_VERSIONS,
+    );
 
     const id = createEntityVersionId(userId, entityType);
     const request = store.get(id);
@@ -79,7 +89,11 @@ export async function getEntityVersion(
       };
     });
   } catch (error) {
-    prodError('❌ Ошибка получения версии сущности:', { userId, entityType, error });
+    prodError("❌ Ошибка получения версии сущности:", {
+      userId,
+      entityType,
+      error,
+    });
     return 0; // По умолчанию версия 0
   }
 }
@@ -91,12 +105,17 @@ export async function setEntityVersion(
   userId: string,
   entityType: EntityType,
   version: number,
-  debugInfo?: EntityVersionRecord['debugInfo']
+  debugInfo?: EntityVersionRecord["debugInfo"],
 ): Promise<void> {
   try {
     const db = await openEntityVersionsDB();
-    const transaction = db.transaction([ENTITY_VERSIONS_CONSTANTS.STORES.ENTITY_VERSIONS], 'readwrite');
-    const store = transaction.objectStore(ENTITY_VERSIONS_CONSTANTS.STORES.ENTITY_VERSIONS);
+    const transaction = db.transaction(
+      [ENTITY_VERSIONS_CONSTANTS.STORES.ENTITY_VERSIONS],
+      "readwrite",
+    );
+    const store = transaction.objectStore(
+      ENTITY_VERSIONS_CONSTANTS.STORES.ENTITY_VERSIONS,
+    );
 
     const id = createEntityVersionId(userId, entityType);
 
@@ -105,7 +124,9 @@ export async function setEntityVersion(
 
     return new Promise((resolve, reject) => {
       getRequest.onsuccess = () => {
-        const existingRecord = getRequest.result as EntityVersionRecord | undefined;
+        const existingRecord = getRequest.result as
+          | EntityVersionRecord
+          | undefined;
 
         const record: EntityVersionRecord = {
           id,
@@ -114,10 +135,10 @@ export async function setEntityVersion(
           lastVersion: version,
           migrationProgress: existingRecord?.migrationProgress || {
             completed: [],
-            failed: []
+            failed: [],
           },
           lastUpdated: Date.now(),
-          debugInfo
+          debugInfo,
         };
 
         // Добавляем версию в completed если её там нет
@@ -129,7 +150,11 @@ export async function setEntityVersion(
         const putRequest = store.put(record);
 
         putRequest.onsuccess = () => {
-          prodInfo('✅ Версия сущности обновлена:', { userId, entityType, version });
+          prodInfo("✅ Версия сущности обновлена:", {
+            userId,
+            entityType,
+            version,
+          });
           resolve();
         };
 
@@ -143,7 +168,12 @@ export async function setEntityVersion(
       };
     });
   } catch (error) {
-    prodError('❌ Ошибка установки версии сущности:', { userId, entityType, version, error });
+    prodError("❌ Ошибка установки версии сущности:", {
+      userId,
+      entityType,
+      version,
+      error,
+    });
     throw error;
   }
 }
@@ -153,7 +183,7 @@ export async function setEntityVersion(
  */
 export async function needsMigration(
   userId: string,
-  entityType: EntityType
+  entityType: EntityType,
 ): Promise<boolean> {
   const currentVersion = await getEntityVersion(userId, entityType);
   const targetVersion = CURRENT_ENTITY_VERSIONS[entityType];
@@ -167,12 +197,17 @@ export async function needsMigration(
 export async function updateMigrationProgress(
   userId: string,
   entityType: EntityType,
-  updates: Partial<EntityMigrationProgress>
+  updates: Partial<EntityMigrationProgress>,
 ): Promise<void> {
   try {
     const db = await openEntityVersionsDB();
-    const transaction = db.transaction([ENTITY_VERSIONS_CONSTANTS.STORES.ENTITY_VERSIONS], 'readwrite');
-    const store = transaction.objectStore(ENTITY_VERSIONS_CONSTANTS.STORES.ENTITY_VERSIONS);
+    const transaction = db.transaction(
+      [ENTITY_VERSIONS_CONSTANTS.STORES.ENTITY_VERSIONS],
+      "readwrite",
+    );
+    const store = transaction.objectStore(
+      ENTITY_VERSIONS_CONSTANTS.STORES.ENTITY_VERSIONS,
+    );
 
     const id = createEntityVersionId(userId, entityType);
     const getRequest = store.get(id);
@@ -189,14 +224,18 @@ export async function updateMigrationProgress(
         // Обновляем прогресс миграции
         record.migrationProgress = {
           ...record.migrationProgress,
-          ...updates
+          ...updates,
         };
         record.lastUpdated = Date.now();
 
         const putRequest = store.put(record);
 
         putRequest.onsuccess = () => {
-          debugLog('📊 Прогресс миграции обновлен:', { userId, entityType, updates });
+          debugLog("📊 Прогресс миграции обновлен:", {
+            userId,
+            entityType,
+            updates,
+          });
           resolve();
         };
 
@@ -210,7 +249,11 @@ export async function updateMigrationProgress(
       };
     });
   } catch (error) {
-    prodError('❌ Ошибка обновления прогресса миграции:', { userId, entityType, error });
+    prodError("❌ Ошибка обновления прогресса миграции:", {
+      userId,
+      entityType,
+      error,
+    });
     throw error;
   }
 }
@@ -218,12 +261,19 @@ export async function updateMigrationProgress(
 /**
  * Получить все версии сущностей для пользователя (для отладки)
  */
-export async function getAllEntityVersions(userId: string): Promise<EntityVersionRecord[]> {
+export async function getAllEntityVersions(
+  userId: string,
+): Promise<EntityVersionRecord[]> {
   try {
     const db = await openEntityVersionsDB();
-    const transaction = db.transaction([ENTITY_VERSIONS_CONSTANTS.STORES.ENTITY_VERSIONS], 'readonly');
-    const store = transaction.objectStore(ENTITY_VERSIONS_CONSTANTS.STORES.ENTITY_VERSIONS);
-    const index = store.index('userId');
+    const transaction = db.transaction(
+      [ENTITY_VERSIONS_CONSTANTS.STORES.ENTITY_VERSIONS],
+      "readonly",
+    );
+    const store = transaction.objectStore(
+      ENTITY_VERSIONS_CONSTANTS.STORES.ENTITY_VERSIONS,
+    );
+    const index = store.index("userId");
 
     const request = index.getAll(userId);
 
@@ -237,7 +287,7 @@ export async function getAllEntityVersions(userId: string): Promise<EntityVersio
       };
     });
   } catch (error) {
-    prodError('❌ Ошибка получения всех версий сущностей:', { userId, error });
+    prodError("❌ Ошибка получения всех версий сущностей:", { userId, error });
     return [];
   }
 }
@@ -252,22 +302,22 @@ export async function getEntityVersionsSummary(userId: string): Promise<{
 }> {
   try {
     const [accountsVersion, roomsVersion, friendsVersion] = await Promise.all([
-      getEntityVersion(userId, 'accounts'),
-      getEntityVersion(userId, 'rooms'),
-      getEntityVersion(userId, 'friends')
+      getEntityVersion(userId, "accounts"),
+      getEntityVersion(userId, "rooms"),
+      getEntityVersion(userId, "friends"),
     ]);
 
     return {
       accounts: accountsVersion,
       rooms: roomsVersion,
-      friends: friendsVersion
+      friends: friendsVersion,
     };
   } catch (error) {
-    prodError('❌ Ошибка получения сводки версий:', { userId, error });
+    prodError("❌ Ошибка получения сводки версий:", { userId, error });
     return {
       accounts: 0,
       rooms: 0,
-      friends: 0
+      friends: 0,
     };
   }
 }
@@ -275,17 +325,19 @@ export async function getEntityVersionsSummary(userId: string): Promise<{
 /**
  * Инициализация версий сущностей для нового пользователя
  */
-export async function initializeEntityVersionsForUser(userId: string): Promise<void> {
+export async function initializeEntityVersionsForUser(
+  userId: string,
+): Promise<void> {
   try {
     await Promise.all([
-      setEntityVersion(userId, 'accounts', CURRENT_ENTITY_VERSIONS.accounts),
-      setEntityVersion(userId, 'rooms', CURRENT_ENTITY_VERSIONS.rooms),
-      setEntityVersion(userId, 'friends', CURRENT_ENTITY_VERSIONS.friends)
+      setEntityVersion(userId, "accounts", CURRENT_ENTITY_VERSIONS.accounts),
+      setEntityVersion(userId, "rooms", CURRENT_ENTITY_VERSIONS.rooms),
+      setEntityVersion(userId, "friends", CURRENT_ENTITY_VERSIONS.friends),
     ]);
 
-    prodInfo('✅ Версии сущностей инициализированы для пользователя:', userId);
+    prodInfo("✅ Версии сущностей инициализированы для пользователя:", userId);
   } catch (error) {
-    prodError('❌ Ошибка инициализации версий сущностей:', { userId, error });
+    prodError("❌ Ошибка инициализации версий сущностей:", { userId, error });
     throw error;
   }
 }
@@ -297,8 +349,13 @@ export async function resetStuckMigrations(userId: string): Promise<void> {
   try {
     const records = await getAllEntityVersions(userId);
     const db = await openEntityVersionsDB();
-    const transaction = db.transaction([ENTITY_VERSIONS_CONSTANTS.STORES.ENTITY_VERSIONS], 'readwrite');
-    const store = transaction.objectStore(ENTITY_VERSIONS_CONSTANTS.STORES.ENTITY_VERSIONS);
+    const transaction = db.transaction(
+      [ENTITY_VERSIONS_CONSTANTS.STORES.ENTITY_VERSIONS],
+      "readwrite",
+    );
+    const store = transaction.objectStore(
+      ENTITY_VERSIONS_CONSTANTS.STORES.ENTITY_VERSIONS,
+    );
 
     for (const record of records) {
       if (record.migrationProgress.inProgress) {
@@ -310,9 +367,86 @@ export async function resetStuckMigrations(userId: string): Promise<void> {
       }
     }
 
-    prodInfo('🔄 Сброшены заблокированные миграции для пользователя:', userId);
+    prodInfo("🔄 Сброшены заблокированные миграции для пользователя:", userId);
   } catch (error) {
-    prodError('❌ Ошибка сброса заблокированных миграций:', { userId, error });
+    prodError("❌ Ошибка сброса заблокированных миграций:", { userId, error });
     throw error;
+  }
+}
+
+/**
+ * Тип для статистики версий сущностей
+ */
+export type EntityVersionStats = {
+  version: number;
+  count: number;
+};
+
+/**
+ * Тип для результата анализа версий всех сущностей
+ */
+export type EntityVersionsAnalysis = {
+  accounts: EntityVersionStats[];
+  rooms: EntityVersionStats[];
+  friends: EntityVersionStats[];
+};
+
+/**
+ * Получить статистику версий сущностей из back_store (оперативной памяти)
+ * Анализирует реальные данные и подсчитывает количество записей по версиям
+ */
+export function getEntityVersions(): EntityVersionsAnalysis {
+  try {
+    // Анализируем аккаунты
+    const accountsStats = new Map<number, number>();
+    for (const account of Object.values(back_store.accounts_by_id)) {
+      const version = account.version || 0;
+      accountsStats.set(version, (accountsStats.get(version) || 0) + 1);
+    }
+
+    // Анализируем комнаты
+    const roomsStats = new Map<number, number>();
+    for (const room of Object.values(back_store.rooms_by_id)) {
+      const version = room.version || 0;
+      roomsStats.set(version, (roomsStats.get(version) || 0) + 1);
+    }
+
+    // Анализируем друзей
+    const friendsStats = new Map<number, number>();
+    for (const friend of Object.values(back_store.friends_by_id)) {
+      const version = friend.version || 0;
+      friendsStats.set(version, (friendsStats.get(version) || 0) + 1);
+    }
+
+    // Преобразуем Map в массивы и сортируем по версиям
+    const result: EntityVersionsAnalysis = {
+      accounts: Array.from(accountsStats.entries())
+        .map(([version, count]) => ({ version, count }))
+        .sort((a, b) => a.version - b.version),
+
+      rooms: Array.from(roomsStats.entries())
+        .map(([version, count]) => ({ version, count }))
+        .sort((a, b) => a.version - b.version),
+
+      friends: Array.from(friendsStats.entries())
+        .map(([version, count]) => ({ version, count }))
+        .sort((a, b) => a.version - b.version),
+    };
+
+    prodInfo("📊 Анализ версий сущностей завершен:", {
+      accountsTotal: Object.keys(back_store.accounts_by_id).length,
+      roomsTotal: Object.keys(back_store.rooms_by_id).length,
+      friendsTotal: Object.keys(back_store.friends_by_id).length,
+      result,
+    });
+
+    return result;
+  } catch (error) {
+    prodError("❌ Ошибка анализа версий сущностей:", error);
+    return {
+      accounts: [],
+      rooms: [],
+      friends: [],
+    };
   }
 }

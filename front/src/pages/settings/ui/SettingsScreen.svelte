@@ -22,7 +22,11 @@
     import { back_store } from "../../../local_back/back_store/back_store";
     import { getMigrationStats } from "../../../indexdb/db_state_manager_v1/db_state_manager";
     import { DB_NAMES } from "../../../indexdb/constants";
-    import { getEntityVersionsSummary } from "../../../indexdb/entity_versions_v1/entity_versions_manager";
+    import {
+        getEntityVersionsSummary,
+        getEntityVersions,
+    } from "../../../indexdb/entity_versions_v1/entity_versions_manager";
+    import { shared_worker_store } from "../../../processes/shared_worker/shared_worker_store";
     import styles from "./SettingsPage.module.css";
 
     // State for settings
@@ -78,6 +82,12 @@
         accounts: number;
         rooms: number;
         friends: number;
+        accountsCount: number;
+        roomsCount: number;
+        friendsCount: number;
+        accountsWithVersion: number;
+        roomsWithVersion: number;
+        friendsWithVersion: number;
     } | null = null;
 
     // Initialize active tabs monitoring
@@ -242,18 +252,70 @@
         entityVersionsLoading = true;
         try {
             // Проверяем авторизацию
-            const currentUserId = $appAuthStore.currentUserId;
-            if (!currentUserId) {
+            const authStore = $appAuthStore;
+            const authIds = Object.keys(authStore.byId);
+
+            if (authIds.length === 0) {
                 isNotAuthorized = true;
                 showEntityVersions = true;
                 return;
             }
 
+            // Берем первого авторизованного пользователя
+            const currentUserId = authIds[0];
             isNotAuthorized = false;
 
-            // Получаем версии сущностей
+            // Загружаем все данные в back_store перед анализом версий
+            console.log("📊 Загрузка данных в back_store...");
+
+            // Загружаем друзей
+            await sharedWorkerApi.friends.getList();
+
+            // Загружаем комнаты (через middleware напрямую)
+            await shared_worker_store.fetch({ path: "GET_ROOMS" });
+
+            console.log("✅ Данные загружены в back_store");
+
+            // Получаем детальную статистику версий из back_store
+            const versionsAnalysis = getEntityVersions();
+
+            // Получаем версии сущностей из entity_versions_manager
             const versions = await getEntityVersionsSummary(currentUserId);
-            entityVersions = versions;
+
+            // Подсчитываем общие количества
+            const accountsCount = Object.keys(back_store.accounts_by_id).length;
+            const roomsCount = Object.keys(back_store.rooms_by_id).length;
+            const friendsCount = Object.keys(back_store.friends_by_id).length;
+
+            // Подсчитываем количество записей с версиями (version > 0)
+            const accountsWithVersion = versionsAnalysis.accounts
+                .filter((stat) => stat.version > 0)
+                .reduce((sum, stat) => sum + stat.count, 0);
+            const roomsWithVersion = versionsAnalysis.rooms
+                .filter((stat) => stat.version > 0)
+                .reduce((sum, stat) => sum + stat.count, 0);
+            const friendsWithVersion = versionsAnalysis.friends
+                .filter((stat) => stat.version > 0)
+                .reduce((sum, stat) => sum + stat.count, 0);
+
+            // Обновляем entityVersions с детальной статистикой
+            entityVersions = {
+                // Версии из entity_versions_manager
+                accounts: versions.accounts,
+                rooms: versions.rooms,
+                friends: versions.friends,
+                // Общие количества
+                accountsCount,
+                roomsCount,
+                friendsCount,
+                // Количества с версиями
+                accountsWithVersion,
+                roomsWithVersion,
+                friendsWithVersion,
+                // Детальная статистика по версиям из back_store
+                versionsAnalysis,
+            };
+
             showEntityVersions = true;
         } catch (error) {
             console.error("Ошибка получения версий сущностей:", error);
@@ -764,21 +826,161 @@
 
                 {#if showEntityVersions && entityVersions && !isNotAuthorized}
                     <div class={styles.versionResults}>
-                        <h4>📊 Текущие версии сущностей</h4>
+                        <h4>📊 Статистика версий сущностей</h4>
+
+                        <h4>🔢 Количество сущностей</h4>
                         <div class={styles.statsGrid}>
                             <div>
-                                <strong>🏠 Accounts last version:</strong>
+                                <strong>🏠 Accounts:</strong>
+                                {entityVersions.accountsCount} записей
+                            </div>
+                            <div>
+                                <strong>💬 Rooms:</strong>
+                                {entityVersions.roomsCount} записей
+                            </div>
+                            <div>
+                                <strong>👥 Friends:</strong>
+                                {entityVersions.friendsCount} записей
+                            </div>
+                        </div>
+
+                        <h4>📝 Версии сущностей</h4>
+                        <div class={styles.statsGrid}>
+                            <div>
+                                <strong>🏠 Accounts version:</strong>
                                 {entityVersions.accounts}
                             </div>
                             <div>
-                                <strong>💬 Rooms last version:</strong>
+                                <strong>💬 Rooms version:</strong>
                                 {entityVersions.rooms}
                             </div>
                             <div>
-                                <strong>👥 Friends last version:</strong>
+                                <strong>👥 Friends version:</strong>
                                 {entityVersions.friends}
                             </div>
                         </div>
+
+                        <h4>✅ Записи с версиями</h4>
+                        <div class={styles.statsGrid}>
+                            <div>
+                                <strong>🏠 Accounts с версиями:</strong>
+                                {entityVersions.accountsWithVersion} из {entityVersions.accountsCount}
+                                ({entityVersions.accountsCount > 0
+                                    ? (
+                                          (entityVersions.accountsWithVersion /
+                                              entityVersions.accountsCount) *
+                                          100
+                                      ).toFixed(1)
+                                    : 0}%)
+                            </div>
+                            <div>
+                                <strong>💬 Rooms с версиями:</strong>
+                                {entityVersions.roomsWithVersion} из {entityVersions.roomsCount}
+                                ({entityVersions.roomsCount > 0
+                                    ? (
+                                          (entityVersions.roomsWithVersion /
+                                              entityVersions.roomsCount) *
+                                          100
+                                      ).toFixed(1)
+                                    : 0}%)
+                            </div>
+                            <div>
+                                <strong>👥 Friends с версиями:</strong>
+                                {entityVersions.friendsWithVersion} из {entityVersions.friendsCount}
+                                ({entityVersions.friendsCount > 0
+                                    ? (
+                                          (entityVersions.friendsWithVersion /
+                                              entityVersions.friendsCount) *
+                                          100
+                                      ).toFixed(1)
+                                    : 0}%)
+                            </div>
+                        </div>
+
+                        {#if entityVersions.versionsAnalysis}
+                            <h4>📈 Детальная статистика по версиям</h4>
+
+                            <div class={styles.versionDetailSection}>
+                                <h5>🏠 Accounts - распределение по версиям:</h5>
+                                <div class={styles.versionStats}>
+                                    {#if entityVersions.versionsAnalysis.accounts.length === 0}
+                                        <div class={styles.emptyMessage}>
+                                            Нет записей аккаунтов
+                                        </div>
+                                    {:else}
+                                        {#each entityVersions.versionsAnalysis.accounts as stat}
+                                            <div class={styles.versionItem}>
+                                                <strong
+                                                    >Версия {stat.version}:</strong
+                                                >
+                                                {stat.count} записей
+                                                {#if entityVersions.accountsCount > 0}
+                                                    ({(
+                                                        (stat.count /
+                                                            entityVersions.accountsCount) *
+                                                        100
+                                                    ).toFixed(1)}%)
+                                                {/if}
+                                            </div>
+                                        {/each}
+                                    {/if}
+                                </div>
+                            </div>
+
+                            <div class={styles.versionDetailSection}>
+                                <h5>💬 Rooms - распределение по версиям:</h5>
+                                <div class={styles.versionStats}>
+                                    {#if entityVersions.versionsAnalysis.rooms.length === 0}
+                                        <div class={styles.emptyMessage}>
+                                            Нет записей комнат
+                                        </div>
+                                    {:else}
+                                        {#each entityVersions.versionsAnalysis.rooms as stat}
+                                            <div class={styles.versionItem}>
+                                                <strong
+                                                    >Версия {stat.version}:</strong
+                                                >
+                                                {stat.count} записей
+                                                {#if entityVersions.roomsCount > 0}
+                                                    ({(
+                                                        (stat.count /
+                                                            entityVersions.roomsCount) *
+                                                        100
+                                                    ).toFixed(1)}%)
+                                                {/if}
+                                            </div>
+                                        {/each}
+                                    {/if}
+                                </div>
+                            </div>
+
+                            <div class={styles.versionDetailSection}>
+                                <h5>👥 Friends - распределение по версиям:</h5>
+                                <div class={styles.versionStats}>
+                                    {#if entityVersions.versionsAnalysis.friends.length === 0}
+                                        <div class={styles.emptyMessage}>
+                                            Нет записей друзей
+                                        </div>
+                                    {:else}
+                                        {#each entityVersions.versionsAnalysis.friends as stat}
+                                            <div class={styles.versionItem}>
+                                                <strong
+                                                    >Версия {stat.version}:</strong
+                                                >
+                                                {stat.count} записей
+                                                {#if entityVersions.friendsCount > 0}
+                                                    ({(
+                                                        (stat.count /
+                                                            entityVersions.friendsCount) *
+                                                        100
+                                                    ).toFixed(1)}%)
+                                                {/if}
+                                            </div>
+                                        {/each}
+                                    {/if}
+                                </div>
+                            </div>
+                        {/if}
                     </div>
                 {/if}
             </div>
