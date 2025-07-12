@@ -10,8 +10,8 @@ export type FriendEntity = {
   myAccId: string;
   /** Публичный ключ libp2p друга */
   friendPubKeyLibp2p: string;
-  /** Версия записи */
-  version?: number;
-  /** Дата последнего обновления */
-  date_updated?: Date;
+  /** Версия записи для миграций */
+  version: number;
+  /** Timestamp последнего обновления */
+  lastUpdated: number;
 };

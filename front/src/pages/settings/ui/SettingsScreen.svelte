@@ -22,6 +22,7 @@
     import { back_store } from "../../../local_back/back_store/back_store";
     import { getMigrationStats } from "../../../indexdb/db_state_manager_v1/db_state_manager";
     import { DB_NAMES } from "../../../indexdb/constants";
+    import { getEntityVersionsSummary } from "../../../indexdb/entity_versions_v1/entity_versions_manager";
     import styles from "./SettingsPage.module.css";
 
     // State for settings
@@ -68,6 +69,15 @@
             startTime: number;
             endTime: number;
         }>;
+    } | null = null;
+
+    // State for entity versions
+    let showEntityVersions = false;
+    let entityVersionsLoading = false;
+    let entityVersions: {
+        accounts: number;
+        rooms: number;
+        friends: number;
     } | null = null;
 
     // Initialize active tabs monitoring
@@ -225,6 +235,31 @@
             alert("Не удалось загрузить статистику миграций");
         } finally {
             migrationStatsLoading = false;
+        }
+    }
+
+    async function handleEntityVersionsCheck() {
+        entityVersionsLoading = true;
+        try {
+            // Проверяем авторизацию
+            const currentUserId = $appAuthStore.currentUserId;
+            if (!currentUserId) {
+                isNotAuthorized = true;
+                showEntityVersions = true;
+                return;
+            }
+
+            isNotAuthorized = false;
+
+            // Получаем версии сущностей
+            const versions = await getEntityVersionsSummary(currentUserId);
+            entityVersions = versions;
+            showEntityVersions = true;
+        } catch (error) {
+            console.error("Ошибка получения версий сущностей:", error);
+            alert("Не удалось загрузить версии сущностей");
+        } finally {
+            entityVersionsLoading = false;
         }
     }
 
@@ -670,6 +705,78 @@
                                               100,
                                       )
                                     : 100}%
+                            </div>
+                        </div>
+                    </div>
+                {/if}
+            </div>
+        </div>
+
+        <!-- Entity Versions Debug Section -->
+        <div class={styles.settingSection}>
+            <h2 class={styles.sectionTitle}>🔢 ВЕРСИИ СУЩНОСТЕЙ</h2>
+
+            <div class={styles.settingItem}>
+                <div class={styles.settingHeader}>
+                    <div class={styles.settingName}>
+                        <span class={styles.settingIcon}>🗂️</span>
+                        <span
+                            class={entityVersionsLoading
+                                ? "⏳ Проверка версий..."
+                                : "🗂️ Версии сущностей"}>Версии сущностей</span
+                        >
+                    </div>
+                </div>
+                <div class={styles.settingDescription}>
+                    Отображает текущие версии сущностей для отладки и
+                    мониторинга миграций
+                </div>
+                <div class={styles.settingActions}>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        disabled={entityVersionsLoading}
+                        onclick={handleEntityVersionsCheck}
+                    >
+                        {entityVersionsLoading
+                            ? "⏳ Проверка..."
+                            : "🔍 Проверить версии"}
+                    </Button>
+                </div>
+
+                {#if showEntityVersions && isNotAuthorized}
+                    <div class={styles.authRequired}>
+                        <div class={styles.authMessage}>
+                            Для проверки версий сущностей требуется авторизация
+                        </div>
+                        <div class={styles.authDescription}>
+                            Авторизуйтесь для просмотра версий ваших данных
+                        </div>
+                        <div class={styles.authActions}>
+                            <Link href={ROUTES.AUTH}>
+                                <Button variant="primary" size="sm">
+                                    🔑 Авторизоваться
+                                </Button>
+                            </Link>
+                        </div>
+                    </div>
+                {/if}
+
+                {#if showEntityVersions && entityVersions && !isNotAuthorized}
+                    <div class={styles.versionResults}>
+                        <h4>📊 Текущие версии сущностей</h4>
+                        <div class={styles.statsGrid}>
+                            <div>
+                                <strong>🏠 Accounts last version:</strong>
+                                {entityVersions.accounts}
+                            </div>
+                            <div>
+                                <strong>💬 Rooms last version:</strong>
+                                {entityVersions.rooms}
+                            </div>
+                            <div>
+                                <strong>👥 Friends last version:</strong>
+                                {entityVersions.friends}
                             </div>
                         </div>
                     </div>

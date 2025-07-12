@@ -11,4 +11,8 @@ export type RoomEntity = {
   viewName: string;
   /** ID аккаунта пользователя */
   myAccId: string;
+  /** Версия записи для миграций */
+  version: number;
+  /** Timestamp последнего обновления */
+  lastUpdated: number;
 };
