@@ -93,22 +93,83 @@ sse.onMessage((data) => console.log(data));
 ```
 
 ### SharedWorker API
+
+> 📚 **Полная документация**: [SharedWorker API Reference](./shared-worker-api.md)
+
+Межвкладочное взаимодействие через SharedWorker с двумя основными методами:
+
+#### fetch() - Запрос-ответ
+```typescript
+import { shared_worker_store } from '@/processes/shared_worker/shared_worker_store';
+import { PATHS } from '@/local_back/constant/PATHS';
+
+// Авторизация
+await shared_worker_store.fetch({
+  path: PATHS.LOGIN,
+  body: { pass: "password" }
+});
+
+// Получение данных
+const accounts = await shared_worker_store.fetch({
+  path: PATHS.GET_ACCOUNTS
+});
+
+// Добавление друга
+await shared_worker_store.fetch({
+  path: PATHS.ADD_FRIENDS,
+  body: {
+    list: [friendEntity],
+    myAccId: "account_id"
+  }
+});
+```
+
+#### subscribeToWorker() - Подписка на обновления
+```typescript
+// Подписка на счетчик активных вкладок
+const unsubscribe = shared_worker_store.subscribeToWorker({
+  payload: {
+    path: PATHS.GET_ACTIVE_TABS_COUNT
+  },
+  callback: (data) => {
+    console.log('Активных вкладок:', data.count);
+  }
+});
+
+// Отписка (обязательно!)
+unsubscribe();
+```
+
+#### Высокоуровневые API обертки
 ```typescript
 // front/src/api/shared_worker/
-import { sharedWorkerAPI } from '@/api/shared_worker';
+import { accounts } from '@/api/shared_worker/accounts';
+import { friends } from '@/api/shared_worker/friends';
+import { tabs } from '@/api/shared_worker/tabs';
 
 // Аккаунты
-await sharedWorkerAPI.accounts.create(accountData);
-await sharedWorkerAPI.accounts.getAll();
+await accounts.login("password");
+const accountList = await accounts.getList();
 
 // Друзья
-await sharedWorkerAPI.friends.add(friendData);
-await sharedWorkerAPI.friends.remove(friendId);
+await friends.add(friendData, "myAccId");
+const friendsList = await friends.getByAccountId("accId");
 
-// Табы
-await sharedWorkerAPI.tabs.register(tabId);
-await sharedWorkerAPI.tabs.broadcast(message);
+// Реактивный счетчик вкладок
+const tabsCounter = tabs.createReactiveTabsCounter();
+const unsubscribe = tabsCounter.subscribe((count) => {
+  console.log('Вкладок:', count);
+});
 ```
+
+#### Основные операции
+
+| Категория | Операции |
+|-----------|----------|
+| **Аккаунты** | LOGIN, GET_ACCOUNTS, ADD_ACCOUNTS, PUT_ACCOUNTS, DELETE_ACCOUNTS |
+| **Друзья** | GET_FRIENDS, ADD_FRIENDS, PUT_FRIENDS, DELETE_FRIENDS, GET_FRIENDS_BY_ACCOUNT_ID |
+| **Вкладки** | GET_ACTIVE_TABS_COUNT (fetch/subscribe) |
+| **LibP2P** | GET_PEER_ID_BY_ACC_ID_FOR_LIBP2P |
 
 ---
 
@@ -286,6 +347,7 @@ window.debugAPI = {
 
 ## 📚 Связанные документы
 
+- **[SharedWorker API Reference](./shared-worker-api.md)** - Полная документация SharedWorker
 - [Troubleshooting Guide](./troubleshooting.md)
 - [IndexedDB Migrations](../front/docs/indexdb/migrations.md)
 - [Backend API Guide](../back/docs/api-guide.md)
