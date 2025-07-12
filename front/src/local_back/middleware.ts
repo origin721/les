@@ -1,29 +1,17 @@
-import { CHANNEL_NAMES } from "../core/broadcast_channel/constants/CHANNEL_NAMES";
-import { FrontMiddlewareActions } from "../core/broadcast_channel/constants/FRONT_MIDDLEWARE_ACTIONS";
-import type { PostMessageParamAddAccounts } from "../core/broadcast_channel/front_middleware_channel";
-import { add_accounts } from "../indexdb/main_les_store_v1/entities/accounts/add_accounts";
-import { delete_accounts } from "../indexdb/main_les_store_v1/entities/accounts/delete_accounts";
-import {
-  get_accounts,
-  type Account,
-} from "../indexdb/main_les_store_v1/entities/accounts/get_accounts";
-import { login } from "../indexdb/main_les_store_v1/entities/accounts/login";
-import { put_accounts } from "../indexdb/main_les_store_v1/entities/accounts/put_accounts";
 import type {
   AccountEntity,
   AccountEntityPut,
 } from "../indexdb/main_les_store_v1/entities/accounts/types";
-import { back_store } from "./back_store/back_store";
 import { EVENT_TYPES, PATHS } from "./constant";
-import { accounts_service } from "./modules/accounts_service";
-import { friends_service } from "./modules/friends_service";
 import type { FriendEntity } from "../indexdb/main_les_store_v1/entities/friends/add_friend";
 import type { FriendEntityPut } from "../indexdb/main_les_store_v1/entities/friends/put_friends";
 import { devLog, prodError } from "../core/debug/logger";
+import { promiseMiddleware } from "./promise_middleware";
+import { subscriptionMiddleware } from "./subscription_middleware";
 
 type IdRequest = string | number;
 export type BackMiddlewareProps = {
-  type: (typeof EVENT_TYPES)["FETCH"];
+  type: (typeof EVENT_TYPES)["FETCH"] | (typeof EVENT_TYPES)["SUBSCRIBE"];
   payload: BackMiddlewarePayload;
   /**
    * Индификатор который вернётся в ответе
@@ -156,71 +144,33 @@ export type BackMiddlewarePayload = Extract<
 
 export type BackMiddlewareEvent = {
   idRequest: IdRequest;
-  type: (typeof EVENT_TYPES)["FETCH"];
+  type: (typeof EVENT_TYPES)["FETCH"] | (typeof EVENT_TYPES)["SUBSCRIBE"];
   payload: BackMiddlewarePayload;
 };
 
-export async function backMiddleware(props: BackMiddlewareProps): Promise<any> {
-  devLog("backMiddleware starting with props:", props);
+export async function backMiddleware(
+  props: BackMiddlewareProps,
+  onSubscriptionUpdate?: (data: any) => void,
+): Promise<any> {
+  devLog("backMiddleware starting with props:", props, "type:", props.type);
 
   try {
-    // Account handlers
-    if (props.payload.path === PATHS.LOGIN) {
-      return await accounts_service.onLogin(props.payload);
-    }
-    if (props.payload.path === PATHS.GET_PEER_ID_BY_ACC_ID_FOR_LIBP2P) {
-      return await accounts_service.getPeerIdForLibp2p(
-        props.payload.body.accId,
-      );
-    }
-    if (props.payload.path === PATHS.GET_ACCOUNTS) {
-      return await accounts_service.getList();
-    }
-    if (props.payload.path === PATHS.DELETE_ACCOUNTS) {
-      return await accounts_service.delete(props.payload.body.ids);
-    }
-    if (props.payload.path === PATHS.ADD_ACCOUNTS) {
-      // TODO: вынести в сервис
-      return await add_accounts(props.payload.body.list);
-    }
-    if (props.payload.path === PATHS.PUT_ACCOUNTS) {
-      return await accounts_service.put(props.payload.body.list);
+    if (props.type === EVENT_TYPES.FETCH) {
+      devLog("backMiddleware: перенаправляем FETCH в promiseMiddleware");
+      return await promiseMiddleware(props);
     }
 
-    // Friends handlers
-    if (props.payload.path === PATHS.GET_FRIENDS) {
-      return await friends_service.getList();
-    }
-    if (props.payload.path === PATHS.ADD_FRIENDS) {
-      return await friends_service.add(
-        props.payload.body.list,
-        props.payload.body.myAccId,
+    if (props.type === EVENT_TYPES.SUBSCRIBE) {
+      devLog(
+        "backMiddleware: перенаправляем SUBSCRIBE в subscriptionMiddleware",
       );
+      return await subscriptionMiddleware(props, onSubscriptionUpdate);
     }
-    if (props.payload.path === PATHS.DELETE_FRIENDS) {
-      return await friends_service.delete(props.payload.body.ids);
-    }
-    if (props.payload.path === PATHS.GET_FRIENDS_BY_ACCOUNT_ID) {
-      return await friends_service.getFriendsByAccountId(
-        props.payload.body.myAccId,
-      );
-    }
-    if (props.payload.path === PATHS.GET_FRIEND_BY_ID) {
-      return await friends_service.getFriendById(props.payload.body.friendId);
-    }
-    if (props.payload.path === PATHS.PUT_FRIENDS) {
-      return await friends_service.put(props.payload.body.list);
-    }
+
+    prodError("backMiddleware: неподдерживаемый тип запроса:", props.type);
+    return null;
   } catch (err) {
-    prodError(err);
+    prodError("backMiddleware error:", err);
+    throw err;
   }
-
-  return null;
-
-  //return new Promise((res, rej) => {
-  //  setTimeout(() => {
-  //    res({aaa:'vvvv', props});
-  //    channel.postMessage({ action: 'notify', data: 'Hello, tabs!2' });
-  //  }, 5000);
-  //});
 }
