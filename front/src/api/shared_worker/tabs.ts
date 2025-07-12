@@ -1,19 +1,9 @@
 import { PATHS } from "../../local_back/constant/PATHS";
 import { shared_worker_store } from "../../processes/shared_worker/shared_worker_store";
 import { devLog } from "../../core/debug/logger";
-import { ReactiveSubscription } from "../../core/utils";
-
-// Типы для нового реактивного API
-export interface TabsCounter {
-  subscribe: (callback: (count: number) => void) => () => void;
-  getCurrentCount: () => Promise<number>;
-  isConnected: () => boolean;
-  onConnectionChange: (callback: (connected: boolean) => void) => () => void;
-}
 
 export const tabs = {
   /**
-   * ✅ LEGACY API - сохранен без изменений для обратной совместимости
    * Подписка на изменения количества активных вкладок
    * @param callback - функция обратного вызова для получения количества вкладок
    * @returns функция для отписки
@@ -33,62 +23,29 @@ export const tabs = {
   },
 
   /**
-   * 🆕 ENHANCED REACTIVE API - теперь использует ReactiveSubscription утилиту
-   * Предоставляет дополнительные возможности: проверка соединения, получение текущего значения
-   * @returns объект с методами для работы с счетчиком вкладок
+   * Получить текущее количество активных вкладок (разовый запрос)
+   * @returns Promise с количеством вкладок
    */
-  createReactiveTabsCounter(): TabsCounter {
-    devLog(
-      "tabs.createReactiveTabsCounter СОЗДАНИЕ с использованием ReactiveSubscription",
-    );
+  //async getCurrentCount(): Promise<number> {
+  //  devLog("tabs.getCurrentCount ВЫЗОВ");
 
-    const subscription = new ReactiveSubscription<{ count: number }>(
-      (callback) => {
-        devLog(
-          "tabs.createReactiveTabsCounter создание подписки через shared_worker_store",
-        );
-        return shared_worker_store.subscribeToWorker({
-          payload: {
-            path: PATHS.GET_ACTIVE_TABS_COUNT,
-          },
-          callback,
-        });
-      },
-      { count: 0 }, // значение по умолчанию
-    );
+  //  return new Promise((resolve, reject) => {
+  //    const timeout = setTimeout(() => {
+  //      devLog("tabs.getCurrentCount ТАЙМАУТ");
+  //      reject(new Error("Timeout: не удалось получить количество вкладок"));
+  //    }, 3000);
 
-    return {
-      subscribe: (callback: (count: number) => void) => {
-        devLog("tabs.createReactiveTabsCounter.subscribe ВЫЗОВ");
-        return subscription.subscribe((data) => {
-          devLog(
-            "tabs.createReactiveTabsCounter.subscribe получены данные:",
-            data,
-          );
-          callback(data.count);
-        });
-      },
-
-      getCurrentCount: async (): Promise<number> => {
-        devLog("tabs.createReactiveTabsCounter.getCurrentCount ВЫЗОВ");
-        const data = await subscription.getCurrentValue();
-        devLog(
-          "tabs.createReactiveTabsCounter.getCurrentCount результат:",
-          data.count,
-        );
-        return data.count;
-      },
-
-      isConnected: (): boolean => {
-        const connected = subscription.isConnected();
-        devLog("tabs.createReactiveTabsCounter.isConnected:", connected);
-        return connected;
-      },
-
-      onConnectionChange: (callback: (connected: boolean) => void) => {
-        devLog("tabs.createReactiveTabsCounter.onConnectionChange ПОДПИСКА");
-        return subscription.onConnectionChange(callback);
-      },
-    };
-  },
+  //    const unsubscribe = shared_worker_store.subscribeToWorker({
+  //      payload: {
+  //        path: PATHS.GET_ACTIVE_TABS_COUNT,
+  //      },
+  //      callback: (data) => {
+  //        devLog("tabs.getCurrentCount получены данные:", data);
+  //        clearTimeout(timeout);
+  //        unsubscribe();
+  //        resolve(data.count);
+  //      },
+  //    });
+  //  });
+  //},
 };
