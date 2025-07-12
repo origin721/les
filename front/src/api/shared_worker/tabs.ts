@@ -21,31 +21,4 @@ export const tabs = {
       },
     });
   },
-
-  /**
-   * Получить текущее количество активных вкладок (разовый запрос)
-   * @returns Promise с количеством вкладок
-   */
-  //async getCurrentCount(): Promise<number> {
-  //  devLog("tabs.getCurrentCount ВЫЗОВ");
-
-  //  return new Promise((resolve, reject) => {
-  //    const timeout = setTimeout(() => {
-  //      devLog("tabs.getCurrentCount ТАЙМАУТ");
-  //      reject(new Error("Timeout: не удалось получить количество вкладок"));
-  //    }, 3000);
-
-  //    const unsubscribe = shared_worker_store.subscribeToWorker({
-  //      payload: {
-  //        path: PATHS.GET_ACTIVE_TABS_COUNT,
-  //      },
-  //      callback: (data) => {
-  //        devLog("tabs.getCurrentCount получены данные:", data);
-  //        clearTimeout(timeout);
-  //        unsubscribe();
-  //        resolve(data.count);
-  //      },
-  //    });
-  //  });
-  //},
 };
