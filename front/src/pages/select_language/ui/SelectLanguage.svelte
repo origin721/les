@@ -1,6 +1,7 @@
 <script lang="ts">
     import { Button } from "../../../components";
-  import { lang_store } from "../../../stores/lang_store.svelte";
+    import { LANGS_KEYS } from "../../../stores/lang_store";
+  import { lang_store } from "../../../stores/lang_store/lang_store.svelte";
   import formStyles from "../../../styles/modules/forms.module.css";
     import { languages, saveText } from "../constants";
 
@@ -41,8 +42,8 @@
     on:change={handleSelect}
     class="{formStyles.form} {formStyles.select} {formStyles.md}"
   >
-    {#each languages as lang}
-      <option value={lang.code}>{lang.name}</option>
+    {#each Object.keys(LANGS_KEYS) as lang}
+      <option value={lang}>{languages[lang]}</option>
     {/each}
   </select>
 
@@ -67,7 +68,7 @@
     selected === 'pl' ? 'Obecny język:' :
     selected === 'uk' ? 'Поточна мова:' :
     selected === 'kk' ? 'Ағымдағы тіл:' : 'Current language:'}
-    <strong style="margin-left:0.4em;">{languages.find(l => l.code === selected)?.name}</strong>
+    <strong style="margin-left:0.4em;">{languages[Object.keys(LANGS_KEYS).find(l => l === selected)]}</strong>
   </div>
 </div>
 

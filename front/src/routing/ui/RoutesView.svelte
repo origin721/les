@@ -24,7 +24,7 @@
 
     import "../../styles/cyberpunk.css";
     import "../../styles/pixel.css";
-    import { lang_store } from "../../stores/lang_store.svelte";
+    import { lang_store } from "../../stores/lang_store/lang_store.svelte";
 
     //import HomePage from "../../pages/home/ui/HomePage.svelte";
     //import RandomPage from "../../pages/random/ui/RandomPage.svelte";

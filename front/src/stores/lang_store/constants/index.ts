@@ -1,0 +1,1 @@
+export {LANGS_KEYS} from './LANGS_KEYS';

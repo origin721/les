@@ -1,8 +1,9 @@
-import { KEYS } from "../core/local-storage/constants";
+import { KEYS } from "../../core/local-storage/constants";
+import { LANGS_KEYS } from "./constants";
 
 export const lang_store = (() => {
-  let state = $state<string>(
-    localStorage.getItem(KEYS.LANG)
+  let state = $state<''|keyof typeof LANGS_KEYS>(
+    localStorage.getItem(KEYS.LANG) as any
     || ''
   );
 
