@@ -19,4 +19,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./front/dist
 
-retention-days: 7
+  retention-days: 7

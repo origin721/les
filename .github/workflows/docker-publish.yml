@@ -30,4 +30,4 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/les:latest
 
-retention-days: 7
+  retention-days: 7
