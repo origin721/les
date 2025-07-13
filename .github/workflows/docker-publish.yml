@@ -29,3 +29,5 @@ jobs:
           file: docker/Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/les:latest
+
+retention-days: 7
