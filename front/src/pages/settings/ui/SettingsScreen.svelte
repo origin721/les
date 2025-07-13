@@ -28,6 +28,7 @@
     } from "../../../indexdb/entity_versions_v1/entity_versions_manager";
     import { shared_worker_store } from "../../../processes/shared_worker/shared_worker_store";
     import styles from "./SettingsPage.module.css";
+    import { routingStore } from "../../../routing/stores";
 
     // State for settings
     let systemStatus = "operational";
@@ -384,6 +385,36 @@
                         🔍 Диагностика
                     </Button>
                 </div>
+            </div>
+        </div>
+
+        <!-- select Lang -->
+        <div class={styles.settingSection}>
+            <h2 class={styles.sectionTitle}>🇷🇺 Язык</h2>
+
+            <div class={styles.settingItem}>
+                <div class={styles.settingHeader}>
+                    <div class={styles.settingName}>
+                        <span class={styles.settingIcon}>🌏</span>
+                        Изменить язык
+                    </div>
+                    <span
+                        class={`${styles.statusIndicator} ${styles.statusActive}`}
+                    >
+                        ● ДОСТУПНО
+                    </span>
+                </div>
+                <div class={styles.settingActions}>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onclick={() => routingStore.setPath(ROUTES.SELECT_LANG)}
+                    >
+                        <!-- onclick={toggleClearOptions} -->
+                        Выбрать другой язык
+                    </Button>
+                </div>
+
             </div>
         </div>
 
