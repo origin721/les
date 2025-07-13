@@ -2,6 +2,7 @@
     import {
         //AccountNewPage,
         AccountsPage,
+        authLangStore,
         //AuthPage,
         //HomePage,
         //Page404,
@@ -82,7 +83,7 @@
         let nextComponentPromise = null;
         await new Promise((r) => setTimeout(r, 500));
 
-
+        
         if(!p.lang) {
             nextComponentPromise = import(
                 `../../pages/select_language/ui/SelectLanguage.svelte`
@@ -101,6 +102,7 @@
                 `../../pages/docs/ui/DocsPage.svelte`
             );
         } else if (!Object.entries(p.apauState.byId).length) {
+            await authLangStore.setConfig(lang_store.state);
             nextComponentPromise = import(
                 `../../pages/auth/ui/AuthPage.svelte`
             );

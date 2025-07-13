@@ -1,0 +1,1 @@
+export {authLangStore} from './authLangStore.svelte';

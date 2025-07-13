@@ -11,7 +11,8 @@
     import styles from "./AuthPage.module.css";
 
     // Импортируем переводы
-    import { langViewPage } from "../stores/lang/langViewPage";
+    //import { langViewPage } from "../stores/lang/ru";
+    import { authLangStore } from "../stores";
 
     // Svelte 5 state
     const themeState = writableToState(theme);
@@ -63,7 +64,7 @@
                         loginSuccess = false;
                     }, 3000);
                 } else {
-                    loginError = langViewPage.loginFailedAccountsNotFound;
+                    loginError = authLangStore.config.loginFailedAccountsNotFound;
                     devLog(
                         "AuthPage: аутентификация неудачна - аккаунты не найдены",
                     );
@@ -79,7 +80,7 @@
             loginError =
                 error instanceof Error
                     ? error.message
-                    : langViewPage.loginFailedGeneral;
+                    : authLangStore.config.loginFailedGeneral;
             isLoading = false;
 
             setTimeout(() => {
@@ -93,19 +94,19 @@
         const code = event.code;
 
         if (key.match(/[а-яё]/i)) {
-            keyboardLayout = langViewPage.keyboardLayoutRu;
+            keyboardLayout = authLangStore.config.keyboardLayoutRu;
         } else if (key.match(/[a-z]/i)) {
-            keyboardLayout = langViewPage.keyboardLayoutEn;
+            keyboardLayout = authLangStore.config.keyboardLayoutEn;
         } else if (key.match(/[ążśćęłńóź]/i)) {
-            keyboardLayout = langViewPage.keyboardLayoutPl;
+            keyboardLayout = authLangStore.config.keyboardLayoutPl;
         } else if (key.match(/[äöüß]/i)) {
-            keyboardLayout = langViewPage.keyboardLayoutDe;
+            keyboardLayout = authLangStore.config.keyboardLayoutDe;
         } else if (key.match(/[àáâäèéêëîïôûüÿç]/i)) {
-            keyboardLayout = langViewPage.keyboardLayoutFr;
+            keyboardLayout = authLangStore.config.keyboardLayoutFr;
         } else if (key.match(/[àáèéìíîïòóùú]/i)) {
-            keyboardLayout = langViewPage.keyboardLayoutIt;
+            keyboardLayout = authLangStore.config.keyboardLayoutIt;
         } else if (key.match(/[ñáéíóúü]/i)) {
-            keyboardLayout = langViewPage.keyboardLayoutEs;
+            keyboardLayout = authLangStore.config.keyboardLayoutEs;
         } else if (
             key === "Backspace" ||
             key === "Delete" ||
@@ -115,27 +116,27 @@
             return;
         }
 
-        if (keyboardLayout === langViewPage.keyboardLayoutUnknown && key.length === 1) {
+        if (keyboardLayout === authLangStore.config.keyboardLayoutUnknown && key.length === 1) {
             switch (code) {
                 case "KeyQ":
-                    if (key === "й") keyboardLayout = langViewPage.keyboardLayoutRu;
-                    else if (key === "q") keyboardLayout = langViewPage.keyboardLayoutEn;
+                    if (key === "й") keyboardLayout = authLangStore.config.keyboardLayoutRu;
+                    else if (key === "q") keyboardLayout = authLangStore.config.keyboardLayoutEn;
                     break;
                 case "KeyW":
-                    if (key === "ц") keyboardLayout = langViewPage.keyboardLayoutRu;
-                    else if (key === "w") keyboardLayout = langViewPage.keyboardLayoutEn;
+                    if (key === "ц") keyboardLayout = authLangStore.config.keyboardLayoutRu;
+                    else if (key === "w") keyboardLayout = authLangStore.config.keyboardLayoutEn;
                     break;
                 case "KeyE":
-                    if (key === "у") keyboardLayout = langViewPage.keyboardLayoutRu;
-                    else if (key === "e") keyboardLayout = langViewPage.keyboardLayoutEn;
+                    if (key === "у") keyboardLayout = authLangStore.config.keyboardLayoutRu;
+                    else if (key === "e") keyboardLayout = authLangStore.config.keyboardLayoutEn;
                     break;
                 case "KeyR":
-                    if (key === "к") keyboardLayout = langViewPage.keyboardLayoutRu;
-                    else if (key === "r") keyboardLayout = langViewPage.keyboardLayoutEn;
+                    if (key === "к") keyboardLayout = authLangStore.config.keyboardLayoutRu;
+                    else if (key === "r") keyboardLayout = authLangStore.config.keyboardLayoutEn;
                     break;
                 case "KeyT":
-                    if (key === "е") keyboardLayout = langViewPage.keyboardLayoutRu;
-                    else if (key === "t") keyboardLayout = langViewPage.keyboardLayoutEn;
+                    if (key === "е") keyboardLayout = authLangStore.config.keyboardLayoutRu;
+                    else if (key === "t") keyboardLayout = authLangStore.config.keyboardLayoutEn;
                     break;
             }
         }
@@ -153,7 +154,7 @@
 
     function getLayoutIndicatorClass(layout: string) {
         switch (layout) {
-            case langViewPage.keyboardLayoutUnknown:
+            case authLangStore.config.keyboardLayoutUnknown:
                 return styles.layoutUnknown;
             default:
                 return "";
@@ -169,13 +170,13 @@
                     .then((layoutMap: any) => {
                         const qKey = layoutMap.get("KeyQ");
                         if (qKey === "й") {
-                            keyboardLayout = langViewPage.keyboardLayoutRu;
+                            keyboardLayout = authLangStore.config.keyboardLayoutRu;
                         } else if (qKey === "q") {
-                            keyboardLayout = langViewPage.keyboardLayoutEn;
+                            keyboardLayout = authLangStore.config.keyboardLayoutEn;
                         }
                     })
                     .catch(() => {
-                        keyboardLayout = langViewPage.keyboardLayoutUnknown;
+                        keyboardLayout = authLangStore.config.keyboardLayoutUnknown;
                     });
             }
         }
@@ -209,7 +210,7 @@
                             stroke-linejoin="round"
                             ><path d="M19 12H5M12 19l-7-7 7-7" /></svg
                         >
-                        <span>{langViewPage.backToAccounts}</span>
+                        <span>{authLangStore.config.backToAccounts}</span>
                     </Link>
                 {/if}
             </div>
@@ -231,7 +232,7 @@
                         text-anchor="middle"
                         font-family="monospace"
                         font-size="24"
-                        fill="var(--les-accent-primary)">{langViewPage.systemLogo}</text
+                        fill="var(--les-accent-primary)">{authLangStore.config.systemLogo}</text
                     >
                     <g clip-path="url(#clip)">
                         <text
@@ -242,7 +243,7 @@
                             text-anchor="middle"
                             font-family="monospace"
                             font-size="24"
-                            fill="var(--les-accent-secondary)">{langViewPage.systemLogo}</text
+                            fill="var(--les-accent-secondary)">{authLangStore.config.systemLogo}</text
                         >
                         <text
                             class="{styles.glitchLayer} {styles.layer2}"
@@ -252,7 +253,7 @@
                             text-anchor="middle"
                             font-family="monospace"
                             font-size="24"
-                            fill="var(--les-accent-primary)">{langViewPage.systemLogo}</text
+                            fill="var(--les-accent-primary)">{authLangStore.config.systemLogo}</text
                         >
                     </g>
                 </svg>
@@ -266,7 +267,7 @@
             <form onsubmit={submit} class={styles.authForm}>
                 <div class={styles.inputGroup}>
                     <label for="password-input">
-                        <span class={styles.labelText}>{langViewPage.passwordRequired}</span>
+                        <span class={styles.labelText}>{authLangStore.config.passwordRequired}</span>
                     </label>
                     <div class={styles.passwordInputContainer}>
                         <input
@@ -275,7 +276,7 @@
                             bind:value={pass}
                             class={styles.passwordInput}
                             type="password"
-                            placeholder={langViewPage.accessKeyPlaceholder}
+                            placeholder={authLangStore.config.accessKeyPlaceholder}
                             onkeydown={handlePasswordKeydown}
                         />
                         <div
@@ -297,7 +298,7 @@
                     >
                         <div class={styles.messageIcon}>⚠</div>
                         <div class={styles.messageText}>
-                            {langViewPage.error} {loginError}
+                            {authLangStore.config.error} {loginError}
                         </div>
                     </div>
                 {/if}
@@ -308,7 +309,7 @@
                     >
                         <div class={styles.messageIcon}>✓</div>
                         <div class={styles.messageText}>
-                            {langViewPage.success}
+                            {authLangStore.config.success}
                         </div>
                     </div>
                 {/if}
@@ -321,28 +322,28 @@
                     >
                         <span
                             >{isLoading
-                                ? langViewPage.connecting
-                                : langViewPage.initiateConnection}</span
+                                ? authLangStore.config.connecting
+                                : authLangStore.config.initiateConnection}</span
                         >
                     </button>
                     <Link
                         className={styles.createLink}
-                        href={ROUTES.ACCOUNTS_NEW}>{langViewPage.createNewId}</Link
+                        href={ROUTES.ACCOUNTS_NEW}>{authLangStore.config.createNewId}</Link
                     >
                     <Link className={styles.docsLink} href={ROUTES.DOCS}
-                        >{langViewPage.systemDocumentation}</Link
+                        >{authLangStore.config.systemDocumentation}</Link
                     >
 
                     <!-- Settings Link -->
                     <Link className={styles.settingsLink} href={ROUTES.SETTINGS}
-                        >{langViewPage.systemSettings}</Link
+                        >{authLangStore.config.systemSettings}</Link
                     >
                 </div>
             </form>
         </main>
 
         <footer class={styles.authFooter}>
-            <p>{langViewPage.secureTerminalInterface}</p>
+            <p>{authLangStore.config.secureTerminalInterface}</p>
         </footer>
     </div>
 </div>

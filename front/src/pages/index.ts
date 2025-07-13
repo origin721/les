@@ -1,4 +1,4 @@
-export { AuthPage } from "./auth";
+export { AuthPage, authLangStore } from "./auth";
 export { HomePage } from "./home";
 export { Page404 } from "./404";
 export { SettingsPage } from './settings';
