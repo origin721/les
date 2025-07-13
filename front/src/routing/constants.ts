@@ -19,6 +19,7 @@ export const ROUTES = {
     ADD_PEER: BASE_URL + '/add-peer',
     FRIENDS: BASE_URL + '/friends',
     NOT_FOUND: BASE_URL + '/404',
+    SELECT_LANG: `${BASE_URL}/select-lang`,
 } as const;
 
 export const QUERY_PARAMS = {

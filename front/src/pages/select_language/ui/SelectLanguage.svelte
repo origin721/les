@@ -1,9 +1,12 @@
 <script lang="ts">
     import { Button } from "../../../components";
+    import { ROUTES } from "../../../routing";
+    import Link from "../../../routing/ui/Link.svelte";
     import { LANGS_KEYS } from "../../../stores/lang_store";
   import { lang_store } from "../../../stores/lang_store/lang_store.svelte";
   import formStyles from "../../../styles/modules/forms.module.css";
     import { languages, saveText } from "../constants";
+    import { selectLangPageLangStore } from "../stores/lang/selectLangPageLangStore.svelte";
 
 
 
@@ -17,6 +20,8 @@
     selected = event.target.value;
   }
 </script>
+
+<Link href={ROUTES.SETTINGS}>{selectLangPageLangStore.config.goToSettings}</Link>
 
 <div class={formStyles.group} style="max-width: 340px; margin: 2rem auto;">
   <label for="lang-select" class={`${formStyles.label} ${formStyles.labelRequired}`}>

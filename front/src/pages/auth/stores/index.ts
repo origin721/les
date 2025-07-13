@@ -1,1 +1,1 @@
-export {authLangStore} from './authLangStore.svelte';
+export {authLangStore} from './lang/authLangStore.svelte';

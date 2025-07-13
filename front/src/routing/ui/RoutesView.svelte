@@ -26,6 +26,7 @@
     import "../../styles/cyberpunk.css";
     import "../../styles/pixel.css";
     import { lang_store } from "../../stores/lang_store/lang_store.svelte";
+    import { selectLangPageLangStore } from "../../pages/select_language/stores/lang/selectLangPageLangStore.svelte";
 
     //import HomePage from "../../pages/home/ui/HomePage.svelte";
     //import RandomPage from "../../pages/random/ui/RandomPage.svelte";
@@ -83,11 +84,20 @@
         let nextComponentPromise = null;
         await new Promise((r) => setTimeout(r, 500));
 
-        
-        if(!p.lang) {
+        async function onLoadSelectLangPage() {
+            await selectLangPageLangStore.setConfig(p.lang);
             nextComponentPromise = import(
                 `../../pages/select_language/ui/SelectLanguage.svelte`
             );
+        }
+
+        console.log('sdfsdfdsfsd  ', p.rState.pathname)
+        
+        if(!p.lang) {
+            onLoadSelectLangPage();
+        }
+        else if (p.rState.pathname === ROUTES.SELECT_LANG) {
+            onLoadSelectLangPage();
         }
         else if (p.rState.pathname === ROUTES.ACCOUNTS_NEW) {
             nextComponentPromise = import(
