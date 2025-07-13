@@ -10,6 +10,9 @@
     import { onMount } from "svelte";
     import styles from "./AuthPage.module.css";
 
+    // Импортируем переводы
+    import { langViewPage } from "../stores/lang/langViewPage";
+
     // Svelte 5 state
     const themeState = writableToState(theme);
     const appAuthStoreState = writableToState(appAuthStore);
@@ -36,8 +39,6 @@
             await appAuthStore.onLogin(pass!);
             devLog("AuthPage: процесс аутентификации завершен");
 
-            // Проверяем, были ли загружены аккаунты после логина
-            // Добавляем небольшую задержку для обновления store
             setTimeout(() => {
                 const currentAccounts = Object.keys(
                     appAuthStoreState.state.byId,
@@ -54,23 +55,20 @@
                         currentAccounts,
                     );
 
-                    // Добавляем задержку для показа успешного состояния
                     setTimeout(() => {
                         isLoading = false;
                     }, 800);
 
-                    // Автоочистка сообщения об успехе через 3 секунды
                     setTimeout(() => {
                         loginSuccess = false;
                     }, 3000);
                 } else {
-                    loginError = "Неверный пароль или аккаунт не найден";
+                    loginError = langViewPage.loginFailedAccountsNotFound;
                     devLog(
                         "AuthPage: аутентификация неудачна - аккаунты не найдены",
                     );
                     isLoading = false;
 
-                    // Автоочистка ошибки через 5 секунд
                     setTimeout(() => {
                         loginError = null;
                     }, 5000);
@@ -81,102 +79,89 @@
             loginError =
                 error instanceof Error
                     ? error.message
-                    : "Произошла ошибка при входе";
+                    : langViewPage.loginFailedGeneral;
             isLoading = false;
 
-            // Автоочистка ошибки через 5 секунд
             setTimeout(() => {
                 loginError = null;
             }, 5000);
         }
     }
 
-    // Функция для определения раскладки клавиатуры
     function detectKeyboardLayout(event: KeyboardEvent) {
         const key = event.key;
         const code = event.code;
 
-        // Определяем раскладку по характерным символам
         if (key.match(/[а-яё]/i)) {
-            keyboardLayout = "RU";
+            keyboardLayout = langViewPage.keyboardLayoutRu;
         } else if (key.match(/[a-z]/i)) {
-            keyboardLayout = "EN";
+            keyboardLayout = langViewPage.keyboardLayoutEn;
         } else if (key.match(/[ążśćęłńóź]/i)) {
-            keyboardLayout = "PL";
+            keyboardLayout = langViewPage.keyboardLayoutPl;
         } else if (key.match(/[äöüß]/i)) {
-            keyboardLayout = "DE";
+            keyboardLayout = langViewPage.keyboardLayoutDe;
         } else if (key.match(/[àáâäèéêëîïôûüÿç]/i)) {
-            keyboardLayout = "FR";
+            keyboardLayout = langViewPage.keyboardLayoutFr;
         } else if (key.match(/[àáèéìíîïòóùú]/i)) {
-            keyboardLayout = "IT";
+            keyboardLayout = langViewPage.keyboardLayoutIt;
         } else if (key.match(/[ñáéíóúü]/i)) {
-            keyboardLayout = "ES";
+            keyboardLayout = langViewPage.keyboardLayoutEs;
         } else if (
             key === "Backspace" ||
             key === "Delete" ||
             key === "Tab" ||
             key === "Enter"
         ) {
-            // Не изменяем раскладку для служебных клавиш
             return;
         }
 
-        // Дополнительное определение по позиции клавиш
-        if (keyboardLayout === "UNKNOWN" && key.length === 1) {
-            // Анализируем по коду клавиши и символу
+        if (keyboardLayout === langViewPage.keyboardLayoutUnknown && key.length === 1) {
             switch (code) {
                 case "KeyQ":
-                    if (key === "й") keyboardLayout = "RU";
-                    else if (key === "q") keyboardLayout = "EN";
+                    if (key === "й") keyboardLayout = langViewPage.keyboardLayoutRu;
+                    else if (key === "q") keyboardLayout = langViewPage.keyboardLayoutEn;
                     break;
                 case "KeyW":
-                    if (key === "ц") keyboardLayout = "RU";
-                    else if (key === "w") keyboardLayout = "EN";
+                    if (key === "ц") keyboardLayout = langViewPage.keyboardLayoutRu;
+                    else if (key === "w") keyboardLayout = langViewPage.keyboardLayoutEn;
                     break;
                 case "KeyE":
-                    if (key === "у") keyboardLayout = "RU";
-                    else if (key === "e") keyboardLayout = "EN";
+                    if (key === "у") keyboardLayout = langViewPage.keyboardLayoutRu;
+                    else if (key === "e") keyboardLayout = langViewPage.keyboardLayoutEn;
                     break;
                 case "KeyR":
-                    if (key === "к") keyboardLayout = "RU";
-                    else if (key === "r") keyboardLayout = "EN";
+                    if (key === "к") keyboardLayout = langViewPage.keyboardLayoutRu;
+                    else if (key === "r") keyboardLayout = langViewPage.keyboardLayoutEn;
                     break;
                 case "KeyT":
-                    if (key === "е") keyboardLayout = "RU";
-                    else if (key === "t") keyboardLayout = "EN";
+                    if (key === "е") keyboardLayout = langViewPage.keyboardLayoutRu;
+                    else if (key === "t") keyboardLayout = langViewPage.keyboardLayoutEn;
                     break;
             }
         }
     }
 
-    // Обработчик события ввода в поле пароля
     function handlePasswordKeydown(event: KeyboardEvent) {
-        // Обработка Escape для очистки поля
         if (event.key === "Escape") {
             pass = null;
             loginError = null;
             loginSuccess = false;
             return;
         }
-
-        // Определение раскладки клавиатуры
         detectKeyboardLayout(event);
     }
 
-    // Получаем класс индикатора в зависимости от раскладки
     function getLayoutIndicatorClass(layout: string) {
         switch (layout) {
-            case "UNKNOWN":
+            case langViewPage.keyboardLayoutUnknown:
                 return styles.layoutUnknown;
             default:
-                return ""; // Используем базовый стиль из CSS модуля
+                return "";
         }
     }
 
-    // Инициализация определения раскладки при монтировании компонента
     function initKeyboardDetection() {
         if (typeof navigator !== "undefined" && "keyboard" in navigator) {
-            // Современный API для определения раскладки (если доступен)
             const keyboard = (navigator as any).keyboard;
             if (keyboard && "getLayoutMap" in keyboard) {
                 keyboard
@@ -184,20 +169,18 @@
                     .then((layoutMap: any) => {
                         const qKey = layoutMap.get("KeyQ");
                         if (qKey === "й") {
-                            keyboardLayout = "RU";
+                            keyboardLayout = langViewPage.keyboardLayoutRu;
                         } else if (qKey === "q") {
-                            keyboardLayout = "EN";
+                            keyboardLayout = langViewPage.keyboardLayoutEn;
                         }
                     })
                     .catch(() => {
-                        // Если API недоступен, используем обработчик событий
-                        keyboardLayout = "UNKNOWN";
+                        keyboardLayout = langViewPage.keyboardLayoutUnknown;
                     });
             }
         }
     }
 
-    // Вызываем инициализацию при монтировании
     onMount(() => {
         initKeyboardDetection();
     });
@@ -226,7 +209,7 @@
                             stroke-linejoin="round"
                             ><path d="M19 12H5M12 19l-7-7 7-7" /></svg
                         >
-                        <span>SYS.MAIN</span>
+                        <span>{langViewPage.backToAccounts}</span>
                     </Link>
                 {/if}
             </div>
@@ -248,7 +231,7 @@
                         text-anchor="middle"
                         font-family="monospace"
                         font-size="24"
-                        fill="var(--les-accent-primary)">AUTH.SYS</text
+                        fill="var(--les-accent-primary)">{langViewPage.systemLogo}</text
                     >
                     <g clip-path="url(#clip)">
                         <text
@@ -259,7 +242,7 @@
                             text-anchor="middle"
                             font-family="monospace"
                             font-size="24"
-                            fill="var(--les-accent-secondary)">AUTH.SYS</text
+                            fill="var(--les-accent-secondary)">{langViewPage.systemLogo}</text
                         >
                         <text
                             class="{styles.glitchLayer} {styles.layer2}"
@@ -269,7 +252,7 @@
                             text-anchor="middle"
                             font-family="monospace"
                             font-size="24"
-                            fill="var(--les-accent-primary)">AUTH.SYS</text
+                            fill="var(--les-accent-primary)">{langViewPage.systemLogo}</text
                         >
                     </g>
                 </svg>
@@ -283,8 +266,7 @@
             <form onsubmit={submit} class={styles.authForm}>
                 <div class={styles.inputGroup}>
                     <label for="password-input">
-                        <span class={styles.labelText}>[PASSWORD_REQUIRED]</span
-                        >
+                        <span class={styles.labelText}>{langViewPage.passwordRequired}</span>
                     </label>
                     <div class={styles.passwordInputContainer}>
                         <input
@@ -293,7 +275,7 @@
                             bind:value={pass}
                             class={styles.passwordInput}
                             type="password"
-                            placeholder="> ACCESS_KEY"
+                            placeholder={langViewPage.accessKeyPlaceholder}
                             onkeydown={handlePasswordKeydown}
                         />
                         <div
@@ -315,7 +297,7 @@
                     >
                         <div class={styles.messageIcon}>⚠</div>
                         <div class={styles.messageText}>
-                            [ERROR] {loginError}
+                            {langViewPage.error} {loginError}
                         </div>
                     </div>
                 {/if}
@@ -326,7 +308,7 @@
                     >
                         <div class={styles.messageIcon}>✓</div>
                         <div class={styles.messageText}>
-                            [ACCESS_GRANTED] Аутентификация успешна
+                            {langViewPage.success}
                         </div>
                     </div>
                 {/if}
@@ -339,28 +321,28 @@
                     >
                         <span
                             >{isLoading
-                                ? "[CONNECTING...]"
-                                : "[INITIATE_CONNECTION]"}</span
+                                ? langViewPage.connecting
+                                : langViewPage.initiateConnection}</span
                         >
                     </button>
                     <Link
                         className={styles.createLink}
-                        href={ROUTES.ACCOUNTS_NEW}>[CREATE_NEW_ID]</Link
+                        href={ROUTES.ACCOUNTS_NEW}>{langViewPage.createNewId}</Link
                     >
                     <Link className={styles.docsLink} href={ROUTES.DOCS}
-                        >[SYSTEM_DOCUMENTATION]</Link
+                        >{langViewPage.systemDocumentation}</Link
                     >
 
                     <!-- Settings Link -->
                     <Link className={styles.settingsLink} href={ROUTES.SETTINGS}
-                        >[SYSTEM_SETTINGS]</Link
+                        >{langViewPage.systemSettings}</Link
                     >
                 </div>
             </form>
         </main>
 
         <footer class={styles.authFooter}>
-            <p>// SECURE_TERMINAL_INTERFACE //</p>
+            <p>{langViewPage.secureTerminalInterface}</p>
         </footer>
     </div>
 </div>
