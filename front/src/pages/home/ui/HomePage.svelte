@@ -3,18 +3,21 @@
     import { theme } from "../../../stores/theme";
     import ThemeSwitcher from "../../../components/ThemeSwitcher.svelte";
     import { AnimatedTitle, MenuGrid, PageFooter } from "../../../components/ui";
+    import { homePageLangStore } from "../stores/lang/homePageLangStore.svelte";
+
+    const langViewPage = homePageLangStore.config;
 
     const menuItems = [
-        { href: ROUTES.ACCOUNTS, title: "АККАУНТЫ", icon: "👤", description: "Управление пользователями" },
-        { href: ROUTES.FRIENDS, title: "ДРУЗЬЯ", icon: "👥", description: "Список друзей и контактов" },
-        { href: ROUTES.CRYPTO, title: "ШИФРОВАНИЕ", icon: "🔐", description: "Криптографические операции" },
-        { href: ROUTES.API_KEYS, title: "API КЛЮЧИ", icon: "🔑", description: "Управление ключами доступа" },
-        { href: ROUTES.CHAT_ROOMS, title: "ЧАТЫ", icon: "💬", description: "Безопасные сообщения" },
-        { href: ROUTES.ADD_PEER, title: "ДОБАВИТЬ ПИРА", icon: "🤝", description: "Подключение к P2P сети" },
-        { href: ROUTES.RANDOM, title: "РАНДОМ", icon: "🎲", description: "Генерация случайных данных" },
-        { href: ROUTES.SETTINGS, title: "НАСТРОЙКИ", icon: "⚙️", description: "Конфигурация системы" },
-        { href: ROUTES.DOCS, title: "ДОКУМЕНТАЦИЯ", icon: "📋", description: "Техническая информация" },
-        { href: ROUTES.NOT_FOUND, title: "404 СТРАНИЦА", icon: "⚠️", description: "Демо ошибки не найдено" }
+      { href: ROUTES.ACCOUNTS, title: langViewPage.goToAccounts, icon: "👤", description: langViewPage.manageUsers },
+  { href: ROUTES.FRIENDS, title: langViewPage.goToFriends, icon: "👥", description: langViewPage.friendsList },
+  { href: ROUTES.CRYPTO, title: langViewPage.goToCrypto, icon: "🔐", description: langViewPage.cryptoOperations },
+  { href: ROUTES.API_KEYS, title: langViewPage.goToApiKeys, icon: "🔑", description: langViewPage.manageAccessKeys },
+  { href: ROUTES.CHAT_ROOMS, title: langViewPage.goToChatRooms, icon: "💬", description: langViewPage.secureMessages },
+  { href: ROUTES.ADD_PEER, title: langViewPage.goToAddPeer, icon: "🤝", description: langViewPage.connectToP2P },
+  { href: ROUTES.RANDOM, title: langViewPage.goToRandom, icon: "🎲", description: langViewPage.generateRandomData },
+  { href: ROUTES.SETTINGS, title: langViewPage.goToSettings, icon: "⚙️", description: langViewPage.systemConfiguration },
+  { href: ROUTES.DOCS, title: langViewPage.goToDocs, icon: "📋", description: langViewPage.technicalInformation },
+  { href: ROUTES.NOT_FOUND, title: langViewPage.goToNotFound, icon: "⚠️", description: langViewPage.demoNotFoundError }
     ];
 </script>
 

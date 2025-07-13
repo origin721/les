@@ -27,6 +27,7 @@
     import "../../styles/pixel.css";
     import { lang_store } from "../../stores/lang_store/lang_store.svelte";
     import { selectLangPageLangStore } from "../../pages/select_language/stores/lang/selectLangPageLangStore.svelte";
+    import { homePageLangStore } from "../../pages/home/stores/lang/homePageLangStore.svelte";
 
     //import HomePage from "../../pages/home/ui/HomePage.svelte";
     //import RandomPage from "../../pages/random/ui/RandomPage.svelte";
@@ -164,6 +165,7 @@
                 `../../pages/random/ui/RandomPage.svelte`
             );
         } else if (p.rState.pathname === ROUTES.HOME) {
+            await homePageLangStore.setConfig(lang_store.state);
             nextComponentPromise = import(
                 `../../pages/home/ui/HomePage.svelte`
             );

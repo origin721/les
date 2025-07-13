@@ -10,7 +10,7 @@
 
 
 
-  let selected = $state('en');
+  let selected = $state(lang_store.state);
 
   function applyLang() {
     lang_store.state = selected;
