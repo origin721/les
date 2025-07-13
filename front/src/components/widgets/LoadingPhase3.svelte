@@ -24,8 +24,9 @@
             x="50%"
             y="50%"
             dominant-baseline="middle"
-            text-anchor="middle">ACCESS GRANTED</text
+            text-anchor="middle">Γνῶθι σεαυτόν</text
         >
+        <!-- Эта фраза означает "Познай самого себя". -->
     </svg>
     <div class="loading-text">
         {#if isComplete}
