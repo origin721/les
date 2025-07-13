@@ -24,6 +24,7 @@
 
     import "../../styles/cyberpunk.css";
     import "../../styles/pixel.css";
+    import { lang_store } from "../../stores/lang_store.svelte";
 
     //import HomePage from "../../pages/home/ui/HomePage.svelte";
     //import RandomPage from "../../pages/random/ui/RandomPage.svelte";
@@ -47,6 +48,7 @@
         onChangePath({
             rState: routState.state,
             apauState: appAuthState.state,
+            lang: lang_store.state,
         });
     });
 
@@ -54,12 +56,10 @@
     let prevRoutParams = $state<{
         rState: (typeof routState)["state"];
         apauState: (typeof appAuthState)["state"];
+        lang: (typeof lang_store)["state"];
     } | null>(null);
 
-    async function onChangePath(p: {
-        rState: (typeof routState)["state"];
-        apauState: (typeof appAuthState)["state"];
-    }) {
+    async function onChangePath(p: NonNullable<typeof prevRoutParams>) {
         // TODO: сделать защиту от рендера если  данные не менялись сохранив prev в ссылку
         if (
             prevRoutParams &&
@@ -68,6 +68,7 @@
                 Object.keys(prevRoutParams.apauState.byId).length &&
             p.rState.queryParams.toString() ===
                 prevRoutParams.rState.queryParams.toString()
+                && p.lang === prevRoutParams.lang
         ) {
             return;
         }
@@ -81,7 +82,13 @@
         let nextComponentPromise = null;
         await new Promise((r) => setTimeout(r, 500));
 
-        if (p.rState.pathname === ROUTES.ACCOUNTS_NEW) {
+
+        if(!p.lang) {
+            nextComponentPromise = import(
+                `../../pages/select_language/ui/SelectLanguage.svelte`
+            );
+        }
+        else if (p.rState.pathname === ROUTES.ACCOUNTS_NEW) {
             nextComponentPromise = import(
                 `../../pages/accounts_new/ui/AccountNewPage.svelte`
             );
