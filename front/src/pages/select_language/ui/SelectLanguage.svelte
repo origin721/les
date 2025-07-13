@@ -2,36 +2,9 @@
     import { Button } from "../../../components";
   import { lang_store } from "../../../stores/lang_store.svelte";
   import formStyles from "../../../styles/modules/forms.module.css";
+    import { languages, saveText } from "../constants";
 
-  // Массив поддерживаемых языков
-  const languages = [
-    { code: 'en', name: 'English' },
-    { code: 'ru', name: 'Русский' },
-    { code: 'de', name: 'Deutsch' },
-    { code: 'fr', name: 'Français' },
-    { code: 'es', name: 'Español' },
-    { code: 'zh', name: '中文' },
-    { code: 'ja', name: '日本語' },
-    { code: 'it', name: 'Italiano' },
-    { code: 'pl', name: 'Polski' },
-    { code: 'uk', name: 'Українська' },
-    { code: 'kk', name: 'Қазақша' }
-  ];
 
-  // Переводы для кнопки "Сохранить язык"
-  const saveText = {
-    en: "Save language",
-    ru: "Сохранить язык",
-    de: "Sprache speichern",
-    fr: "Enregistrer la langue",
-    es: "Guardar idioma",
-    zh: "保存语言",
-    ja: "言語を保存",
-    it: "Salva lingua",
-    pl: "Zapisz język",
-    uk: "Зберегти мову",
-    kk: "Тілді сақтау"
-  };
 
   let selected = $state('en');
 
