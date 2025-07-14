@@ -18,7 +18,7 @@
 </script>
 
 <div class={`theme-${themeRoon.state} loading-phase`}>
-    <svg class="glitch-svg" viewBox="0 0 400 100">
+    <svg class="glitch-svg" viewBox="0 0 500 100">
         <text
             class="glitch-text"
             x="50%"
