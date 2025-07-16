@@ -8,6 +8,7 @@ import type {
 import { create_counter_generator } from "../../core/create_counter_generator";
 import { EVENT_TYPES } from "../../local_back/constant";
 import { devLog, prodError } from "../../core/debug/logger";
+import { uuidv4 } from "../../core/uuid";
 
 const workerGeneratorIds = create_counter_generator();
 
@@ -57,7 +58,7 @@ function create_shared_worker_store() {
         params,
       );
 
-      const idRequest = workerGeneratorIds().toString();
+      const idRequest = uuidv4();
       devLog(
         "shared_worker_store.subscribeToWorker сгенерирован idRequest:",
         idRequest,
@@ -94,6 +95,8 @@ function create_shared_worker_store() {
           idRequest,
         );
         if (currentStore?.onSubscriptionMessage) {
+          // TOOD: доделать сигнал завершения
+          //currentStore.onSubscriptionMessage();
           delete currentStore.onSubscriptionMessage[idRequest];
         }
       };

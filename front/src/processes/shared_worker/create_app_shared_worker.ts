@@ -11,9 +11,10 @@ import { EVENT_TYPES } from "../../local_back/constant";
 type SendProps =
   | BackMiddlewareEvent
   | {
-      idRequest: string | number;
+      idRequest: string;
       type: (typeof EVENT_TYPES)["SUBSCRIBE"];
       payload: any;
+      callBack: (props: any) => void;
     };
 
 export async function createAppSharedWorker() {
@@ -44,6 +45,9 @@ export async function createAppSharedWorker() {
           }, 300000);
 
           promiseResolves[event.idRequest] = (value) => {
+            if('callBack' in event) {
+              event.callBack(value);
+            }
             devLog("SharedWorker ответ idRequest:", event.idRequest);
             clearTimeout(timeout);
             res(value);

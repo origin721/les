@@ -16,8 +16,8 @@
     import NavigationSection from "./NavigationSection.svelte";
     import styles from "./SettingsPage.module.css";
 
-    let systemStatus = "operational";
-    let activeTabsCount = 0;
+    let systemStatus = $state("operational");
+    let activeTabsCount = $state(0);
 
     onMount(() => {
         const unsubscribe = sharedWorkerApi.tabs.subscribeActiveTabsCount((count) => {
