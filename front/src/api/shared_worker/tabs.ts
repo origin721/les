@@ -11,6 +11,8 @@ export const tabs = {
   subscribeActiveTabsCount(callback: (count: number) => void): () => void {
     devLog("tabs.subscribeActiveTabsCount ВЫЗОВ");
 
+    return () => {};
+
     return shared_worker_store.subscribeToWorker({
       payload: {
         path: PATHS.GET_ACTIVE_TABS_COUNT,

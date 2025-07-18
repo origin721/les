@@ -5,6 +5,7 @@ import {
 } from "../../local_back/middleware";
 import { shared_worker_store } from "./shared_worker_store";
 import SharedWorkerConstructor from './process/sharedWorker.js?sharedworker';
+import { EVENT_TYPES } from "../../local_back/constant";
 
 export async function createAppSharedWorker() {
   await sleep(3000);
@@ -18,12 +19,29 @@ export async function createAppSharedWorker() {
   sharedWorker.port.postMessage({ message: "Hello, shared worker!" });
   const promiseResolves: PromiseResolves = {};
   shared_worker_store.set({
-    sendMessage: (event: BackMiddlewareEvent) => {
-      const result = new Promise(async(res, rej) => {
-        promiseResolves[event.idRequest] = res;
-      });
-      sharedWorker.port.postMessage({ message: JSON.stringify(event) })
-      return result;
+    sendMessage: (
+      event: BackMiddlewareEvent,
+      param?: {
+        /**
+         * Для подписки получение новых реактивно
+         */
+        callback: (p: any) => void;
+      }
+    ) => {
+      if (event.type === EVENT_TYPES.FETCH) {
+        const result = new Promise(async (res, rej) => {
+          promiseResolves[event.idRequest] = res;
+        });
+        sharedWorker.port.postMessage({ message: JSON.stringify(event) })
+        return result;
+      } // end FETCH
+      else if (event.type === EVENT_TYPES.SUBSCRIBE) {
+        sharedWorker.port.postMessage({ message: JSON.stringify(event) })
+
+        return () => {
+          // unsubscribe
+        }
+      }
     },
   });
 
