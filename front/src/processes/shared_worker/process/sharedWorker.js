@@ -9,7 +9,7 @@ import { subscribeItemByPath } from "../../../local_back/subscribeItemByPath";
 import { updateActiveTabsCountSubscription } from "../../../local_back/subscribeModules/handleActiveTabsCountSubscription";
 import { subscriptionMiddleware } from "../../../local_back/subscription_middleware";
 import { workerGeneratorIds } from "../workerGeneratorIds";
-import { sharedWorkerLastPortsAll } from "./sharedWorkerLastPortsRef";
+import { sharedWorkerLastPortsActive, sharedWorkerLastPortsAll } from "./sharedWorkerLastPortsRef";
 
 
 const channelPing = new BroadcastChannel(CHANNEL_NAMES.SERVICE_WORKER_PING);
@@ -19,6 +19,11 @@ function serviceWorkerPing() {
   const broadcast_event = {
     serviceWorkerDate: Date.now(),
   };
+
+  sharedWorkerLastPortsActive.clear();
+  sharedWorkerLastPortsAll.forEach(port => {
+    sharedWorkerLastPortsActive.add(port);
+  });
 
   sharedWorkerLastPortsAll.clear();
   channelPing.postMessage(broadcast_event);
