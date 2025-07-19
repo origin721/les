@@ -7,5 +7,6 @@ type KeyEqualValue = MyEnum<ReturnType<typeof getChannelNames>>;
 function getChannelNames() {
   return Object.freeze({
     FRONT_MIDDLEWARE: 'FRONT_MIDDLEWARE',
+    SERVICE_WORKER_PING: 'SERVICE_WORKER_PING',
   })
 }

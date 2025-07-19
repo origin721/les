@@ -1,8 +1,10 @@
-import { sharedWorkerLastPortsActive } from "../../processes/shared_worker/process/sharedWorkerLastPortsRef";
+import { sharedWorkerLastPortsAll } from "../../processes/shared_worker/process/sharedWorkerLastPortsRef";
 import type { ReturnSubscriptionMiddleware, SubscriptionMiddlewareProps } from "../subscription_middleware";
 
 
 let update = null as null|(()=> void);
+
+let prevResult: null|number = null;
 
 /**
  * Обработчик подписки на количество активных вкладок
@@ -15,7 +17,11 @@ export function handleActiveTabsCountSubscription(
 
     },
     update: () => {
-      props.sendAll({ count: sharedWorkerLastPortsActive.size });
+      const newResult = sharedWorkerLastPortsAll.size;
+      if (prevResult === newResult) return;
+
+      prevResult = newResult;
+      props.sendAll({ count: newResult });
     },
   }
   update = result.update;

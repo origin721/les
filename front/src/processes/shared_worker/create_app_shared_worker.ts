@@ -9,6 +9,9 @@ import { shared_worker_store, type SubscribeParam, type SubscribeUtilsParam } fr
 import SharedWorkerConstructor from './process/sharedWorker.js?sharedworker';
 import { EVENT_TYPES, PATHS } from "../../local_back/constant";
 import type { ObjectValues } from "../../types/utils";
+import { CHANNEL_NAMES } from "../../core/broadcast_channel/constants/CHANNEL_NAMES";
+
+const channelPing = new BroadcastChannel(CHANNEL_NAMES.SERVICE_WORKER_PING);
 
 const subscribeCallBackByEvents: Record<
   keyof typeof PATHS,
@@ -31,6 +34,21 @@ export async function createAppSharedWorker() {
   //sharedWorker.port.postMessage({ message: "Hello, shared worker!" });
   const promiseResolves: PromiseResolves = {};
   const subscribeUtils: SubscribeUtils = {};
+
+  // Прослушивание сообщений
+  channelPing.onmessage = (event) => {
+    //console.log('Получено сообщение:', event.data);
+
+    sharedWorker.port.postMessage({
+      message: JSON.stringify({
+        type: EVENT_TYPES.PING,
+        response: {
+          ...event.data,
+          pageDate: Date.now(),
+        },
+      })
+    });
+  };
 
   shared_worker_store.set({
     subscribeMessage: (param) => {

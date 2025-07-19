@@ -1,7 +1,7 @@
 import { EVENT_TYPES, PATHS } from "./constant";
 import { devLog, prodError } from "../core/debug/logger";
 import type { BackMiddlewarePayload, BackMiddlewarePayloadSubscribe, ResultByPath } from "./middleware";
-import { sharedWorkerLastPortsActive, sharedWorkerLastPortsAll } from "../processes/shared_worker/process/sharedWorkerLastPortsRef";
+import { sharedWorkerLastPortsAll } from "../processes/shared_worker/process/sharedWorkerLastPortsRef";
 import { handleActiveTabsCountSubscription } from "./subscribeModules/handleActiveTabsCountSubscription";
 
 type IdRequest = string | number;

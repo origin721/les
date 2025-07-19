@@ -4,4 +4,4 @@ type Port = {
 
 export const sharedWorkerLastPortsAll = new Set<Port>();
 
-export const sharedWorkerLastPortsActive = new Set<Port>();
+//export const sharedWorkerLastPortsActive = new Set<Port>();

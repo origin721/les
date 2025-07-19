@@ -1,14 +1,33 @@
 // @ts-check
 import { toJson } from "../../../core";
+import { CHANNEL_NAMES } from "../../../core/broadcast_channel/constants/CHANNEL_NAMES";
+import { FrontMiddlewareActions } from "../../../core/broadcast_channel/constants/FRONT_MIDDLEWARE_ACTIONS";
+import { debugLog } from "../../../core/debug/logger";
 import { EVENT_TYPES } from "../../../local_back/constant";
 import { backMiddleware } from "../../../local_back/middleware";
 import { subscribeItemByPath } from "../../../local_back/subscribeItemByPath";
 import { updateActiveTabsCountSubscription } from "../../../local_back/subscribeModules/handleActiveTabsCountSubscription";
 import { subscriptionMiddleware } from "../../../local_back/subscription_middleware";
 import { workerGeneratorIds } from "../workerGeneratorIds";
-import { sharedWorkerLastPortsActive, sharedWorkerLastPortsAll } from "./sharedWorkerLastPortsRef";
+import { sharedWorkerLastPortsAll } from "./sharedWorkerLastPortsRef";
 
 
+const channelPing = new BroadcastChannel(CHANNEL_NAMES.SERVICE_WORKER_PING);
+
+serviceWorkerPing();
+function serviceWorkerPing() {
+  const broadcast_event = {
+    serviceWorkerDate: Date.now(),
+  };
+
+  sharedWorkerLastPortsAll.clear();
+  channelPing.postMessage(broadcast_event);
+ 
+  setTimeout(() => {
+    serviceWorkerPing();
+  }, 3000);
+ }
+ 
 /**
  * @type {null|number}
  */
@@ -24,6 +43,7 @@ self.onconnect = function (event) {
     sharedWorkerLastPortsAll.add(port);
 
     port.onmessage = function (e) {
+      sharedWorkerLastPortsAll.add(port);
       //console.log("SharedWorker received:", e.data);
 
       listener(e.data, port);
@@ -65,12 +85,11 @@ async function listener(data, port) {
         listenerSubscribe({ data: props, port });
       }
       else if (props.type === EVENT_TYPES.PING) {
-        const prevSize = sharedWorkerLastPortsActive.size;
-        sharedWorkerLastPortsActive.add(port);
+        const prevSize = sharedWorkerLastPortsAll.size;
+        sharedWorkerLastPortsAll.add(port);
+        // debugLog(import.meta.url, {delta: props.response.pageDate - props.response.serviceWorkerDate});
         
-        if(prevSize !== sharedWorkerLastPortsActive.size) {
-          updateActiveTabsCountSubscription();
-        }
+        updateActiveTabsCountSubscription();
       }
     }
   }
@@ -98,13 +117,12 @@ function listenerSubscribe({
   else {
     const controllerSubscribe = subscriptionMiddleware({
       sendAll: (dataSended) => { 
-        if(
-          lastPingDate === null 
-          || (lastPingDate + MS_PING_SLEEP) < Date.now()
-        ) {
-          lastPingDate = Date.now();
-          sharedWorkerLastPortsActive.clear();
-        }
+       //if(
+       //  lastPingDate === null 
+       //  || (lastPingDate + MS_PING_SLEEP) < Date.now()
+       //) {
+       //  lastPingDate = Date.now();
+       //}
 
         sharedWorkerLastPortsAll.forEach(port => {
           try {
