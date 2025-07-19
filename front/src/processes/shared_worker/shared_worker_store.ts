@@ -76,13 +76,15 @@ type _SendProps = {
   res: (p: SendProps) => void;
 }
 type SendProps = BackMiddlewareEvent;
+export type SubscribeParam = BackMiddlewarePayloadSubscribe;
+export type SubscribeUtilsParam<P extends SubscribeParam> = {
+  callback: (p: ResultByPath[P['path']]) => void;
+};
 type Store = {
   sendMessage: <F extends BackMiddlewareEventFetch = BackMiddlewareEventFetch>(p: BackMiddlewarePayloadFetch) => Promise<ResultByPath[F['payload']['path']]>;
-  subscribeMessage: <P extends BackMiddlewarePayloadSubscribe = BackMiddlewarePayloadSubscribe>(
+  subscribeMessage: <P extends SubscribeParam = SubscribeParam>(
     p: P,
-    utils: {
-      callback: (p: ResultByPath[P['path']]) => void;
-    }
+    utils: SubscribeUtilsParam<P>
   /** Функция отписки */
   ) => () => void;
 }
