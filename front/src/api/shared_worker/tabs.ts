@@ -9,7 +9,16 @@ export const tabs = {
    * @returns функция для отписки
    */
   subscribeActiveTabsCount(callback: (count: number) => void): () => void {
-    devLog("tabs.subscribeActiveTabsCount ВЫЗОВ");
+    //devLog("tabs.subscribeActiveTabsCount ВЫЗОВ");
+
+    return shared_worker_store.subscribeWorker({
+      reqParam: {
+        path: PATHS.GET_ACTIVE_TABS_COUNT,
+      },
+      utils: {
+        callback: (data) => callback(data.count),
+      }
+    });
 
     return () => {};
 

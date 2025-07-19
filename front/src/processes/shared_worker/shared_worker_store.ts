@@ -92,7 +92,7 @@ function create_shared_worker_store() {
 
       unsubscribeMap.set(
         item, 
-        result.subscribe(...item),
+        result.subscribeWorker(...item),
       );
     }
 
@@ -126,8 +126,10 @@ export type SubscribeUtilsParam<P extends SubscribeParam> = {
 type Store = {
   sendMessage: <F extends BackMiddlewareEventFetch = BackMiddlewareEventFetch>(p: BackMiddlewarePayloadFetch) => Promise<ResultByPath[F['payload']['path']]>;
   subscribeMessage: <P extends SubscribeParam = SubscribeParam>(
-    p: P,
-    utils: SubscribeUtilsParam<P>
+    p: {
+      reqParam: P;
+      utils: SubscribeUtilsParam<P>
+    }
   /** Функция отписки */
   ) => () => void;
 }

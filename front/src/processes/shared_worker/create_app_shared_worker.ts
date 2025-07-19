@@ -7,8 +7,13 @@ import {
 } from "../../local_back/middleware";
 import { shared_worker_store, type SubscribeParam, type SubscribeUtilsParam } from "./shared_worker_store";
 import SharedWorkerConstructor from './process/sharedWorker.js?sharedworker';
-import { EVENT_TYPES } from "../../local_back/constant";
+import { EVENT_TYPES, PATHS } from "../../local_back/constant";
 import type { ObjectValues } from "../../types/utils";
+
+const subscribeCallBackByEvents: Record<
+  keyof typeof PATHS,
+  Set<()=>void>
+> = {}
 
 export async function createAppSharedWorker() {
   await sleep(3000);
@@ -19,37 +24,35 @@ export async function createAppSharedWorker() {
   const sharedWorker = new SharedWorkerConstructor();
 
   // Отправляем сообщение общему воркеру
-  sharedWorker.port.postMessage({ message: "Hello, shared worker!" });
+  //sharedWorker.port.postMessage({ message: "Hello, shared worker!" });
   const promiseResolves: PromiseResolves = {};
   const subscribeUtils: SubscribeUtils = {};
 
   shared_worker_store.set({
-    subscribeMessage: (
-      event,
-      utils,
-    ) => {
+    subscribeMessage: (param) => {
+
       //else if (event.type === EVENT_TYPES.SUBSCRIBE) {
-        sharedWorker.port.postMessage({ message: JSON.stringify(event) })
+        sharedWorker.port.postMessage({ 
+          message: JSON.stringify({
+            type: EVENT_TYPES.SUBSCRIBE,
+            payload: param.reqParam,
+          })
+        });
 
-        if(!subscribeUtils[event.path]) {
-          subscribeUtils[event.path] = new Set();
+        if(!subscribeUtils[param.reqParam.path]) {
+          subscribeUtils[param.reqParam.path] = new Set();
         };
 
 
-        const newParam: SubscribeItem<typeof event> = {
-          param: event,
-          utils: utils,
-        };
+        const newParam: SubscribeItem<typeof param.reqParam> = param;
 
-        subscribeUtils[event.path].add(newParam);
+        subscribeUtils[param.reqParam.path].add(newParam);
 
         return () => {
           // unsubscribe
-          subscribeUtils[event.path].delete(newParam);
+          subscribeUtils[param.reqParam.path].delete(newParam);
         }
       //}
-
-      return () => {};
     },
     sendMessage: (
       event,
@@ -89,6 +92,7 @@ async function listener({
   subscribeUtils: SubscribeUtils,
 }) {
   try {
+    // TODO: не тот тип BackMiddlewareProps по сути это контракт из sharedWorker
     const props = toJson(param) as BackMiddlewareProps;
 
     if(props.type === EVENT_TYPES.FETCH) {
@@ -98,15 +102,18 @@ async function listener({
       }
     }
     else if(props.type === EVENT_TYPES.SUBSCRIBE) {
-      (subscribeUtils[props.payload.path]||[]).forEach(subItem => {
-        subItem.utils.callback(props.payload);
+      (subscribeUtils[props.payload.path] || []).forEach(subItem => {
+        subItem.utils.callback(props.data);
       });
     }
+    else console.log('TODO: tmp debug 3288h9f4', props);
   }
   catch(err) {
     return null;
   }
 };
+
+
 
 type PromiseResolves = Record<
   string,
@@ -114,7 +121,7 @@ type PromiseResolves = Record<
 >;
 
 type SubscribeItem<P extends SubscribeParam> = {
-  param: P;
+  reqParam: P;
   utils: SubscribeUtilsParam<P>;
 };
 

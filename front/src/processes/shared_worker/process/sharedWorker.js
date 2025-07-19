@@ -37,18 +37,21 @@ async function listener(data, port) {
      */
     const props = toJson(data.message);
 
-    if (
-      (props.idRequest || props.idRequest === 0)
-      && props.payload
-    ) {
+    if ('type' in props) {
       if (props.type === EVENT_TYPES.FETCH) {
-        port.postMessage(JSON.stringify({
-          idRequest: props.idRequest,
-          payload: await backMiddleware(props),
-        }));
+        if (
+          (props.idRequest)
+          && props.payload
+        ) {
+          port.postMessage(JSON.stringify({
+            type: EVENT_TYPES.FETCH,
+            idRequest: props.idRequest,
+            payload: await backMiddleware(props),
+          }));
+        }
       }
-      else if(props.type === EVENT_TYPES.SUBSCRIBE) {
-        listenerSubscribe({data, port});
+      else if (props.type === EVENT_TYPES.SUBSCRIBE) {
+        listenerSubscribe({ data: props, port });
       }
     }
   }
@@ -75,10 +78,14 @@ function listenerSubscribe({
   }
   else {
     const controllerSubscribe = subscriptionMiddleware({
-      sendAll: () => { 
+      sendAll: (dataSended) => { 
         (sharedWorkerLastPortsRef.current||[]).forEach(port => {
           try {
-            port.postMessage(JSON.stringify({ hi: '))' }));
+            port.postMessage(JSON.stringify({
+              type: EVENT_TYPES.SUBSCRIBE,
+              payload: data.payload,
+              data: dataSended,
+            }));
           }
           catch(err) {
             console.error(err, 'Не удалось отправить в порт сообщение');
