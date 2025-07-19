@@ -49,7 +49,7 @@ self.onconnect = function (event) {
 
     port.onmessage = function (e) {
       sharedWorkerLastPortsAll.add(port);
-      console.log("SharedWorker received:", e.data);
+      //console.log("SharedWorker received:", e.data);
 
       listener(e.data, port);
 

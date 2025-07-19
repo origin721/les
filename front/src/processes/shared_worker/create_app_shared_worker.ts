@@ -38,7 +38,7 @@ export async function createAppSharedWorker() {
 
   // Прослушивание сообщений
   channelPing.onmessage = (event) => {
-    console.log('Получено сообщение:', event.data);
+    // console.log('Получено сообщение:', event.data);
 
     sharedWorker.port.postMessage({
       message: JSON.stringify({
@@ -133,7 +133,7 @@ async function listener({
         subItem.utils.callback(props.data);
       });
     }
-    else console.log('TODO: tmp debug 3288h9f4', props);
+    //else console.log('TODO: tmp debug 3288h9f4', props);
   }
   catch(err) {
     return null;
