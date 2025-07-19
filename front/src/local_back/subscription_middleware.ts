@@ -1,13 +1,14 @@
 import { EVENT_TYPES, PATHS } from "./constant";
 import { devLog, prodError } from "../core/debug/logger";
-import type { BackMiddlewarePayload } from "./middleware";
+import type { BackMiddlewarePayload, BackMiddlewarePayloadSubscribe, ResultByPath } from "./middleware";
 
 type IdRequest = string | number;
 
-export type SubscriptionMiddlewareProps = {
-  type: (typeof EVENT_TYPES)["SUBSCRIBE"];
-  payload: BackMiddlewarePayload;
-  idRequest: IdRequest;
+export type SubscriptionMiddlewareProps<P extends BackMiddlewarePayloadSubscribe = BackMiddlewarePayloadSubscribe> = {
+  //type: (typeof EVENT_TYPES)["SUBSCRIBE"];
+  payload: P;
+  //idRequest: IdRequest;
+  sendAll: (data: ResultByPath[P['path']]) => void;
 };
 
 export type SubscriptionCallback = (data: any) => void;
@@ -20,22 +21,26 @@ export type SubscriptionResult = {
   error?: string;
 };
 
+export type ReturnSubscriptionMiddleware = {
+  update: () => void;
+  onDestroy: () => void;
+}
+
 /**
  * Middleware для обработки подписок (SUBSCRIBE запросы)
  * @param props - параметры подписки
  * @param onSubscriptionUpdate - callback для отправки обновлений
  * @returns результат обработки подписки
  */
-export async function subscriptionMiddleware(
+export function subscriptionMiddleware(
   props: SubscriptionMiddlewareProps,
-  onSubscriptionUpdate?: SubscriptionCallback,
-): Promise<SubscriptionResult> {
+): (ReturnSubscriptionMiddleware | void) {
   devLog("subscriptionMiddleware starting with props:", props);
 
   try {
     // Подписка на количество активных вкладок
     if (props.payload.path === PATHS.GET_ACTIVE_TABS_COUNT) {
-      return await handleActiveTabsCountSubscription(props, onSubscriptionUpdate);
+      return handleActiveTabsCountSubscription(props);
     }
 
     // Здесь можно добавить другие подписки:
@@ -57,44 +62,26 @@ export async function subscriptionMiddleware(
       props.payload.path,
     );
 
-    return {
-      subscriptionHandled: false,
-      path: props.payload.path,
-      idRequest: props.idRequest,
-      error: `Неподдерживаемая подписка: ${props.payload.path}`,
-    };
   } catch (err) {
-    prodError("subscriptionMiddleware error:", err);
-
-    return {
-      subscriptionHandled: false,
-      path: props.payload.path,
-      idRequest: props.idRequest,
-      error: err instanceof Error ? err.message : "Неизвестная ошибка",
-    };
+    console.error(err);
   }
+
 }
 
 /**
  * Обработчик подписки на количество активных вкладок
  */
-async function handleActiveTabsCountSubscription(
+function handleActiveTabsCountSubscription(
   props: SubscriptionMiddlewareProps,
-  onSubscriptionUpdate?: SubscriptionCallback,
-): Promise<SubscriptionResult> {
-  devLog(
-    "subscriptionMiddleware: обрабатываем подписку на активные вкладки, idRequest:",
-    props.idRequest,
-  );
-
-  // Для подписки на вкладки логика остается в SharedWorker
-  // так как там ведется учет активных портов
+): ReturnSubscriptionMiddleware {
   return {
-    subscriptionHandled: true,
-    path: props.payload.path,
-    idRequest: props.idRequest,
-    // initialData будет установлена в SharedWorker
-  };
+    onDestroy: () => {
+
+    },
+    update: () => {
+      props.sendAll({count: 888});
+    }
+  }
 }
 
 /**

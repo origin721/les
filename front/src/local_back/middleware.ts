@@ -6,22 +6,13 @@ import { EVENT_TYPES, PATHS } from "./constant";
 import type { FriendEntity } from "../indexdb/main_les_store_v1/entities/friends/types/friend_entity";
 import type { FriendEntityPut } from "../indexdb/main_les_store_v1/entities/friends/put_friends";
 import { devLog, prodError } from "../core/debug/logger";
-import { promiseMiddleware } from "./promise_middleware";
-import { subscriptionMiddleware } from "./subscription_middleware";
+import { promiseMiddleware, type PromiseMiddlewareProps } from "./promise_middleware";
+import { subscriptionMiddleware, type SubscriptionMiddlewareProps } from "./subscription_middleware";
 import type { friends_service } from "./modules/friends_service";
 import type { get_accounts } from "../indexdb/main_les_store_v1/entities/accounts/get_accounts";
 
 type IdRequest = string | number;
-export type BackMiddlewareProps = {
-  type: (typeof EVENT_TYPES)["FETCH"] | (typeof EVENT_TYPES)["SUBSCRIBE"];
-  payload: BackMiddlewarePayload;
-  /**
-   * Индификатор который вернётся в ответе
-   * например для shared worker что бы было понятно
-   * что это ответ для этого запроса
-   */
-  idRequest: IdRequest;
-};
+export type BackMiddlewareProps = SubscriptionMiddlewareProps | PromiseMiddlewareProps;
 
 export type AddAccountsPayload = {
   path: (typeof PATHS)["ADD_ACCOUNTS"];

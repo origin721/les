@@ -10,6 +10,11 @@ type IdRequest = string | number;
 export type PromiseMiddlewareProps = {
   type: "FETCH";
   payload: BackMiddlewarePayload;
+  /**
+   * Индификатор который вернётся в ответе
+   * например для shared worker что бы было понятно
+   * что это ответ для этого запроса
+   */
   idRequest: IdRequest;
 };
 
