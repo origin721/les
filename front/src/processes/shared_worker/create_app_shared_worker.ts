@@ -23,6 +23,7 @@ let lastPingDate: null|number = null;
 const MS_PING_SLEEP = 2000;
 
 export async function createAppSharedWorker() {
+  // TODO: DEBUG MODE
   await sleep(3000);
   //const workerUrl = new URL('./process/sharedWorker.js', import.meta.url);
   // Создаем общий воркер
@@ -37,7 +38,7 @@ export async function createAppSharedWorker() {
 
   // Прослушивание сообщений
   channelPing.onmessage = (event) => {
-    //console.log('Получено сообщение:', event.data);
+    console.log('Получено сообщение:', event.data);
 
     sharedWorker.port.postMessage({
       message: JSON.stringify({
@@ -127,18 +128,6 @@ async function listener({
       }
     }
     else if(props.type === EVENT_TYPES.SUBSCRIBE) {
-      if(
-        lastPingDate === null
-        || (lastPingDate + MS_PING_SLEEP < Date.now())
-      ) {
-        sharedWorker.port.postMessage({
-          message: JSON.stringify({
-            type: EVENT_TYPES.PING,
-            idRequest: props.idRequest,
-            date: Date.now(),
-          })
-        });
-      }
 
       (subscribeUtils[props.payload.path] || []).forEach(subItem => {
         subItem.utils.callback(props.data);
