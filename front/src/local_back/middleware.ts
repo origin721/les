@@ -3,11 +3,13 @@ import type {
   AccountEntityPut,
 } from "../indexdb/main_les_store_v1/entities/accounts/types";
 import { EVENT_TYPES, PATHS } from "./constant";
-import type { FriendEntity } from "../indexdb/main_les_store_v1/entities/friends/add_friend";
+import type { FriendEntity } from "../indexdb/main_les_store_v1/entities/friends/types/friend_entity";
 import type { FriendEntityPut } from "../indexdb/main_les_store_v1/entities/friends/put_friends";
 import { devLog, prodError } from "../core/debug/logger";
 import { promiseMiddleware } from "./promise_middleware";
 import { subscriptionMiddleware } from "./subscription_middleware";
+import type { friends_service } from "./modules/friends_service";
+import type { get_accounts } from "../indexdb/main_les_store_v1/entities/accounts/get_accounts";
 
 type IdRequest = string | number;
 export type BackMiddlewareProps = {
@@ -122,7 +124,7 @@ export type ResultByPath = {
   [PATHS.GET_ACTIVE_TABS_COUNT]: { count: number };
 };
 
-export type BackMiddlewarePayload = Extract<
+export type BackMiddlewarePayloadFetch = Extract<
   | GetAccountsPayload
   | DeleteAccountsPayload
   | PutAccountsPayload
@@ -134,13 +136,42 @@ export type BackMiddlewarePayload = Extract<
   | DeleteFriendsPayload
   | GetFriendsPayload
   | GetFriendsByAccountIdPayload
-  | GetFriendByIdPayload
+  | GetFriendByIdPayload,
+  {
+    path: keyof typeof PATHS;
+    body?: any;
+  }
+>;
+
+export type BackMiddlewarePayload = Extract<
+  BackMiddlewarePayloadFetch
+  | BackMiddlewarePayloadSubscribe,
+  {
+    path: keyof typeof PATHS;
+    body?: any;
+  }
+>;
+
+export type BackMiddlewareEventFetch = {
+  idRequest: IdRequest;
+  type: (typeof EVENT_TYPES)["FETCH"];
+  payload: BackMiddlewarePayload;
+};
+
+
+export type BackMiddlewarePayloadSubscribe = Extract<
   | GetActiveTabsCountPayload,
   {
     path: keyof typeof PATHS;
     body?: any;
   }
 >;
+
+export type BackMiddlewareEventSubscribe = {
+  idRequest: IdRequest;
+  type: (typeof EVENT_TYPES)["SUBSCRIBE"];
+  payload: BackMiddlewarePayloadSubscribe;
+};
 
 export type BackMiddlewareEvent = {
   idRequest: IdRequest;
