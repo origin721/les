@@ -155,7 +155,7 @@ export type BackMiddlewarePayload = Extract<
 export type BackMiddlewareEventFetch = {
   idRequest: IdRequest;
   type: (typeof EVENT_TYPES)["FETCH"];
-  payload: BackMiddlewarePayload;
+  payload: BackMiddlewarePayloadFetch;
 };
 
 

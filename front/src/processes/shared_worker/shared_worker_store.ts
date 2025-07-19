@@ -1,5 +1,5 @@
 import { writable } from "svelte/store";
-import type { BackMiddlewareEvent, BackMiddlewarePayload, BackMiddlewarePayloadFetch, BackMiddlewarePayloadSubscribe, BackMiddlewareProps, ResultByPath } from "../../local_back/middleware";
+import type { BackMiddlewareEvent, BackMiddlewareEventFetch, BackMiddlewarePayload, BackMiddlewarePayloadFetch, BackMiddlewarePayloadSubscribe, BackMiddlewareProps, ResultByPath } from "../../local_back/middleware";
 import { create_counter_generator } from "../../core/create_counter_generator";
 import { EVENT_TYPES } from "../../local_back/constant";
 import { generateRandomString } from "../../core/random/generateRandomString";
@@ -77,8 +77,8 @@ type _SendProps = {
 }
 type SendProps = BackMiddlewareEvent;
 type Store = {
-  sendMessage: <J extends BackMiddlewarePayloadFetch>(p: BackMiddlewarePayloadFetch) => Promise<ResultByPath[J['path']]>;
-  subscribeMessage: <P extends BackMiddlewarePayloadSubscribe>(
+  sendMessage: <F extends BackMiddlewareEventFetch = BackMiddlewareEventFetch>(p: BackMiddlewarePayloadFetch) => Promise<ResultByPath[F['payload']['path']]>;
+  subscribeMessage: <P extends BackMiddlewarePayloadSubscribe = BackMiddlewarePayloadSubscribe>(
     p: P,
     utils: {
       callback: (p: ResultByPath[P['path']]) => void;

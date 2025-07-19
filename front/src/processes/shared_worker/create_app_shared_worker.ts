@@ -38,13 +38,7 @@ export async function createAppSharedWorker() {
       return () => {};
     },
     sendMessage: (
-      event: BackMiddlewarePayloadFetch,
-      param?: {
-        /**
-         * Для подписки получение новых реактивно
-         */
-        callback: (p: any) => void;
-      }
+      event,
     ) => {
         const result = new Promise(async (res, rej) => {
           promiseResolves[event.idRequest] = res;
