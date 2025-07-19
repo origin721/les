@@ -4,16 +4,8 @@ import { create_counter_generator } from "../../core/create_counter_generator";
 import { EVENT_TYPES } from "../../local_back/constant";
 import { generateRandomString } from "../../core/random/generateRandomString";
 import { getRandomInRange } from "../../core/random/getRandomInRange";
+import { workerGeneratorIds } from "./workerGeneratorIds";
 
-const _workerGeneratorIds = create_counter_generator();
-
-const workerGeneratorIds = () => {
-  return `${Date.now()}_${_workerGeneratorIds()}_${getRandomString()}`;
-
-  function getRandomString() {
-    return generateRandomString(getRandomInRange(8, 14))
-  }
-}
 
 export const shared_worker_store = create_shared_worker_store();
 

@@ -3,15 +3,26 @@ import { toJson } from "../../../core";
 import { EVENT_TYPES } from "../../../local_back/constant";
 import { backMiddleware } from "../../../local_back/middleware";
 import { subscribeItemByPath } from "../../../local_back/subscribeItemByPath";
+import { updateActiveTabsCountSubscription } from "../../../local_back/subscribeModules/handleActiveTabsCountSubscription";
 import { subscriptionMiddleware } from "../../../local_back/subscription_middleware";
-import { sharedWorkerLastPortsRef } from "./sharedWorkerLastPortsRef";
+import { workerGeneratorIds } from "../workerGeneratorIds";
+import { sharedWorkerLastPortsActive, sharedWorkerLastPortsAll } from "./sharedWorkerLastPortsRef";
+
+
+/**
+ * @type {null|number}
+ */
+let lastPingDate = null;
+
+const MS_PING_SLEEP = 2000;
 
 
 self.onconnect = function (event) {
 
-  sharedWorkerLastPortsRef.current = event.ports;
 
   event.ports.forEach(port => {
+    sharedWorkerLastPortsAll.add(port);
+
     port.onmessage = function (e) {
       //console.log("SharedWorker received:", e.data);
 
@@ -53,6 +64,14 @@ async function listener(data, port) {
       else if (props.type === EVENT_TYPES.SUBSCRIBE) {
         listenerSubscribe({ data: props, port });
       }
+      else if (props.type === EVENT_TYPES.PING) {
+        const prevSize = sharedWorkerLastPortsActive.size;
+        sharedWorkerLastPortsActive.add(port);
+        
+        if(prevSize !== sharedWorkerLastPortsActive.size) {
+          updateActiveTabsCountSubscription();
+        }
+      }
     }
   }
   catch (err) {
@@ -79,12 +98,21 @@ function listenerSubscribe({
   else {
     const controllerSubscribe = subscriptionMiddleware({
       sendAll: (dataSended) => { 
-        (sharedWorkerLastPortsRef.current||[]).forEach(port => {
+        if(
+          lastPingDate === null 
+          || (lastPingDate + MS_PING_SLEEP) < Date.now()
+        ) {
+          lastPingDate = Date.now();
+          sharedWorkerLastPortsActive.clear();
+        }
+
+        sharedWorkerLastPortsAll.forEach(port => {
           try {
             port.postMessage(JSON.stringify({
               type: EVENT_TYPES.SUBSCRIBE,
               payload: data.payload,
               data: dataSended,
+              idRequest: workerGeneratorIds(),
             }));
           }
           catch(err) {

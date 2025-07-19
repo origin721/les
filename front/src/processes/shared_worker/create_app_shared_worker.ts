@@ -15,6 +15,10 @@ const subscribeCallBackByEvents: Record<
   Set<()=>void>
 > = {}
 
+let lastPingDate: null|number = null;
+
+const MS_PING_SLEEP = 2000;
+
 export async function createAppSharedWorker() {
   await sleep(3000);
   //const workerUrl = new URL('./process/sharedWorker.js', import.meta.url);
@@ -72,6 +76,7 @@ export async function createAppSharedWorker() {
       param: event.data, 
       promiseResolves,
       subscribeUtils,
+      sharedWorker,
   });
   };
 
@@ -86,10 +91,12 @@ async function listener({
   param,
   promiseResolves,
   subscribeUtils,
+  sharedWorker,
 }:{
   param: string,
-  promiseResolves: PromiseResolves,
-  subscribeUtils: SubscribeUtils,
+  promiseResolves: PromiseResolves;
+  subscribeUtils: SubscribeUtils;
+  sharedWorker: SharedWorker;
 }) {
   try {
     // TODO: не тот тип BackMiddlewareProps по сути это контракт из sharedWorker
@@ -102,6 +109,19 @@ async function listener({
       }
     }
     else if(props.type === EVENT_TYPES.SUBSCRIBE) {
+      if(
+        lastPingDate === null
+        || (lastPingDate + MS_PING_SLEEP < Date.now())
+      ) {
+        sharedWorker.port.postMessage({
+          message: JSON.stringify({
+            type: EVENT_TYPES.PING,
+            idRequest: props.idRequest,
+            date: Date.now(),
+          })
+        });
+      }
+
       (subscribeUtils[props.payload.path] || []).forEach(subItem => {
         subItem.utils.callback(props.data);
       });
