@@ -181,7 +181,6 @@ export type BackMiddlewareEvent = {
 
 export async function backMiddleware(
   props: BackMiddlewareProps,
-  onSubscriptionUpdate?: (data: any) => void,
 ): Promise<any> {
   devLog("backMiddleware starting with props:", props, "type:", props.type);
 
@@ -195,7 +194,7 @@ export async function backMiddleware(
       devLog(
         "backMiddleware: перенаправляем SUBSCRIBE в subscriptionMiddleware",
       );
-      return await subscriptionMiddleware(props, onSubscriptionUpdate);
+      return subscriptionMiddleware(props);
     }
 
     prodError("backMiddleware: неподдерживаемый тип запроса:", props.type);
