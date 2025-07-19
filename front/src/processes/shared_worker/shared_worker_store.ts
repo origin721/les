@@ -21,9 +21,32 @@ function create_shared_worker_store() {
   const store = writable<Store>();
 
   const requestBefore: _SendProps[] = [];
+  const requestBeforeSubscribe: Set<Parameters<Store['subscribeMessage']>> = new Set();
+  const unsubscribeMap: Map<
+    Parameters<Store['subscribeMessage']>,
+    (() => void)
+  > = new Map();
+
   const result = {
     subscribe: store.subscribe,
     set: store.set,
+    subscribeWorker: (
+      ...args: Parameters<Store['subscribeMessage']>
+    ) => {
+      requestBeforeSubscribe.add(args);
+
+      return () => {
+        if(requestBeforeSubscribe.has(args)) {
+          requestBeforeSubscribe.delete(args);
+        }
+        else {
+          if(unsubscribeMap.has(args)) {
+            unsubscribeMap.get(args)!();
+            unsubscribeMap.delete(args);
+          };
+        }
+      };
+    },
     fetch: (
       params: FetchParams
     ): ResultByPath[typeof params['path']] => {
@@ -44,6 +67,11 @@ function create_shared_worker_store() {
 
   store.subscribe(async (newStore) => {
     if(!newStore) return;
+    result.subscribeWorker = (
+      ...args
+    ) => {
+      return newStore.subscribeMessage(...args);
+    };
     result.fetch = (
       p: FetchParams
     ): ResultByPath[typeof p['path']] => {
@@ -53,6 +81,21 @@ function create_shared_worker_store() {
         type: EVENT_TYPES.FETCH,
       }).then(v => v.payload);
     };
+    const tmpListSubscribeArgs = Array.from(requestBeforeSubscribe);
+    for (
+      let _item = tmpListSubscribeArgs.pop();
+      _item;
+      _item = tmpListSubscribeArgs.pop()
+    ) {
+      const item = _item;
+      requestBeforeSubscribe.delete(item);
+
+      unsubscribeMap.set(
+        item, 
+        result.subscribe(...item),
+      );
+    }
+
     for (
       let _item = requestBefore.pop();
       _item;
