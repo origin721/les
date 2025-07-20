@@ -1,1 +1,0 @@
-import{a as p,f as d,k as m,n as o,d as n,y as c,l as f}from"./index-BZn_2kwK.js";var i=d('<header data-widget-name="AppHeader" class="pl-3 text-center m-3"> </header> <span class="ml-auto mr-auto mb-3 w-[90%] h-1 bg-slate-700 block"></span>',1);function x(e,t){let r=p(t,"titleText",3,"");var a=i(),s=m(a),l=f(s);o(()=>c(l,r())),n(e,a)}export{x as A};
