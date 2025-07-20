@@ -102,11 +102,18 @@ async function listener(data, port) {
       }
       else if(props.type === EVENT_TYPES.RESPONSE_FROM_PAGE) {
         // TODO:
-        if(
+        if (
           responseFromPageByPath[props.payload.path]
-          && responseFromPageByPath[props.payload.path].idRequest === props.idRequest
         ) {
-          responseFromPageByPath[props.payload.path].portSuccessResponse.add(port);
+          if (
+            responseFromPageByPath[props.payload.path].idRequest === props.idRequest
+          ) {
+
+            responseFromPageByPath[props.payload.path].portSuccessResponse.add(port);
+          }
+          else {
+            responseFromPageByPath[props.payload.path].portSuccessResponse.delete(port);
+          }
         }
       }
     }
