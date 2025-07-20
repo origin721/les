@@ -9,6 +9,7 @@
   import { search_params_to_string } from "../../../core";
   import { theme } from "../../../stores/theme";
   import ThemeSwitcher from "../../../components/ThemeSwitcher.svelte";
+    import { setQueryParam } from "../../../routing/stores/routing-store.create";
 
   const defaultRoomName = "no name";
   let name_field = writable("");
@@ -21,11 +22,12 @@
     
     try {
       const room = events_store.add_room({name: $name_field.trim() || defaultRoomName});
-      routingStore.setPath(
-        `${ROUTES.CHAT_ROOMS}?${search_params_to_string({
-          [QUERY_PARAMS.ROOM_ID]: room.roomId
-        })}`
-      );
+        
+      setQueryParam([
+        [QUERY_PARAMS.ROOM_ID, room.roomId],
+      ])
+          
+      routingStore.setPath(ROUTES.CHAT_ROOMS);
     } catch (error) {
       console.error("Ошибка при создании комнаты:", error);
       isSubmitting = false;

@@ -12,6 +12,7 @@
     import layoutStyles from "../../../styles/modules/layout.module.css";
     import styles from "./ChatRoomsPage.module.css";
     import { onMount } from "svelte";
+    import { setQueryParam } from "../../../routing/stores/routing-store.create";
 
     // Types
     interface Chat {
@@ -177,9 +178,9 @@
     function selectChat(chatId: string) {
         selectedChatId = chatId;
 
-        const url = new URL(window.location.href);
-        url.searchParams.set("room_id", chatId);
-        window.history.replaceState({}, "", url.toString());
+        setQueryParam([
+            ["room_id", chatId]
+        ])
 
         if (isMobile) {
             showSidebar = false;

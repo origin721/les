@@ -47,3 +47,13 @@ function getInitialValue() {
     queryParams,
   };
 }
+
+export function setQueryParam(
+  pathParams: Array<[string, string]>
+) {
+  const url = new URL(location.href);
+  pathParams.forEach(([key, value]) => {
+    url.searchParams.set(key, value);
+  });
+  window.history.replaceState({}, "", url.toString());
+}
