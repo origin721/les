@@ -131,6 +131,11 @@ function listenerSubscribe({
 }) {
   if(subscribeItemByPath.has(data.payload.path)) {
     subscribeItemByPath.get(data.payload.path)?.update();
+    if(responseFromPageByPath[data.payload.path]) {
+      port.postMessage(
+        responseFromPageByPath[data.payload.path].lastMessage
+      )
+    }
   }
   else {
     const controllerSubscribe = subscriptionMiddleware({
