@@ -8,6 +8,6 @@ export const workerGeneratorIds = () => {
   return `${Date.now()}_${_workerGeneratorIds()}_${getRandomString()}`;
 
   function getRandomString() {
-    return generateRandomString(getRandomInRange(1, 4))
+    return generateRandomString(getRandomInRange(8, 14))
   }
 }

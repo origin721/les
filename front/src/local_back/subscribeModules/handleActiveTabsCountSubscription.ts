@@ -22,13 +22,10 @@ export function handleActiveTabsCountSubscription(
     update: () => {
       const newResult = sharedWorkerLastPortsActive.size;
       if (
-        prevResult === newResult && 
-        lastUpdateTime !== null &&
-        (lastUpdateTime + DELAY_UPDATE_MS) < Date.now()
-
+        prevResult === newResult 
       ) return;
 
-      lastUpdateTime = Date.now();
+      //lastUpdateTime = Date.now();
 
       prevResult = newResult;
       props.sendAll({ count: newResult });

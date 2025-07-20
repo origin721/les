@@ -13,14 +13,7 @@ import { CHANNEL_NAMES } from "../../core/broadcast_channel/constants/CHANNEL_NA
 
 const channelPing = new BroadcastChannel(CHANNEL_NAMES.SERVICE_WORKER_PING);
 
-const subscribeCallBackByEvents: Record<
-  keyof typeof PATHS,
-  Set<()=>void>
-> = {}
 
-let lastPingDate: null|number = null;
-
-const MS_PING_SLEEP = 2000;
 
 export async function createAppSharedWorker() {
   // TODO: DEBUG MODE
@@ -120,6 +113,17 @@ async function listener({
   try {
     // TODO: не тот тип BackMiddlewareProps по сути это контракт из sharedWorker
     const props = toJson(param) as BackMiddlewareProps;
+
+
+    if(props.isResponseRequire) {
+      sharedWorker.port.postMessage({
+        message: JSON.stringify({
+          type: EVENT_TYPES.RESPONSE_FROM_PAGE,
+          idRequest: props.idRequest,
+          payload: props.payload,
+        })
+      });
+    }
 
     if(props.type === EVENT_TYPES.FETCH) {
       if (promiseResolves[props.idRequest]) {

@@ -1,4 +1,4 @@
-type Port = {
+export type Port = {
   postMessage: (p: string) => unknown;
 }
 

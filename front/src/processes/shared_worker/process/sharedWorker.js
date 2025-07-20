@@ -9,10 +9,14 @@ import { subscribeItemByPath } from "../../../local_back/subscribeItemByPath";
 import { updateActiveTabsCountSubscription } from "../../../local_back/subscribeModules/handleActiveTabsCountSubscription";
 import { subscriptionMiddleware } from "../../../local_back/subscription_middleware";
 import { workerGeneratorIds } from "../workerGeneratorIds";
+import { processSendAll } from "./processSendAll";
+import { createResponseFromPageByPath, responseFromPageByPath } from "./ResponseFromPageByPath";
 import { sharedWorkerLastPortsActive, sharedWorkerLastPortsAll } from "./sharedWorkerLastPortsRef";
 
 
 const channelPing = new BroadcastChannel(CHANNEL_NAMES.SERVICE_WORKER_PING);
+
+processSendAll();
 
 serviceWorkerPing();
 function serviceWorkerPing() {
@@ -96,6 +100,15 @@ async function listener(data, port) {
         
         updateActiveTabsCountSubscription();
       }
+      else if(props.type === EVENT_TYPES.RESPONSE_FROM_PAGE) {
+        // TODO:
+        if(
+          responseFromPageByPath[props.payload.path]
+          && responseFromPageByPath[props.payload.path].idRequest === props.idRequest
+        ) {
+          responseFromPageByPath[props.payload.path].portSuccessResponse.add(port);
+        }
+      }
     }
   }
   catch (err) {
@@ -122,21 +135,25 @@ function listenerSubscribe({
   else {
     const controllerSubscribe = subscriptionMiddleware({
       sendAll: (dataSended) => { 
-       //if(
-       //  lastPingDate === null 
-       //  || (lastPingDate + MS_PING_SLEEP) < Date.now()
-       //) {
-       //  lastPingDate = Date.now();
-       //}
+        const idRequest = workerGeneratorIds();
+        const responseMessage = JSON.stringify({
+          type: EVENT_TYPES.SUBSCRIBE,
+          payload: data.payload,
+          data: dataSended,
+          idRequest,
+          isResponseRequire: true,
+        });
 
+        createResponseFromPageByPath(
+          data.payload.path,
+          {
+            lastMessage: responseMessage,
+            idRequest,
+          }
+        );
         sharedWorkerLastPortsAll.forEach(port => {
           try {
-            port.postMessage(JSON.stringify({
-              type: EVENT_TYPES.SUBSCRIBE,
-              payload: data.payload,
-              data: dataSended,
-              idRequest: workerGeneratorIds(),
-            }));
+            port.postMessage(responseMessage);
           }
           catch(err) {
             console.error(err, 'Не удалось отправить в порт сообщение');
