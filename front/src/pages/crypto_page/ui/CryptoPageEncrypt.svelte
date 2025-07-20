@@ -78,7 +78,7 @@
         
         try {
             await navigator.clipboard.writeText(encryptedText);
-            alert("Зашифрованный текст скопирован в буфер обмена");
+            //alert("Зашифрованный текст скопирован в буфер обмена");
         } catch (err) {
             console.error("Ошибка копирования:", err);
             alert("Ошибка копирования в буфер обмена");
