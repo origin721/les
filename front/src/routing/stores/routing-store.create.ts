@@ -14,7 +14,9 @@ export const createRoutingStore = () => {
  
 
     // Изменяем URL и добавляем новое состояние в историю браузера
-    history.pushState(state, title, url);
+    //history.pushState(state, title, url);
+
+    window.location.hash = newPathString;
 
     store.set(getInitialValue());
 
@@ -41,7 +43,7 @@ function getInitialValue() {
   // const value = queryParams.get('aaa');
 
   return {
-    pathname: location.pathname,
+    pathname: location.hash.slice(1),
     queryParams,
   };
 }
