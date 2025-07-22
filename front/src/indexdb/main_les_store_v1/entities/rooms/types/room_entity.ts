@@ -4,7 +4,7 @@
  */
 export type RoomEntity = {
   /** ID комнаты в базе данных (незашифрованный) */
-  id: string;
+  // id: string;
   /** Источник имени комнаты */
   sourceName: string;
   /** Отображаемое имя комнаты */

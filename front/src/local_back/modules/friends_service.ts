@@ -7,8 +7,6 @@ import type {
 } from "../../core/broadcast_channel/front_middleware_channel";
 import {
   add_friend,
-  type FriendEntity,
-  type FriendEntityFull,
 } from "../../indexdb/main_les_store_v1/entities/friends/add_friend";
 import { delete_friend } from "../../indexdb/main_les_store_v1/entities/friends/delete_friend";
 import { get_friends } from "../../indexdb/main_les_store_v1/entities/friends/get_friends";
@@ -20,6 +18,7 @@ import {
 import { get_accounts } from "../../indexdb/main_les_store_v1/entities/accounts/get_accounts";
 import { back_store } from "../back_store/back_store";
 import { devLog, prodError, prodInfo } from "../../core/debug/logger";
+import type { FriendEntity, FriendEntityFull } from "../../indexdb/main_les_store_v1/entities/friends/types";
 
 const channel = new BroadcastChannel(CHANNEL_NAMES.FRONT_MIDDLEWARE);
 

@@ -10,5 +10,5 @@ export const createFriendsLibp2pService = async (options: CreateFriendsLibp2pSer
   if (!account) {
     throw new Error(`Account with id ${options.accId} not found in back_store`);
   }
-  return await connectionLibp2p({ keyPair: account._libp2p_keyPair });
+  //return await connectionLibp2p({ keyPair: account._libp2p_keyPair });
 };

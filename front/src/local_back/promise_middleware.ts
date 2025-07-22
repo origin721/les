@@ -4,6 +4,7 @@ import { add_accounts } from "../indexdb/main_les_store_v1/entities/accounts/add
 import { accounts_service } from "./modules/accounts_service";
 import { friends_service } from "./modules/friends_service";
 import type { BackMiddlewarePayload } from "./middleware";
+import { rooms_service } from "./modules/rooms_service";
 
 type IdRequest = string | number;
 
@@ -85,11 +86,10 @@ export async function promiseMiddleware(props: PromiseMiddlewareProps): Promise<
       return await friends_service.put(props.payload.body.list);
     }
 
-    // Special case: GET_ACTIVE_TABS_COUNT can work as FETCH (return current count)
-    if (props.payload.path === PATHS.GET_ACTIVE_TABS_COUNT) {
-      // For FETCH requests, this will be handled by SharedWorker directly
-      return { handledBySharedWorker: true };
+    if (props.payload.path === PATHS.ADD_ROOMS) {
+      return await rooms_service.add_rooms(props.payload.body);
     }
+
 
     prodError(
       "promiseMiddleware: неподдерживаемый путь:",
