@@ -73,7 +73,7 @@
         try {
             const result = await useAddFriend(data, accounts);
             
-            console.log('📥 Результат:', result);
+            //console.log('📥 Результат:', result);
             
             message = result.message;
             messageType = result.messageType;
@@ -82,7 +82,7 @@
                 // Clear form on success
                 friendName = '';
                 friendNickname = '';
-                console.log('✅ Форма очищена');
+                //console.log('✅ Форма очищена');
             }
         } catch (error) {
             console.error('❌ Error in handleAddFriend:', error);
@@ -91,7 +91,7 @@
         } finally {
             // Reset loading immediately
             loading = false;
-            console.log('🔄 Loading сброшен');
+            //console.log('🔄 Loading сброшен');
         }
     }
 

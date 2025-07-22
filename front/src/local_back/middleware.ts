@@ -10,6 +10,7 @@ import { promiseMiddleware, type PromiseMiddlewareProps } from "./promise_middle
 import { subscriptionMiddleware, type SubscriptionMiddlewareProps } from "./subscription_middleware";
 import type { friends_service } from "./modules/friends_service";
 import type { get_accounts } from "../indexdb/main_les_store_v1/entities/accounts/get_accounts";
+import type { AddRoomParam } from "../indexdb/main_les_store_v1/entities/rooms/add_room";
 
 type IdRequest = string | number;
 export type BackMiddlewareProps = SubscriptionMiddlewareProps | PromiseMiddlewareProps;
@@ -93,6 +94,11 @@ export type GetFriendByIdPayload = {
   };
 };
 
+export type AddRoomsPayload = {
+  path: (typeof PATHS)["ADD_ROOMS"];
+  body: AddRoomParam;
+};
+
 export type GetActiveTabsCountPayload = {
   path: (typeof PATHS)["GET_ACTIVE_TABS_COUNT"];
 };
@@ -127,7 +133,8 @@ export type BackMiddlewarePayloadFetch = Extract<
   | DeleteFriendsPayload
   | GetFriendsPayload
   | GetFriendsByAccountIdPayload
-  | GetFriendByIdPayload,
+  | GetFriendByIdPayload
+  | AddRoomsPayload,
   {
     path: keyof typeof PATHS;
     body?: any;
