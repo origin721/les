@@ -92,8 +92,6 @@
             );
         }
 
-        console.log('sdfsdfdsfsd  ', p.rState.pathname)
-        
         if(!p.lang) {
             onLoadSelectLangPage();
         }
