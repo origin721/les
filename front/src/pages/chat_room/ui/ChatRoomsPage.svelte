@@ -244,7 +244,7 @@
         >
             <div class={styles.sidebarHeader}>
                 <div class={styles.sidebarHeaderTop}>
-                    <Link href={'#'+ROUTES.HOME} className={styles.homeLink}
+                    <Link href={'?#'+ROUTES.HOME} className={styles.homeLink}
                         >🏠 Главная</Link
                     >
                 </div>
