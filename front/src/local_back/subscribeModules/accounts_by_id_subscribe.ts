@@ -22,7 +22,7 @@ export function accounts_by_id_subscribe(
         accounts_by_id: (
           Object.fromEntries(
             Object.entries(
-              back_store
+              back_store.accounts_by_id
             ).map(([key, value]) => {
               return [key, accountToDto(value)];
             })

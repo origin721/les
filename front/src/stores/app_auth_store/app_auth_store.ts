@@ -3,6 +3,7 @@ import type { AccountDto } from "../../local_back/modules/accounts_service";
 import { shared_worker_store } from "../../processes";
 import { PATHS } from "../../local_back";
 import type { AccountEntity } from "../../indexdb/main_les_store_v1/entities/accounts/types";
+import { accounts } from "../../api/shared_worker/accounts";
 
 /**
  * @type {Object}
@@ -26,15 +27,24 @@ export function authListToRecordById(list: AccountDto[]) {
 function createAppAuthStore() {
   const store = writable(getInitialStore());
 
+  accounts.subscribeAccById((data) => {
+    store.update((prev) => ({
+      byId: data.accounts_by_id,
+    }))
+  });
+
   const result = {
     subscribe: store.subscribe,
+    /**
+     * @deprecated потому что нужно использовать subscribeAccById 
+     */
     _add: (newList: AccountDto[]) => {
-      store.update((prev) => ({
-        byId: {
-          ...prev.byId,
-          ...authListToRecordById(newList),
-        },
-      }));
+     //store.update((prev) => ({
+     //  byId: {
+     //    ...prev.byId,
+     //    ...authListToRecordById(newList),
+     //  },
+     //}));
     },
     add: async (newAcc: AccountEntity) => {
       //appLocalStorage.addSecret(newAcc);

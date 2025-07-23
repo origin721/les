@@ -3,6 +3,7 @@ import { devLog, prodError } from "../core/debug/logger";
 import type { BackMiddlewarePayload, BackMiddlewarePayloadSubscribe, ResultByPath } from "./middleware";
 import { sharedWorkerLastPortsAll } from "../processes/shared_worker/process/sharedWorkerLastPortsRef";
 import { handleActiveTabsCountSubscription } from "./subscribeModules/handleActiveTabsCountSubscription";
+import { accounts_by_id_subscribe } from "./subscribeModules/accounts_by_id_subscribe";
 
 type IdRequest = string | number;
 
@@ -44,6 +45,11 @@ export function subscriptionMiddleware(
     if (props.payload.path === PATHS.GET_ACTIVE_TABS_COUNT) {
       return handleActiveTabsCountSubscription(props);
     }
+
+    if (props.payload.path === PATHS.GET_ACC_BY_ID) {
+      return accounts_by_id_subscribe(props);
+    }
+
 
     // Здесь можно добавить другие подписки:
 

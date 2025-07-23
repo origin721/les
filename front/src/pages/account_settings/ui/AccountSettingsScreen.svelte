@@ -9,6 +9,8 @@
   import { SEARCH_PARAMS_KEYS } from "../constants/SEARCH_PARAMS_KEYS";
   import { shared_worker_store } from "../../../processes";
   import { PATHS } from "../../../local_back";
+    import { onMount } from 'svelte';
+    import { accounts } from '../../../api/shared_worker/accounts';
 
   const fieldHttpServers = writable([]);
   let idParam = $derived($routingStore.queryParams.get(SEARCH_PARAMS_KEYS.ID));
@@ -30,9 +32,18 @@
     }
   }
 
+  let accsById = $state({});
+
+  onMount(() => {
+    
+    return accounts.subscribeAccById((data) => {
+      accsById = data.accounts_by_id;
+    });
+  });
+
   run(() => {
-    if (idParam && $appAuthStore.byId[idParam]) {
-      fieldHttpServers.set($appAuthStore.byId[idParam].httpServers || []);
+    if (idParam && accsById[idParam]) {
+      fieldHttpServers.set(accsById[idParam].httpServers || []);
     }
   });
 </script>

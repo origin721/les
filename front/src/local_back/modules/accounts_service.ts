@@ -23,14 +23,17 @@ import { UserMigrationManager } from "../../indexdb/main_les_store_v1/user_migra
 import { UserStateManager } from "../../indexdb/db_state_manager_v1/user_state_manager";
 import { MIGRATIONS_REGISTRY } from "../../indexdb/main_les_store_v1/migrations/MIGRATIONS_REGISTRY";
 import { ConnectionManager } from "../../indexdb/main_les_store_v1/connection_manager";
+import { updateAccById } from "../subscribeModules/accounts_by_id_subscribe";
 
 const channel = new BroadcastChannel(CHANNEL_NAMES.FRONT_MIDDLEWARE);
 
 export const accounts_service = {
   async put(list: AccountEntityPut[]) {
     await put_accounts(list);
-
     await accounts_service.getList();
+
+// TODO: put не такой как другие не тут меняется back_store
+    updateAccById();
   },
   async delete(ids: string[]) {
     try {
@@ -38,6 +41,7 @@ export const accounts_service = {
       for (let id of ids) {
         delete back_store.accounts_by_id[id];
       }
+      updateAccById();
       // broadcast delete
       const broadcast_event: PostMessageParamDeleteAccounts = {
         action: FrontMiddlewareActions.DELETE_ACCOUNTS,
@@ -58,6 +62,11 @@ export const accounts_service = {
       },
     };
     channel.postMessage(broadcast_event);
+
+    back_store.accounts_by_id = {};
+    accounts.forEach(el => {
+      back_store.accounts_by_id[el.id] = el;
+    });
   },
   async onLogin(props: LoginPayload) {
     const accounts = await login(props.body.pass);
@@ -88,6 +97,7 @@ export const accounts_service = {
     for (let ac of accounts) {
       back_store.accounts_by_id[ac.id] = ac;
     }
+    updateAccById();
     const broadcast_event: PostMessageParamAddAccounts = {
       action: FrontMiddlewareActions.ADD_ACCOUNTS,
       data: {
@@ -104,7 +114,7 @@ export const accounts_service = {
   },
 };
 
-export type AccountDto = Omit<Account, "pass" | "_libp2p_keyPair">;
+export type AccountDto = Omit<Account, "_pass" | "pass" | "_libp2p_keyPair">;
 export function accountToDto(a: Account): AccountDto {
   return {
     namePub: a.namePub,
@@ -112,7 +122,6 @@ export function accountToDto(a: Account): AccountDto {
     httpServers: a.httpServers,
     date_created: a.date_created,
     date_updated: a.date_updated,
-    _pass: a._pass,
     friendsByIds: a.friendsByIds,
     version: a.version,
   };

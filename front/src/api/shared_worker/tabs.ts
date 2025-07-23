@@ -16,20 +16,8 @@ export const tabs = {
         path: PATHS.GET_ACTIVE_TABS_COUNT,
       },
       utils: {
-        callback: (data) => callback(data.count),
+        callback: (data: any) => callback(data.count),
       }
-    });
-
-    return () => {};
-
-    return shared_worker_store.subscribeToWorker({
-      payload: {
-        path: PATHS.GET_ACTIVE_TABS_COUNT,
-      },
-      callback: (data) => {
-        devLog("tabs.subscribeActiveTabsCount получены данные:", data);
-        callback(data.count);
-      },
     });
   },
 };
