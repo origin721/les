@@ -24,8 +24,8 @@ export function put_accounts(new_list: AccountEntityPut[]) {
           ...item,
           date_updated: new Date(),
           // Сохраняем важные поля из оригинального аккаунта
-          _pass: existingAccount._pass,
-          _libp2p_keyPair: existingAccount._libp2p_keyPair,
+          //_pass: existingAccount._pass,
+          //_libp2p_keyPair: existingAccount._libp2p_keyPair,
           date_created: existingAccount.date_created,
           version: ACCOUNTS_VERSION, // Версия внутри зашифрованных данных
         };
