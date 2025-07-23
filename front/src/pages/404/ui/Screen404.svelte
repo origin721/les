@@ -61,12 +61,12 @@
       </div>
       
       <div class="action-buttons">
-        <Link hash={ROUTES.HOME} className="btn-primary">
+        <Link href={'#'+ROUTES.HOME} className="btn-primary">
           <span class="btn-text">ВЕРНУТЬСЯ ДОМОЙ</span>
           <span class="btn-glow"></span>
         </Link>
         
-        <button class="btn-secondary" on:click={() => routingStore.setRoute({hash: ROUTES.HOME})}>
+        <button class="btn-secondary" on:click={() => routingStore.setPath('#'+ROUTES.HOME)}>
           <span class="btn-text">НАЗАД</span>
           <span class="btn-glow"></span>
         </button>

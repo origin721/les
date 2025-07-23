@@ -8,28 +8,28 @@
 <div class="" data-widget-name="HomePage">
     <ul>
         <li>
-            <Link hash={ROUTES.ACCOUNTS}>Акаунты</Link>
+            <Link href={'#'+ROUTES.ACCOUNTS}>Акаунты</Link>
         </li>
         <li>
-            <Link hash={ROUTES.RANDOM}>Рандом</Link>
+            <Link href={'#'+ROUTES.RANDOM}>Рандом</Link>
         </li>
         <li>
-            <Link hash={ROUTES.CRYPTO}>Шифрование</Link>
+            <Link href={'#'+ROUTES.CRYPTO}>Шифрование</Link>
         </li>
         <li>
-            <Link hash={ROUTES.API_KEYS}>API Ключи</Link>
+            <Link href={'#'+ROUTES.API_KEYS}>API Ключи</Link>
         </li>
         <li>
-            <Link hash={ROUTES.ADD_FRIEND}>Добавить друга</Link>
+            <Link href={'#'+ROUTES.ADD_FRIEND}>Добавить друга</Link>
         </li>
         <li>
-            <Link hash={ROUTES.ADD_PEER}>Добавить пира</Link>
+            <Link href={'#'+ROUTES.ADD_PEER}>Добавить пира</Link>
         </li>
         <li>
-            <Link hash={ROUTES.CHAT_ROOMS}>Чаты</Link>
+            <Link href={'#'+ROUTES.CHAT_ROOMS}>Чаты</Link>
         </li>
         <li>
-            <Link hash={ROUTES.SETTINGS}>Настройки</Link>
+            <Link href={'#'+ROUTES.SETTINGS}>Настройки</Link>
         </li>
     </ul>
 </div>

@@ -20,7 +20,7 @@
     statusText = "СИСТЕМА АКТИВНА",
     showBackButton = true,
     backButtonText = "← ГЛАВНАЯ",
-    backButtonHref = ROUTES.HOME,
+    backButtonHref = '#'+ROUTES.HOME,
     showThemeSwitcher = true
   }: Props = $props();
 
@@ -66,7 +66,7 @@
 
   <div class={headerStyles.headerControls}>
     {#if showBackButton}
-      <Link hash={backButtonHref} className="back-button">
+      <Link href={backButtonHref} className="back-button">
         {backButtonText}
       </Link>
     {/if}

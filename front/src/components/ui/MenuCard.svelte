@@ -18,7 +18,7 @@
   }: Props = $props();
 </script>
 
-<Link hash={href} className="menu-card {className}">
+<Link href={href} className="menu-card {className}">
   <div class="menu-icon">{icon}</div>
   <h3 class="menu-title">{title}</h3>
   <p class="menu-description">{description}</p>

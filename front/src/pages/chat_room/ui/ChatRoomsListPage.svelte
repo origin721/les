@@ -1,6 +1,6 @@
 <script lang="ts">
   import { PageContainer, PageTitle, Card, Button, Input, StatusIndicator } from '../../../components/ui';
-  import { Link } from '../../../routing';
+  import { Link, ROUTES } from '../../../routing';
   import { theme } from '../../../stores/theme';
   import { 
     type ChatRoom, 
@@ -209,7 +209,7 @@
             </div>
             
             <div class="room-item-actions">
-              <Link hash={`/chat_rooms?room_id=${room.id}`} className="room-enter-link">
+              <Link href={'#'+`/chat_rooms?room_id=${room.id}`} className="room-enter-link">
                 ВОЙТИ →
               </Link>
             </div>
@@ -269,7 +269,7 @@
             </div>
             
             <div class="room-actions">
-              <Link hash={`/chat_rooms?room_id=${selectedRoom.id}`}>
+              <Link href={`room_id=${selectedRoom.id}`+'#'+ROUTES.CHAT_ROOMS}>
                 <Button variant="primary" size="lg">
                   ВОЙТИ В КАНАЛ
                 </Button>

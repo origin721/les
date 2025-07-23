@@ -17,7 +17,7 @@
             Вернуться на главную страницу приложения.
         </div>
         <div class={styles.settingActions}>
-            <Link hash={ROUTES.HOME}>
+            <Link href={'#'+ROUTES.HOME}>
                 <Button variant="outline" size="sm">
                     Перейти на главную
                 </Button>

@@ -176,7 +176,7 @@
                         <!-- Action Buttons -->
                         <div class="action-buttons">
                             <Link
-                                hash={ROUTES.ADD_FRIEND}
+                                href={'#'+ROUTES.ADD_FRIEND}
                                 className="action-button primary"
                             >
                                 <span class="button-icon">👥</span>

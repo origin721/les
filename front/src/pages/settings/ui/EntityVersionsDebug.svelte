@@ -93,7 +93,7 @@
                     Авторизуйтесь для просмотра версий ваших данных
                 </div>
                 <div class={styles.authActions}>
-                    <Link hash={ROUTES.AUTH}>
+                    <Link href={'#'+ROUTES.AUTH}>
                         <Button variant="primary" size="sm">
                             🔑 Авторизоваться
                         </Button>

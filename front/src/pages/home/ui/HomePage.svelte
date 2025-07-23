@@ -8,16 +8,16 @@
     const langViewPage = homePageLangStore.config;
 
     const menuItems = [
-      { href: ROUTES.ACCOUNTS, title: langViewPage.goToAccounts, icon: "👤", description: langViewPage.manageUsers },
-  { href: ROUTES.FRIENDS, title: langViewPage.goToFriends, icon: "👥", description: langViewPage.friendsList },
-  { href: ROUTES.CRYPTO, title: langViewPage.goToCrypto, icon: "🔐", description: langViewPage.cryptoOperations },
-  { href: ROUTES.API_KEYS, title: langViewPage.goToApiKeys, icon: "🔑", description: langViewPage.manageAccessKeys },
-  { href: ROUTES.CHAT_ROOMS, title: langViewPage.goToChatRooms, icon: "💬", description: langViewPage.secureMessages },
-  { href: ROUTES.ADD_PEER, title: langViewPage.goToAddPeer, icon: "🤝", description: langViewPage.connectToP2P },
-  { href: ROUTES.RANDOM, title: langViewPage.goToRandom, icon: "🎲", description: langViewPage.generateRandomData },
-  { href: ROUTES.SETTINGS, title: langViewPage.goToSettings, icon: "⚙️", description: langViewPage.systemConfiguration },
-  { href: ROUTES.DOCS, title: langViewPage.goToDocs, icon: "📋", description: langViewPage.technicalInformation },
-  { href: ROUTES.NOT_FOUND, title: langViewPage.goToNotFound, icon: "⚠️", description: langViewPage.demoNotFoundError }
+      { href: '#'+ROUTES.ACCOUNTS, title: langViewPage.goToAccounts, icon: "👤", description: langViewPage.manageUsers },
+  { href: '#'+ROUTES.FRIENDS, title: langViewPage.goToFriends, icon: "👥", description: langViewPage.friendsList },
+  { href: '#'+ROUTES.CRYPTO, title: langViewPage.goToCrypto, icon: "🔐", description: langViewPage.cryptoOperations },
+  { href: '#'+ROUTES.API_KEYS, title: langViewPage.goToApiKeys, icon: "🔑", description: langViewPage.manageAccessKeys },
+  { href: '#'+ROUTES.CHAT_ROOMS, title: langViewPage.goToChatRooms, icon: "💬", description: langViewPage.secureMessages },
+  { href: '#'+ROUTES.ADD_PEER, title: langViewPage.goToAddPeer, icon: "🤝", description: langViewPage.connectToP2P },
+  { href: '#'+ROUTES.RANDOM, title: langViewPage.goToRandom, icon: "🎲", description: langViewPage.generateRandomData },
+  { href: '#'+ROUTES.SETTINGS, title: langViewPage.goToSettings, icon: "⚙️", description: langViewPage.systemConfiguration },
+  { href: '#'+ROUTES.DOCS, title: langViewPage.goToDocs, icon: "📋", description: langViewPage.technicalInformation },
+  { href: '#'+ROUTES.NOT_FOUND, title: langViewPage.goToNotFound, icon: "⚠️", description: langViewPage.demoNotFoundError }
     ];
 </script>
 

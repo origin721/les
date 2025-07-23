@@ -24,7 +24,7 @@
   {#each actions as action}
     {#if action.href}
       <Link
-        hash={action.href}
+        href={action.href}
         className={[
           "action-tab",
           `action-${action.variant || 'primary'}`,

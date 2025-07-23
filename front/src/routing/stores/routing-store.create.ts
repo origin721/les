@@ -25,9 +25,37 @@ export const createRoutingStore = () => {
     // Изменяем URL и добавляем новое состояние в историю браузера
     //history.pushState(state, title, url);
 
-    window.location.hash = param.hash;
+    window.location.hash = (
+      (
+        typeof param.hash === 'string'
+        && param.hash[0] === '#'
+      )
+        ? param.hash
+        : `#${param.hash}`
+    );
 
     store.set(getInitialValue());
+  }
+
+  window.addEventListener('popstate', (event) => {
+    store.set(getInitialValue());
+  });
+
+  function setPath(newPathString: string) {
+    // Создаем объект состояния, который будет сохранен в истории
+    const state = {};
+
+    // Новый URL, который нужно установить
+    const title = ""; // Вы можете установить заголовок страницы, если нужно
+    // const url = '/sss.page?aaa=ccc#section';
+    const url = newPathString;
+
+
+    // Изменяем URL и добавляем новое состояние в историю браузера
+    history.pushState(state, title, url);
+
+    store.set(getInitialValue());
+
   }
 
   window.addEventListener('popstate', (event) => {
@@ -37,6 +65,7 @@ export const createRoutingStore = () => {
   return {
     subscribe: store.subscribe,
     setRoute,
+    setPath,
   };
 };
 

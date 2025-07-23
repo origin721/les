@@ -12,7 +12,7 @@
       id: 'back',
       title: 'НАЗАД',
       icon: '←',
-      href: ROUTES.HOME,
+      href: '#' + ROUTES.HOME,
       variant: 'outline' as const,
       description: 'Вернуться на главную страницу'
     },
@@ -20,7 +20,7 @@
       id: 'create',
       title: 'СОЗДАТЬ_АККАУНТ',
       icon: '+',
-      href: ROUTES.ACCOUNTS_NEW,
+      href: '#' + ROUTES.ACCOUNTS_NEW,
       variant: 'primary' as const,
       description: 'Создать новый аккаунт в системе'
     },
@@ -28,7 +28,7 @@
       id: 'auth',
       title: 'АВТОРИЗИРОВАТЬСЯ',
       icon: '🔐',
-      href: ROUTES.AUTH,
+      href: '#' + ROUTES.AUTH,
       variant: 'secondary' as const,
       description: 'Войти в существующий аккаунт'
     },

@@ -25,7 +25,7 @@
             httpServers: $fieldHttpServers,
         });
 
-        routingStore.setRoute({hash: ROUTES.ACCOUNTS});
+        routingStore.setPath('#'+ROUTES.ACCOUNTS);
     }
 </script>
 
@@ -33,7 +33,7 @@
     title="СОЗДАНИЕ_АККАУНТА"
     subtitle="РЕГИСТРАЦИЯ_НОВОГО_ПОЛЬЗОВАТЕЛЯ"
     statusText="СИСТЕМА ГОТОВА"
-    backButtonHref={ROUTES.ACCOUNTS}
+    backButtonHref={'#'+ROUTES.ACCOUNTS}
     backButtonText="← АККАУНТЫ"
     version="0.0.1"
     versionPrefix="ACCOUNT_SYSTEM_v"

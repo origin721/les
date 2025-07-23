@@ -83,7 +83,7 @@
 
 <ul>
     <li><h1>Добавить пира</h1></li>
-    <li><Link hash={ROUTES.HOME}>На главную</Link></li>
+    <li><Link href={'#'+ROUTES.HOME}>На главную</Link></li>
 </ul>
 
 <div>

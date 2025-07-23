@@ -19,7 +19,7 @@
 <aside class="rooms-sidebar" class:mobile-hidden={!showOnMobile}>
   <div class="sidebar-header">
     <h3 class="sidebar-title">// КАНАЛЫ //</h3>
-    <Link hash={ROUTES.CHAT_ROOMS_ADD} className="add-room-btn">
+    <Link href={'#'+ROUTES.CHAT_ROOMS_ADD} className="add-room-btn">
       + НОВЫЙ
     </Link>
   </div>

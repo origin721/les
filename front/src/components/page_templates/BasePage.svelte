@@ -21,7 +21,7 @@
     title,
     subtitle = "",
     showBackLink = true,
-    backLinkHref = ROUTES.HOME,
+    backLinkHref = '#'+ROUTES.HOME,
     backLinkText = "ГЛАВНАЯ",
     showThemeSwitcher = true,
     footerVersion = "// SECURE_MESSAGE_v0.1.0 //",
@@ -35,7 +35,7 @@
     <header class="base-header">
       {#if showBackLink}
         <div class="back-link-container">
-          <Link hash={backLinkHref} className="back-link">
+          <Link href={backLinkHref} className="back-link">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"

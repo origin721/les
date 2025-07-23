@@ -20,7 +20,7 @@
 <div class={styles["docs-container"]} data-widget-name="DocsPage">
     <header class={styles["docs-header"]}>
         <div class="back-link-container z-10">
-            <Link hash={ROUTES.HOME} className={styles["back-link"]}>
+            <Link href={'#'+ROUTES.HOME} className={styles["back-link"]}>
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="24"

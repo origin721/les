@@ -38,7 +38,7 @@
 </script>
 
 <div data-widget-name="AccountsScreen">
-  <div><Link hash={ROUTES.ACCOUNTS}>Назад</Link></div>
+  <div><Link href={'#'+ROUTES.ACCOUNTS}>Назад</Link></div>
   <form
     onsubmit={submit}
     class="flex justify-center h-[100%] flex-col items-center"

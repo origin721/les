@@ -4,25 +4,25 @@
 
 
   interface Props {
-    hash: undefined|string;
+    href: undefined|string;
     className?: string|string[];
     title?: string;
     children?: import('svelte').Snippet;
-    queryParams?: Record<string, string>;
+    //queryParams?: Record<string, string>;
   }
 
   let { 
-    hash = undefined, 
+    href, 
     className = "", 
     title, 
     children,
-    queryParams = {},
+    //queryParams = {},
   }: Props = $props();
 
     function handleClick(event: MouseEvent) {
         event.preventDefault();
-        if(!hash) return;
-        routingStore.setRoute({hash: hash, queryParams});
+        if(!href) return;
+        routingStore.setPath(href);
     }
 </script>
 
@@ -32,11 +32,7 @@ rel="nofollow" для ненадёжных ссылок
 -->
 <a
   data-widget-name="Link"
-  href={location.origin + location.pathname + search_params_to_string(queryParams) + (
-    hash && hash[0] === '#'
-    ? hash
-    : '#' + hash
-  )}
+  href={href}
   onclick={handleClick}
   class={className}
   title={title}

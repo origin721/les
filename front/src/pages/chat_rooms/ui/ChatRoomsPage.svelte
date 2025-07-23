@@ -50,7 +50,7 @@
   title="SECURE_CHAT_SYSTEM"
   subtitle="ТЕРМИНАЛ_ЗАЩИЩЕННОЙ_СВЯЗИ"
   statusText="КАНАЛЫ АКТИВНЫ"
-  backButtonHref={ROUTES.HOME}
+  backButtonHref={'#'+ROUTES.HOME}
   backButtonText="← ГЛАВНАЯ"
   versionPrefix="SECURE_CHAT_TERMINAL_v"
   contentClass="chat-content flex"

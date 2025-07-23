@@ -21,7 +21,7 @@
 <aside class="{chatStyles.sidebar} {showMobile ? '' : chatStyles.mobileHidden}">
   <div class={chatStyles.sidebarHeader}>
     <h3 class={chatStyles.sidebarTitle}>// КАНАЛЫ //</h3>
-    <Link hash={ROUTES.CHAT_ROOMS_ADD} className="add-room-btn">
+    <Link href={'#'+ROUTES.CHAT_ROOMS_ADD} className="add-room-btn">
       + НОВЫЙ
     </Link>
   </div>

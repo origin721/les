@@ -10,6 +10,7 @@
   import { theme } from "../../../stores/theme";
   import ThemeSwitcher from "../../../components/ThemeSwitcher.svelte";
     import { setQueryParam } from "../../../routing/stores/routing-store.create";
+    import { uuidv4 } from "../../../core/uuid";
 
   const defaultRoomName = "no name";
   let name_field = writable("");
@@ -21,10 +22,11 @@
     isSubmitting = true;
     
     try {
-      const room = events_store.add_room({name: $name_field.trim() || defaultRoomName});
+      //const room = events_store.add_room({name: $name_field.trim() || defaultRoomName});
         
       setQueryParam([
-        [QUERY_PARAMS.ROOM_ID, room.roomId],
+        //[QUERY_PARAMS.ROOM_ID, room.roomId],
+        [QUERY_PARAMS.ROOM_ID, uuidv4()],
       ])
           
       routingStore.setRoute({hash: ROUTES.CHAT_ROOMS});
@@ -62,7 +64,7 @@
     <div class="max-w-2xl mx-auto">
       <!-- Navigation -->
       <div class="mb-8">
-        <Link hash={ROUTES.CHAT_ROOMS} 
+        <Link href={'#'+ROUTES.CHAT_ROOMS} 
               className="inline-flex items-center gap-2 text-[var(--les-accent-primary)] hover:text-[var(--les-accent-secondary)] transition-colors duration-200 text-sm font-mono uppercase tracking-wider">
           <span class="text-lg">←</span>
           НАЗАД К ЧАТАМ
