@@ -1,15 +1,16 @@
 import { sharedWorkerLastPortsActive, sharedWorkerLastPortsAll } from "../../processes/shared_worker/process/sharedWorkerLastPortsRef";
+import { back_store } from "../back_store";
+import { accountToDto } from "../modules/accounts_service";
 import type { ReturnSubscriptionMiddleware, SubscriptionMiddlewareProps } from "../subscription_middleware";
 
 
 let update = null as null|(()=> void);
 
-let prevResult: null|number = null;
 
 /**
  * Обработчик подписки на количество активных вкладок
  */
-export function handleActiveTabsCountSubscription(
+export function accounts_by_id_subscribe(
   props: SubscriptionMiddlewareProps,
 ): ReturnSubscriptionMiddleware {
   const result = {
@@ -17,15 +18,17 @@ export function handleActiveTabsCountSubscription(
 
     },
     update: () => {
-      const newResult = sharedWorkerLastPortsActive.size;
-      if (
-        prevResult === newResult 
-      ) return;
-
-      //lastUpdateTime = Date.now();
-
-      prevResult = newResult;
-      props.sendAll({ count: newResult });
+      props.sendAll({
+        accounts_by_id: (
+          Object.fromEntries(
+            Object.entries(
+              back_store
+            ).map(([key, value]) => {
+              return [key, accountToDto(value)];
+            })
+          )
+        ),
+      });
     },
   }
   update = result.update;
@@ -34,7 +37,7 @@ export function handleActiveTabsCountSubscription(
 }
 
 
-export function updateActiveTabsCountSubscription() {
+export function updateAccById() {
   if(update) {
     update();
   }

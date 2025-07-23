@@ -105,7 +105,7 @@ export const accounts_service = {
 };
 
 export type AccountDto = Omit<Account, "pass" | "_libp2p_keyPair">;
-function accountToDto(a: Account): AccountDto {
+export function accountToDto(a: Account): AccountDto {
   return {
     namePub: a.namePub,
     id: a.id,

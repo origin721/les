@@ -11,6 +11,7 @@ import { subscriptionMiddleware, type SubscriptionMiddlewareProps } from "./subs
 import type { friends_service } from "./modules/friends_service";
 import type { get_accounts } from "../indexdb/main_les_store_v1/entities/accounts/get_accounts";
 import type { AddRoomParam } from "../indexdb/main_les_store_v1/entities/rooms/add_room";
+import type { AccountDto } from "./modules/accounts_service";
 
 type IdRequest = string | number;
 export type BackMiddlewareProps = SubscriptionMiddlewareProps | PromiseMiddlewareProps;
@@ -103,6 +104,10 @@ export type GetActiveTabsCountPayload = {
   path: (typeof PATHS)["GET_ACTIVE_TABS_COUNT"];
 };
 
+export type GetAccByIdPayload = {
+  path: (typeof PATHS)["GET_ACC_BY_ID"];
+};
+
 export type ResultByPath = {
   [PATHS.GET_ACCOUNTS]: ReturnType<typeof get_accounts>;
   [PATHS.ADD_ACCOUNTS]: void;
@@ -119,6 +124,7 @@ export type ResultByPath = {
   >;
   [PATHS.GET_FRIEND_BY_ID]: ReturnType<typeof friends_service.getFriendById>;
   [PATHS.GET_ACTIVE_TABS_COUNT]: { count: number };
+  [PATHS.GET_ACC_BY_ID]: { accounts_by_id: Record<string, AccountDto> };
 };
 
 export type BackMiddlewarePayloadFetch = Extract<
@@ -158,6 +164,7 @@ export type BackMiddlewareEventFetch = {
 
 
 export type BackMiddlewarePayloadSubscribe = Extract<
+  | GetAccByIdPayload
   | GetActiveTabsCountPayload,
   {
     path: keyof typeof PATHS;
