@@ -6,7 +6,7 @@
 
 </script>
 <ul>
-    <li><Link href={ROUTES.HOME}>Назад</Link></li>
+    <li><Link hash={ROUTES.HOME}>Назад</Link></li>
 </ul>
 
 

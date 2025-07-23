@@ -103,7 +103,7 @@
                     Данные версий зашифрованы и требуют авторизации для доступа.
                 </div>
                 <div class={styles.authActions}>
-                    <Link href={ROUTES.AUTH}>
+                    <Link hash={ROUTES.AUTH}>
                         <Button variant="primary" size="sm">
                             Перейти к авторизации
                         </Button>

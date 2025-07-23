@@ -197,7 +197,7 @@
         <header class={styles.authHeader}>
             <div class={styles.backLinkContainer}>
                 {#if Object.entries(appAuthStoreState.state.byId).length}
-                    <Link href={ROUTES.ACCOUNTS} className={styles.backLink}>
+                    <Link hash={ROUTES.ACCOUNTS} className={styles.backLink}>
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="24"
@@ -328,14 +328,14 @@
                     </button>
                     <Link
                         className={styles.createLink}
-                        href={ROUTES.ACCOUNTS_NEW}>{authLangStore.config.createNewId}</Link
+                        hash={ROUTES.ACCOUNTS_NEW}>{authLangStore.config.createNewId}</Link
                     >
-                    <Link className={styles.docsLink} href={ROUTES.DOCS}
+                    <Link className={styles.docsLink} hash={ROUTES.DOCS}
                         >{authLangStore.config.systemDocumentation}</Link
                     >
 
                     <!-- Settings Link -->
-                    <Link className={styles.settingsLink} href={ROUTES.SETTINGS}
+                    <Link className={styles.settingsLink} hash={ROUTES.SETTINGS}
                         >{authLangStore.config.systemSettings}</Link
                     >
                 </div>

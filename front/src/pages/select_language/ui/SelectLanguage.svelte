@@ -21,7 +21,7 @@
   }
 </script>
 
-<Link href={ROUTES.SETTINGS}>{selectLangPageLangStore.config.goToSettings}</Link>
+<Link hash={ROUTES.SETTINGS}>{selectLangPageLangStore.config.goToSettings}</Link>
 
 <div class={formStyles.group} style="max-width: 340px; margin: 2rem auto;">
   <label for="lang-select" class={`${formStyles.label} ${formStyles.labelRequired}`}>

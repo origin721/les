@@ -46,7 +46,7 @@
     </Button>
 
     {#if secondaryText && secondaryHref}
-        <Link href={secondaryHref} className="action-button secondary">
+        <Link hash={secondaryHref} className="action-button secondary">
             <span class="button-icon">{secondaryIcon}</span>
             <span>{secondaryText}</span>
         </Link>

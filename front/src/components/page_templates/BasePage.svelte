@@ -35,7 +35,7 @@
     <header class="base-header">
       {#if showBackLink}
         <div class="back-link-container">
-          <Link href={backLinkHref} className="back-link">
+          <Link hash={backLinkHref} className="back-link">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"

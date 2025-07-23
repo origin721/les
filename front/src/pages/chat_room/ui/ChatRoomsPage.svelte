@@ -244,13 +244,13 @@
         >
             <div class={styles.sidebarHeader}>
                 <div class={styles.sidebarHeaderTop}>
-                    <Link href={ROUTES.HOME} className={styles.homeLink}
+                    <Link hash={ROUTES.HOME} className={styles.homeLink}
                         >🏠 Главная</Link
                     >
                 </div>
                 <div class={styles.sidebarHeaderBottom}>
                     <h2 class={styles.sidebarTitle}>Чаты</h2>
-                    <Link href={ROUTES.CHAT_ROOMS_ADD} className="inline-block">
+                    <Link hash={ROUTES.CHAT_ROOMS_ADD} className="inline-block">
                         <Button size="sm">+ Добавить</Button>
                     </Link>
                 </div>

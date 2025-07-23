@@ -41,7 +41,7 @@
         onclick={(event) => {
             event.preventDefault();
             if(!href) return;
-            routingStore.setPath(href);
+            routingStore.setRoute({hash: href});
         }}
     >
         {#if icon}

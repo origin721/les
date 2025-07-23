@@ -26,7 +26,7 @@
         <div class="no-accounts">
             <span class="warning-icon">⚠️</span>
             <span>Нет доступных аккаунтов</span>
-            <Link href={ROUTES.ACCOUNTS_NEW} className="create-account-link">
+            <Link hash={ROUTES.ACCOUNTS_NEW} className="create-account-link">
                 Создать аккаунт
             </Link>
         </div>

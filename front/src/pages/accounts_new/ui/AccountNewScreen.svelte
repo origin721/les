@@ -25,7 +25,7 @@
             httpServers: $fieldHttpServers,
         });
 
-        routingStore.setPath(ROUTES.ACCOUNTS);
+        routingStore.setRoute({hash: ROUTES.ACCOUNTS});
     }
 </script>
 

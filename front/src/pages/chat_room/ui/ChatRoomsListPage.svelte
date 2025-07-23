@@ -209,7 +209,7 @@
             </div>
             
             <div class="room-item-actions">
-              <Link href={`/chat_rooms?room_id=${room.id}`} className="room-enter-link">
+              <Link hash={`/chat_rooms?room_id=${room.id}`} className="room-enter-link">
                 ВОЙТИ →
               </Link>
             </div>
@@ -269,7 +269,7 @@
             </div>
             
             <div class="room-actions">
-              <Link href={`/chat_rooms?room_id=${selectedRoom.id}`}>
+              <Link hash={`/chat_rooms?room_id=${selectedRoom.id}`}>
                 <Button variant="primary" size="lg">
                   ВОЙТИ В КАНАЛ
                 </Button>

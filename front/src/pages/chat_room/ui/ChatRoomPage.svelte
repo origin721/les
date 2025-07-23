@@ -22,7 +22,7 @@
 {#if room}
   <Chat {room} />
 {:else}
-  <Link className="text-yellow-500" href={ROUTES.CHAT_ROOMS}>back</Link>
+  <Link className="text-yellow-500" hash={ROUTES.CHAT_ROOMS}>back</Link>
 
   <h1 class="text-rose-600">Комната не найдена</h1>
 {/if}

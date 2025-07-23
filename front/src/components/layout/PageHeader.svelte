@@ -66,7 +66,7 @@
 
   <div class={headerStyles.headerControls}>
     {#if showBackButton}
-      <Link href={backButtonHref} className="back-button">
+      <Link hash={backButtonHref} className="back-button">
         {backButtonText}
       </Link>
     {/if}

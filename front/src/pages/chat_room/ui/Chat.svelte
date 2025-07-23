@@ -104,7 +104,7 @@
     <!-- Header -->
     <div class="chat-header">
       <div class="header-top">
-        <Link href="/chat_rooms">
+        <Link hash="/chat_rooms">
           <Button variant="secondary" size="sm">
             ← НАЗАД_К_СПИСКУ
           </Button>

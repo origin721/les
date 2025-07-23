@@ -18,7 +18,7 @@
             </span>
         </div>
         <div class={styles.settingActions}>
-            <Button variant="outline" size="sm" onclick={() => routingStore.setPath(ROUTES.SELECT_LANG)}>
+            <Button variant="outline" size="sm" onclick={() => routingStore.setRoute({hash: ROUTES.SELECT_LANG})}>
                 Выбрать другой язык
             </Button>
         </div>

@@ -31,7 +31,7 @@
 <div class="crypto-container" data-widget-name="CryptoPage" data-theme="{$theme}">
     <header class="crypto-header">
       <div class="back-link-container">
-        <Link href={ROUTES.HOME} className="back-link">
+        <Link hash={ROUTES.HOME} className="back-link">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="24"

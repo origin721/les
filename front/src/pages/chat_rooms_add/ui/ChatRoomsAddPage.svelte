@@ -27,7 +27,7 @@
         [QUERY_PARAMS.ROOM_ID, room.roomId],
       ])
           
-      routingStore.setPath(ROUTES.CHAT_ROOMS);
+      routingStore.setRoute({hash: ROUTES.CHAT_ROOMS});
     } catch (error) {
       console.error("Ошибка при создании комнаты:", error);
       isSubmitting = false;
@@ -35,7 +35,7 @@
   }
 
   function handleCancel() {
-    routingStore.setPath(ROUTES.CHAT_ROOMS);
+    routingStore.setRoute({hash: ROUTES.CHAT_ROOMS});
   }
 </script>
 
@@ -62,7 +62,7 @@
     <div class="max-w-2xl mx-auto">
       <!-- Navigation -->
       <div class="mb-8">
-        <Link href={ROUTES.CHAT_ROOMS} 
+        <Link hash={ROUTES.CHAT_ROOMS} 
               className="inline-flex items-center gap-2 text-[var(--les-accent-primary)] hover:text-[var(--les-accent-secondary)] transition-colors duration-200 text-sm font-mono uppercase tracking-wider">
           <span class="text-lg">←</span>
           НАЗАД К ЧАТАМ

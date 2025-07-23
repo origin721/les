@@ -15,7 +15,7 @@
 </script>
 
 <div class="back-link-container {className}">
-  <Link {href}>{text}</Link>
+  <Link hash={href}>{text}</Link>
 </div>
 
 <style>

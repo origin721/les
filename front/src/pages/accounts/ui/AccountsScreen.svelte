@@ -46,9 +46,9 @@
           </div>
           
           <div class={styles.accountActionsInline}>
-            <Link href={ROUTES.ACCOUNT_SETTINGS+'?'+search_params_to_string({
+            <Link hash={ROUTES.ACCOUNT_SETTINGS} queryParams={{
               [SETTINGS_S_P_KEYS.ID]: authItem.id,
-            })}>
+            }}>
               <Button variant="outline" size="sm">
                 ⚙️ НАСТРОЙКИ
               </Button>
@@ -82,7 +82,7 @@
             <span class={styles.securityBadge}>⚡ QUANTUM-SAFE</span>
           </div>
           
-          <Link href={ROUTES.ACCOUNTS_NEW}>
+          <Link hash={ROUTES.ACCOUNTS_NEW}>
             <Button variant="primary" size="lg">
               + СОЗДАТЬ_ПЕРВЫЙ_АККАУНТ
             </Button>
