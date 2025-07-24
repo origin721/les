@@ -39,12 +39,6 @@ function createAppAuthStore() {
      * @deprecated потому что нужно использовать subscribeAccById 
      */
     _add: (newList: AccountDto[]) => {
-     //store.update((prev) => ({
-     //  byId: {
-     //    ...prev.byId,
-     //    ...authListToRecordById(newList),
-     //  },
-     //}));
     },
     add: async (newAcc: AccountEntity) => {
       await shared_worker_store.fetch({

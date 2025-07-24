@@ -28,6 +28,8 @@
     import { lang_store } from "../../stores/lang_store/lang_store.svelte";
     import { selectLangPageLangStore } from "../../pages/select_language/stores/lang/selectLangPageLangStore.svelte";
     import { homePageLangStore } from "../../pages/home/stores/lang/homePageLangStore.svelte";
+    import { LoadingSpinner1, LoadingSpinner2 } from "../../widgets/loading_components";
+    import LoadingSpinner3 from "../../widgets/loading_components/LoadingSpinner3.svelte";
 
     //import HomePage from "../../pages/home/ui/HomePage.svelte";
     //import RandomPage from "../../pages/random/ui/RandomPage.svelte";
@@ -199,6 +201,18 @@
     {#await componentPromise then mod}
         {@const Component = mod.default}
         <Component />
+    {:catch err}
+        <div class="flex flex-col bg-[var(--les-bg-primary)] h-full items-center justify-center">
+            <h1><b class="text-[3rem]">Приложение устарело обновите страницу</b></h1>
+            <div class="flex justify-center">
+                <LoadingSpinner3/> 
+                <LoadingSpinner2/> 
+                <LoadingSpinner1/> 
+                <LoadingSpinner2/> 
+                <LoadingSpinner3/> 
+            </div>
+            <h1><b class="text-[2rem]">Или может сервер недоступен</b></h1>
+        </div>
     {/await}
 {:else}
     <LoadingSequence />
