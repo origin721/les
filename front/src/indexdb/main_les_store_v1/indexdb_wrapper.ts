@@ -22,6 +22,7 @@ const isDebugMode = false;
 export async function indexdb_wrapper(
   onChange: (db: IDBDatabase) => Promise<void>,
 ) {
+  let result;
   if(isDebugMode) {
     ++counterInfo.open;
     debugLog({counterInfo});
@@ -37,7 +38,7 @@ export async function indexdb_wrapper(
     const db = await ConnectionManager.getConnection();
     
     // Вызываем пользовательский callback
-    await onChange(db);
+    result = await onChange(db);
     
     // НЕ закрываем соединение - оно управляется ConnectionManager
     
@@ -59,6 +60,8 @@ export async function indexdb_wrapper(
   } finally {
     // Уменьшаем счетчик активных запросов при завершении (успех или ошибка)
     ConnectionManager.decrementActiveRequests();
+
+    return result;
   }
 }
 

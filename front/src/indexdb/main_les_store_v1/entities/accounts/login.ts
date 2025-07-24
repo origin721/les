@@ -4,10 +4,10 @@ import { back_store } from "../../../../local_back/back_store/back_store";
 import { indexdb_wrapper } from "../../indexdb_wrapper";
 import type { HttpServerParam } from "./types";
 import type { Account } from "./get_accounts";
+import { accounts_store_utils } from "../../../../local_back/back_store/accounts_store_utils";
 
 export function login(pass: string): Promise<Account[]> {
-  return new Promise((mRes, rej) => {
-    indexdb_wrapper((db) => {
+    return indexdb_wrapper((db) => {
       return new Promise((res, rej) => {
         const transaction = db.transaction(["accounts"], "readwrite");
         const store = transaction.objectStore("accounts");
@@ -36,11 +36,10 @@ export function login(pass: string): Promise<Account[]> {
             }
             cursor.continue(); // Продолжаем обход
           } else {
-            mRes(result);
-            res();
+            //accounts_store_utils.add(result);
+            res(result);
           }
         };
       });
     });
-  });
 }

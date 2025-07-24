@@ -5,12 +5,14 @@ import { uuidv4 } from "../../../../core/uuid";
 import { indexdb_wrapper } from "../../indexdb_wrapper";
 import type { HttpServerParam, AccountEntityPut } from "./types";
 import { ACCOUNTS_VERSION } from "./constants";
+import { accounts_store_utils } from "../../../../local_back/back_store/accounts_store_utils";
 
 export function put_accounts(new_list: AccountEntityPut[]) {
   return indexdb_wrapper((db) => {
     return new Promise(async (res, rej) => {
       const transaction = db.transaction(["accounts"], "readwrite");
       const store = transaction.objectStore("accounts");
+      const result = [];
       // Обновляем записи
       for (let item of new_list) {
         const existingAccount = back_store.accounts_by_id[item.id];
@@ -30,6 +32,8 @@ export function put_accounts(new_list: AccountEntityPut[]) {
           version: ACCOUNTS_VERSION, // Версия внутри зашифрованных данных
         };
 
+        result.push(updatedAccount);
+
         const newData = await encrypt_curve25519_from_pass({
           pass: existingAccount.pass,
           message: JSON.stringify(updatedAccount),
@@ -40,7 +44,8 @@ export function put_accounts(new_list: AccountEntityPut[]) {
 
       transaction.oncomplete = function () {
         //console.log("Данные добавлены успешно");
-        res();
+        accounts_store_utils.add(result);
+        res(result);
       };
 
       transaction.onerror = function (event) {

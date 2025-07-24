@@ -1,30 +1,31 @@
 //import { AES } from "../../../crypt";
 import { decrypt_curve25519_from_pass } from "../../../../core/crypt";
+import { accounts_store_utils } from "../../../../local_back/back_store/accounts_store_utils";
 import { back_store } from "../../../../local_back/back_store/back_store";
 import { indexdb_wrapper } from "../../indexdb_wrapper";
 import type { HttpServerParam } from "./types";
+import type { AccountEntityFull } from "./types/full_account_entity";
 
-export type Account = {
-  namePub: string;
-  pass: string;
-  id: string;
-  httpServers: HttpServerParam[];
-  date_created: Date;
-  date_updated?: Date;
-  _pass: string;
-  _libp2p_keyPair: string;
-  friendsByIds?: string[]; // Массив ID друзей для данного аккаунта
-  version: number; // Версия entity для отслеживания изменений структуры
-};
+// export type Account = {
+//   namePub: string;
+//   pass: string;
+//   id: string;
+//   httpServers: HttpServerParam[];
+//   date_created: Date;
+//   date_updated?: Date;
+//   _pass: string;
+//   _libp2p_keyPair: string;
+//   friendsByIds?: string[]; // Массив ID друзей для данного аккаунта
+//   version: number; // Версия entity для отслеживания изменений структуры
+// };
 
-export function get_accounts(): Promise<Account[]> {
+export function get_accounts(): Promise<AccountEntityFull[]> {
   // Оптимизированный возврат аккаунтов из оперативной памяти
   //return Promise.resolve(Object.values(back_store.accounts_by_id));
 
   // Старый код как пример брудфорса через IndexDB - больше не нужен,
   // так как можно оптимизировать и возвращать аккаунты из оперативки
-  return new Promise((mRes, rej) => {
-    indexdb_wrapper((db) => {
+    return indexdb_wrapper((db) => {
       return new Promise((res, rej) => {
         const transaction = db.transaction(["accounts"], "readwrite");
         const store = transaction.objectStore("accounts");
@@ -65,14 +66,13 @@ export function get_accounts(): Promise<Account[]> {
             }
             cursor.continue(); // Продолжаем обход
           } else {
-            mRes(result);
             //console.log("Обработка завершена.");
-            res();
+            //accounts_store_utils.add(result);
+            res(result);
           }
         };
 
       });
     })
 
-  });
 }

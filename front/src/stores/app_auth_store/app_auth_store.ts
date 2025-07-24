@@ -55,12 +55,12 @@ function createAppAuthStore() {
           list: [newAcc],
         },
       });
-      await shared_worker_store.fetch({
-        path: PATHS.LOGIN,
-        body: {
-          pass: newAcc.pass,
-        },
-      });
+     //await shared_worker_store.fetch({
+     //  path: PATHS.LOGIN,
+     //  body: {
+     //    pass: newAcc.pass,
+     //  },
+     //});
 
       //store.update(prev => ({
       //  byId: {
@@ -78,17 +78,17 @@ function createAppAuthStore() {
       });
     },
     _onDeleteSecret(ids: string[]) {
-      store.update((prev) => {
-        const newData = {
-          ...prev,
-          byId: { ...prev.byId },
-        };
-        for (let id of ids) {
-          delete newData.byId[id];
-        }
+     //store.update((prev) => {
+     //  const newData = {
+     //    ...prev,
+     //    byId: { ...prev.byId },
+     //  };
+     //  for (let id of ids) {
+     //    delete newData.byId[id];
+     //  }
 
-        return newData;
-      });
+     //  return newData;
+     //});
     },
     async onDeleteSecret(id: string) {
       // TODO: доделать удаление
@@ -104,9 +104,9 @@ function createAppAuthStore() {
     //getById
   };
 
-  shared_worker_store.fetch({
-    path: PATHS.GET_ACCOUNTS,
-  });
+ //shared_worker_store.fetch({
+ //  path: PATHS.GET_ACCOUNTS,
+ //});
 
   return result;
 }

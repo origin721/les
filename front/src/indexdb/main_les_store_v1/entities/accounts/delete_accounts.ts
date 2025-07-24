@@ -1,5 +1,7 @@
 import { indexdb_wrapper } from "../../indexdb_wrapper";
 import { prodInfo, devDB } from "../../../../core/debug/logger";
+import { back_store } from "../../../../local_back/back_store";
+import { accounts_store_utils } from "../../../../local_back/back_store/accounts_store_utils";
 
 
 export function delete_accounts(ids: string[]) {
@@ -17,6 +19,7 @@ export function delete_accounts(ids: string[]) {
         listPromise.push(new Promise((i_res,i_rej) => {
           deleteRequest.onsuccess = () => {
             //console.log(`Запись с id=${key} успешно удалена.`);
+            accounts_store_utils.delete([key]);
             i_res();
           }
           deleteRequest.onerror = (event) => {

@@ -24,13 +24,14 @@ import { UserStateManager } from "../../indexdb/db_state_manager_v1/user_state_m
 import { MIGRATIONS_REGISTRY } from "../../indexdb/main_les_store_v1/migrations/MIGRATIONS_REGISTRY";
 import { ConnectionManager } from "../../indexdb/main_les_store_v1/connection_manager";
 import { updateAccById } from "../subscribeModules/accounts_by_id_subscribe";
+import { accounts_store_utils } from "../back_store/accounts_store_utils";
 
 const channel = new BroadcastChannel(CHANNEL_NAMES.FRONT_MIDDLEWARE);
 
 export const accounts_service = {
   async put(list: AccountEntityPut[]) {
     await put_accounts(list);
-    await accounts_service.getList();
+    //await accounts_service.getList();
 
 // TODO: put не такой как другие не тут меняется back_store
     updateAccById();
@@ -38,35 +39,35 @@ export const accounts_service = {
   async delete(ids: string[]) {
     try {
       await delete_accounts(ids);
-      for (let id of ids) {
-        delete back_store.accounts_by_id[id];
-      }
-      updateAccById();
+     //for (let id of ids) {
+     //  delete back_store.accounts_by_id[id];
+     //}
       // broadcast delete
-      const broadcast_event: PostMessageParamDeleteAccounts = {
-        action: FrontMiddlewareActions.DELETE_ACCOUNTS,
-        data: {
-          ids: ids,
-        },
-      };
-      channel.postMessage(broadcast_event);
+     //const broadcast_event: PostMessageParamDeleteAccounts = {
+     //  action: FrontMiddlewareActions.DELETE_ACCOUNTS,
+     //  data: {
+     //    ids: ids,
+     //  },
+     //};
+     //channel.postMessage(broadcast_event);
     } catch (err) {}
   },
   async getList() {
-    const accounts = await get_accounts();
+    return back_store.accounts_by_id;
+   //const accounts = await get_accounts();
 
-    const broadcast_event: PostMessageParamAddAccounts = {
-      action: FrontMiddlewareActions.ADD_ACCOUNTS,
-      data: {
-        list: accounts.map(accountToDto),
-      },
-    };
-    channel.postMessage(broadcast_event);
+   //const broadcast_event: PostMessageParamAddAccounts = {
+   //  action: FrontMiddlewareActions.ADD_ACCOUNTS,
+   //  data: {
+   //    list: accounts.map(accountToDto),
+   //  },
+   //};
+   //channel.postMessage(broadcast_event);
 
-    back_store.accounts_by_id = {};
-    accounts.forEach(el => {
-      back_store.accounts_by_id[el.id] = el;
-    });
+    //back_store.accounts_by_id = {};
+   //accounts.forEach(el => {
+   //  back_store.accounts_by_id[el.id] = el;
+   //});
   },
   async onLogin(props: LoginPayload) {
     const accounts = await login(props.body.pass);
@@ -94,10 +95,11 @@ export const accounts_service = {
       }
     }
 
-    for (let ac of accounts) {
-      back_store.accounts_by_id[ac.id] = ac;
-    }
-    updateAccById();
+            accounts_store_utils.add(accounts);
+   //for (let ac of accounts) {
+   //  back_store.accounts_by_id[ac.id] = ac;
+   //}
+   //updateAccById();
     const broadcast_event: PostMessageParamAddAccounts = {
       action: FrontMiddlewareActions.ADD_ACCOUNTS,
       data: {
