@@ -47,27 +47,12 @@ function createAppAuthStore() {
      //}));
     },
     add: async (newAcc: AccountEntity) => {
-      //appLocalStorage.addSecret(newAcc);
-      //const newList = appLocalStorage.onLogin(newAcc.pass);
       await shared_worker_store.fetch({
         path: PATHS.ADD_ACCOUNTS,
         body: {
           list: [newAcc],
         },
       });
-     //await shared_worker_store.fetch({
-     //  path: PATHS.LOGIN,
-     //  body: {
-     //    pass: newAcc.pass,
-     //  },
-     //});
-
-      //store.update(prev => ({
-      //  byId: {
-      //    ...prev.byId,
-      //    ...authListToRecordById(newList),
-      //  }
-      //}));
     },
     async onLogin(pass: string) {
       const newList = await shared_worker_store.fetch({
@@ -78,22 +63,8 @@ function createAppAuthStore() {
       });
     },
     _onDeleteSecret(ids: string[]) {
-     //store.update((prev) => {
-     //  const newData = {
-     //    ...prev,
-     //    byId: { ...prev.byId },
-     //  };
-     //  for (let id of ids) {
-     //    delete newData.byId[id];
-     //  }
-
-     //  return newData;
-     //});
     },
     async onDeleteSecret(id: string) {
-      // TODO: доделать удаление
-      // appLocalStorage.onDeleteSecret(storeData.byId[id].origin);
-      // await delete_accounts([id]);
       await shared_worker_store.fetch({
         path: PATHS.DELETE_ACCOUNTS,
         body: {
@@ -101,12 +72,7 @@ function createAppAuthStore() {
         },
       });
     },
-    //getById
   };
-
- //shared_worker_store.fetch({
- //  path: PATHS.GET_ACCOUNTS,
- //});
 
   return result;
 }
