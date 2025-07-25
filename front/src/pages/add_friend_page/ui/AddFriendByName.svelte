@@ -169,7 +169,7 @@
                                 primaryIcon="➕"
                                 secondaryText="НАЗАД"
                                 secondaryIcon="⬅️"
-                                secondaryHref={ROUTES.FRIENDS}
+                                secondaryHref={'#'+ROUTES.FRIENDS}
                                 {loading}
                                 disabled={loading}
                                 onPrimaryClick={handleAddFriend}
