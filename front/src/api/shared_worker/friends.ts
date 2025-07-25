@@ -39,10 +39,14 @@ export const friends = {
     /**
      * Получить друга по ID
      */
-    async getById(friendId: string): Promise<FriendEntityFull | null> {
+    async getById(
+      body: {
+        friendId: string;
+        explicitMyAccId: string;
+      }): Promise<FriendEntityFull | null> {
       const result = await shared_worker_store.fetch({
         path: PATHS.GET_FRIEND_BY_ID,
-        body: { friendId }
+        body: body
       });
       return result as FriendEntityFull | null;
     },
@@ -53,34 +57,18 @@ export const friends = {
      * 1. Старый: add(list: FriendEntity[])
      * 2. Новый: add(params: AddFriendsParams)
      */
-    async add(listOrParams: FriendEntity[] | AddFriendsParams): Promise<void> {
+    async add(listOrParams: AddFriendsParams): Promise<void> {
       devAPI('🌐 API friends.add СТАРТ:', listOrParams);
       const startTime = Date.now();
       
       try {
-        let fetchParams;
-        
-        // Определяем формат входных данных
-        if (Array.isArray(listOrParams)) {
-          // Старый формат - массив друзей
-          fetchParams = {
-            path: PATHS.ADD_FRIENDS,
-            body: { list: listOrParams }
-          };
-          devAPI('🌐 API friends.add: используем старый формат (массив)');
-        } else {
-          // Новый формат - объект с друзьями и myAccId
-          fetchParams = {
-            path: PATHS.ADD_FRIENDS,
-            body: { 
-              list: listOrParams.friends,
-              myAccId: listOrParams.myAccId 
-            }
-          };
-          devAPI('🌐 API friends.add: используем новый формат с myAccId:', listOrParams.myAccId);
+        const fetchParams = {
+          path: PATHS.ADD_FRIENDS,
+          body: {
+            list: listOrParams.friends,
+            myAccId: listOrParams.myAccId
+          }
         }
-        
-        devAPI('🌐 API friends.add: вызываем shared_worker_store.fetch с параметрами:', fetchParams);
         
         const result = await shared_worker_store.fetch(fetchParams);
         

@@ -79,7 +79,7 @@ export async function promiseMiddleware(props: PromiseMiddlewareProps): Promise<
     }
 
     if (props.payload.path === PATHS.GET_FRIEND_BY_ID) {
-      return await friends_service.getFriendById(props.payload.body.friendId);
+      return await friends_service.getFriendById(props.payload.body);
     }
 
     if (props.payload.path === PATHS.PUT_FRIENDS) {

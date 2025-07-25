@@ -16,7 +16,7 @@ export async function add_room({
 }: AddRoomParam): Promise<RoomEntityFull[]> {
   try {
     // Используем EntityService для добавления комнат
-    return await entity_service.addEntities<
+    return await entity_service.add_entities<
       RoomEntity,
       RoomEntityFull
     >({

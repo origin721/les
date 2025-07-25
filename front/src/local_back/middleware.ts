@@ -92,6 +92,7 @@ export type GetFriendByIdPayload = {
   path: (typeof PATHS)["GET_FRIEND_BY_ID"];
   body: {
     friendId: string;
+    explicitMyAccId: string;
   };
 };
 
@@ -102,6 +103,10 @@ export type AddRoomsPayload = {
 
 export type GetActiveTabsCountPayload = {
   path: (typeof PATHS)["GET_ACTIVE_TABS_COUNT"];
+};
+
+export type GetFriendsByIdSubscribePayload = {
+  path: (typeof PATHS)["GET_FRIENDS_BY_ID_SUBSCRIBE"];
 };
 
 export type GetAccByIdPayload = {
@@ -165,6 +170,7 @@ export type BackMiddlewareEventFetch = {
 
 export type BackMiddlewarePayloadSubscribe = Extract<
   | GetAccByIdPayload
+  | GetFriendsByIdSubscribePayload
   | GetActiveTabsCountPayload,
   {
     path: keyof typeof PATHS;

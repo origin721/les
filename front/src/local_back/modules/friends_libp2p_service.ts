@@ -121,7 +121,10 @@ export const friends_libp2p_service = (options: FriendsLibp2pServiceOptions) => 
       }
 
       // Fallback to database
-      const friend = await get_friend_by_id(friendId);
+      const friend = await get_friend_by_id({
+        friendId,
+        explicitMyAccId,
+      });
       if (friend && friend.myAccId === accId) {
         return friend;
       }
