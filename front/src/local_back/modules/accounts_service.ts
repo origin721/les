@@ -25,6 +25,8 @@ import { MIGRATIONS_REGISTRY } from "../../indexdb/main_les_store_v1/migrations/
 import { ConnectionManager } from "../../indexdb/main_les_store_v1/connection_manager";
 import { updateAccById } from "../subscribeModules/accounts_by_id_subscribe";
 import { accounts_store_utils } from "../back_store/accounts_store_utils";
+import { get_friend_by_id } from "../../indexdb/main_les_store_v1/entities/friends/get_friend_by_id";
+import type { AccountEntityFull } from "../../indexdb/main_les_store_v1/entities/accounts/types/full_account_entity";
 
 const channel = new BroadcastChannel(CHANNEL_NAMES.FRONT_MIDDLEWARE);
 
@@ -96,17 +98,29 @@ export const accounts_service = {
     }
 
             accounts_store_utils.add(accounts);
+
+            accounts.forEach((acc) => {
+              (acc.friendsByIds||[]).forEach((friendId) => {
+                get_friend_by_id({
+                  friendId: friendId,
+                  explicitMyAccId: acc.id,
+                });
+
+              });
+            });
+
+
    //for (let ac of accounts) {
    //  back_store.accounts_by_id[ac.id] = ac;
    //}
    //updateAccById();
-    const broadcast_event: PostMessageParamAddAccounts = {
-      action: FrontMiddlewareActions.ADD_ACCOUNTS,
-      data: {
-        list: accounts.map(accountToDto),
-      },
-    };
-    channel.postMessage(broadcast_event);
+   //const broadcast_event: PostMessageParamAddAccounts = {
+   //  action: FrontMiddlewareActions.ADD_ACCOUNTS,
+   //  data: {
+   //    list: accounts.map(accountToDto),
+   //  },
+   //};
+    //channel.postMessage(broadcast_event);
   },
   async getPeerIdForLibp2p(accId: string) {
     const acc = await get_account_by_id(accId);

@@ -5,7 +5,7 @@ import type { FriendEntityFull } from "../../indexdb/main_les_store_v1/entities/
 import type { FriendEntityPut } from "../../indexdb/main_les_store_v1/entities/friends/put_friends";
 import type { Account } from "../../indexdb/main_les_store_v1/entities/accounts/get_accounts";
 import { devAPI, prodError } from "../../core/debug/logger";
-import { friends } from "./friends";
+import { friends_shared_worker } from "./friends";
 import { accounts } from "./accounts";
 import { tabs } from "./tabs";
 
@@ -14,7 +14,7 @@ import { tabs } from "./tabs";
  * Основной API для работы с backend через shared worker
  */
 export const sharedWorkerApi = {
-  friends: friends,
+  friends: friends_shared_worker,
   accounts: accounts,
   tabs: tabs,
 };

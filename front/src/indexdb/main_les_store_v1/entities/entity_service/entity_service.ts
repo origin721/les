@@ -1,14 +1,66 @@
 import { decrypt_curve25519_from_pass, encrypt_curve25519_from_pass } from "../../../../core/crypt";
-import { prodError, prodInfo } from "../../../../core/debug/logger";
+import { devLog, prodError, prodInfo } from "../../../../core/debug/logger";
 import { recommendedGenerateKeyPair } from "../../../../libs/libp2p";
 import { back_store } from "../../../../local_back/back_store";
 import { workerGeneratorIds } from "../../../../processes/shared_worker/workerGeneratorIds";
 import { indexdb_wrapper } from "../../indexdb_wrapper";
+import { source_entity_service, type SaveEntityItem } from "./source_entity_service";
+import type { CommonEntity } from "./types/CommonEntity";
 
 export const entity_service = {
   addEntities: add_entities,
-  delete_entities,
+  delete_entities: source_entity_service.delete_entities,
   get_entity_by_id,
+  put_entities,
+}
+
+export function put_entities<T extends CommonEntity>(
+  {
+    table_name,
+    new_list,
+    entityVersion,
+  }: {
+    table_name: string;
+    new_list: T[];
+    entityVersion: number;
+  }): Promise<T[]> {
+  return new Promise(async (res, rej) => {
+    const resultList = [];
+    const saveItem: SaveEntityItem[] = [];
+
+
+    for (let item of new_list) {
+      if (!back_store.accounts_by_id[item.explicitMyAccId]) {
+        rej('Не найден explicitMyAccId для сущности таблице ' + table_name);
+        return;
+      };
+
+      const newId = workerGeneratorIds();
+
+      const myAcc = back_store.accounts_by_id[item.explicitMyAccId];
+
+      const resultItem: T = {
+        ...item,
+        date_updated: new Date(),
+        version: entityVersion, // Версия внутри зашифрованных данных
+      }
+
+      resultList.push(resultItem);
+      saveItem.push({
+        pass: myAcc._pass,
+        id: newId,
+        data: JSON.stringify(resultItem),
+      });
+
+    }
+
+    await source_entity_service.put_entities({
+      table_name,
+      new_list: saveItem,
+    });
+
+    res(resultList);
+  });
 }
 
 export function get_entity_by_id<FULL_T = any>(
@@ -70,7 +122,10 @@ export function get_entity_by_id<FULL_T = any>(
   });
 }
 
-function add_entities<T = any, FULL_T = any>({
+function add_entities<
+  T = any,
+  FULL_T extends CommonEntity = CommonEntity
+>({
   table_name,
   new_list,
   explicitMyAccId,
@@ -84,98 +139,88 @@ function add_entities<T = any, FULL_T = any>({
   explicitMyAccId: string;
   entityVersion: number;
 }): Promise<FULL_T[]> {
+  return new Promise(async (res, rej) => {
+    if (!back_store.accounts_by_id[explicitMyAccId]) {
+      rej('Не найден explicitMyAccId для сущности таблице ' + table_name);
+      return;
+    };
 
-  return indexdb_wrapper((db) => {
-    return new Promise(async (res, rej) => {
-      if (!back_store.accounts_by_id[explicitMyAccId]) {
-        rej('Не найден explicitMyAccId для сущности таблице ' + table_name);
-        return;
-      };
+    const myAcc = back_store.accounts_by_id[explicitMyAccId];
+    const resultList = [];
+    const saveItem: SaveEntityItem[] = [];
 
-      const myAcc = back_store.accounts_by_id[explicitMyAccId];
+    for (let item of new_list) {
+      const newId = workerGeneratorIds();
 
-      const transaction = db.transaction([table_name], "readwrite");
-      const store = transaction.objectStore(table_name);
-      const resultList = [];
-      // Добавляем запись
-      for (let item of new_list) {
-        const newId = workerGeneratorIds();
-
-        const resultItem = {
-          ...item,
-          id: newId,
-          date_created: new Date(),
-          version: entityVersion, // Версия внутри зашифрованных данных
-        }
-
-        resultList.push(resultItem);
-
-        const newData = await encrypt_curve25519_from_pass({
-          pass: myAcc.pass,
-          message: JSON.stringify(resultItem),
-        });
-        store.add({ id: newId, data: newData });
+      const resultItem: FULL_T = {
+        ...item,
+        id: newId,
+        date_created: new Date(),
+        version: entityVersion, // Версия внутри зашифрованных данных
+        explicitMyAccId,
       }
 
-      transaction.oncomplete = function () {
-        prodInfo("Данные добавлены успешно");
-        res(resultList);
-      };
+      resultList.push(resultItem);
+      saveItem.push({
+        pass: myAcc._pass,
+        id: newId,
+        data: JSON.stringify(resultItem),
+      });
 
-      transaction.onerror = function (event) {
-        prodError("Ошибка при добавлении данных:", event);
-        rej(new Error("Ошибка при добавлении данных в IndexedDB"));
-      };
+    }
+
+    await source_entity_service.add_entities({
+      table_name,
+      new_list: saveItem,
     });
+
+    res(resultList);
   });
-}
 
-export function delete_entities<T = string[]>({
-  table_name,
-  ids,
-}: {
-  table_name: string;
-  ids: T[];
-  /**
-   * Для шифрования к акаунту
-   */
-  //explicitMyAccId: string;
-}) {
-  return indexdb_wrapper((db) => {
-    return new Promise((res, rej) => {
-      try {
-        const transaction = db.transaction([table_name], "readwrite");
-        const store = transaction.objectStore(table_name);
 
-        let completedOperations = 0;
-        const totalOperations = ids.length;
 
-        if (totalOperations === 0) {
-          res();
-          return;
-        }
+ //return indexdb_wrapper((db) => {
+ //  return new Promise(async (res, rej) => {
+ //    if (!back_store.accounts_by_id[explicitMyAccId]) {
+ //      rej('Не найден explicitMyAccId для сущности таблице ' + table_name);
+ //      return;
+ //    };
 
-        for (const id of ids) {
-          const request = store.delete(id);
+ //    const myAcc = back_store.accounts_by_id[explicitMyAccId];
 
-          request.onsuccess = function () {
+ //    const transaction = db.transaction([table_name], "readwrite");
+ //    const store = transaction.objectStore(table_name);
+ //    const resultList = [];
+ //    // Добавляем запись
+ //    for (let item of new_list) {
+ //      const newId = workerGeneratorIds();
 
-            completedOperations++;
-            if (completedOperations === totalOperations) {
-              prodInfo('✅ entity удалены успешно');
-              res();
-            }
-          };
+ //      const resultItem = {
+ //        ...item,
+ //        id: newId,
+ //        date_created: new Date(),
+ //        version: entityVersion, // Версия внутри зашифрованных данных
+ //        explicitMyAccId,
+ //      }
 
-          request.onerror = function (event) {
-            prodError('❌ Ошибка удаления друга из IndexedDB:', event);
-            rej(event);
-          };
-        }
-      } catch (error) {
-        prodError('❌ Критическая ошибка в delete_friend:', error);
-        rej(error);
-      }
-    });
-  }) as Promise<void>;
+ //      resultList.push(resultItem);
+
+ //      const newData = await encrypt_curve25519_from_pass({
+ //        pass: myAcc.pass,
+ //        message: JSON.stringify(resultItem),
+ //      });
+ //      store.add({ id: newId, data: newData });
+ //    }
+
+ //    transaction.oncomplete = function () {
+ //      prodInfo("Данные добавлены успешно");
+ //      res(resultList);
+ //    };
+
+ //    transaction.onerror = function (event) {
+ //      prodError("Ошибка при добавлении данных:", event);
+ //      rej(new Error("Ошибка при добавлении данных в IndexedDB"));
+ //    };
+ //  });
+ //});
 }

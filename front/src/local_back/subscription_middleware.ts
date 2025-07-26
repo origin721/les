@@ -4,6 +4,9 @@ import type { BackMiddlewarePayload, BackMiddlewarePayloadSubscribe, ResultByPat
 import { sharedWorkerLastPortsAll } from "../processes/shared_worker/process/sharedWorkerLastPortsRef";
 import { handleActiveTabsCountSubscription } from "./subscribeModules/handleActiveTabsCountSubscription";
 import { accounts_by_id_subscribe } from "./subscribeModules/accounts_by_id_subscribe";
+import { friends_by_id_subscribe } from "./subscribeModules/friends_by_id_subscribe";
+import { source_entity_service } from "../indexdb/main_les_store_v1/entities/entity_service/source_entity_service";
+import { TABLE_NAMES } from "../indexdb/main_les_store_v1/entities/constats/TABLE_NAMES";
 
 type IdRequest = string | number;
 
@@ -40,6 +43,27 @@ export function subscriptionMiddleware(
 ): (ReturnSubscriptionMiddleware | void) {
   devLog("subscriptionMiddleware starting with props:", props);
 
+  source_entity_service.get_by_ids_entity({
+    table_name: TABLE_NAMES.friends,
+    ids: [
+      '017457dc-5a71-4508-9e51-c4d6ac398e90',
+      '0588d43e-6eb3-4e43-a309-418654227208'
+    ],
+  }).then(res => {
+    devLog('entiresById', res);
+  });
+
+ //source_entity_service.get_all_entities({
+ //  table_name: TABLE_NAMES.friends,
+ //  onFinish: () => {
+ //    console.log('onFinishOk))');
+ //  },
+ //  on: (control) => {
+ //    console.log(control);
+ //    control.onNext();
+ //  }
+ //});
+
   try {
     // Подписка на количество активных вкладок
     if (props.payload.path === PATHS.GET_ACTIVE_TABS_COUNT) {
@@ -50,6 +74,9 @@ export function subscriptionMiddleware(
       return accounts_by_id_subscribe(props);
     }
 
+    if (props.payload.path === PATHS.GET_FRIENDS_BY_ID_SUBSCRIBE) {
+      return friends_by_id_subscribe(props);
+    }
 
     // Здесь можно добавить другие подписки:
 

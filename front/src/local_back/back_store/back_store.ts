@@ -1,4 +1,4 @@
-import type { Account } from "../../indexdb/main_les_store_v1/entities/accounts/get_accounts";
+import type { AccountEntityFull } from "../../indexdb/main_les_store_v1/entities/accounts/types/full_account_entity";
 import type { FriendEntityFull } from "../../indexdb/main_les_store_v1/entities/friends/add_friend";
 import type { RoomEntityFull } from "../../indexdb/main_les_store_v1/entities/rooms/add_room";
 
@@ -10,7 +10,7 @@ export interface Libp2pNodeInstance {
 }
 
 export const back_store = {
-  accounts_by_id: {} as Record<string, Account>,
+  accounts_by_id: {} as Record<string, AccountEntityFull>,
   friends_by_id: {} as Record<string, FriendEntityFull>,
   rooms_by_id: {} as Record<string, RoomEntityFull>,
 }

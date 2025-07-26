@@ -17,123 +17,33 @@
         devAPI,
         prodError,
         prodLog,
+        devLog,
     } from "../../../core/debug/logger";
     import sharedWorkerApi from "../../../api/shared_worker";
+    import { onMount } from "svelte";
+    import { friends_shared_worker } from "../../../api/shared_worker/friends";
 
     let friends = $state<FriendEntityFull[]>([]);
     let loading = $state(true);
     let error = $state<string | null>(null);
     let broadcastChannel: BroadcastChannel | null = null;
 
-    // Загружаем друзей при инициализации и настраиваем broadcast канал
-    $effect(() => {
-        loadFriends();
-        setupBroadcastChannel();
 
-        // Cleanup функция для закрытия канала
-        return () => {
-            if (broadcastChannel) {
-                broadcastChannel.close();
-                broadcastChannel = null;
-            }
-        };
+    onMount(() => {
+        return friends_shared_worker.subscribeFriendsById((data) => {
+            devLog('[FRIENDS SUBSCRIBE]', data);
+            friends = Object.values(data.friends_by_id);
+        });
     });
 
-    function setupBroadcastChannel() {
-        try {
-            broadcastChannel = new BroadcastChannel(
-                CHANNEL_NAMES.FRONT_MIDDLEWARE,
-            );
-            broadcastChannel.addEventListener(
-                "message",
-                handleBroadcastMessage,
-            );
-            devUI("📡 FriendsPage: Broadcast канал настроен");
-        } catch (err) {
-            prodError(
-                "❌ FriendsPage: Ошибка настройки broadcast канала:",
-                err,
-            );
-        }
-    }
 
-    function handleBroadcastMessage(event: MessageEvent<PostMessageParam>) {
-        const { action, data } = event.data;
-        devUI("📢 FriendsPage: Получено broadcast сообщение:", action, data);
-
-        if (action === FrontMiddlewareActions.ADD_FRIENDS) {
-            devUI(
-                "➕ FriendsPage: Обновляем список друзей через broadcast напрямую",
-            );
-            // Используем данные из broadcast события напрямую, не вызываем loadFriends()
-            if (data.list && Array.isArray(data.list)) {
-                friends = data.list as FriendEntityFull[];
-                devUI(
-                    `📊 FriendsPage: Обновлено через broadcast: ${friends.length} друзей`,
-                );
-            } else {
-                devUI(
-                    "⚠️ FriendsPage: Некорректные данные в broadcast, перезагружаем через API",
-                );
-                loadFriends();
-            }
-        } else if (action === FrontMiddlewareActions.DELETE_FRIENDS) {
-            devUI("➖ FriendsPage: Удаляем друзей через broadcast:", data.ids);
-            // Удаляем друзей из текущего списка
-            friends = friends.filter((friend) => !data.ids.includes(friend.id));
-        }
-    }
-
-    async function loadFriends() {
-        devUI("🔄 FriendsPage: Начинаем загрузку друзей...");
-        loading = true;
-        error = null;
-
-        // Гарантируем отключение loading через 1000ms независимо от результата
-        const startTime = Date.now();
-
-        try {
-            devAPI("📞 FriendsPage: Вызываем api.friends.getList()...");
-            const friendsList = await sharedWorkerApi.friends.getList();
-            devAPI("✅ FriendsPage: Получен список друзей:", friendsList);
-
-            friends = friendsList || [];
-            devUI(`📊 FriendsPage: Количество друзей: ${friends.length}`);
-
-            if (friends.length === 0) {
-                devUI("📭 FriendsPage: Список друзей пуст");
-            } else {
-                devUI(
-                    "👥 FriendsPage: Имена друзей:",
-                    friends.map((f) => f.namePub),
-                );
-            }
-        } catch (err) {
-            prodError("❌ FriendsPage: Ошибка загрузки друзей:", err);
-            error = `Ошибка загрузки списка друзей: ${(err as any)?.message || String(err)}`;
-            // При ошибке оставляем старые данные, не обнуляем friends
-        }
-
-        // Гарантируем минимум 1000ms загрузки
-        const elapsed = Date.now() - startTime;
-        const remainingTime = Math.max(0, 1000 - elapsed);
-
-        setTimeout(() => {
-            loading = false;
-            devUI(
-                "🏁 FriendsPage: Загрузка завершена через",
-                elapsed + remainingTime,
-                "ms",
-            );
-        }, remainingTime);
-    }
 
     async function handleDeleteFriend(friendId: string) {
         if (confirm("Вы уверены, что хотите удалить этого друга?")) {
             try {
                 devUI("🗑️ FriendsPage: Удаляем друга с ID:", friendId);
                 await sharedWorkerApi.friends.delete([friendId]);
-                friends = friends.filter((friend) => friend.id !== friendId);
+                //friends = friends.filter((friend) => friend.id !== friendId);
                 prodLog("✅ FriendsPage: Друг удален успешно");
             } catch (err) {
                 prodError("❌ FriendsPage: Ошибка при удалении друга:", err);
@@ -144,7 +54,7 @@
 
     function handleRefresh() {
         devUI("🔄 FriendsPage: Принудительное обновление списка");
-        loadFriends();
+        //loadFriends();
     }
 </script>
 

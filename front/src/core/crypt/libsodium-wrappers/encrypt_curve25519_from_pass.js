@@ -3,6 +3,9 @@ import sodium from 'libsodium-wrappers';
 import { generate_keys_curve25519_from_password } from './generate_keys_curve25519_from_password';
 import { devCrypto, prodError } from "../../debug/logger";
 
+// TODO: можно будет сделать 
+// encrypt_curve25519_from_pass_with_verify
+// которая будет тоже с строкой работать но и с проверкой подписи
 /**
  * @typedef {Object} Props
  * @prop {string} pass

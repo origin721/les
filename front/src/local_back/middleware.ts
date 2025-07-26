@@ -12,6 +12,7 @@ import type { friends_service } from "./modules/friends_service";
 import type { get_accounts } from "../indexdb/main_les_store_v1/entities/accounts/get_accounts";
 import type { AddRoomParam } from "../indexdb/main_les_store_v1/entities/rooms/add_room";
 import type { AccountDto } from "./modules/accounts_service";
+import type { FriendEntityFull } from "../indexdb/main_les_store_v1/entities/friends/types";
 
 type IdRequest = string | number;
 export type BackMiddlewareProps = SubscriptionMiddlewareProps | PromiseMiddlewareProps;
@@ -130,6 +131,9 @@ export type ResultByPath = {
   [PATHS.GET_FRIEND_BY_ID]: ReturnType<typeof friends_service.getFriendById>;
   [PATHS.GET_ACTIVE_TABS_COUNT]: { count: number };
   [PATHS.GET_ACC_BY_ID]: { accounts_by_id: Record<string, AccountDto> };
+  [PATHS.GET_FRIENDS_BY_ID_SUBSCRIBE]: { 
+    friends_by_id: Record<string, FriendEntityFull>;
+  }
 };
 
 export type BackMiddlewarePayloadFetch = Extract<

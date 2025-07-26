@@ -1,9 +1,6 @@
-import type { AccountEntity } from "./account_entity";
-
-
-export type AccountEntityFull = AccountEntity & {
+export type CommonEntity = {
   id: string;
   version: number; // Версия записи для миграций
   lastUpdated: number; // Timestamp последнего обновления
-  _pass: string;
-};
+  explicitMyAccId: string; // кем зашифрованно id
+}

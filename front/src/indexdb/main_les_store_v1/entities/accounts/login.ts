@@ -5,6 +5,7 @@ import { indexdb_wrapper } from "../../indexdb_wrapper";
 import type { HttpServerParam } from "./types";
 import type { Account } from "./get_accounts";
 import { accounts_store_utils } from "../../../../local_back/back_store/accounts_store_utils";
+import type { AccountEntityFull } from "./types/full_account_entity";
 
 export function login(pass: string): Promise<Account[]> {
     return indexdb_wrapper((db) => {
@@ -16,7 +17,7 @@ export function login(pass: string): Promise<Account[]> {
         let found = true;
 
         const request = store.openCursor();
-        const result: Account[] = [];
+        const result: AccountEntityFull[] = [];
         request.onsuccess = async function (event) {
           const cursor = event.target.result;
           if (cursor) {

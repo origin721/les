@@ -5,6 +5,7 @@ import type { FriendEntityFull } from "../../indexdb/main_les_store_v1/entities/
 import type { FriendEntityPut } from "../../indexdb/main_les_store_v1/entities/friends/put_friends";
 import type { Account } from "../../indexdb/main_les_store_v1/entities/accounts/get_accounts";
 import { devAPI, prodError } from "../../core/debug/logger";
+import type { ResultByPath } from "../../local_back/middleware";
 
 /**
  * Параметры для добавления друзей с явным указанием аккаунта
@@ -14,7 +15,7 @@ export type AddFriendsParams = {
   myAccId: string;
 };
 
-export const friends = {
+export const friends_shared_worker = {
     /**
      * Получить всех друзей
      */
@@ -99,5 +100,22 @@ export const friends = {
         path: PATHS.PUT_FRIENDS,
         body: { list }
       });
-    }
+    },
+
+  subscribeFriendsById(callback: (
+    friendsById: ResultByPath[typeof PATHS.GET_FRIENDS_BY_ID_SUBSCRIBE]
+  ) => void): () => void {
+
+    return shared_worker_store.subscribeWorker({
+      reqParam: {
+        path: PATHS.GET_FRIENDS_BY_ID_SUBSCRIBE,
+      },
+      utils: {
+        callback: (
+          // Всё праивльно но закоментирую что бы не ругался это тут не главное
+          data: any //ResultByPath[typeof PATHS.GET_ACC_BY_ID]
+        ) => callback(data),
+      }
+    });
+  },
   }

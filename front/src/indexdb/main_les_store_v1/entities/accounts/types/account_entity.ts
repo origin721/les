@@ -12,8 +12,6 @@ export type AccountEntity = {
   namePub: string;
   pass: string;
   httpServers: HttpServerParam[];
-  friendsByIds?: string[]; // Опциональное для обратной совместимости
+  friendsByIds: string[]; // Опциональное для обратной совместимости
   roomIds?: string[]; // Связанные комнаты
-  version: number; // Версия записи для миграций
-  lastUpdated: number; // Timestamp последнего обновления
 };
