@@ -66,10 +66,10 @@ export async function add_accounts(new_list: AccountEntity[]) {
       explicitMyAccId: acc.id,
     });
 
-    await put_accounts([{
-      ...acc,
-      friendsIdJoin: friend_ids.id,
-    }]);
+   //await put_accounts([{
+   //  ...acc,
+   //  friendsIdJoin: friend_ids.id,
+   //}]);
 
     friend_ids_store_utils.add([friend_ids], acc.id);
   }

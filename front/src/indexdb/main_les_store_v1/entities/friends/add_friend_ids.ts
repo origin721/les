@@ -18,6 +18,7 @@ import type { FriendIdsFull } from "./types/FriendIdsFull";
 import type { FriendIdsEntityFull } from "./types/FriendIdsEntityFull";
 import { friend_by_ids_utils } from "./friend_by_ids_utils";
 import { put_accounts } from "../accounts/put_accounts";
+import { friend_ids_store_utils } from "../../../../local_back/back_store/friend_ids_store_utils";
 
 type ServiceParams = {
   list: FriendIdsEntity[];
@@ -39,7 +40,7 @@ export async function add_friend_ids({
     entityVersion: FRIENDS_VERSION,
   });
 
-  friends_store_utils.add(newFriends);
+  friend_ids_store_utils.add(newFriends);
 
   for(const el of newFriends) {
     const acc = back_store.accounts_by_id[el.explicitMyAccId];

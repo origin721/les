@@ -13,6 +13,7 @@ import { FRIENDS_VERSION } from "./constants";
 import { entity_service } from "../entity_service/entity_service";
 import { friends_store_utils } from "../../../../local_back/back_store/friends_store_utils";
 import { friend_by_ids_utils } from "./friend_by_ids_utils";
+import { TABLE_NAMES } from "../constats/TABLE_NAMES";
 
 type ServiceParams = {
   list: FriendEntity[];
@@ -28,7 +29,7 @@ export async function add_friend({
     FriendEntity,
     FriendEntityFull
   >({
-    table_name: 'friends',
+    table_name: TABLE_NAMES.friends,
     new_list: list,
     explicitMyAccId: myAccId,
     entityVersion: FRIENDS_VERSION,
@@ -49,6 +50,8 @@ export async function add_friend({
   await friend_by_ids_utils.put(Object.values(
     back_store.friends_ids_by_accounts_id
   ));
+
+  //friends_store_utils.add(newFriends);
 
   return newFriends;
 }
