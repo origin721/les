@@ -1,6 +1,7 @@
 import { prodInfo, devDB } from '../../../../core/debug/logger';
 import type { MigrationInfo, MigrationFunction } from '../types';
 import type { MigrationContext } from '../../../db_state_manager_v1/constants';
+import { TABLE_NAMES } from '../../entities/constats/TABLE_NAMES';
 
 /**
  * Информация о миграции
@@ -30,12 +31,18 @@ export function migrationScheme(db: IDBDatabase): void {
     db.createObjectStore('friends', { keyPath: 'id' });
     devDB('✅ Хранилище friends создано');
   }
+
+  if (!db.objectStoreNames.contains(TABLE_NAMES.friends_ids)) {
+    db.createObjectStore(TABLE_NAMES.friends_ids, { keyPath: 'id' });
+    devDB(`✅ Хранилище ${TABLE_NAMES.friends_ids} создано`);
+  }
   
   // Создание хранилища rooms
   if (!db.objectStoreNames.contains('rooms')) {
     db.createObjectStore('rooms', { keyPath: 'id' });
     devDB('✅ Хранилище rooms создано');
   }
+
   
   prodInfo('✅ Миграция схемы 0 завершена успешно');
 }

@@ -43,18 +43,6 @@ export function subscriptionMiddleware(
 ): (ReturnSubscriptionMiddleware | void) {
   devLog("subscriptionMiddleware starting with props:", props);
 
-
- //source_entity_service.get_all_entities({
- //  table_name: TABLE_NAMES.friends,
- //  onFinish: () => {
- //    console.log('onFinishOk))');
- //  },
- //  on: (control) => {
- //    console.log(control);
- //    control.onNext();
- //  }
- //});
-
   try {
     // Подписка на количество активных вкладок
     if (props.payload.path === PATHS.GET_ACTIVE_TABS_COUNT) {

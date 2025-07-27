@@ -1,9 +1,11 @@
+import { jsonParse } from "../../../../core";
 import { decrypt_curve25519_from_pass, encrypt_curve25519_from_pass } from "../../../../core/crypt";
 import { devLog, prodError, prodInfo } from "../../../../core/debug/logger";
 import { recommendedGenerateKeyPair } from "../../../../libs/libp2p";
 import { back_store } from "../../../../local_back/back_store";
 import { workerGeneratorIds } from "../../../../processes/shared_worker/workerGeneratorIds";
 import { indexdb_wrapper } from "../../indexdb_wrapper";
+import { db_id_generator } from "../../utils/db_id_generator";
 import { source_entity_service, type SaveEntityItem } from "./source_entity_service";
 import type { CommonEntity } from "./types/CommonEntity";
 
@@ -12,9 +14,31 @@ export const entity_service = {
   delete_entities: source_entity_service.delete_entities,
   get_entity_by_id,
   put_entities,
+  decrypt_by_explicitMyAccId,
 }
 
-export function put_entities<T extends CommonEntity>(
+
+async function decrypt_by_explicitMyAccId({
+  cipherText,
+  explicitMyAccId,
+}:{
+  cipherText: string,
+  explicitMyAccId: string,
+}) {
+  const acc = back_store.accounts_by_id[explicitMyAccId];
+  if(!acc) return null;
+
+    return jsonParse(
+    await decrypt_curve25519_from_pass({
+      pass: acc._pass,
+      cipherText: cipherText,
+    })
+  );
+}
+
+export function put_entities<
+T extends CommonEntity = CommonEntity
+>(
   {
     table_name,
     new_list,
@@ -39,6 +63,7 @@ export function put_entities<T extends CommonEntity>(
 
       const myAcc = back_store.accounts_by_id[item.explicitMyAccId];
 
+
       const resultItem: T = {
         ...item,
         date_updated: new Date(),
@@ -53,6 +78,7 @@ export function put_entities<T extends CommonEntity>(
       });
 
     }
+
 
     await source_entity_service.put_entities({
       table_name,
@@ -150,7 +176,7 @@ function add_entities<
     const saveItem: SaveEntityItem[] = [];
 
     for (let item of new_list) {
-      const newId = workerGeneratorIds();
+      const newId = db_id_generator();
 
       const resultItem: FULL_T = {
         ...item,

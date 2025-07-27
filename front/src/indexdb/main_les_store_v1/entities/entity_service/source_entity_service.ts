@@ -7,6 +7,7 @@ export const source_entity_service = {
   add_entities: add_encrypt_entities,
   add_encrypt_entities,
   put_entities: put_encrypt_entities,
+  put_encrypt_entities,
   delete_entities,
   get_all_entities,
   get_by_id_entity,
@@ -46,7 +47,7 @@ function add_encrypt_entities({
 
         const newData = await encrypt_curve25519_from_pass({
           pass: item.pass,
-          message: JSON.stringify(item.data),
+          message: item.data,
         });
         store.add({ id: item.id, data: newData });
       }
@@ -86,7 +87,7 @@ function put_encrypt_entities({
 
         const newData = await encrypt_curve25519_from_pass({
           pass: item.pass,
-          message: JSON.stringify(item.data),
+          message: item.data,
         });
         store.put({ id: item.id, data: newData });
       }
@@ -163,7 +164,7 @@ function get_all_entities({
 }: {
   table_name: string;
   onFinish?: () => void;
-  on?: (p: {
+  on: (p: {
     entity: Entity;
     onNext: () => void;
     abort: () => void;

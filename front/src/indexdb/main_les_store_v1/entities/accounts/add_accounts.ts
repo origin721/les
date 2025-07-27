@@ -16,6 +16,9 @@ import { accounts_store_utils } from "../../../../local_back/back_store/accounts
 import { TABLE_NAMES } from "../constats/TABLE_NAMES";
 import { source_entity_service, type SaveEntityItem } from "../entity_service/source_entity_service";
 import type { AccountEntityFull } from "./types/full_account_entity";
+import { add_friend_ids } from "../friends/add_friend_ids";
+import { put_accounts } from "./put_accounts";
+import { friend_ids_store_utils } from "../../../../local_back/back_store/friend_ids_store_utils";
 
 export async function add_accounts(new_list: AccountEntity[]) {
   const result: AccountEntityFull[] = [];
@@ -24,6 +27,7 @@ export async function add_accounts(new_list: AccountEntity[]) {
   for (const item of new_list) {
     const newId = uuidv4();
     const libp2p_keyPair = await recommendedGenerateKeyPair();
+
 
     const entityForSave: AccountEntityFull = {
       ...item,
@@ -35,6 +39,7 @@ export async function add_accounts(new_list: AccountEntity[]) {
       roomIds: item.roomIds || [], // Инициализируем пустым массивом
       version: ACCOUNTS_VERSION, // Версия внутри зашифрованных данных
     }
+
 
     saveResult.push({
       id: newId,
@@ -52,6 +57,23 @@ export async function add_accounts(new_list: AccountEntity[]) {
   });
 
   accounts_store_utils.add(result);
+
+  for (const acc of result) {
+    const [friend_ids] = await add_friend_ids({
+      list: [{
+        ids: []
+      }],
+      explicitMyAccId: acc.id,
+    });
+
+    await put_accounts([{
+      ...acc,
+      friendsIdJoin: friend_ids.id,
+    }]);
+
+    friend_ids_store_utils.add([friend_ids], acc.id);
+  }
+
 
   return result;
 }

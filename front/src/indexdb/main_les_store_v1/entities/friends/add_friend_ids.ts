@@ -15,28 +15,60 @@ import { friends_store_utils } from "../../../../local_back/back_store/friends_s
 import type { FriendIdsEntity } from "./types/FriendIdsEntity";
 import { TABLE_NAMES } from "../constats/TABLE_NAMES";
 import type { FriendIdsFull } from "./types/FriendIdsFull";
+import type { FriendIdsEntityFull } from "./types/FriendIdsEntityFull";
+import { friend_by_ids_utils } from "./friend_by_ids_utils";
+import { put_accounts } from "../accounts/put_accounts";
 
 type ServiceParams = {
   list: FriendIdsEntity[];
-  myAccId: string,
+  explicitMyAccId: string,
 }
 
 // 1. нужно получать myId из аргумента
 export async function add_friend_ids({
   list,
-  myAccId,
-}:ServiceParams): Promise<FriendIdsEntity[]> {
+  explicitMyAccId: explicitMyAccId,
+}:ServiceParams): Promise<FriendIdsEntityFull[]> {
   const newFriends = await entity_service.addEntities<
     FriendIdsEntity,
     FriendIdsFull
   >({
     table_name: TABLE_NAMES.friends_ids,
     new_list: list,
-    explicitMyAccId: myAccId,
+    explicitMyAccId: explicitMyAccId,
     entityVersion: FRIENDS_VERSION,
   });
 
-  //friends_store_utils.add(newFriends);
+  friends_store_utils.add(newFriends);
+
+  for(const el of newFriends) {
+    const acc = back_store.accounts_by_id[el.explicitMyAccId];
+    if (acc) {
+      //acc.friendsIdJoin = el.id;
+      await put_accounts([{
+        ...acc,
+        friendsIdJoin: el.id,
+      }]);
+    }
+
+  }
+
+
+ //for (const friend of newFriends) {
+ //  const prevFriendByIds = back_store.friends_ids_by_accounts_id[friend.explicitMyAccId];
+ //  if(prevFriendByIds) {
+ //    prevFriendByIds.ids = [
+ //      ...prevFriendByIds.ids,
+ //      friend.id
+ //    ]
+ //  }
+ //}
+
+ //await friend_by_ids_utils.put(
+ //  Object.values(
+ //    back_store.friends_ids_by_accounts_id
+ //  )
+ //);
 
  //const acc = back_store.accounts_by_id[myAccId];
  //newFriends.forEach((friendEl) => {

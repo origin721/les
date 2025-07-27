@@ -6,52 +6,44 @@ import { indexdb_wrapper } from "../../indexdb_wrapper";
 import type { HttpServerParam, AccountEntityPut } from "./types";
 import { ACCOUNTS_VERSION } from "./constants";
 import { accounts_store_utils } from "../../../../local_back/back_store/accounts_store_utils";
+import { source_entity_service, type SaveEntityItem } from "../entity_service/source_entity_service";
+import { TABLE_NAMES } from "../constats/TABLE_NAMES";
+import type { AccountEntityFull } from "./types/full_account_entity";
 
-export function put_accounts(new_list: AccountEntityPut[]) {
-  return indexdb_wrapper((db) => {
-    return new Promise(async (res, rej) => {
-      const transaction = db.transaction(["accounts"], "readwrite");
-      const store = transaction.objectStore("accounts");
-      const result = [];
-      // Обновляем записи
-      for (let item of new_list) {
-        const existingAccount = back_store.accounts_by_id[item.id];
-        if (!existingAccount) {
-          throw new Error(`Account ${item.id} not found in back_store`);
-        }
+export async function put_accounts(new_list: AccountEntityFull[]) {
+  const saveItems: SaveEntityItem[] = [];
+  const result: AccountEntityFull[] = [];
 
-        // Объединяем существующие данные с новыми
-        const updatedAccount = {
-          ...existingAccount,
-          ...item,
-          date_updated: new Date(),
-          // Сохраняем важные поля из оригинального аккаунта
-          //_pass: existingAccount._pass,
-          //_libp2p_keyPair: existingAccount._libp2p_keyPair,
-          date_created: existingAccount.date_created,
-          version: ACCOUNTS_VERSION, // Версия внутри зашифрованных данных
-        };
+  for (let item of new_list) {
+    const existingAccount = back_store.accounts_by_id[item.id];
+    if (!existingAccount) {
+      throw new Error(`Account ${item.id} not found in back_store`);
+    }
 
-        result.push(updatedAccount);
+    // Объединяем существующие данные с новыми
+    const updatedAccount = {
+      ...existingAccount,
+      ...item,
+      date_updated: new Date(),
+      version: ACCOUNTS_VERSION, // Версия внутри зашифрованных данных
+    };
 
-        const newData = await encrypt_curve25519_from_pass({
-          pass: existingAccount.pass,
-          message: JSON.stringify(updatedAccount),
-        });
+    result.push(updatedAccount);
 
-        store.put({ id: item.id, data: newData });
-      }
-
-      transaction.oncomplete = function () {
-        //console.log("Данные добавлены успешно");
-        accounts_store_utils.add(result);
-        res(result);
-      };
-
-      transaction.onerror = function (event) {
-        //console.error("Ошибка при добавлении данных:", event.target.errorCode);
-        rej();
-      };
+    saveItems.push({
+      id: updatedAccount.id,
+      data: JSON.stringify(updatedAccount),
+      pass: updatedAccount.pass,
     });
+
+  }
+
+  accounts_store_utils.add(result);
+
+  await source_entity_service.put_encrypt_entities({
+    table_name: TABLE_NAMES.accounts,
+    new_list: saveItems,
   });
+
+  return result;
 }

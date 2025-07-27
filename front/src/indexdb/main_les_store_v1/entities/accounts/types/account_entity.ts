@@ -13,8 +13,8 @@ export type AccountEntity = {
   pass: string;
   httpServers: HttpServerParam[];
   friendsByIds: string[]; // Опциональное для обратной совместимости
+  friendsIdJoin: string;
   roomIds?: string[]; // Связанные комнаты
-  roomIdJoin: string;
   /**
    * Пароль от сущностей
    */

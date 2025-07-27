@@ -17,6 +17,7 @@ export const MIGRATIONS_REGISTRY: Record<number, string> = {
   3: "3_rooms_versioning",
   4: "4_accounts_room_ids",
   5: "5_entities_version_fields",
+  6: "6_account_friends_ids",
 };
 
 /**

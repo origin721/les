@@ -27,6 +27,10 @@ import { updateAccById } from "../subscribeModules/accounts_by_id_subscribe";
 import { accounts_store_utils } from "../back_store/accounts_store_utils";
 import { get_friend_by_id } from "../../indexdb/main_les_store_v1/entities/friends/get_friend_by_id";
 import type { AccountEntityFull } from "../../indexdb/main_les_store_v1/entities/accounts/types/full_account_entity";
+import { get_friend_by_ids_by_id } from "../../indexdb/main_les_store_v1/entities/friends/get_friend_by_ids_by_id";
+import { updateFriendsById } from "../subscribeModules/friends_by_id_subscribe";
+import { add_friend_ids } from "../../indexdb/main_les_store_v1/entities/friends/add_friend_ids";
+import { friend_by_ids_utils } from "../../indexdb/main_les_store_v1/entities/friends/friend_by_ids_utils";
 
 const channel = new BroadcastChannel(CHANNEL_NAMES.FRONT_MIDDLEWARE);
 
@@ -35,41 +39,41 @@ export const accounts_service = {
     await put_accounts(list);
     //await accounts_service.getList();
 
-// TODO: put не такой как другие не тут меняется back_store
+    // TODO: put не такой как другие не тут меняется back_store
     updateAccById();
   },
   async delete(ids: string[]) {
     try {
       await delete_accounts(ids);
-     //for (let id of ids) {
-     //  delete back_store.accounts_by_id[id];
-     //}
+      //for (let id of ids) {
+      //  delete back_store.accounts_by_id[id];
+      //}
       // broadcast delete
-     //const broadcast_event: PostMessageParamDeleteAccounts = {
-     //  action: FrontMiddlewareActions.DELETE_ACCOUNTS,
-     //  data: {
-     //    ids: ids,
-     //  },
-     //};
-     //channel.postMessage(broadcast_event);
-    } catch (err) {}
+      //const broadcast_event: PostMessageParamDeleteAccounts = {
+      //  action: FrontMiddlewareActions.DELETE_ACCOUNTS,
+      //  data: {
+      //    ids: ids,
+      //  },
+      //};
+      //channel.postMessage(broadcast_event);
+    } catch (err) { }
   },
   async getList() {
     return back_store.accounts_by_id;
-   //const accounts = await get_accounts();
+    //const accounts = await get_accounts();
 
-   //const broadcast_event: PostMessageParamAddAccounts = {
-   //  action: FrontMiddlewareActions.ADD_ACCOUNTS,
-   //  data: {
-   //    list: accounts.map(accountToDto),
-   //  },
-   //};
-   //channel.postMessage(broadcast_event);
+    //const broadcast_event: PostMessageParamAddAccounts = {
+    //  action: FrontMiddlewareActions.ADD_ACCOUNTS,
+    //  data: {
+    //    list: accounts.map(accountToDto),
+    //  },
+    //};
+    //channel.postMessage(broadcast_event);
 
     //back_store.accounts_by_id = {};
-   //accounts.forEach(el => {
-   //  back_store.accounts_by_id[el.id] = el;
-   //});
+    //accounts.forEach(el => {
+    //  back_store.accounts_by_id[el.id] = el;
+    //});
   },
   async onLogin(props: LoginPayload) {
     const accounts = await login(props.body.pass);
@@ -97,29 +101,47 @@ export const accounts_service = {
       }
     }
 
-            accounts_store_utils.add(accounts);
+    accounts_store_utils.add(accounts);
 
-            accounts.forEach((acc) => {
-              (acc.friendsByIds||[]).forEach((friendId) => {
-                get_friend_by_id({
-                  friendId: friendId,
-                  explicitMyAccId: acc.id,
-                });
-
-              });
+    for( const acc of accounts) {
+      // TODO: сделать миграцию 
+      if (acc.friendsIdJoin) {
+        get_friend_by_ids_by_id({
+          id: acc.friendsIdJoin,
+          explicitMyAccId: acc.id,
+        }).then(friend_ids => {
+          if (!friend_ids) {
+            console.error('Должны существовать!');
+            return
+          }
+          
+          (friend_ids.ids || []).forEach((friendId) => {
+            get_friend_by_id({
+              friendId: friendId,
+              explicitMyAccId: acc.id,
             });
 
+          });
+        });
+      }
+      else {
+        await friend_by_ids_utils.recovery();
+      }
+    };
 
-   //for (let ac of accounts) {
-   //  back_store.accounts_by_id[ac.id] = ac;
-   //}
-   //updateAccById();
-   //const broadcast_event: PostMessageParamAddAccounts = {
-   //  action: FrontMiddlewareActions.ADD_ACCOUNTS,
-   //  data: {
-   //    list: accounts.map(accountToDto),
-   //  },
-   //};
+
+    updateFriendsById();
+
+    //for (let ac of accounts) {
+    //  back_store.accounts_by_id[ac.id] = ac;
+    //}
+    //updateAccById();
+    //const broadcast_event: PostMessageParamAddAccounts = {
+    //  action: FrontMiddlewareActions.ADD_ACCOUNTS,
+    //  data: {
+    //    list: accounts.map(accountToDto),
+    //  },
+    //};
     //channel.postMessage(broadcast_event);
   },
   async getPeerIdForLibp2p(accId: string) {
@@ -130,14 +152,15 @@ export const accounts_service = {
   },
 };
 
-export type AccountDto = Omit<Account, "_pass" | "pass" | "_libp2p_keyPair">;
-export function accountToDto(a: Account): AccountDto {
+export type AccountDto = Omit<AccountEntityFull, "_pass" | "pass" | "_libp2p_keyPair">;
+export function accountToDto(a: AccountEntityFull): AccountDto {
   return {
     namePub: a.namePub,
     id: a.id,
     httpServers: a.httpServers,
     date_created: a.date_created,
-    date_updated: a.date_updated,
+    //date_updated: a.date_updated,
+    lastUpdated: a.lastUpdated,
     friendsByIds: a.friendsByIds,
     version: a.version,
   };
