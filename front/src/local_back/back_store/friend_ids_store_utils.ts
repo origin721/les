@@ -4,18 +4,18 @@ import { back_store } from "./back_store";
 export const friend_ids_store_utils = {
   add(friends: FriendIdsEntity[], explicitMyAccId: string) {
     for (let friendIds of friends) {
-      back_store.friends_by_id[explicitMyAccId] = friendIds
+      back_store.friends_ids_by_accounts_id[explicitMyAccId] = friendIds
     };
   },
 
   delete(ids: string[]) {
     for (let id of ids) {
-      delete back_store.friends_by_id[id];
+      delete back_store.friends_ids_by_accounts_id[id];
     }
   },
 
   getById(id: string) {
-    return back_store.friends_by_id[id] || null;
+    return back_store.friends_ids_by_accounts_id[id] || null;
   },
 
 }

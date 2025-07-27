@@ -1,4 +1,5 @@
-import { prodInfo } from '../../../core/debug/logger';
+import { devDB, prodInfo } from '../../../core/debug/logger';
+import { TABLE_NAMES } from '../entities/constats/TABLE_NAMES';
 
 /**
  * Выполняет экстренные встроенные миграции схемы БД
@@ -22,24 +23,34 @@ export function runEmergencyMigrations({
     if (migrationVersion === 0 && realOldVersion <= 0) {
       prodInfo('📦 Экстренная миграция схемы 0: Создание базовых хранилищ');
       
-      if (!db.objectStoreNames.contains('accounts')) {
-        db.createObjectStore('accounts', { keyPath: 'id' });
+      if (!db.objectStoreNames.contains(TABLE_NAMES.accounts)) {
+        db.createObjectStore(TABLE_NAMES.accounts, { keyPath: 'id' });
         prodInfo('✅ Хранилище accounts создано');
       }
       
-      if (!db.objectStoreNames.contains('friends')) {
-        db.createObjectStore('friends', { keyPath: 'id' });
+      if (!db.objectStoreNames.contains(TABLE_NAMES.friends)) {
+        db.createObjectStore(TABLE_NAMES.friends, { keyPath: 'id' });
         prodInfo('✅ Хранилище friends создано');
       }
       
-      if (!db.objectStoreNames.contains('rooms')) {
-        db.createObjectStore('rooms', { keyPath: 'id' });
+      if (!db.objectStoreNames.contains(TABLE_NAMES.rooms)) {
+        db.createObjectStore(TABLE_NAMES.rooms, { keyPath: 'id' });
         prodInfo('✅ Хранилище rooms создано');
       }
+
+     //if (!db.objectStoreNames.contains(TABLE_NAMES.friends_ids)) {
+     //  db.createObjectStore(TABLE_NAMES.friends_ids, { keyPath: 'id' });
+     //  devDB(`✅ Хранилище ${TABLE_NAMES.friends_ids} создано`);
+     //}
       
       prodInfo('✅ Экстренная миграция схемы 0 завершена');
     }
     
+      if (!db.objectStoreNames.contains(TABLE_NAMES.friends_ids)) {
+        db.createObjectStore(TABLE_NAMES.friends_ids, { keyPath: 'id' });
+        devDB(`✅ Хранилище ${TABLE_NAMES.friends_ids} создано`);
+      }
+
     // Миграция 1: добавление индексов
     if (migrationVersion === 1 && realOldVersion <= 1) {
       prodInfo('📦 Экстренная миграция схемы 1: Добавление индексов');

@@ -30,6 +30,9 @@
 
 
     onMount(() => {
+        setTimeout(() => {
+            loading = false;
+        }, 500);
         return friends_shared_worker.subscribeFriendsById((data) => {
             devLog('[FRIENDS SUBSCRIBE]', data);
             friends = Object.values(data.friends_by_id);
@@ -53,6 +56,10 @@
     }
 
     function handleRefresh() {
+        loading = true;
+        setTimeout(() => {
+            loading = false;
+        }, 500);
         devUI("🔄 FriendsPage: Принудительное обновление списка");
         //loadFriends();
     }

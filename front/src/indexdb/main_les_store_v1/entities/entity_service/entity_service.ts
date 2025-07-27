@@ -59,7 +59,7 @@ T extends CommonEntity = CommonEntity
         return;
       };
 
-      const newId = workerGeneratorIds();
+      //const newId = workerGeneratorIds();
 
       const myAcc = back_store.accounts_by_id[item.explicitMyAccId];
 
@@ -73,7 +73,7 @@ T extends CommonEntity = CommonEntity
       resultList.push(resultItem);
       saveItem.push({
         pass: myAcc._pass,
-        id: newId,
+        id: resultItem.id,
         data: JSON.stringify(resultItem),
       });
 
@@ -120,7 +120,7 @@ export function get_entity_by_id<FULL_T = any>(
         try {
           const passwords = new Set<string>();
           for (let ac of Object.values(back_store.accounts_by_id)) {
-            passwords.add(ac.pass);
+            passwords.add(ac._pass);
           }
 
           for (let pass of passwords) {

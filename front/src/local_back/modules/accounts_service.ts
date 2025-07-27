@@ -31,6 +31,7 @@ import { get_friend_by_ids_by_id } from "../../indexdb/main_les_store_v1/entitie
 import { updateFriendsById } from "../subscribeModules/friends_by_id_subscribe";
 import { add_friend_ids } from "../../indexdb/main_les_store_v1/entities/friends/add_friend_ids";
 import { friend_by_ids_utils } from "../../indexdb/main_les_store_v1/entities/friends/friend_by_ids_utils";
+import { friend_ids_store_utils } from "../back_store/friend_ids_store_utils";
 
 const channel = new BroadcastChannel(CHANNEL_NAMES.FRONT_MIDDLEWARE);
 
@@ -106,22 +107,21 @@ export const accounts_service = {
     for( const acc of accounts) {
       // TODO: сделать миграцию 
       if (acc.friendsIdJoin) {
-        get_friend_by_ids_by_id({
+        await get_friend_by_ids_by_id({
           id: acc.friendsIdJoin,
           explicitMyAccId: acc.id,
-        }).then(friend_ids => {
+        }).then(async(friend_ids) => {
           if (!friend_ids) {
             console.error('Должны существовать!');
             return
           }
           
-          (friend_ids.ids || []).forEach((friendId) => {
-            get_friend_by_id({
+          for (const friendId of (friend_ids.ids || [])) {
+            await get_friend_by_id({
               friendId: friendId,
               explicitMyAccId: acc.id,
             });
-
-          });
+          };
         });
       }
       else {
