@@ -1,0 +1,1 @@
+import{a as l,f as d,k as m,v as o,d as n,z as c,n as f}from"./index-ChEfoVlL.js";var i=d('<header data-widget-name="AppHeader" class="pl-3 text-center m-3"> </header> <span class="ml-auto mr-auto mb-3 w-[90%] h-1 bg-slate-700 block"></span>',1);function x(e,t){let r=l(t,"titleText",3,"");var a=i(),s=m(a),p=f(s);o(()=>c(p,r())),n(e,a)}export{x as A};
