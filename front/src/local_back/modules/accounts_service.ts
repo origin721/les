@@ -129,6 +129,7 @@ export const accounts_service = {
       }
     };
 
+    //await friend_by_ids_utils.recovery();
 
     updateFriendsById();
 

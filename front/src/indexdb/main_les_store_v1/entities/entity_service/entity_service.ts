@@ -15,6 +15,7 @@ export const entity_service = {
   get_entity_by_id,
   put_entities,
   decrypt_by_explicitMyAccId,
+  decrypt_by_pass,
 }
 
 
@@ -31,6 +32,22 @@ async function decrypt_by_explicitMyAccId({
     return jsonParse(
     await decrypt_curve25519_from_pass({
       pass: acc._pass,
+      cipherText: cipherText,
+    })
+  );
+}
+
+async function decrypt_by_pass({
+  cipherText,
+  pass,
+}:{
+  cipherText: string,
+  pass: string,
+}) {
+
+  return jsonParse(
+    await decrypt_curve25519_from_pass({
+      pass: pass,
       cipherText: cipherText,
     })
   );

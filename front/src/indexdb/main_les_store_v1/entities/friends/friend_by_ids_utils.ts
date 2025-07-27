@@ -54,16 +54,20 @@ async function recovery_by_ids_friends() {
           cipherText: entity.data,
           explicitMyAccId: acc.id,
         });
+
         if(decryptedEntity) {
           const prevFriendIds = back_store.friends_ids_by_accounts_id[acc.id];
-          prevFriendIds.ids = [
-            ...prevFriendIds.ids,
-            decryptedEntity.id,
-          ];
 
-          await put_utils([
-            back_store.friends_ids_by_accounts_id[acc.id]
-          ]);
+          if(!prevFriendIds.ids.includes(decryptedEntity.id)) {
+            prevFriendIds.ids = [
+              ...prevFriendIds.ids,
+              decryptedEntity.id,
+            ];
+
+            await put_utils([
+              back_store.friends_ids_by_accounts_id[acc.id]
+            ]);
+          }
 
           break;
         }
