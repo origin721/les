@@ -16,9 +16,6 @@
         onchange
     }: Props = $props();
 
-    $effect(() => {
-        console.log(accounts);
-    });
 </script>
 
 <div class={formStyles.group}>
