@@ -1,15 +1,18 @@
+import { jsonParse } from "../../../../core";
 import { decrypt_curve25519_from_pass, encrypt_curve25519_from_pass } from "../../../../core/crypt";
 import { devLog, prodError, prodInfo } from "../../../../core/debug/logger";
 import { indexdb_wrapper } from "../../indexdb_wrapper";
 
 export const source_entity_service = {
   add_entities: add_encrypt_entities,
+  add_encrypt_entities,
   put_entities: put_encrypt_entities,
   delete_entities,
   get_all_entities,
   get_by_id_entity,
   get_by_ids_entity,
   get_by_ids_entity_with_decrypt,
+  get_by_id_entity_with_decrypt,
 }
 
 export type SaveEntityItem = Entity & {
@@ -156,10 +159,11 @@ export function delete_entities<T = string[]>({
 function get_all_entities({
   table_name,
   on,
+  onFinish,
 }: {
   table_name: string;
-  onFinish: () => void;
-  on: (p: {
+  onFinish?: () => void;
+  on?: (p: {
     entity: Entity;
     onNext: () => void;
     abort: () => void;
@@ -188,7 +192,7 @@ function get_all_entities({
           if (cursor) {
             // Обрабатываем текущую запись
             //console.log('Ключ:', cursor.key, 'Значение:', cursor.value);
-            on({
+            on?.({
               entity: cursor.value,
               onNext: () => cursor.continue(),
               abort: () => {
@@ -202,6 +206,7 @@ function get_all_entities({
           } else {
             console.log('Все записи обработаны.');
             res();
+            onFinish?.();
           }
         };
 
@@ -213,13 +218,35 @@ function get_all_entities({
   }) as Promise<void>;
 }
 
+async function get_by_id_entity_with_decrypt({
+  table_name,
+  id,
+  pass,
+}: {
+  table_name: string;
+  id: string;
+  pass: string;
+}) {
+  const encryptedEntity = await get_by_id_entity({
+    table_name,
+    id,
+  });
+
+  return jsonParse(
+    await decrypt_curve25519_from_pass({
+      pass,
+      cipherText: encryptedEntity,
+    })
+  );
+}
+
 function get_by_id_entity({
   table_name,
   id,
 }: {
   table_name: string;
   id: string;
-}) {
+}): Promise<string> {
   return indexdb_wrapper((db) => {
     return new Promise((res, rej) => {
       try {
@@ -302,10 +329,12 @@ async function get_by_ids_entity_with_decrypt<T = any>({
   const result: Record<string, T> = {}
 
   for (const [key, value] of Object.entries(entityById)) {
-    result[key] = await decrypt_curve25519_from_pass({
-      pass,
-      cipherText: value,
-    });
+    result[key] = jsonParse(
+      await decrypt_curve25519_from_pass({
+        pass,
+        cipherText: value,
+      })
+    );
   };
 
   return result;

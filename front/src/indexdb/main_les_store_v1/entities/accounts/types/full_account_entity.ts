@@ -5,5 +5,5 @@ export type AccountEntityFull = AccountEntity & {
   id: string;
   version: number; // Версия записи для миграций
   lastUpdated: number; // Timestamp последнего обновления
-  _pass: string;
+  date_created: string;
 };

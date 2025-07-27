@@ -169,7 +169,7 @@ function add_entities<
 
     }
 
-    await source_entity_service.add_entities({
+    await source_entity_service.add_encrypt_entities({
       table_name,
       new_list: saveItem,
     });

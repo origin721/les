@@ -14,4 +14,9 @@ export type AccountEntity = {
   httpServers: HttpServerParam[];
   friendsByIds: string[]; // Опциональное для обратной совместимости
   roomIds?: string[]; // Связанные комнаты
+  roomIdJoin: string;
+  /**
+   * Пароль от сущностей
+   */
+  _pass: string;
 };

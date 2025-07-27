@@ -5,6 +5,8 @@ import { indexdb_wrapper } from "../../indexdb_wrapper";
 import type { HttpServerParam } from "./types";
 import { prodError } from "../../../../core/debug/logger";
 import { accounts_store_utils } from "../../../../local_back/back_store/accounts_store_utils";
+import { source_entity_service } from "../entity_service/source_entity_service";
+import { TABLE_NAMES } from "../constats/TABLE_NAMES";
 
 export type Account = {
   namePub: string;
@@ -17,45 +19,12 @@ export type Account = {
   date_updated?: Date;
 };
 
-export function get_account_by_id(accId: string): Promise<Account> {
-  return indexdb_wrapper((db) => {
-    return new Promise((res, rej) => {
-      const transaction = db.transaction(["accounts"], "readwrite");
-      const store = transaction.objectStore("accounts");
-
-      // Получаем запись по идентификатору
-      const getRequest = store.get(accId);
-
-      getRequest.onerror = function (event) {
-        prodError(
-          "Ошибка при получении записи:",
-          (event.target as any)?.error,
-        );
-      };
-
-      getRequest.onsuccess = async function (event) {
-        try {
-          const entity = (event.target as any)?.result;
-          if (entity && back_store.accounts_by_id[accId]) {
-            const decryptedData = await decrypt_curve25519_from_pass({
-              pass: back_store.accounts_by_id[accId].pass,
-              cipherText: entity.data,
-            });
-            if (decryptedData) {
-              const successResult = JSON.parse(decryptedData);
-              res(successResult);
-              //accounts_store_utils.add([successResult]);
-            } else {
-              throw "Не удалось расшифровать данные для аккаунта " + accId;
-            }
-          } else {
-            throw "Сущность с таким id не найдена " + accId;
-          }
-        } catch (err) {
-          prodError(err);
-          rej(err);
-        }
-      };
-    });
+export function get_account_by_id(
+  accId: string
+): Promise<Account> {
+  return source_entity_service.get_by_id_entity_with_decrypt({
+    table_name: TABLE_NAMES.accounts,
+    id: accId,
+    pass: back_store.accounts_by_id[accId].pass,
   });
 }

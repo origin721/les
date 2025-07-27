@@ -13,49 +13,45 @@ import type { AccountEntity, HttpServerParam } from "./types";
 import { entity_service } from "../entity_service/entity_service";
 import { back_store } from "../../../../local_back/back_store";
 import { accounts_store_utils } from "../../../../local_back/back_store/accounts_store_utils";
+import { TABLE_NAMES } from "../constats/TABLE_NAMES";
+import { source_entity_service, type SaveEntityItem } from "../entity_service/source_entity_service";
+import type { AccountEntityFull } from "./types/full_account_entity";
 
-export function add_accounts(new_list: AccountEntity[]) {
-  return indexdb_wrapper((db) => {
-    return new Promise(async (res, rej) => {
-      const transaction = db.transaction(["accounts"], "readwrite");
-      const store = transaction.objectStore("accounts");
-      const result = [];
-      // Добавляем запись
-      for (let item of new_list) {
-        const newId = uuidv4();
-        const libp2p_keyPair = await recommendedGenerateKeyPair();
+export async function add_accounts(new_list: AccountEntity[]) {
+  const result: AccountEntityFull[] = [];
+  const saveResult: SaveEntityItem[] = [];
 
-        const entityForSave = {
-          ...item,
-          id: newId,
-          _pass: gen_pass(),
-          _libp2p_keyPair: privateKeyToString(libp2p_keyPair),
-          date_created: new Date(),
-          friendsByIds: item.friendsByIds || [], // Инициализируем пустым массивом
-          roomIds: item.roomIds || [], // Инициализируем пустым массивом
-          version: ACCOUNTS_VERSION, // Версия внутри зашифрованных данных
-        }
+  for (const item of new_list) {
+    const newId = uuidv4();
+    const libp2p_keyPair = await recommendedGenerateKeyPair();
 
-        result.push(entityForSave)
+    const entityForSave: AccountEntityFull = {
+      ...item,
+      id: newId,
+      _pass: gen_pass(),
+      _libp2p_keyPair: privateKeyToString(libp2p_keyPair),
+      date_created: new Date(),
+      friendsByIds: item.friendsByIds || [], // Инициализируем пустым массивом
+      roomIds: item.roomIds || [], // Инициализируем пустым массивом
+      version: ACCOUNTS_VERSION, // Версия внутри зашифрованных данных
+    }
 
-        const newData = await encrypt_curve25519_from_pass({
-          pass: item.pass,
-          message: JSON.stringify(entityForSave),
-        });
-        store.add({ id: newId, data: newData });
-      }
-
-      transaction.oncomplete = function () {
-        prodInfo("Данные добавлены успешно");
-        res(result);
-        
-        accounts_store_utils.add(result);
-      };
-
-      transaction.onerror = function (event) {
-        prodError("Ошибка при добавлении данных:", event);
-        rej(new Error("Ошибка при добавлении данных в IndexedDB"));
-      };
+    saveResult.push({
+      id: newId,
+      data: JSON.stringify(entityForSave),
+      pass: entityForSave.pass,
     });
+    result.push(entityForSave)
+
+
+  }
+
+  await source_entity_service.add_encrypt_entities({
+    table_name: TABLE_NAMES.accounts,
+    new_list: saveResult,
   });
+
+  accounts_store_utils.add(result);
+
+  return result;
 }

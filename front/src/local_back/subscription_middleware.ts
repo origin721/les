@@ -43,15 +43,6 @@ export function subscriptionMiddleware(
 ): (ReturnSubscriptionMiddleware | void) {
   devLog("subscriptionMiddleware starting with props:", props);
 
-  source_entity_service.get_by_ids_entity({
-    table_name: TABLE_NAMES.friends,
-    ids: [
-      '017457dc-5a71-4508-9e51-c4d6ac398e90',
-      '0588d43e-6eb3-4e43-a309-418654227208'
-    ],
-  }).then(res => {
-    devLog('entiresById', res);
-  });
 
  //source_entity_service.get_all_entities({
  //  table_name: TABLE_NAMES.friends,
