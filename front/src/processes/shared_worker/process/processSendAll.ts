@@ -1,3 +1,5 @@
+import { devLog } from "../../../core/debug/logger";
+import { back_store } from "../../../local_back/back_store";
 import { responseFromPageByPath } from "./ResponseFromPageByPath";
 import { sharedWorkerLastPortsActive } from "./sharedWorkerLastPortsRef";
 
@@ -17,5 +19,6 @@ export const processSendAll = () => {
   }
   finally {
     setTimeout(processSendAll, 3000);
+    //devLog(back_store);
   }
 }

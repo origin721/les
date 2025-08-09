@@ -11,6 +11,7 @@ import type { CommonEntity } from "./types/CommonEntity";
 
 export const entity_service = {
   addEntities: add_entities,
+  add_entities,
   delete_entities: source_entity_service.delete_entities,
   get_entity_by_id,
   put_entities,

@@ -41,7 +41,7 @@ export type ReturnSubscriptionMiddleware = {
 export function subscriptionMiddleware(
   props: SubscriptionMiddlewareProps,
 ): (ReturnSubscriptionMiddleware | void) {
-  devLog("subscriptionMiddleware starting with props:", props);
+  //devLog("subscriptionMiddleware starting with props:", props);
 
   try {
     // Подписка на количество активных вкладок

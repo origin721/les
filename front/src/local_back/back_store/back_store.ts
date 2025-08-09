@@ -1,8 +1,8 @@
 import type { AccountEntityFull } from "../../indexdb/main_les_store_v1/entities/accounts/types/full_account_entity";
-import type { FriendEntityFull } from "../../indexdb/main_les_store_v1/entities/friends/add_friend";
+import type { FriendEntityFull } from "../../indexdb/main_les_store_v1/entities/friends/types";
 import type { FriendIdsEntity } from "../../indexdb/main_les_store_v1/entities/friends/types/FriendIdsEntity";
 import type { FriendIdsEntityFull } from "../../indexdb/main_les_store_v1/entities/friends/types/FriendIdsEntityFull";
-import type { RoomEntityFull } from "../../indexdb/main_les_store_v1/entities/rooms/add_room";
+import type { RoomEntityFull } from "../../indexdb/main_les_store_v1/entities/rooms/types";
 
 export interface Libp2pNodeInstance {
   peerId: string;
@@ -13,7 +13,7 @@ export interface Libp2pNodeInstance {
 
 export const back_store = {
   accounts_by_id: {} as Record<string, AccountEntityFull>,
-  friends_by_id: {} as Record<string, FriendEntityFull>,
+  friends_by_id: {} as Record<string, FriendIdsEntityFull>,
   friends_ids_by_accounts_id: {} as Record<string, FriendIdsEntityFull>,
   rooms_by_id: {} as Record<string, RoomEntityFull>,
 }

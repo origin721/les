@@ -11,12 +11,10 @@ import {
 import { back_store } from "../../../../local_back/back_store/back_store";
 import { FRIENDS_VERSION } from "./constants";
 import { entity_service } from "../entity_service/entity_service";
-import { friends_store_utils } from "../../../../local_back/back_store/friends_store_utils";
 import type { FriendIdsEntity } from "./types/FriendIdsEntity";
 import { TABLE_NAMES } from "../constats/TABLE_NAMES";
 import type { FriendIdsFull } from "./types/FriendIdsFull";
 import type { FriendIdsEntityFull } from "./types/FriendIdsEntityFull";
-import { friend_by_ids_utils } from "./friend_by_ids_utils";
 import { put_accounts } from "../accounts/put_accounts";
 import { friend_ids_store_utils } from "../../../../local_back/back_store/friend_ids_store_utils";
 
@@ -54,29 +52,6 @@ export async function add_friend_ids({
 
   }
 
-
- //for (const friend of newFriends) {
- //  const prevFriendByIds = back_store.friends_ids_by_accounts_id[friend.explicitMyAccId];
- //  if(prevFriendByIds) {
- //    prevFriendByIds.ids = [
- //      ...prevFriendByIds.ids,
- //      friend.id
- //    ]
- //  }
- //}
-
- //await friend_by_ids_utils.put(
- //  Object.values(
- //    back_store.friends_ids_by_accounts_id
- //  )
- //);
-
- //const acc = back_store.accounts_by_id[myAccId];
- //newFriends.forEach((friendEl) => {
- //  acc.friendsByIds.push(friendEl.id);
- //});
-
-  
 
   return newFriends;
 }
