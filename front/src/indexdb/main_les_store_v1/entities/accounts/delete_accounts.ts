@@ -9,9 +9,19 @@ import { friend_by_ids_utils } from "../friends/friend_by_ids_utils";
 
 export async function delete_accounts(ids: string[]) {
   for(const idItem of ids) {
-    await friend_by_ids_utils.delete([
-      back_store.accounts_by_id[idItem].friendsIdJoin
-    ]);
+    //const acc = back_store.accounts_by_id[idItem];
+    //debugger
+
+    //console.log({back_store});
+
+    const friends_by_id = back_store.friends_ids_by_accounts_id[idItem];
+
+    //console.log({friends_by_id});
+    
+    await friend_by_ids_utils.delete(
+      [friends_by_id.id],
+      idItem,
+    );
   }
 
   const deletedItems = await source_entity_service.delete_entities({

@@ -34,13 +34,17 @@ async function _delete_friend(ids: string[]) {
 
 }
 
-async function delete_by_id(friendIds: string[]) {
-  for(const idItem of friendIds) {
-    if(Array.isArray(back_store.friends_by_id[idItem].ids)) {
-      await delete_friend(back_store.friends_by_id[idItem].ids);
+async function delete_by_id(friendIds: string[], accId: string) {
+  //for(const idItem of friendIds) {
+    //if(back_store.friends_ids_by_accounts_id[back_store.friends_by_id[idItem].explicitMyAccId].ids)//back_store.friends_by_id[idItem].explicitMyAccId) {
+
+    const friend_ids = back_store.friends_ids_by_accounts_id[accId];
+
+    if(Array.isArray(friend_ids.ids)) {
+      await delete_friend(friend_ids.ids);
     }
     else console.error('ошибка потом добавить уведомление если не так что то');
-  }
+  //}
 
   await entity_service.delete_entities({
     ids: friendIds,

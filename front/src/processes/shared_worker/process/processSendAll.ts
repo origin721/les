@@ -19,6 +19,6 @@ export const processSendAll = () => {
   }
   finally {
     setTimeout(processSendAll, 3000);
-    //devLog(back_store);
+    devLog(back_store);
   }
 }

@@ -38,7 +38,7 @@ export async function add_friend_ids({
     entityVersion: FRIENDS_VERSION,
   });
 
-  friend_ids_store_utils.add(newFriends);
+  friend_ids_store_utils.add(newFriends, explicitMyAccId);
 
   for(const el of newFriends) {
     const acc = back_store.accounts_by_id[el.explicitMyAccId];

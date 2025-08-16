@@ -25,19 +25,26 @@ export async function add_friend({
   list,
   myAccId,
 }:ServiceParams): Promise<FriendEntityFull[]> {
+  const acc = back_store.accounts_by_id[myAccId];
+
   const newFriends = await entity_service.addEntities<
     FriendEntity,
     FriendEntityFull
   >({
     table_name: TABLE_NAMES.friends,
-    new_list: list,
+    new_list: list.map(el => {
+      return {
+        ...el,
+        explicitMyAccId: el.explicitMyAccId||el.myAccId,
+        joinFriendId: acc.friendsIdJoin
+      };
+    }),
     explicitMyAccId: myAccId,
     entityVersion: FRIENDS_VERSION,
   });
 
   friends_store_utils.add(newFriends);
 
-  const acc = back_store.accounts_by_id[myAccId];
   newFriends.forEach((friendEl) => {
     //acc.friendsByIds.push(friendEl.id);
 

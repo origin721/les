@@ -1,4 +1,5 @@
 import { sharedWorkerApi } from "../../../api/shared_worker";
+import { devLog } from "../../../core/debug/logger";
 
 export interface AddFriendData {
     friendName: string;
@@ -38,23 +39,24 @@ export async function useAddFriend(data: AddFriendData, accounts: any[]): Promis
     });
 
     try {
-        console.log('🔄 Начинаем добавление друга...');
+        devLog('🔄 Начинаем добавление друга...');
         
         // Сначала попытаемся войти в аккаунт, чтобы загрузить пароли в SharedWorker
         const selectedAccount = accounts.find(acc => acc.id === selectedAccountId);
-        console.log('👤 Выбранный аккаунт:', selectedAccount);
+        devLog('👤 Выбранный аккаунт:', selectedAccount);
         
         if (selectedAccount) {
-            console.log('🔄 Пропускаем аутентификацию...');
+            devLog('🔄 Пропускаем аутентификацию...');
         }
 
-        console.log('🔄 Добавляем друга через API...');
+        devLog('🔄 Добавляем друга через API...');
         const friendData = {
             namePub: friendName.trim(),
             myAccId: selectedAccountId,
+            explicitMyAccId: selectedAccountId,
             friendPubKeyLibp2p: '' // Будет заполнен позже
         };
-        console.log('📝 Данные друга:', friendData);
+        devLog('📝 Данные друга:', friendData);
 
         // Используем новый API с явным указанием myAccId
         await Promise.race([
@@ -65,7 +67,7 @@ export async function useAddFriend(data: AddFriendData, accounts: any[]): Promis
             timeout
         ]);
         
-        console.log('✅ Друг добавлен успешно');
+        devLog('✅ Друг добавлен успешно');
 
         return {
             success: true,

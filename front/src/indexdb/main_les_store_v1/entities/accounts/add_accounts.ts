@@ -71,7 +71,7 @@ export async function add_accounts(new_list: AccountEntity[]) {
    //  friendsIdJoin: friend_ids.id,
    //}]);
 
-    friend_ids_store_utils.add([friend_ids], acc.id);
+    //friend_ids_store_utils.add([friend_ids], acc.id);
   }
 
 
