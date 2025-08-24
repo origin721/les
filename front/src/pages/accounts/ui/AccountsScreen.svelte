@@ -62,7 +62,11 @@
             <Button 
               variant="danger" 
               size="sm"
-              onclick={() => appAuthStore.onDeleteSecret(authItem.id)}
+              onclick={() => {
+                if(confirm("Удалить акаунт " + authItem.namePub)) {
+                  appAuthStore.onDeleteSecret(authItem.id)
+                }
+              }}
             >
               🗑️ УДАЛИТЬ
             </Button>
