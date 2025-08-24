@@ -1,4 +1,5 @@
 import { back_store } from "../../../../local_back/back_store";
+import { room_ids_store_utils } from "../../../../local_back/back_store/room_ids_store_utils";
 import { put_accounts } from "../accounts/put_accounts";
 import { TABLE_NAMES } from "../constats/TABLE_NAMES";
 import { entity_service } from "../entity_service/entity_service";

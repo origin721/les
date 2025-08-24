@@ -48,14 +48,13 @@ export async function add_friend({
   newFriends.forEach((friendEl) => {
     //acc.friendsByIds.push(friendEl.id);
 
-    const prev_friends_by_ids = back_store
-      .friends_ids_by_accounts_id[friendEl.explicitMyAccId];
+    const prev_friends_by_ids = friend_by_ids_utils.getByAccId(friendEl.explicitMyAccId);
     if (prev_friends_by_ids) prev_friends_by_ids.ids.push(friendEl.id);
   });
 
 
   await friend_by_ids_utils.put(Object.values(
-    back_store.friends_ids_by_accounts_id
+    back_store.friend_ids
   ));
 
   //friends_store_utils.add(newFriends);

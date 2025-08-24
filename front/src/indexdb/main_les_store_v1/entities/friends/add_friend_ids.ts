@@ -33,12 +33,15 @@ export async function add_friend_ids({
     FriendIdsFull
   >({
     table_name: TABLE_NAMES.friends_ids,
-    new_list: list,
+    new_list: list.map(el => ({
+      ...el,
+      explicitMyAccId: explicitMyAccId,
+    })),
     explicitMyAccId: explicitMyAccId,
     entityVersion: FRIENDS_VERSION,
   });
 
-  friend_ids_store_utils.add(newFriends, explicitMyAccId);
+  friend_ids_store_utils.add(newFriends);
 
   for(const el of newFriends) {
     const acc = back_store.accounts_by_id[el.explicitMyAccId];

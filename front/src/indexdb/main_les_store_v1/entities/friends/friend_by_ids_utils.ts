@@ -15,7 +15,13 @@ export const friend_by_ids_utils = {
   recovery: recovery_by_ids_friends,
   delete: delete_by_id,
   delete_friend: _delete_friend,
+  getByAccId,
 }
+
+function getByAccId(accId: string) {
+  return back_store.friend_ids[back_store.accounts_by_id[accId].friendsIdJoin];
+}
+
 
 /**
  * 
@@ -25,7 +31,7 @@ async function _delete_friend(ids: string[]) {
   for(const idItem of ids) {
     const friend = back_store.friends_by_id[idItem];
 
-    const friendIds = back_store.friends_ids_by_accounts_id[friend.explicitMyAccId];
+    const friendIds = getByAccId(friend.explicitMyAccId);
 
     friendIds.ids = arrayRemove(friendIds.ids, idItem);
 
@@ -34,17 +40,16 @@ async function _delete_friend(ids: string[]) {
 
 }
 
-async function delete_by_id(friendIds: string[], accId: string) {
-  //for(const idItem of friendIds) {
-    //if(back_store.friends_ids_by_accounts_id[back_store.friends_by_id[idItem].explicitMyAccId].ids)//back_store.friends_by_id[idItem].explicitMyAccId) {
+async function delete_by_id(friendIds: string[]) {
+  for (const frId of friendIds) {
+    const friend_ids = back_store.friend_ids[frId];
 
-    const friend_ids = back_store.friends_ids_by_accounts_id[accId];
-
-    if(Array.isArray(friend_ids.ids)) {
+    if (Array.isArray(friend_ids.ids)) {
       await delete_friend(friend_ids.ids);
     }
     else console.error('ошибка потом добавить уведомление если не так что то');
-  //}
+
+  }
 
   await entity_service.delete_entities({
     ids: friendIds,
@@ -64,9 +69,9 @@ async function put_utils(
       entityVersion: FRIEND_IDS_VERSION,
     });
 
-    for(const item of replaced_entities) {
-      friend_ids_store_utils.add([item], item.explicitMyAccId);
-    }
+    //for(const item of replaced_entities) {
+      friend_ids_store_utils.add(replaced_entities);
+    //}
 }
 
 async function recovery_by_ids_friends() {
@@ -97,7 +102,7 @@ async function recovery_by_ids_friends() {
         });
 
         if(decryptedEntity) {
-          const prevFriendIds = back_store.friends_ids_by_accounts_id[acc.id];
+          const prevFriendIds = friend_by_ids_utils.getByAccId(acc.id);
 
           if(!prevFriendIds.ids.includes(decryptedEntity.id)) {
             prevFriendIds.ids = [
@@ -106,7 +111,7 @@ async function recovery_by_ids_friends() {
             ];
 
             await put_utils([
-              back_store.friends_ids_by_accounts_id[acc.id]
+              friend_by_ids_utils.getByAccId(acc.id)
             ]);
           }
 

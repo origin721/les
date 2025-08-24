@@ -14,13 +14,12 @@ export async function delete_accounts(ids: string[]) {
 
     //console.log({back_store});
 
-    const friends_by_id = back_store.friends_ids_by_accounts_id[idItem];
+    const friends_by_id = friend_by_ids_utils.getByAccId(idItem);
 
     //console.log({friends_by_id});
     
     await friend_by_ids_utils.delete(
       [friends_by_id.id],
-      idItem,
     );
   }
 

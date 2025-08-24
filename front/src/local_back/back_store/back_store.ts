@@ -14,6 +14,9 @@ export interface Libp2pNodeInstance {
 export const back_store = {
   accounts_by_id: {} as Record<string, AccountEntityFull>,
   friends_by_id: {} as Record<string, FriendIdsEntityFull>,
-  friends_ids_by_accounts_id: {} as Record<string, FriendIdsEntityFull>,
+  //friends_ids_by_accounts_id: {} as Record<string, FriendIdsEntityFull>,
+  // Переименование и по id не акаунтов а собственных
+  // По Акаунту и так можно легко найти какая
+  friend_ids: {} as Record<string, FriendIdsEntityFull>,
   rooms_by_id: {} as Record<string, RoomEntityFull>,
 }

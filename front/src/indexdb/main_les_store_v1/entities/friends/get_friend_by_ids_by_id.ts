@@ -22,7 +22,7 @@ export async function get_friend_by_ids_by_id({
   });
 
   if(foundFriend) {
-    friend_ids_store_utils.add([foundFriend], explicitMyAccId);
+    friend_ids_store_utils.add([foundFriend]);
   }
 
   return foundFriend;

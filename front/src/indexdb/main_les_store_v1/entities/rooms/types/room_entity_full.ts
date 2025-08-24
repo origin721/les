@@ -5,7 +5,4 @@ import { RoomEntity } from "./room_entity";
  * Полная сущность комнаты с зашифрованным ID
  * Используется для безопасной работы с доверенными данными
  */
-export type RoomEntityFull = CommonEntity & {
-  /** Зашифрованный/доверенный ID комнаты для безопасности */
-  id: string;
-} & RoomEntity;
+export type RoomEntityFull = CommonEntity & RoomEntity;
