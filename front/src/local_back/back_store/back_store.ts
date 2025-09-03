@@ -19,4 +19,5 @@ export const back_store = {
   // По Акаунту и так можно легко найти какая
   friend_ids: {} as Record<string, FriendIdsEntityFull>,
   rooms_by_id: {} as Record<string, RoomEntityFull>,
+  accounts_rooms_by_id: {} as Record<string, AccountRoomsEntity>,
 }

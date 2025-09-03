@@ -1,0 +1,1 @@
+export const ACCOUNTS_ROOMS_VERSION = 1;

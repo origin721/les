@@ -18,10 +18,10 @@ export type AccountEntity = {
   friendsByIds: string[]; // Опциональное для обратной совместимости
   friendsIdJoin: string;
   /**
-   * @deprecated use roomsIdJoin
+   * @deprecated use accounts_rooms_id
    */
   roomIds?: string[]; // Связанные комнаты
-  roomsIdJoin: string;
+  accounts_rooms_id: string;
   /**
    * Пароль от сущностей
    */

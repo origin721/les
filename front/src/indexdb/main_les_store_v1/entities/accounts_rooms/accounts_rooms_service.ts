@@ -4,11 +4,12 @@ import { put_accounts } from "../accounts/put_accounts";
 import { TABLE_NAMES } from "../constats/TABLE_NAMES";
 import { entity_service } from "../entity_service/entity_service";
 import { FRIENDS_VERSION } from "../friends/constants";
-import type { RoomIdsEntity } from "./types/RoomIdsEntity";
-import type { RoomIdsEntityFull } from "./types/RoomIdsEntityFull";
+import type { RoomIdsEntity } from "../rooms/types/RoomIdsEntity";
+import type { RoomIdsEntityFull } from "../rooms/types/RoomIdsEntityFull";
+import { ACCOUNTS_ROOMS_VERSION } from "./ACCOUNTS_ROOMS_VERSION";
 
-export const room_by_ids_utils = {
-  add_room_ids,
+export const accounts_rooms_service = {
+  add: add_accounts_rooms,
 };
 
 type ServiceParams = {
@@ -16,7 +17,7 @@ type ServiceParams = {
   explicitMyAccId: string,
 }
 
-export async function add_room_ids({
+export async function add_accounts_rooms({
   list,
   explicitMyAccId: explicitMyAccId,
 }:ServiceParams): Promise<RoomIdsEntityFull[]> {
@@ -24,10 +25,10 @@ export async function add_room_ids({
     RoomIdsEntity,
     RoomIdsEntityFull
   >({
-    table_name: TABLE_NAMES.friends_ids,
+    table_name: TABLE_NAMES.accounts_rooms,
     new_list: list,
     explicitMyAccId: explicitMyAccId,
-    entityVersion: FRIENDS_VERSION,
+    entityVersion: ACCOUNTS_ROOMS_VERSION,
   });
 
   room_ids_store_utils.add(newFriends);
@@ -38,7 +39,7 @@ export async function add_room_ids({
       //acc.friendsIdJoin = el.id;
       await put_accounts([{
         ...acc,
-        roomsIdJoin: el.id,
+        accounts_rooms_id: el.id,
       }]);
     }
 

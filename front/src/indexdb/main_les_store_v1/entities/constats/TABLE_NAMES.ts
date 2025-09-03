@@ -3,4 +3,5 @@ export const TABLE_NAMES = Object.freeze({
   friends: 'friends',
   accounts: 'accounts',
   rooms: 'rooms',
+  accounts_rooms: 'accounts_rooms',
 });
