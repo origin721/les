@@ -1,5 +1,5 @@
 import type { RoomEntity, RoomEntityFull } from "./types";
-
+// TODO: файл мусор но как идею оставлю
 /**
  * Проверяет валидность данных комнаты
  */

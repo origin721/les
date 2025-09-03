@@ -1,5 +1,5 @@
 import type { CommonEntity } from "../../entity_service/types/CommonEntity";
-import { RoomEntity } from "./room_entity";
+import type { RoomEntity } from "./room_entity";
 
 /**
  * Полная сущность комнаты с зашифрованным ID

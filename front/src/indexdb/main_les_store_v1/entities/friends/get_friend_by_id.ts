@@ -2,6 +2,7 @@ import { decrypt_curve25519_from_pass } from "../../../../core/crypt";
 import { back_store } from "../../../../local_back/back_store/back_store";
 import { friends_store_utils } from "../../../../local_back/back_store/friends_store_utils";
 import { indexdb_wrapper } from "../../indexdb_wrapper";
+import { TABLE_NAMES } from "../constats/TABLE_NAMES";
 import { entity_service } from "../entity_service/entity_service";
 import type { FriendEntityFull } from "./types";
 
@@ -13,7 +14,7 @@ export async function get_friend_by_id({
   explicitMyAccId: string;
 }): Promise<FriendEntityFull | null> {
   const foundFriend = await entity_service.get_entity_by_id<FriendEntityFull>({
-    table_name: "friends",
+    table_name: TABLE_NAMES.friends,
     id: friendId,
     explicitMyAccId,
   });
