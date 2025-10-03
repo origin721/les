@@ -49,3 +49,12 @@ export async function add_accounts_rooms({
 
   return newFriends;
 }
+
+async function delete_by_ids(acc_rooms_ids: string[]) {
+  await entity_service.delete_entities({
+    ids: acc_rooms_ids,
+    table_name: TABLE_NAMES.accounts_rooms,
+  });
+
+  await friend_ids_store_utils.delete(acc_rooms_ids);
+}
