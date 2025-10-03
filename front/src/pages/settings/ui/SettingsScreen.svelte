@@ -15,6 +15,7 @@
     import EntityVersionsDebug from "./EntityVersionsDebug.svelte";
     import NavigationSection from "./NavigationSection.svelte";
     import styles from "./SettingsPage.module.css";
+    import AppVersions from "./AppVersions.svelte";
 
     let systemStatus = $state("operational");
     let activeTabsCount = $state(0);
@@ -35,6 +36,7 @@
         <TabManagementSection {activeTabsCount} />
         <MigrationStatistics />
         <VersionManagement />
+        <AppVersions/>
         <EntityVersionsDebug />
         <NavigationSection />
     </div>
