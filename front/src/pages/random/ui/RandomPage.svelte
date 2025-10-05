@@ -1,5 +1,7 @@
 <script lang="ts">
   import { PageLayout } from "../../../components/layout";
+    import { VIEW_VERSION_APP } from "../../../constants";
+    import { ROUTES } from "../../../routing";
   import RandomContent from "./RandomContent.svelte";
 
   // Создаем компонент для security badges
@@ -15,7 +17,8 @@
   subtitle="ГЕНЕРАТОР_СЛУЧАЙНЫХ_ДАННЫХ"
   statusText="ENTROPY: MAXIMUM"
   backButtonText="← ГЛАВНАЯ"
-  version="RANDOM_GENERATOR_v0.1.0"
+  backButtonHref={'#'+ROUTES.HOME}
+  version={`RANDOM_GENERATOR_${VIEW_VERSION_APP}`}
   status="ENTROPY: MAXIMUM"
   containerClass="random-page"
   contentClass="random-content"

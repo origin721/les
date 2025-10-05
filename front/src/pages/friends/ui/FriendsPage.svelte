@@ -22,6 +22,7 @@
     import sharedWorkerApi from "../../../api/shared_worker";
     import { onMount } from "svelte";
     import { friends_shared_worker } from "../../../api/shared_worker/friends";
+    import { VIEW_VERSION_APP } from "../../../constants";
 
     let friends = $state<FriendEntityFull[]>([]);
     let loading = $state(true);
@@ -70,7 +71,7 @@
         title="ДРУЗЬЯ"
         subtitle="Управление списком друзей"
         pageName="FriendsPage"
-        footerVersion="// FRIENDS_SYSTEM_v2.0 //"
+        footerVersion={`// FRIENDS_SYSTEM_${VIEW_VERSION_APP} //`}
         footerStatus="MODE: SVELTE5"
     >
         {#snippet children()}
@@ -161,7 +162,7 @@
                         <!-- Footer Status -->
                         <div class="footer-status">
                             <span class="footer-info">
-                                // FRIENDS_SYSTEM_v2.0 // STATUS: {friends.length}
+                                // FRIENDS_SYSTEM_{VIEW_VERSION_APP} // STATUS: {friends.length}
                                 ДРУЗЕЙ // SVELTE5 //
                             </span>
                         </div>

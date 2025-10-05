@@ -6,6 +6,7 @@
   import CryptoPageDecrypt from "./CryptoPageDecrypt.svelte";
   import CryptoPageKeys from "./CryptoPageKeys.svelte";
   import CryptoPageSign from "./CryptoPageSign.svelte";
+    import { VIEW_VERSION_APP } from "../../../constants";
 
   const PAGE_TABS = {
     KEYS: "KEYS",
@@ -135,7 +136,7 @@
 
     <footer class="crypto-footer">
       <div class="footer-info">
-        <span class="footer-version">// CRYPTO_TERMINAL_v0.1.0 //</span>
+        <span class="footer-version">// CRYPTO_TERMINAL_{VIEW_VERSION_APP} //</span>
         <span class="footer-security">SECURITY: MAXIMUM</span>
       </div>
     </footer>

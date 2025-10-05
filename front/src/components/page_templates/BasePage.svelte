@@ -2,6 +2,7 @@
   import { theme } from "../../stores/theme";
   import ThemeSwitcher from "../ThemeSwitcher.svelte";
   import { Link, ROUTES } from "../../routing";
+    import { VIEW_VERSION_APP } from "../../constants";
   
 
   interface Props {
@@ -24,7 +25,7 @@
     backLinkHref = '#'+ROUTES.HOME,
     backLinkText = "ГЛАВНАЯ",
     showThemeSwitcher = true,
-    footerVersion = "// SECURE_MESSAGE_v0.1.0 //",
+    footerVersion = `// SECURE_MESSAGE_${VIEW_VERSION_APP} //`,
     footerStatus = "STATUS: OPERATIONAL",
     pageName = "BasePage",
     children

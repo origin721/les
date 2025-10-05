@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { VIEW_VERSION_APP } from "../../constants";
+
   interface Props {
     version?: string;
     status?: string;
@@ -6,7 +8,7 @@
   }
 
   let {
-    version = "SECURE_MESSAGE_TERMINAL_v0.1.0",
+    version = `SECURE_MESSAGE_TERMINAL_${VIEW_VERSION_APP}`,
     status = "STATUS: OPERATIONAL",
     className = ""
   }: Props = $props();
